@@ -256,6 +256,7 @@
     let worker=null;try{worker=new Worker(window.__LF_WORKER_URL);}catch{}
     if(!worker){setDecisionSearchPanel({status:'warn',total,tested:0,approvedCount:0,resultText:'Busca exaustiva indisponível neste navegador. Nenhum NOVO INDICADO oficial foi definido.',mode:'Busca exaustiva obrigatória · 51 filtros · F28 + F29 + F36 obrigatórios'});return;}
     state.decisionWorker=worker;state.decisionWorkerSignature=sig;
+    state.decisionSearchMeta={status:'idle',tested:0,total,approvedCount:0,startedAt:null};
     setDecisionSearchPanel({status:'running',total,tested:0,approvedCount:0,resultText:'Jogo oficial será definido somente em 100%.',mode:'Busca exaustiva obrigatória · nenhum jogo oficial antes de 100% · 51 filtros · F28 + F29 + F36 obrigatórios'});
     worker.onmessage=e=>{const d=e.data||{};if(state.decisionWorker!==worker)return;if(d.type==='progress'){
       setDecisionSearchPanel({status:'running',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount??d.found??0,resultText:'Jogo oficial será definido somente em 100%.',mode:'Busca exaustiva obrigatória · nenhum jogo oficial antes de 100% · 51 filtros · F28 + F29 + F36 obrigatórios'});
