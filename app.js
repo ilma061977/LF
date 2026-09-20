@@ -275,7 +275,9 @@
     if(sig!==state.generationSignature){state.generationSignature=sig;state.decisionIndex=0;state.decisionRankingCache=null;if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{} state.decisionWorker=null;state.decisionWorkerSignature='';}}
     const excluded=[...blockedNumbers()],available=25-excluded.length,total=available>=15?M.nCk(available,15):0;
     if(available<15){applyDecision(null);setDecisionSearchPanel({status:'warn',total,resultText:'Bloqueios demais para formar 15 dezenas.'});toast('Bloqueios demais para formar 15 dezenas.');return;}
-    if(!state.decisionRankingCache)state.decisionRankingCache=loadPersistentDecisionCache(sig);const cache=state.decisionRankingCache;
+    // Em uma nova sessão, execute a varredura real. O ranking em memória só é
+    // reutilizado para "Próxima indicação" após a busca chegar a 100%.
+    const cache=state.decisionRankingCache;
     if(cache&&cache.signature===sig){
       if(!cache.games.length){applyDecision(null);setDecisionSearchPanel({status:'done',total:cache.total,tested:cache.tested,approvedCount:cache.approvedCount,resultText:'Nenhum jogo aprovado após busca exaustiva completa.',mode:cache.mode});return;}
       if(advance&&state.decision.length===15)state.decisionIndex++;
