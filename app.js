@@ -223,7 +223,8 @@
         else{state.history=[];state.apiOk=false;state.dataBlocked=true;state.officialVerified=false;state.dataSource='indisponível';state.dataWarning=msg;rebuildContext();status.textContent='Não foi possível confirmar uma base completa';dot.className='status-dot warn';const text='BASE INDISPONÍVEL OU INCOMPLETA — ANÁLISE BLOQUEADA';$('#base-meta').textContent=text;const baseInfo=$('#base-info');if(baseInfo){baseInfo.textContent=text;baseInfo.classList.add('base-blocked');}toast(text);}
       }
     }
-    refreshAll();
+    let restoredCache=null;if(!state.dataBlocked&&state.history.length){const sig=generationSignature(),cache=loadPersistentDecisionCache(sig);if(cache&&cache.tested===cache.total&&cache.games?.length){state.generationSignature=sig;state.decisionRankingCache=cache;state.decisionStarted=true;state.decisionIndex=0;state.decision=[...cache.games[0]];state.selection=new Set(state.decision);state.labBase=[...state.decision];restoredCache=cache;}}
+    refreshAll();if(restoredCache)setDecisionSearchPanel({status:'done',total:restoredCache.total,tested:restoredCache.tested,approvedCount:restoredCache.approvedCount,game:state.decision,mode:`${restoredCache.mode} · resultado concluído restaurado`});
   }
 
   function generationSignature(){const q=indicatorQuotaSpec();return JSON.stringify({contest:state.history.at(-1)?.concurso||0,period:state.period,excluded:[...blockedNumbers()].sort((a,b)=>a-b),policies:M.FILTERS.map(f=>state.filterPolicies[f.id]||''),indicatorTargets:q.targets,indicatorGroups:q.groups,schema:M.SCHEMA_VERSION,threshold:M.THRESHOLD_VERSION});}
