@@ -5,7 +5,7 @@ const ALL=Array.from({length:25},(_,i)=>i+1);
 const MANDATORY_BLOCKS=new Set([28,29,36]);
 function resolvedPolicy(f,policies={}){return MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'));}
 const keyOf=g=>g.map(n=>String(n).padStart(2,'0')).join('-');
-function blockedFailures(report,policies){return report.filters.filter(f=>resolvedPolicy(f,policies)==='block'&&!f.passed);}
+function blockedFailures(report,policies){const out=report.filters.filter(f=>resolvedPolicy(f,policies)==='block'&&!f.passed);if(report?.patternCooldown?.blocked)out.push({id:'PADRAO',name:'Carência de padrão exato'});if(report?.colorRule?.blocked)out.push({id:'CORES',name:'Mínimo obrigatório de 8 cores'});return out;}
 function warnings(report,policies){return report.filters.filter(f=>resolvedPolicy(f,policies)==='warn'&&!f.passed);}
 const COLOR_ORDER=[1,2,3,4,5,6,7,8,9,0];
 const BLOCKED_COLOR_PROFILES=new Set(['3-3-3-3-1-1-1-0-0-0','3-3-3-2-2-2-0-0-0-0','3-2-2-2-2-2-2-0-0-0','3-3-3-1-1-1-1-1-1-0']);

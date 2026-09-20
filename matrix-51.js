@@ -78,6 +78,13 @@
   function cycleMissingSet(history){if(!history.length)return new Set(ALL);let seen=new Set(),start=0,completedAt=-1;for(let i=history.length-1;i>=0;i--){for(const n of history[i].dezenas)seen.add(n);if(seen.size===25){completedAt=i;break;}}start=completedAt>=0?completedAt+1:0;seen=new Set();for(let i=start;i<history.length;i++)for(const n of history[i].dezenas)seen.add(n);return new Set(ALL.filter(n=>!seen.has(n)));}
   function historicalSeries(history,fn,minPrior=1){const out=[];for(let i=minPrior;i<history.length;i++){const v=fn(history[i],history.slice(0,i));if(Number.isFinite(v))out.push(v);}return out;}
   function maxHistoricalHits(game,history=[]){const g=normalize(game);if(!g)return{max:0,contests:[]};let max=0,contests=[];for(const d of history){const h=intersections(g,d.dezenas||[]);if(h>max){max=h;contests=[d.concurso];}else if(h===max)contests.push(d.concurso);}return{max,contests};}
+  function mandatoryColorRule(game){
+    const g=normalize(game),colorCounts=Array(10).fill(0);
+    if(!g)return{blocked:true,passed:false,distinct:0,min:8,max:10,counts:colorCounts};
+    g.forEach(n=>colorCounts[n%10]++);
+    const distinct=colorCounts.filter(Boolean).length,passed=distinct>=8&&distinct<=10;
+    return{blocked:!passed,passed,distinct,min:8,max:10,counts:colorCounts};
+  }
   function exactPatternCooldown(lineCounts,history=[]){
     const pattern=(lineCounts||[]).join('-'),interval=PATTERN_COOLDOWNS[pattern]||null;
     const latestContest=Number(history.at(-1)?.concurso)||0,targetContest=latestContest+1;
@@ -285,13 +292,13 @@
     add(50,true,'Cobertura calculada no módulo Fechamentos; esta posição não elimina isoladamente.');
     add(51,true,'Exportação/carteira operacional; esta posição não elimina isoladamente.');
 
-    const hardFailed=checks.filter(f=>(f.mode==='core'||MANDATORY_BLOCKS.has(f.id))&&!f.passed),warnings=checks.filter(f=>f.mode==='advisory'&&!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]);
-    return {valid:true,approved:hardFailed.length===0&&!patternCooldown.blocked,filters:checks,failed:hardFailed.map(f=>f.id),warnings:warnings.map(f=>f.id),patternCooldown,metrics:{lines,cols,qs,borderSectors,center,border,run,gap,primes,odds,total,repeated,elite,couples,absentRecent,persistentAbsent,delayedCount,floatingCount,cycleCount,opposedBands,hotCount,coldCount,avgDelay,endingDelta,ds,fib,m3,m5,maxHistorical:historicalCeiling,radial,adjacency,centroid:cm},calibrated:ctx.calibrated};
+    const hardFailed=checks.filter(f=>(f.mode==='core'||MANDATORY_BLOCKS.has(f.id))&&!f.passed),warnings=checks.filter(f=>f.mode==='advisory'&&!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]),colorRule=mandatoryColorRule(g);
+    return {valid:true,approved:hardFailed.length===0&&!patternCooldown.blocked&&!colorRule.blocked,filters:checks,failed:hardFailed.map(f=>f.id),warnings:warnings.map(f=>f.id),patternCooldown,colorRule,metrics:{lines,cols,qs,borderSectors,center,border,run,gap,primes,odds,total,repeated,elite,couples,absentRecent,persistentAbsent,delayedCount,floatingCount,cycleCount,opposedBands,hotCount,coldCount,avgDelay,endingDelta,ds,fib,m3,m5,maxHistorical:historicalCeiling,radial,adjacency,colors:colorRule.distinct,colorCounts:colorRule.counts,centroid:cm},calibrated:ctx.calibrated};
   }
   function histoSafe(x){return Number.isFinite(x)?x:0;}
 
   function policyAllows(report,policies={}){
-    if(report?.valid===false||report?.patternCooldown?.blocked)return false;
+    if(report?.valid===false||report?.patternCooldown?.blocked||report?.colorRule?.blocked)return false;
     return report.filters.every(f=>{
       const policy=MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'));
       return policy!=='block'||f.passed;
@@ -301,7 +308,7 @@
   function generate(ctx,quantity=1,maxAttempts=300000,options={}){const target=Math.max(1,Math.min(20,Number(quantity)||1)),out=[],seen=new Set(),excluded=options.excluded||[],policies=options.policies||{};let tested=0;while(out.length<target&&tested<maxAttempts){const g=randomAllowedGame(excluded);if(!g)break;const k=keyOf(g);tested++;if(seen.has(k))continue;seen.add(k);const r=inspect(g,ctx);if(policyAllows(r,policies))out.push(g);}return{games:out,tested,complete:out.length===target};}
 
   function rangeCentral(value,range){if(!Number.isFinite(value)||!range)return 0;const mid=(range[0]+range[1])/2,half=Math.max(.5,(range[1]-range[0])/2);return Math.max(-1,1-Math.abs(value-mid)/half);}
-  function candidateScore(game,ctx,policies={}){const r=inspect(game,ctx);if(!r.valid||r.patternCooldown?.blocked)return-Infinity;const blocked=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='block'&&!f.passed).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='warn'&&!f.passed).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
+  function candidateScore(game,ctx,policies={}){const r=inspect(game,ctx);if(!r.valid||r.patternCooldown?.blocked||r.colorRule?.blocked)return-Infinity;const blocked=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='block'&&!f.passed).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='warn'&&!f.passed).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
   function nCk(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);}
   function unrank(pool,k,rank){const out=[];let start=0,r=Math.max(0,Math.floor(rank));for(let need=k;need>0;need--){for(let i=start;i<=pool.length-need;i++){const c=nCk(pool.length-i-1,need-1);if(r<c){out.push(pool[i]);start=i+1;break;}r-=c;}}return out;}
   function deterministicBest(ctx,policies={},options={}){
@@ -317,5 +324,5 @@
   }
   function portfolioScore(games){const norm=games.map(normalize).filter(Boolean);if(norm.length<2)return{score:100,meanOverlap:0,maxOverlap:0};const overlaps=[];for(let i=0;i<norm.length;i++)for(let j=i+1;j<norm.length;j++)overlaps.push(intersections(norm[i],norm[j]));const mo=mean(overlaps),mx=Math.max(...overlaps);return{score:Math.max(0,Math.round(100-(mo-7)*12-(mx-10)*5)),meanOverlap:+mo.toFixed(2),maxOverlap:mx};}
 
-  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,buildContext,inspect,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,exactPatternCooldown,policyAllows,candidateScore,deterministicBest,nCk,unrank};
+  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,buildContext,inspect,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,exactPatternCooldown,policyAllows,candidateScore,deterministicBest,nCk,unrank};
 })();

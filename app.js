@@ -177,7 +177,7 @@
   }
   function queueCloudSync(){clearTimeout(state.cloudTimer);state.cloudTimer=setTimeout(()=>syncCloud(true),900);}
   function policyApproved(report){return M.policyAllows(report,state.filterPolicies);}
-  function policyFailures(report){return report.filters.filter(f=>(isMandatoryBlock(f.id)||state.filterPolicies[f.id]==='block')&&!f.passed);}
+  function policyFailures(report){const out=report.filters.filter(f=>(isMandatoryBlock(f.id)||state.filterPolicies[f.id]==='block')&&!f.passed);if(report?.patternCooldown?.blocked)out.push({id:'PADRAO',name:'Carência de padrão exato'});if(report?.colorRule?.blocked)out.push({id:'CORES',name:'Mínimo obrigatório de 8 cores'});return out;}
   function policyWarnings(report){return report.filters.filter(f=>!isMandatoryBlock(f.id)&&state.filterPolicies[f.id]==='warn'&&!f.passed);}
   function historicalSimilarity(g){return M.maxHistoricalHits(g,state.history);}
   function fullHistoryStatus(){if(!state.history.length)return{complete:false,missing:0};const sorted=[...state.history].sort((a,b)=>a.concurso-b.concurso),min=sorted[0].concurso,max=sorted.at(-1).concurso;const seen=new Set(sorted.map(x=>x.concurso));let missing=0;for(let c=min;c<=max;c++)if(!seen.has(c))missing++;return{complete:min<=1&&missing===0,missing,min,max,total:sorted.length};}
