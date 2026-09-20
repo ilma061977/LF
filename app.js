@@ -17,6 +17,9 @@
   const safeJSON=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||'null')??fallback}catch{return fallback}};
   const DEFAULT_INDICATOR_TARGETS={hot:1,cold:1,latest:1,delayed:1,three:1};
   const restoredIndicatorTargets=safeJSON('lfv3_indicator_targets',DEFAULT_INDICATOR_TARGETS);
+  const restoredIndicatorMode=localStorage.getItem('lfv3_indicator_mode')==='random'?'random':'manual';
+  const restoredIndicatorCompositions=safeJSON('lfv3_indicator_compositions',[]);
+  const restoredIndicatorPicks=safeJSON('lfv3_indicator_picks',{});
   const savedPolicySchema=localStorage.getItem('lfv3_matrix_schema');
   const restoredPolicies=savedPolicySchema===M.SCHEMA_VERSION?safeJSON('lfv3_filter_policies',{}):{};
   const makeCloudId=()=>{try{return crypto.randomUUID()}catch{return `lf-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}};
@@ -26,7 +29,7 @@
     exclusions:new Set(safeJSON('lfv3_exclusions',[])),emojiLocks:new Set(safeJSON('lfv3_emoji_locks',[])),labBase:[],labLocked:new Set(),
     matrixReport:null,matrixFilter:'all',page:'decision',worker:null,workerTask:null,filterAuditCache:new Map(),
     filterPolicies:restoredPolicies,savedGames:safeJSON('lfv3_saved_games',[]),groups:safeJSON('lfv3_groups',[]),
-    apiOk:false,officialVerified:false,dataBlocked:false,dataSource:'',dataWarning:'',decisionWorker:null,decisionIndex:0,generationSignature:'',decisionRankingCache:null,decisionWorkerSignature:'',decisionSearchMeta:{status:'idle',tested:0,total:0,approvedCount:0},cloudId,cloudStatus:'local',cloudTimer:null,myGamesContest:null,fullFilterAudit:null,indicatorTargets:{...DEFAULT_INDICATOR_TARGETS,...restoredIndicatorTargets}
+    apiOk:false,officialVerified:false,dataBlocked:false,dataSource:'',dataWarning:'',decisionWorker:null,decisionIndex:0,generationSignature:'',decisionRankingCache:null,decisionWorkerSignature:'',decisionSearchMeta:{status:'idle',tested:0,total:0,approvedCount:0},cloudId,cloudStatus:'local',cloudTimer:null,myGamesContest:null,fullFilterAudit:null,indicatorMode:restoredIndicatorMode,indicatorTargets:{...DEFAULT_INDICATOR_TARGETS,...restoredIndicatorTargets},indicatorPicks:restoredIndicatorPicks&&typeof restoredIndicatorPicks==='object'?restoredIndicatorPicks:{},indicatorCompositions:Array.isArray(restoredIndicatorCompositions)?restoredIndicatorCompositions:[]
   };
   const MANDATORY_BLOCK_IDS=new Set([28,29,36]);
   const isMandatoryBlock=id=>MANDATORY_BLOCK_IDS.has(Number(id));
@@ -122,14 +125,25 @@
   }
   function markerData(){const x=indicatorSets();return[{key:'hot',emoji:'🔥',label:'Quentes',set:x.hot},{key:'cold',emoji:'❄️',label:'Frias',set:x.cold},{key:'latest',emoji:'♻️',label:'Repetidas',set:x.latest},{key:'three',emoji:'🔄',label:'3+ seguidos',set:x.three},{key:'delayed',emoji:'⏳',label:'Atrasadas',set:x.delayed}];}
   function indicatorQuotaSpec(){
-    const x=indicatorSets(),groups={hot:[...x.hot],cold:[...x.cold],latest:[...x.latest],delayed:[...x.delayed],three:[...x.three]},targets={};
-    for(const key of Object.keys(groups)){const available=groups[key].length,raw=Math.max(1,Math.min(5,Number(state.indicatorTargets[key])||1));targets[key]=available?Math.min(raw,Math.min(5,available)):0;}
-    return{targets,groups};
+    const x=indicatorSets(),availableGroups={hot:[...x.hot],cold:[...x.cold],latest:[...x.latest],delayed:[...x.delayed],three:[...x.three]},targets={},groups={};
+    for(const key of Object.keys(availableGroups)){const available=availableGroups[key].length,raw=Math.max(1,Math.min(5,Number(state.indicatorTargets[key])||1));targets[key]=available?Math.min(raw,Math.min(5,available)):0;const allowed=new Set(availableGroups[key]),saved=(state.indicatorPicks[key]||[]).map(Number).filter(n=>allowed.has(n));groups[key]=(saved.length===targets[key]?saved:availableGroups[key].slice(0,targets[key])).sort((a,b)=>a-b);state.indicatorPicks[key]=groups[key];}
+    return{targets,groups,mode:state.indicatorMode};
   }
   function indicatorQuotaAllows(game,spec=indicatorQuotaSpec()){
     if(!Array.isArray(game)||game.length!==15)return false;
-    for(const key of Object.keys(spec.targets||{})){const target=Number(spec.targets[key]||0);if(target<=0)continue;const set=new Set(spec.groups?.[key]||[]),count=game.filter(n=>set.has(n)).length;if(count<target)return false;}
+    for(const key of Object.keys(spec.targets||{})){const target=Number(spec.targets[key]||0);if(target<=0)continue;const set=new Set(spec.groups?.[key]||[]),count=game.filter(n=>set.has(n)).length;if(count!==target)return false;}
+    if(spec.mode==='random'){const hot=new Set(spec.groups?.hot||[]),cold=new Set(spec.groups?.cold||[]),union=game.filter(n=>hot.has(n)||cold.has(n)).length;if(union<1||union>8)return false;}
     return true;
+  }
+  function indicatorCompositionKey(targets=state.indicatorTargets,picks=state.indicatorPicks){const contest=state.history.at(-1)?.concurso||0;return `${contest}|${['hot','cold','latest','delayed','three'].map(k=>`${Number(targets[k])||0}:${(picks[k]||[]).slice().sort((a,b)=>a-b).join('.')}`).join('|')}`;}
+  function randomizeIndicatorComposition(){
+    const items=indicatorTargetItems(),ranges={};
+    for(const item of items){const available=Math.min(5,item.set.size);ranges[item.key]=available?Array.from({length:available},(_,i)=>i+1):[0];}
+    ranges.hot=ranges.hot.filter(v=>v>=1&&v<=4);ranges.cold=ranges.cold.filter(v=>v>=1&&v<=4);
+    const source=Object.fromEntries(items.map(item=>[item.key,[...item.set]])),used=new Set(state.indicatorCompositions);let picked=null;
+    for(let attempt=0;attempt<500&&!picked;attempt++){const targets={};for(const key of Object.keys(ranges))targets[key]=ranges[key][Math.floor(Math.random()*ranges[key].length)];const picks={};for(const key of Object.keys(source)){const shuffled=[...source[key]];for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}picks[key]=shuffled.slice(0,targets[key]).sort((a,b)=>a-b);}const key=indicatorCompositionKey(targets,picks);if(!used.has(key))picked={targets,picks,key};}
+    if(!picked){const contest=`${state.history.at(-1)?.concurso||0}|`;state.indicatorCompositions=state.indicatorCompositions.filter(k=>!String(k).startsWith(contest));return randomizeIndicatorComposition();}
+    state.indicatorTargets={...picked.targets};state.indicatorPicks=picked.picks;state.indicatorCompositions.push(picked.key);state.indicatorCompositions=state.indicatorCompositions.slice(-2000);savePrefs();invalidateDecisionForIndicatorTargets();renderIndicatorTargetPanel();toast('Nova composição aleatória definida sem repetição.');
   }
   function indicatorTargetItems(){
     const x=indicatorSets();
@@ -146,10 +160,11 @@
     const spec=indicatorQuotaSpec(),game=new Set(state.decision||[]);
     el.innerHTML=indicatorTargetItems().map(item=>{const available=item.set.size,max=Math.min(5,available),saved=Math.max(1,Math.min(5,Number(state.indicatorTargets[item.key])||1)),effective=spec.targets[item.key]||0,current=[...game].filter(n=>item.set.has(n)).length;
       const options=[1,2,3,4,5].map(v=>`<option value="${v}" ${saved===v?'selected':''} ${available&&v>max?'disabled':''}>${v}</option>`).join('');
-      return `<label class="indicator-target-card ${available?'':'is-disabled'}"><span><b>${item.emoji} ${item.label}</b><small>${item.hint}</small></span><select data-indicator-target="${item.key}" ${available?'':'disabled'}>${options}</select><i>Mínimo ${effective} · disponíveis ${available} · no jogo ${current}</i></label>`;
+      return `<label class="indicator-target-card ${available?'':'is-disabled'}"><span><b>${item.emoji} ${item.label}</b><small>${item.hint}</small></span><select data-indicator-target="${item.key}" ${available&&state.indicatorMode==='manual'?'':'disabled'}>${options}</select><i>Base exata ${effective}: ${(spec.groups[item.key]||[]).map(pad).join(', ')||'—'} · no jogo ${current}/${effective}</i></label>`;
     }).join('');
-    if(summary){const t=spec.targets;summary.textContent=`Metas mínimas: 🔥 ${t.hot} · ❄️ ${t.cold} · ♻️ ${t.latest} · ⏳ ${t.delayed} · 🔄 ${t.three}. Sobreposições contam em mais de um indicador.`;}
-    $$('[data-indicator-target]').forEach(s=>s.onchange=()=>{state.indicatorTargets[s.dataset.indicatorTarget]=Math.max(1,Math.min(5,Number(s.value)||1));savePrefs();invalidateDecisionForIndicatorTargets();renderIndicatorTargetPanel();});
+    if(summary){const t=spec.targets;summary.textContent=`Metas exatas: 🔥 ${t.hot} · ❄️ ${t.cold} · ♻️ ${t.latest} · ⏳ ${t.delayed} · 🔄 ${t.three}. Sobreposições contam em mais de um indicador.`;}
+    const mode=$('#indicator-composition-mode');if(mode)mode.value=state.indicatorMode;const reroll=$('#randomize-indicator-targets');if(reroll)reroll.hidden=state.indicatorMode!=='random';
+    $$('[data-indicator-target]').forEach(s=>s.onchange=()=>{state.indicatorTargets[s.dataset.indicatorTarget]=Math.max(1,Math.min(5,Number(s.value)||1));state.indicatorPicks[s.dataset.indicatorTarget]=[];savePrefs();invalidateDecisionForIndicatorTargets();renderIndicatorTargetPanel();});
   }
   function invalidateDecisionForIndicatorTargets(){
     if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{}state.decisionWorker=null;state.decisionWorkerSignature='';}
@@ -165,7 +180,7 @@
   function renderLastComparison(){const el=$('#decision-last-comparison');if(!el)return;const latest=state.history.at(-1);if(!latest||state.decision.length!==15){el.innerHTML='<p class="muted">Aguardando NOVO INDICADO e último concurso.</p>';return;}const cur=new Set(state.decision),prev=new Set(latest.dezenas),common=state.decision.filter(n=>prev.has(n)),entered=state.decision.filter(n=>!prev.has(n)),left=latest.dezenas.filter(n=>!cur.has(n));el.innerHTML=`<div class="decision-last-kpis"><span>Concurso base <b>#${latest.concurso}</b></span><span>Em comum <b>${common.length}/15</b></span><span>Entraram <b>${entered.length}</b></span><span>Saíram <b>${left.length}</b></span></div><div class="decision-last-groups"><div><strong>♻️ Em comum</strong>${gameNumbers(common)}</div><div><strong>＋ Entraram</strong>${gameNumbers(entered)}</div><div><strong>− Saíram do último</strong>${gameNumbers(left)}</div></div>`;}
   function normalizeSavedEntry(x){const game=M.normalize(x?.game);if(!game)return null;return{id:String(x.id||`${Date.now()}-${Math.random().toString(36).slice(2)}`),savedAt:x.savedAt||new Date().toISOString(),updatedAt:x.updatedAt||x.savedAt||new Date().toISOString(),game,note:String(x.note||''),classification:['principal','reserva','teste'].includes(x.classification)?x.classification:'principal'};}
   state.savedGames=state.savedGames.map(normalizeSavedEntry).filter(Boolean);
-  function savePrefs(){localStorage.setItem('lfv3_period',state.period);localStorage.setItem('lfv3_exclusions',JSON.stringify([...state.exclusions]));localStorage.setItem('lfv3_emoji_locks',JSON.stringify([...state.emojiLocks]));localStorage.setItem('lfv3_filter_policies',JSON.stringify(state.filterPolicies));localStorage.setItem('lfv3_matrix_schema',M.SCHEMA_VERSION);localStorage.setItem('lfv3_saved_games',JSON.stringify(state.savedGames));localStorage.setItem('lfv3_groups',JSON.stringify(state.groups));localStorage.setItem('lfv3_indicator_targets',JSON.stringify(state.indicatorTargets));}
+  function savePrefs(){localStorage.setItem('lfv3_period',state.period);localStorage.setItem('lfv3_exclusions',JSON.stringify([...state.exclusions]));localStorage.setItem('lfv3_emoji_locks',JSON.stringify([...state.emojiLocks]));localStorage.setItem('lfv3_filter_policies',JSON.stringify(state.filterPolicies));localStorage.setItem('lfv3_matrix_schema',M.SCHEMA_VERSION);localStorage.setItem('lfv3_saved_games',JSON.stringify(state.savedGames));localStorage.setItem('lfv3_groups',JSON.stringify(state.groups));localStorage.setItem('lfv3_indicator_targets',JSON.stringify(state.indicatorTargets));localStorage.setItem('lfv3_indicator_picks',JSON.stringify(state.indicatorPicks));localStorage.setItem('lfv3_indicator_mode',state.indicatorMode);localStorage.setItem('lfv3_indicator_compositions',JSON.stringify(state.indicatorCompositions));}
   function setCloudStatus(text,kind=''){state.cloudStatus=text;const el=$('#cloud-status');if(el){el.textContent=text;el.className=`cloud-status ${kind}`;}}
   function mergeCloudGames(remote=[]){const map=new Map();for(const raw of [...state.savedGames,...remote]){const x=normalizeSavedEntry(raw);if(!x)continue;const k=keyOf(x.game),prev=map.get(k);if(!prev||String(x.updatedAt)>String(prev.updatedAt))map.set(k,x);}state.savedGames=[...map.values()].sort((a,b)=>String(a.savedAt).localeCompare(String(b.savedAt))).slice(-500);savePrefs();renderMyGames();}
   async function syncCloud(push=true){
@@ -455,7 +470,7 @@
   $('#menu-button').onclick=()=>$('#sidebar').classList.toggle('open');
   $('#refresh-data').onclick=()=>loadData(true);
   $('#global-period').value=String(state.period);$('#global-period').onchange=e=>{state.period=Number(e.target.value);savePrefs();rebuildContext();state.decision=[];state.decisionIndex=0;state.generationSignature='';state.matrixReport=null;refreshAll();};
-  $('#decision-generate').onclick=()=>generateDecision(true);$('#apply-indicator-targets').onclick=()=>{invalidateDecisionForIndicatorTargets();generateDecision(false);};
+  $('#decision-generate').onclick=()=>generateDecision(true);$('#apply-indicator-targets').onclick=()=>{invalidateDecisionForIndicatorTargets();generateDecision(false);};$('#indicator-composition-mode').onchange=e=>{state.indicatorMode=e.target.value==='random'?'random':'manual';if(state.indicatorMode==='random')randomizeIndicatorComposition();else{savePrefs();invalidateDecisionForIndicatorTargets();renderIndicatorTargetPanel();}};$('#randomize-indicator-targets').onclick=()=>randomizeIndicatorComposition();
   $('#use-suggestion').onclick=()=>{if(state.decision.length!==15)return toast('Aguarde a busca exaustiva chegar a 100% para usar o NOVO INDICADO oficial.');state.selection=new Set(state.decision);renderAnalysis();};
   $('#clear-selection').onclick=()=>{state.selection.clear();renderAnalysis();};
   $('#complete-selection').onclick=()=>{const blocked=blockedNumbers(),pool=ALL.filter(n=>!state.selection.has(n)&&!blocked.has(n)).sort(()=>Math.random()-.5);while(state.selection.size<15&&pool.length)state.selection.add(pool.pop());renderAnalysis();if(state.selection.size<15)toast('Bloqueios demais para completar 15 dezenas.');};
