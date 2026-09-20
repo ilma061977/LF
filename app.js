@@ -249,7 +249,7 @@
     if(pill){pill.className=`search-status-pill ${status==='running'?'running':status==='done'?'ok':status==='warn'?'warn':''}`;pill.textContent=status==='running'?'Processando':status==='done'?'Concluída':status==='warn'?'Atenção':'Aguardando';}
     if(btn){const complete=status==='done'&&state.decisionRankingCache?.signature===state.generationSignature;btn.disabled=status==='running';btn.textContent=complete?'Próxima indicação aprovada':status==='running'?'Aguarde busca 100%':'Iniciar busca exaustiva';}
   }
-  function startDecisionExhaustive(sig,excluded,total){
+  function startDecisionExhaustive(sig,excluded,total,rankIndex=0){
     if(state.decisionWorker&&state.decisionWorkerSignature===sig)return;
     if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{} state.decisionWorker=null;}
     applyDecision(null);
@@ -262,11 +262,11 @@
     }else if(d.type==='done'){
       try{worker.terminate();}catch{} if(state.decisionWorker===worker){state.decisionWorker=null;state.decisionWorkerSignature='';}
       const mode='Busca exaustiva concluída em 100% · Top 1.000 melhores aprovados retidos · 51 filtros · F28 + F29 + F36 obrigatórios';
-      if(Array.isArray(d.topGames)&&d.topGames.length){state.decisionRankingCache={signature:sig,games:d.topGames,scores:d.topScores||[],tested:Number(d.tested||0),total:Number(d.total||total),approvedCount:Number(d.approvedCount||0),mode,completedAt:new Date().toISOString()};savePersistentDecisionCache(state.decisionRankingCache);state.decisionIndex=0;applyDecision(d.topGames[0]);setDecisionSearchPanel({status:'done',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,game:d.topGames[0],mode});toast(`Busca exaustiva 100% concluída: ${Number(d.approvedCount||0).toLocaleString('pt-BR')} jogos aprovados. NOVO INDICADO oficial definido.`);}
+      if(Array.isArray(d.topGames)&&d.topGames.length){state.decisionRankingCache={signature:sig,games:d.topGames,scores:d.topScores||[],tested:Number(d.tested||0),total:Number(d.total||total),approvedCount:Number(d.approvedCount||0),mode,completedAt:new Date().toISOString()};savePersistentDecisionCache(state.decisionRankingCache);state.decisionIndex=Math.min(rankIndex,d.topGames.length-1);const picked=d.topGames[state.decisionIndex];applyDecision(picked);setDecisionSearchPanel({status:'done',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,game:picked,mode:`${mode} · indicação #${state.decisionIndex+1}/${Math.min(1000,d.topGames.length)}`});toast(`Busca 100% concluída: indicação #${state.decisionIndex+1} definida entre ${Number(d.approvedCount||0).toLocaleString('pt-BR')} jogos aprovados.`);}
       else{state.decisionRankingCache={signature:sig,games:[],scores:[],tested:Number(d.tested||0),total:Number(d.total||total),approvedCount:Number(d.approvedCount||0),mode,completedAt:new Date().toISOString()};savePersistentDecisionCache(state.decisionRankingCache);applyDecision(null);setDecisionSearchPanel({status:'done',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,resultText:'Nenhum jogo aprovado após busca exaustiva completa.',mode});toast('Busca exaustiva concluída sem jogo aprovado nas regras atuais.');}
     }};
     worker.onerror=()=>{try{worker.terminate();}catch{} if(state.decisionWorker===worker){state.decisionWorker=null;state.decisionWorkerSignature='';}applyDecision(null);setDecisionSearchPanel({status:'warn',total,tested:state.decisionSearchMeta.tested||0,approvedCount:state.decisionSearchMeta.approvedCount||0,resultText:'Erro na busca exaustiva. Nenhum NOVO INDICADO oficial foi definido.',mode:'Busca exaustiva obrigatória · erro de processamento'});};
-    worker.postMessage({task:'generate',history:state.history,period:state.period,quantity:1,excluded,policies:state.filterPolicies,indicatorQuotas:indicatorQuotaSpec(),colorBalanced:false,deterministic:true,exhaustive:true,rankIndex:0,topLimit:1000});
+    worker.postMessage({task:'generate',history:state.history,period:state.period,quantity:1,excluded,policies:state.filterPolicies,indicatorQuotas:indicatorQuotaSpec(),colorBalanced:false,deterministic:true,exhaustive:true,rankIndex,topLimit:1000});
   }
   function generateDecision(advance=false){
     state.decisionStarted=true;
@@ -275,17 +275,16 @@
     if(sig!==state.generationSignature){state.generationSignature=sig;state.decisionIndex=0;state.decisionRankingCache=null;if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{} state.decisionWorker=null;state.decisionWorkerSignature='';}}
     const excluded=[...blockedNumbers()],available=25-excluded.length,total=available>=15?M.nCk(available,15):0;
     if(available<15){applyDecision(null);setDecisionSearchPanel({status:'warn',total,resultText:'Bloqueios demais para formar 15 dezenas.'});toast('Bloqueios demais para formar 15 dezenas.');return;}
-    // Em uma nova sessão, execute a varredura real. O ranking em memória só é
-    // reutilizado para "Próxima indicação" após a busca chegar a 100%.
+    // Cada novo clique executa outra varredura real e escolhe a próxima posição
+    // do ranking, para que progresso e aprovados parciais recomecem em zero.
     const cache=state.decisionRankingCache;
     if(cache&&cache.signature===sig){
       if(!cache.games.length){applyDecision(null);setDecisionSearchPanel({status:'done',total:cache.total,tested:cache.tested,approvedCount:cache.approvedCount,resultText:'Nenhum jogo aprovado após busca exaustiva completa.',mode:cache.mode});return;}
-      if(advance&&state.decision.length===15)state.decisionIndex++;
-      if(state.decisionIndex>=cache.games.length)state.decisionIndex=0;
-      const g=cache.games[state.decisionIndex];applyDecision(g);setDecisionSearchPanel({status:'done',total:cache.total,tested:cache.tested,approvedCount:cache.approvedCount,game:g,mode:cache.mode});if(advance)toast(`Nova indicação #${state.decisionIndex+1} carregada do ranking exaustivo retido.`);return;
+      if(advance&&state.decision.length===15){const next=(state.decisionIndex+1)%cache.games.length;state.decisionRankingCache=null;startDecisionExhaustive(sig,excluded,total,next);return;}
+      const g=cache.games[state.decisionIndex];applyDecision(g);setDecisionSearchPanel({status:'done',total:cache.total,tested:cache.tested,approvedCount:cache.approvedCount,game:g,mode:`${cache.mode} · indicação #${state.decisionIndex+1}/${Math.min(1000,cache.games.length)}`});return;
     }
     if(state.decisionWorker&&state.decisionWorkerSignature===sig){setDecisionSearchPanel({status:'running',total:state.decisionSearchMeta.total||total,tested:state.decisionSearchMeta.tested||0,approvedCount:state.decisionSearchMeta.approvedCount||0,resultText:'Jogo oficial será definido somente em 100%.',mode:'Busca exaustiva obrigatória · nenhum jogo oficial antes de 100% · 51 filtros · F28 + F29 + F36 obrigatórios'});if(advance)toast('Aguarde a busca exaustiva chegar a 100% para liberar o NOVO INDICADO oficial.');return;}
-    startDecisionExhaustive(sig,excluded,total);
+    startDecisionExhaustive(sig,excluded,total,state.decisionIndex);
   }
 
   function numberReason(n){const ind=indicatorSets(),reasons=[];if(ind.hot.has(n))reasons.push('🔥 quente');if(ind.cold.has(n))reasons.push('❄️ fria');if(ind.latest.has(n))reasons.push('♻️ repetida');if(ind.three.has(n))reasons.push('🔄 3+ seguidos');if(ind.delayed.has(n))reasons.push(`⏳ atraso ${ind.dm[n]} · top 5 das 10 ausentes`);if(!reasons.length){const f=ind.f[n]||0;reasons.push(`${f} saídas nos últimos ${Math.min(10,state.history.length)} concursos`);}return reasons;}
