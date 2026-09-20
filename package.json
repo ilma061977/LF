@@ -1,0 +1,8 @@
+{
+  "name": "lf-inteligente-2026-atualizado",
+  "version": "3.7.2",
+  "private": true,
+  "scripts": {
+    "test": "node --check app.js && node --check matrix-51.js && node --check analysis-worker.js"
+  }
+}
