@@ -3,7 +3,7 @@
   const M=window.LFMatrix51;
   if(!M) throw new Error('Matriz 51 não carregada.');
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-  const ALL=Array.from({length:25},(_,i)=>i+1), pad=n=>String(n).padStart(2,'0'), cls=n=>`c${n%10}`;
+  const ALL=Array.from({length:25},(_,i)=>i+1), pad=n=>String(n).padStart(2,'0'), cls=n=>(window.LFOfficialBalls?.className(n)||`c${n%10}`);
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const hits=(a,b)=>{const s=new Set(b||[]);return (a||[]).filter(n=>s.has(n)).length;};
   const mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
@@ -104,7 +104,7 @@
   function frequency(period=state.period){const rows=rowsForPeriod(period),f=Object.fromEntries(ALL.map(n=>[n,0]));rows.forEach(d=>d.dezenas.forEach(n=>f[n]++));return f;}
   function delayMap(){const out={};for(const n of ALL){let d=0;for(let i=state.history.length-1;i>=0&&!state.history[i].dezenas.includes(n);i--)d++;out[n]=d;}return out;}
 
-  const COLOR_INFO={1:{name:'Vermelha',nums:[1,11,21]},2:{name:'Amarela',nums:[2,12,22]},3:{name:'Verde',nums:[3,13,23]},4:{name:'Marrom',nums:[4,14,24]},5:{name:'Azul',nums:[5,15,25]},6:{name:'Rosa',nums:[6,16]},7:{name:'Preta',nums:[7,17]},8:{name:'Cinza',nums:[8,18]},9:{name:'Laranja',nums:[9,19]},0:{name:'Branca',nums:[10,20]}};
+  const COLOR_INFO=window.LFOfficialBalls?.info||{1:{name:'Vermelha',nums:[1,11,21]},2:{name:'Amarela',nums:[2,12,22]},3:{name:'Verde',nums:[3,13,23]},4:{name:'Marrom',nums:[4,14,24]},5:{name:'Azul',nums:[5,15,25]},6:{name:'Rosa',nums:[6,16]},7:{name:'Preta',nums:[7,17]},8:{name:'Cinza',nums:[8,18]},9:{name:'Laranja',nums:[9,19]},0:{name:'Branca',nums:[10,20]}};
   const COLOR_ORDER=[1,2,3,4,5,6,7,8,9,0];
   const BLOCKED_COLOR_PROFILES=new Set(['3-3-3-3-1-1-1-0-0-0','3-3-3-2-2-2-0-0-0-0','3-2-2-2-2-2-2-0-0-0','3-3-3-1-1-1-1-1-1-0']);
   const MIOLO_NUMBERS=[7,8,9,12,13,14,17,18,19],MOLDURA_NUMBERS=[1,2,3,4,5,6,10,11,15,16,20,21,22,23,24,25];
