@@ -173,7 +173,7 @@
   }
   function markers(n){return markerData().filter(x=>x.set.has(n)).map(x=>x.emoji);}
   function blockedNumbers(){const out=new Set(state.exclusions);for(const item of markerData())if(state.emojiLocks.has(item.key))item.set.forEach(n=>out.add(n));return out;}
-  function ballHTML(n,{selected=false,blocked=false,withMarkers=true,dim=false,locked=false}={}){const mk=withMarkers?markers(n):[];return `<div class="ball ${cls(n)} ${selected?'selected':''} ${blocked?'blocked':''} ${dim?'dimmed':''} ${locked?'fixed':''}" data-n="${n}" aria-pressed="${selected}" title="${locked?'Fixa · ':''}${mk.join(' ')}"><b>${pad(n)}</b>${locked?'<i class="lock-mark">🔒</i>':''}${mk.length?`<span class="markers">${mk.join('')}</span>`:''}</div>`;}
+  function ballHTML(n,{selected=false,blocked=false,withMarkers=true,dim=false,locked=false}={}){const mk=withMarkers?markers(n):[];return `<div class="ball ${cls(n)} ${selected?'selected':''} ${blocked?'blocked':''} ${dim?'dimmed':''} ${locked?'fixed':''}" data-n="${n}" aria-pressed="${selected}" title="${locked?'Fixa · ':''}${mk.join(' ')}"><b>${pad(n)}</b>${locked?'<i class="lock-mark">🔒</i>':''}${mk.length?`<span class="markers">${mk.map(e=>`<i>${e}</i>`).join('')}</span>`:''}</div>`;}
   function mini(n){return `<span class="mini-ball ${cls(n)}">${pad(n)}</span>`;}
   function gameNumbers(g){return `<div class="game-numbers">${g.map(mini).join('')}</div>`;}
   function blockedInGame(g){const blocked=blockedNumbers();return (g||[]).filter(n=>blocked.has(n));}
