@@ -15,7 +15,7 @@
 </style>
 </head>
 <body>
-<header class="top"><div class="mark">LF</div><div><strong>Estatísticas PRO</strong><small>20 evoluções + combinatória exata + duplas/trincas</small></div><div class="spacer"></div><a href="/">App principal</a><a href="/estatisticas-plus.html">Estatísticas+</a><a href="/historico-avancado.html">Histórico</a></header>
+<header class="top"><div class="mark">LF</div><div><strong>Estatísticas PRO</strong><small>20 evoluções + combinatória exata + duplas/trincas</small></div><div class="spacer"></div><a href="/">App principal</a><a href="/estatisticas-plus.html">Estatísticas+</a><a href="/historico-avancado.html">Histórico</a><a href="/evolucoes-21-29.html">PRO 21–29</a></header>
 <div class="layout">
 <nav class="nav"><h3>EVOLUÇÕES 1–20</h3>
 <button class="tab active" data-tab="jumps">↝ <b>1. Saltos +3/+4/+5</b></button>
@@ -217,7 +217,7 @@ function renderMonteCarlo(){const N=+$('#mc-n').value,w=+$('#mc-window').value,s
 $('#mc-run').onclick=renderMonteCarlo;
 
 function renderTab(n){if(n==='jumps')renderJumps();else if(n==='verticalseq')renderVerticalSeq();else if(n==='verticaljumps')renderVerticalJumps();else if(n==='longruns')renderLongRuns();else if(n==='colorcycle')renderColorCycle();else if(n==='groups3')renderGroups3();else if(n==='draworder')renderDrawOrder();else if(n==='drawpositions')renderDrawPositions();else if(n==='trends')renderTrends();else if(n==='scatter')renderScatter();else if(n==='pairs')renderPairPage(0);else if(n==='intervals')renderIntervals();else if(n==='analyzer')renderAnalyzer();else if(n==='percentiles')renderPercentiles();else if(n==='typicity')renderTypicity();else if(n==='oe')renderOE();else if(n==='streaks')renderStreaks();else if(n==='montecarlo')renderMonteCarlo()}
-async function init(){const r=await fetch('/data/lotofacil-base.json?pro='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({...x,concurso:Number(x.concurso),dezenas:(x.dezenas||[]).map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);CTX=window.LFIndicatorEmojis?.context(H)||null;const h=location.hash.replace('#','');setTab($$('.tab').some(x=>x.dataset.tab===h)?h:'jumps')}
+async function init(){const [r,or]=await Promise.all([fetch('/data/lotofacil-base.json?pro='+Date.now()),fetch('/api/lotofacil-ordem?from=1&to=999999').catch(()=>null)]),b=await r.json(),oj=or&&or.ok?await or.json().catch(()=>null):null,om=new Map((oj?.rows||[]).map(x=>[Number(x.concurso),x.ordemSorteio]));H=(b.history||[]).map(x=>({...x,concurso:Number(x.concurso),dezenas:(x.dezenas||[]).map(Number).sort((a,b)=>a-b),...(om.has(Number(x.concurso))?{ordemSorteio:om.get(Number(x.concurso))}:{})})).sort((a,b)=>a.concurso-b.concurso);CTX=window.LFIndicatorEmojis?.context(H)||null;const h=location.hash.replace('#','');setTab($('.tab').some(x=>x.dataset.tab===h)?h:'jumps')}
 init().catch(e=>{document.querySelector('.hero p').textContent='Erro ao carregar a base: '+e.message;console.error(e)});
 </script>
 </body></html>
