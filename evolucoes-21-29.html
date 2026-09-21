@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0d10">
+<title>Evoluções 21–29 · LF Inteligente 2026</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#64748b;--line:#e2e8f0;--dark:#0b0d10;--blue:#2563eb;--green:#15803d;--amber:#b45309;--red:#b91c1c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}
+.top{position:sticky;top:0;z-index:30;display:flex;gap:10px;align-items:center;padding:12px 16px;background:var(--dark);color:#fff}.mark{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#fff;color:#111;font-weight:950}.top strong{font-size:15px}.top small{display:block;color:#94a3b8}.top .spacer{flex:1}.top a{color:#fff;text-decoration:none;border:1px solid #334155;border-radius:9px;padding:8px 10px}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:calc(100vh - 62px)}.nav{position:sticky;top:62px;height:calc(100vh - 62px);overflow:auto;background:#111419;padding:12px 9px}.nav h3{font-size:9px;letter-spacing:.12em;color:#64748b;margin:9px}.tab{width:100%;display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center;border:0;background:transparent;color:#cbd5e1;padding:10px;border-radius:9px;text-align:left;cursor:pointer}.tab:hover,.tab.active{background:#22262d;color:#fff}.tab b{font-size:11px}.main{padding:22px;max-width:1750px}.hero{padding:24px;border-radius:18px;background:linear-gradient(135deg,#0b0d10,#172033);color:#fff;margin-bottom:12px}.hero span{font-size:9px;letter-spacing:.14em;color:#93c5fd;font-weight:900}.hero h1{font-size:31px;margin:5px 0}.hero p{color:#cbd5e1;max-width:1100px}.page{display:none}.page.active{display:block}.head{margin:4px 0 13px}.head h2{margin:0;font-size:24px}.head p{margin:4px 0;color:var(--muted)}
+.periodbar{position:sticky;top:62px;z-index:20;background:#eef2ff;border:1px solid #c7d2fe;border-radius:13px;padding:10px 12px;margin-bottom:14px;display:flex;gap:8px;align-items:end;flex-wrap:wrap}.periodbar label,.controls label{display:grid;gap:4px;font-size:10px;font-weight:850;color:#475569}.periodbar input,.controls input,.controls select,.controls textarea{border:1px solid #cbd5e1;border-radius:8px;padding:8px 9px;background:#fff}.controls textarea{min-width:360px;min-height:66px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:13px;box-shadow:0 5px 18px rgba(15,23,42,.04)}.controls{display:flex;gap:9px;align-items:end;flex-wrap:wrap}.btn{border:0;border-radius:9px;padding:9px 13px;background:#111827;color:#fff;font-weight:850;cursor:pointer}.btn.blue{background:var(--blue)}.btn.green{background:var(--green)}.btn.ghost{background:#eef2ff;color:#1e3a8a}.btn.red{background:var(--red)}.note{padding:11px 13px;border-radius:10px;background:#eff6ff;border-left:4px solid #2563eb;color:#1e3a8a;margin:10px 0}.note.warn{background:#fff7ed;border-color:#d97706;color:#92400e}.note.good{background:#ecfdf5;border-color:#16a34a;color:#166534}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:10px 0}.kpi{border:1px solid var(--line);border-radius:11px;padding:11px;background:#f8fafc}.kpi span{display:block;color:#64748b;font-size:9px;text-transform:uppercase;font-weight:900}.kpi b{display:block;margin-top:3px;font-size:18px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.table{overflow:auto;border:1px solid var(--line);border-radius:10px;max-height:70vh}table{width:100%;border-collapse:collapse}th{position:sticky;top:0;background:#111827;color:#fff;font-size:9px;text-align:left;padding:8px;white-space:nowrap}td{padding:8px;border-bottom:1px solid #eef2f7;white-space:nowrap;font-size:11px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:9px;font-weight:850}.pager{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}.bar{height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden;min-width:100px}.bar i{display:block;height:100%;background:#111827}.qgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.qcard{border:1px solid var(--line);border-radius:12px;padding:12px;background:#f8fafc}.qcard b{font-size:20px}.qcard small{display:block;color:var(--muted)}
+@media print{.top,.nav,.periodbar,.controls,.btn{display:none!important}.layout{display:block}.main{max-width:none;padding:0}.page{display:none!important}.page.active{display:block!important}.panel{box-shadow:none;break-inside:avoid}}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.nav{position:static;height:auto;display:flex;overflow:auto}.nav h3{display:none}.tab{min-width:220px}.grid2,.grid4{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.main{padding:14px}.periodbar{top:62px}}
+@media(max-width:580px){.kpis{grid-template-columns:1fr}.controls textarea{min-width:min(86vw,360px)}.top a:nth-last-child(n+3){display:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="mark">LF</div><div><strong>Evoluções 21–29</strong><small>auditoria competitiva integrada</small></div><div class="spacer"></div><a href="/">App principal</a><a href="/estatisticas-pro.html">PRO 1–20</a><a href="/inteligencia.html">Inteligência</a></header>
+<div class="layout">
+<nav class="nav"><h3>EVOLUÇÕES 21–29</h3>
+<button class="tab active" data-tab="order">🎱 <b>21. Ordem real</b></button>
+<button class="tab" data-tab="patterns32">▦ <b>22. 32 padrões L/C</b></button>
+<button class="tab" data-tab="custom">🎯 <b>23. Estatística + ciclo personalizado</b></button>
+<button class="tab" data-tab="finance">💰 <b>24. Prêmios + simulador financeiro</b></button>
+<button class="tab" data-tab="period">📅 <b>25. Período universal</b></button>
+<button class="tab" data-tab="quadrants">📊 <b>26. Quadrantes PRO</b></button>
+<button class="tab" data-tab="export">📥 <b>27. Excel / PDF</b></button>
+<button class="tab" data-tab="suits">🃏 <b>28. Naipes + Bernoulli</b></button>
+<button class="tab" data-tab="universe">🧮 <b>29. Universo 15–21D</b></button>
+</nav>
+<main class="main">
+<div class="hero"><span>LF INTELIGENTE · EVOLUÇÃO COMPETITIVA</span><h1>9 lacunas transformadas em módulos</h1><p>Esta área é histórica, descritiva e auditável. Não altera a Matriz 51 nem o NOVO INDICADO. Ordem real usa fonte secundária explícita; premiações usam a API pública da CAIXA quando disponível.</p></div>
+<div class="periodbar"><label>Concurso inicial<input id="range-from" type="number"></label><label>Concurso final<input id="range-to" type="number"></label><button class="btn blue" id="range-apply">Aplicar a todos</button><button class="btn ghost" id="range-last100">Últimos 100</button><button class="btn ghost" id="range-all">Todos</button><b id="range-label"></b></div>
+
+<section class="page active" data-page="order"><div class="head"><h2>21. 🎱 Ordem real de extração</h2><p>Sequência 1ª→15ª bola e estatística por posição real. Não deriva ordem a partir das dezenas crescentes.</p></div><div class="panel"><div class="controls"><button class="btn blue" id="order-load">Carregar ordem real</button><button class="btn green" id="order-csv">CSV da janela</button></div></div><div id="order-out"></div></section>
+
+<section class="page" data-page="patterns32"><div class="head"><h2>22. ▦ 32 padrões de cada linha e coluna</h2><p>As 32 máscaras binárias possíveis de cada faixa de cinco dezenas, com frequência, percentual, atraso e última ocorrência.</p></div><div class="panel"><div class="controls"><label>Estrutura<select id="p32-kind"><option value="row">Linha</option><option value="col">Coluna</option></select></label><label>Índice<select id="p32-index"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option></select></label><button class="btn blue" id="p32-run">Calcular 32 padrões</button></div></div><div id="p32-out"></div></section>
+
+<section class="page" data-page="custom"><div class="head"><h2>23. 🎯 Estatística e ciclo personalizado</h2><p>Escolha qualquer conjunto de dezenas e analise frequência, atraso, tendência, cobertura e ciclos exclusivos desse grupo.</p></div><div class="panel"><div class="controls"><label>Grupo personalizado<textarea id="custom-nums">01 03 05 07 09 11 13 15 17 19 21 23 25</textarea></label><button class="btn blue" id="custom-run">Analisar grupo</button></div></div><div id="custom-out"></div></section>
+
+<section class="page" data-page="finance"><div class="head"><h2>24. 💰 Premiações reais + simulador financeiro</h2><p>Confronta um jogo de 15 dezenas com concursos selecionados e usa os valores de prêmio publicados pela CAIXA.</p></div><div class="panel"><div class="controls"><label>Jogo de 15 dezenas<textarea id="fin-game">01 02 03 04 05 06 07 08 09 10 11 12 13 14 15</textarea></label><label>Custo por concurso (R$)<input id="fin-cost" type="number" min="0" step=".01" value="3.50"></label><button class="btn blue" id="fin-run">Simular até 100 concursos</button></div><div class="note warn">O custo é configurável pelo usuário porque o preço da aposta mudou historicamente. Os prêmios por faixa são lidos da CAIXA; o investimento exibido usa o custo informado.</div></div><div id="fin-out"></div></section>
+
+<section class="page" data-page="period"><div class="head"><h2>25. 📅 Período universal De/Até</h2><p>O seletor fixo acima controla todos os módulos desta página. Assim é possível repetir exatamente o mesmo recorte em padrões, ciclos, quadrantes, naipes e Bernoulli.</p></div><div id="period-out"></div></section>
+
+<section class="page" data-page="quadrants"><div class="head"><h2>26. 📊 Quadrantes PRO</h2><p>Usa os mesmos quatro quadrantes canônicos da Matriz 51 e mostra média, mínimo, máximo e tendências 10/20/50/100.</p></div><div class="panel"><button class="btn blue" id="q-run">Atualizar quadrantes</button></div><div id="q-out"></div></section>
+
+<section class="page" data-page="export"><div class="head"><h2>27. 📥 Exportação Excel / PDF</h2><p>Exporta a janela histórica atual para Excel compatível e oferece impressão otimizada para salvar em PDF.</p></div><div class="panel"><div class="controls"><button class="btn green" id="xls-base">Excel · base da janela</button><button class="btn green" id="xls-order">Excel · ordem real</button><button class="btn blue" id="pdf-current">Imprimir / Salvar PDF</button></div><div class="note">“Salvar PDF” usa a caixa de impressão do navegador, permitindo escolher PDF como destino sem dependência externa.</div></div><div id="export-out"></div></section>
+
+<section class="page" data-page="suits"><div class="head"><h2>28. 🃏 Naipes + Bernoulli</h2><p>Naipes = distribuição em 01–09 / 10–19 / 20–25. Bernoulli = distribuição binomial exata da frequência de cada dezena com probabilidade teórica 0,60 por concurso.</p></div><div class="panel"><button class="btn blue" id="suits-run">Calcular</button></div><div id="suits-out"></div></section>
+
+<section class="page" data-page="universe"><div class="head"><h2>29. 🧮 Universo global 15D–21D</h2><p>Navegue pelas combinações C(25,k) sem materializar milhões de linhas em memória.</p></div><div class="panel"><div class="controls"><label>Quantidade k<select id="uni-k"><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option><option>21</option></select></label><label>Página<input id="uni-page" type="number" min="1" value="1"></label><button class="btn blue" id="uni-run">Abrir página</button><button class="btn green" id="uni-csv">CSV desta página</button></div></div><div id="uni-out"></div></section>
+</main></div>
+<script src="/ball-colors.js"></script>
+<script>
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],ALL=Array.from({length:25},(_,i)=>i+1);
+const pad=n=>String(n).padStart(2,'0'),fmt=n=>Number(n||0).toLocaleString('pt-BR'),money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+let H=[],ORDER=[],FROM=1,TO=0,UNI_ROWS=[];
+const Q=[new Set([1,2,3,6,7,8]),new Set([4,5,9,10,14,15]),new Set([11,12,16,17,21,22]),new Set([18,19,20,23,24,25])];
+function parseNums(v){return[...new Set(String(v||'').match(/\d+/g)?.map(Number).filter(n=>n>=1&&n<=25)||[])].sort((a,b)=>a-b)}
+function mean(a){return a.length?a.reduce((s,x)=>s+x,0)/a.length:0}
+function median(a){if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y),m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2}
+function combN(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r)}
+function ball(n){const cls=window.LFOfficialBalls?.className?.(n)||'';return '<span class="pill '+cls+'">'+pad(n)+'</span>'}
+function table(head,rows){return '<div class="table"><table><thead><tr>'+head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'}
+function rangeRows(){return H.filter(d=>d.concurso>=FROM&&d.concurso<=TO)}
+function setTab(n){$$('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===n));$$('.page').forEach(x=>x.classList.toggle('active',x.dataset.page===n));history.replaceState(null,'','#'+n);renderTab(n)}
+$$('.tab').forEach(x=>x.onclick=()=>setTab(x.dataset.tab));
+function applyRange(from,to){const min=H[0]?.concurso||1,max=H.at(-1)?.concurso||0;FROM=Math.max(min,Number(from)||min);TO=Math.min(max,Number(to)||max);if(FROM>TO)[FROM,TO]=[TO,FROM];$('#range-from').value=FROM;$('#range-to').value=TO;$('#range-label').textContent='#'+FROM+' → #'+TO+' · '+rangeRows().length+' concursos';renderTab($('.tab.active')?.dataset.tab||'order')}
+$('#range-apply').onclick=()=>applyRange($('#range-from').value,$('#range-to').value);
+$('#range-last100').onclick=()=>{const m=H.at(-1)?.concurso||0;applyRange(Math.max(1,m-99),m)};
+$('#range-all').onclick=()=>applyRange(H[0]?.concurso,H.at(-1)?.concurso);
+
+async function loadOrder(force=false){
+  if(ORDER.length&&!force)return ORDER;
+  const r=await fetch('/api/lotofacil-ordem?from='+FROM+'&to='+TO+(force?'&t='+Date.now():''));
+  const j=await r.json();if(!j.ok)throw new Error(j.error||'Falha na ordem real');
+  ORDER=j.rows||[];return ORDER;
+}
+async function renderOrder(){
+  const out=$('#order-out');out.innerHTML='<div class="note">Carregando ordem real…</div>';
+  try{
+    const rows=await loadOrder(true),m=Array.from({length:15},()=>Object.fromEntries(ALL.map(n=>[n,0])));
+    rows.forEach(d=>d.ordemSorteio.forEach((n,i)=>m[i][n]++));
+    out.innerHTML='<div class="kpis">'+[['Concursos na janela',rangeRows().length],['Com ordem real',rows.length],['Primeiro',rows[0]?'#'+rows[0].concurso:'—'],['Último',rows.at(-1)?'#'+rows.at(-1).concurso:'—'],['Fonte','As Loterias']].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="grid2"><div class="panel"><h3>Últimas sequências reais</h3>'+table(['Concurso','Data','1ª → 15ª bola'],rows.slice(-100).reverse().map(d=>['#'+d.concurso,d.data,'<span class="mono">'+d.ordemSorteio.map(pad).join(' → ')+'</span>']))+'</div><div class="panel"><h3>Mais frequente por posição</h3>'+table(['Posição','Mais frequentes','Base'],m.map((x,i)=>{const a=Object.entries(x).sort((p,q)=>q[1]-p[1]||p[0]-q[0]),mx=Number(a[0]?.[1]||0);return[(i+1)+'ª',a.filter(z=>Number(z[1])===mx).map(z=>pad(z[0])+' ('+z[1]+')').join(' · '),rows.length]}))+'</div></div>';
+  }catch(e){out.innerHTML='<div class="note warn">'+e.message+'</div>'}
+}
+$('#order-load').onclick=renderOrder;
+$('#order-csv').onclick=async()=>{try{const a=await loadOrder();download('lf-ordem-real.csv','concurso,data,ordem_real\n'+a.map(x=>x.concurso+','+x.data+',"'+x.ordemSorteio.map(pad).join(' ')+'"').join('\n'),'text/csv')}catch(e){alert(e.message)}};
+
+function maskFor(d,kind,idx){
+  const nums=kind==='row'?ALL.slice(idx*5,idx*5+5):ALL.filter(n=>(n-1)%5===idx),s=new Set(d.dezenas);
+  return nums.map(n=>s.has(n)?'1':'0').join('');
+}
+function renderPatterns32(){
+  const rows=rangeRows(),kind=$('#p32-kind').value,idx=+$('#p32-index').value,stats=[];
+  for(let m=0;m<32;m++){const mask=m.toString(2).padStart(5,'0');let count=0,lastIndex=-1,lastContest=null;rows.forEach((d,i)=>{if(maskFor(d,kind,idx)===mask){count++;lastIndex=i;lastContest=d.concurso}});stats.push({mask,count,pct:count/Math.max(1,rows.length)*100,delay:lastIndex<0?rows.length:rows.length-1-lastIndex,lastContest})}
+  stats.sort((a,b)=>b.count-a.count||a.mask.localeCompare(b.mask));
+  $('#p32-out').innerHTML='<div class="kpis">'+[['Estrutura',(kind==='row'?'Linha ':'Coluna ')+(idx+1)],['Padrões possíveis',32],['Concursos',rows.length],['Mais frequente',stats[0]?.mask||'—'],['Ocorrências',stats[0]?.count||0]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['Máscara','Ocorrências','%','Atraso atual','Última ocorrência'],stats.map(x=>['<span class="mono">'+x.mask+'</span>',x.count,x.pct.toFixed(2)+'%',x.delay,x.lastContest?'#'+x.lastContest:'—']))+'</div>';
+}
+$('#p32-run').onclick=renderPatterns32;
+
+function cycleStats(rows,group){
+  const gs=new Set(group),cycles=[];let seen=new Set(),start=null;
+  for(const d of rows){if(start==null)start=d.concurso;for(const n of d.dezenas)if(gs.has(n))seen.add(n);if(seen.size===group.length){cycles.push({start,end:d.concurso,len:d.concurso-start+1});seen=new Set();start=null}}
+  return{cycles,currentSeen:seen,currentStart:start,missing:group.filter(n=>!seen.has(n))};
+}
+function renderCustom(){
+  const group=parseNums($('#custom-nums').value),rows=rangeRows();if(group.length<2){$('#custom-out').innerHTML='<div class="note warn">Informe ao menos duas dezenas.</div>';return}
+  const stats=group.map(n=>{const flags=rows.map(d=>d.dezenas.includes(n));const count=flags.filter(Boolean).length;let delay=0;for(let i=flags.length-1;i>=0&&!flags[i];i--)delay++;const f10=flags.slice(-10).filter(Boolean).length/Math.max(1,Math.min(10,flags.length))*100,f50=flags.slice(-50).filter(Boolean).length/Math.max(1,Math.min(50,flags.length))*100;return{n,count,pct:count/Math.max(1,rows.length)*100,delay,f10,f50,trend:f10-f50}});
+  const hits=rows.map(d=>d.dezenas.filter(n=>group.includes(n)).length),cs=cycleStats(rows,group),lens=cs.cycles.map(x=>x.len);
+  $('#custom-out').innerHTML='<div class="kpis">'+[['Grupo',group.length+' dezenas'],['Média presentes/concurso',mean(hits).toFixed(2)],['Ciclos fechados',cs.cycles.length],['Ciclo médio',lens.length?mean(lens).toFixed(2):'—'],['Faltam no ciclo',cs.missing.map(pad).join(' ')||'0']].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="grid2"><div class="panel"><h3>Dezenas do grupo</h3>'+table(['Dez.','Freq.','%','Atraso','Freq.10','Freq.50','Tendência'],stats.map(x=>[ball(x.n),x.count,x.pct.toFixed(1)+'%',x.delay,x.f10.toFixed(1)+'%',x.f50.toFixed(1)+'%',(x.trend>=0?'+':'')+x.trend.toFixed(1)+' p.p.']))+'</div><div class="panel"><h3>Ciclos personalizados</h3>'+table(['#','Início','Fim','Duração'],cs.cycles.slice(-100).reverse().map((x,i)=>[cs.cycles.length-i,'#'+x.start,'#'+x.end,x.len]))+'</div></div>';
+}
+$('#custom-run').onclick=renderCustom;
+
+function hits(a,b){const s=new Set(b);return a.filter(n=>s.has(n)).length}
+async function renderFinance(){
+  const game=parseNums($('#fin-game').value),rows=rangeRows(),out=$('#fin-out');if(game.length!==15){out.innerHTML='<div class="note warn">Informe exatamente 15 dezenas.</div>';return}
+  if(rows.length>100){out.innerHTML='<div class="note warn">O simulador consulta a CAIXA concurso a concurso e aceita no máximo 100 concursos por execução. Ajuste o período universal.</div>';return}
+  out.innerHTML='<div class="note">Consultando premiações oficiais…</div>';
+  try{
+    const r=await fetch('/api/lotofacil-premios?from='+FROM+'&to='+TO),j=await r.json();if(!j.ok)throw new Error(j.error||'Falha na CAIXA');
+    const cost=Number($('#fin-cost').value)||0;let prize=0;const dist={11:0,12:0,13:0,14:0,15:0};
+    const detail=(j.rows||[]).map(d=>{const h=hits(game,d.dezenas);const p=h>=11?Number(d.premios?.[h]?.valor||0):0;if(h>=11)dist[h]++;prize+=p;return{...d,h,p}});
+    const invest=detail.length*cost,balance=prize-invest;
+    out.innerHTML='<div class="kpis">'+[['Concursos',detail.length],['Investimento',money(invest)],['Prêmios',money(prize)],['Saldo',money(balance)],['ROI',invest?((balance/invest)*100).toFixed(1)+'%':'—']].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['Concurso','Data','Acertos','Prêmio da faixa','Ganhadores na faixa'],detail.slice().reverse().map(d=>['#'+d.concurso,d.data,d.h,d.h>=11?money(d.p):'—',d.h>=11?fmt(d.premios?.[d.h]?.ganhadores||0):'—']))+'</div><div class="note">Distribuição do seu jogo: 11P '+dist[11]+' · 12P '+dist[12]+' · 13P '+dist[13]+' · 14P '+dist[14]+' · 15P '+dist[15]+'.</div>';
+  }catch(e){out.innerHTML='<div class="note warn">'+e.message+'</div>'}
+}
+$('#fin-run').onclick=renderFinance;
+
+function renderPeriod(){
+  const rows=rangeRows();$('#period-out').innerHTML='<div class="kpis">'+[['Início','#'+FROM],['Fim','#'+TO],['Concursos',rows.length],['Data inicial',rows[0]?.data||'—'],['Data final',rows.at(-1)?.data||'—']].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="note good">Este recorte é compartilhado por todos os módulos 21–29. Use a barra superior para trocar o período uma única vez.</div>';
+}
+function renderQuadrants(){
+  const rows=rangeRows(),wins=[10,20,50,100],data=Q.map((q,i)=>{const vals=rows.map(d=>d.dezenas.filter(n=>q.has(n)).length),tr={};for(const w of wins){const a=rows.slice(-w).map(d=>d.dezenas.filter(n=>q.has(n)).length);tr[w]=mean(a)}return{i:i+1,vals,avg:mean(vals),min:vals.length?Math.min(...vals):0,max:vals.length?Math.max(...vals):0,tr}});
+  $('#q-out').innerHTML='<div class="qgrid">'+data.map(x=>'<div class="qcard"><span>Quadrante '+x.i+'</span><b>'+x.avg.toFixed(2)+'</b><small>mín '+x.min+' · máx '+x.max+'</small><div style="margin-top:8px">10: '+x.tr[10].toFixed(2)+' · 20: '+x.tr[20].toFixed(2)+' · 50: '+x.tr[50].toFixed(2)+' · 100: '+x.tr[100].toFixed(2)+'</div></div>').join('')+'</div><div class="panel" style="margin-top:12px">'+table(['Quadrante','Dezenas','Média','Mín','Máx','M10','M20','M50','M100'],data.map(x=>['Q'+x.i,[...Q[x.i-1]].map(pad).join(' '),x.avg.toFixed(2),x.min,x.max,x.tr[10].toFixed(2),x.tr[20].toFixed(2),x.tr[50].toFixed(2),x.tr[100].toFixed(2)]))+'</div>';
+}
+$('#q-run').onclick=renderQuadrants;
+
+function download(name,text,type='text/plain'){const b=new Blob(['\ufeff'+text],{type:type+';charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+function xls(name,head,rows){const html='<table border="1"><tr>'+head.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+r.map(x=>'<td>'+String(x).replace(/</g,'&lt;')+'</td>').join('')+'</tr>').join('')+'</table>';download(name,html,'application/vnd.ms-excel')}
+$('#xls-base').onclick=()=>{const rows=rangeRows();xls('lf-base-'+FROM+'-'+TO+'.xls',['Concurso','Data',...Array.from({length:15},(_,i)=>'D'+(i+1))],rows.map(d=>[d.concurso,d.data,...d.dezenas]))};
+$('#xls-order').onclick=async()=>{try{const a=await loadOrder();xls('lf-ordem-real-'+FROM+'-'+TO+'.xls',['Concurso','Data',...Array.from({length:15},(_,i)=>(i+1)+'a')],a.map(d=>[d.concurso,d.data,...d.ordemSorteio]))}catch(e){alert(e.message)}};
+$('#pdf-current').onclick=()=>window.print();
+
+function binomProb(n,k,p=.6){if(k<0||k>n)return 0;return combN(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k)}
+function renderSuits(){
+  const rows=rangeRows(),maps=new Map();for(const d of rows){const a=[d.dezenas.filter(n=>n<=9).length,d.dezenas.filter(n=>n>=10&&n<=19).length,d.dezenas.filter(n=>n>=20).length],key=a.join('');maps.set(key,(maps.get(key)||0)+1)}
+  const suit=[...maps].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+  const b=ALL.map(n=>{const k=rows.filter(d=>d.dezenas.includes(n)).length,p=binomProb(rows.length,k,.6),z=rows.length?((k-rows.length*.6)/Math.sqrt(rows.length*.6*.4)):0;return{n,k,p,z}});
+  $('#suits-out').innerHTML='<div class="grid2"><div class="panel"><h3>Naipes 01–09 / 10–19 / 20–25</h3>'+table(['Naipe','Ocorrências','%'],suit.map(x=>['<span class="mono">'+x[0]+'</span>',x[1],(x[1]/Math.max(1,rows.length)*100).toFixed(2)+'%']))+'</div><div class="panel"><h3>Bernoulli por dezena</h3>'+table(['Dez.','k em n','Freq.','P(X=k)','Z vs 60%'],b.map(x=>[ball(x.n),x.k+' / '+rows.length,(x.k/Math.max(1,rows.length)*100).toFixed(2)+'%',(x.p*100).toExponential(3)+'%',x.z.toFixed(2)]))+'</div></div><div class="note">Bernoulli aqui significa P(X=k)=C(n,k)·0,6^k·0,4^(n-k). É uma leitura probabilística descritiva; não transforma resultados passados em previsão independente do próximo sorteio.</div>';
+}
+$('#suits-run').onclick=renderSuits;
+
+function unrank(n,k,r){const out=[];let x=1;for(let pos=0;pos<k;pos++){for(let v=x;v<=n-(k-pos)+1;v++){const c=combN(n-v,k-pos-1);if(r<c){out.push(v);x=v+1;break}r-=c}}return out}
+function universePage(){
+  const k=+$('#uni-k').value,total=combN(25,k),size=100,pages=Math.ceil(total/size);let p=Math.max(1,Math.min(pages,Number($('#uni-page').value)||1));$('#uni-page').value=p;const start=(p-1)*size,count=Math.min(size,total-start);UNI_ROWS=Array.from({length:count},(_,i)=>({rank:start+i,nums:unrank(25,k,start+i)}));
+  $('#uni-out').innerHTML='<div class="kpis">'+[['k',k+' dezenas'],['Universo',fmt(total)],['Páginas',fmt(pages)],['Página',fmt(p)],['Linhas',count]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['#','Combinação'],UNI_ROWS.map(x=>[fmt(x.rank+1),'<span class="mono">'+x.nums.map(pad).join(' ')+'</span>']))+'<div class="pager"><button class="btn ghost" id="uni-prev">←</button><button class="btn ghost" id="uni-next">→</button></div></div>';$('#uni-prev').onclick=()=>{$('#uni-page').value=Math.max(1,p-1);universePage()};$('#uni-next').onclick=()=>{$('#uni-page').value=Math.min(pages,p+1);universePage()};
+}
+$('#uni-run').onclick=universePage;
+$('#uni-csv').onclick=()=>{if(!UNI_ROWS.length)universePage();download('lf-universo-k'+$('#uni-k').value+'-pagina'+$('#uni-page').value+'.csv','id,combinacao\n'+UNI_ROWS.map(x=>(x.rank+1)+',"'+x.nums.map(pad).join(' ')+'"').join('\n'),'text/csv')};
+
+function renderTab(n){if(n==='order')renderOrder();else if(n==='patterns32')renderPatterns32();else if(n==='custom')renderCustom();else if(n==='period')renderPeriod();else if(n==='quadrants')renderQuadrants();else if(n==='suits')renderSuits();else if(n==='universe')universePage();else if(n==='export')$('#export-out').innerHTML='<div class="kpis"><div class="kpi"><span>Janela</span><b>#'+FROM+'–#'+TO+'</b></div><div class="kpi"><span>Registros</span><b>'+rangeRows().length+'</b></div></div>'}
+async function init(){
+  const r=await fetch('/data/lotofacil-base.json?v='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({...x,concurso:Number(x.concurso),dezenas:(x.dezenas||[]).map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);FROM=H[0]?.concurso||1;TO=H.at(-1)?.concurso||0;applyRange(FROM,TO);const hash=location.hash.replace('#','');setTab($$('.tab').some(x=>x.dataset.tab===hash)?hash:'order')
+}
+init().catch(e=>{$('.hero p').textContent='Erro ao carregar base: '+e.message});
+</script>
+</body></html>
