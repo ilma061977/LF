@@ -62,7 +62,15 @@
     {title:'Índice de Tipicidade',section:'PRO 1–20',url:'/estatisticas-pro.html#typicity',keywords:'tipicidade equilíbrio centralidade 0 100 estrutural'},
     {title:'Duplas Trincas Observado Esperado',section:'PRO 1–20',url:'/estatisticas-pro.html#oe',keywords:'observado esperado oe desvio cobertura inéditas 300 2300'},
     {title:'Séries Consecutivas por Dezena',section:'PRO 1–20',url:'/estatisticas-pro.html#streaks',keywords:'série presença ausência recorde última ocorrência'},
-    {title:'Laboratório Monte Carlo',section:'PRO 1–20',url:'/estatisticas-pro.html#montecarlo',keywords:'simulação aleatória 1000 10000 100000 60% intervalo confiança'}
+    {title:'Laboratório Monte Carlo',section:'PRO 1–20',url:'/estatisticas-pro.html#montecarlo',keywords:'simulação aleatória 1000 10000 100000 60% intervalo confiança'},
+    {title:'Evoluções 21–29',section:'PRO 21–29',url:'/evolucoes-21-29.html',keywords:'ordem real 32 padrões personalizado prêmios período quadrantes excel pdf naipes bernoulli universo'},
+    {title:'Ordem real de extração',section:'PRO 21–29',url:'/evolucoes-21-29.html#order',keywords:'ordem sorteio posição bola extração'},
+    {title:'32 padrões linhas colunas',section:'PRO 21–29',url:'/evolucoes-21-29.html#patterns32',keywords:'32 máscaras linha coluna frequência atraso'},
+    {title:'Estatística e ciclo personalizado',section:'PRO 21–29',url:'/evolucoes-21-29.html#custom',keywords:'grupo dezenas ciclo personalizado frequência tendência'},
+    {title:'Premiações e simulador financeiro',section:'PRO 21–29',url:'/evolucoes-21-29.html#finance',keywords:'premios caixa custo retorno roi 11 12 13 14 15'},
+    {title:'Quadrantes PRO',section:'PRO 21–29',url:'/evolucoes-21-29.html#quadrants',keywords:'quadrante médias 10 20 50 100'},
+    {title:'Naipes e Bernoulli',section:'PRO 21–29',url:'/evolucoes-21-29.html#suits',keywords:'naipes 01 09 10 19 20 25 bernoulli binomial'},
+    {title:'Universo 15–21D',section:'PRO 21–29',url:'/evolucoes-21-29.html#universe',keywords:'combinações 15 16 17 18 19 20 21 universo 25'}
   ]);
   function norm(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
   function search(q){const n=norm(q).trim();if(!n)return ITEMS.slice(0,20);const toks=n.split(/\s+/);return ITEMS.map(x=>{const h=norm(x.title+' '+x.section+' '+x.keywords);let score=0;for(const t of toks){if(norm(x.title).includes(t))score+=5;if(norm(x.section).includes(t))score+=2;if(h.includes(t))score+=1}return{x,score}}).filter(z=>z.score>0).sort((a,b)=>b.score-a.score||a.x.title.localeCompare(b.x.title)).map(z=>z.x)}
