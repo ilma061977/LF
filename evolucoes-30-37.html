@@ -26,7 +26,7 @@
 <div class="layout">
 <nav class="nav"><h3>EVOLUÇÕES 30–37</h3>
 <button class="tab active" data-tab="generator">🔗 <b>30. Estatística → Gerador</b></button>
-<button class="tab" data-tab="patterns">📋 <b>31. Tabela Universal “1 em X”</b></button>
+<button class="tab" data-tab="virgins">🎯 <b>31. Grupos Premiados / Virgens</b></button>
 <button class="tab" data-tab="endings">0️⃣ <b>32. Terminações</b></button>
 <button class="tab" data-tab="paircompare">↔️ <b>33. Comparar 2 dezenas</b></button>
 <button class="tab" data-tab="neighbors">🔗 <b>34. Vizinhos + esperado</b></button>
@@ -42,8 +42,20 @@
 <div class="grid2"><div class="panel"><h3>Perfil de geração</h3><div class="controls"><label>Métrica<select id="rule-metric"><option value="sum">Soma</option><option value="odd">Ímpares</option><option value="prime">Primos</option><option value="fib">Fibonacci</option><option value="m3">Múltiplos de 3</option><option value="border">Moldura</option><option value="center">Miolo</option><option value="repeat">Repetidas</option><option value="run">Maior sequência</option></select></label><label>Mín.<input id="rule-min" type="number"></label><label>Máx.<input id="rule-max" type="number"></label><button class="btn blue" id="rule-add">Adicionar regra</button></div><div id="rules"></div></div>
 <div class="panel"><h3>Busca PRO</h3><div class="note good">Perfil integrado: ao adicionar ou remover regras aqui, a assinatura da busca oficial muda. No app principal, o próximo Jogo Indicado só será liberado após nova varredura 100% com <b>Matriz 51 + metas + Perfil PRO</b>.</div><button class="btn green" id="pro-generate">Testar perfil agora</button><a class="btn blue" href="/?page=decision" style="text-decoration:none;display:inline-block">Abrir Jogo Indicado</a><button class="btn ghost" id="rules-clear">Limpar perfil</button><div id="gen-status" class="note">Aguardando.</div><div class="progress"><i id="gen-bar"></i></div><div id="gen-out"></div></div></div></section>
 
-<section class="page" data-page="patterns"><div class="head"><h2>31. 📋 Tabela Universal de Padrões</h2><p>Ocorrências, %, “1 em X”, atraso atual, maior atraso, última ocorrência, esperado matemático, O/E e botão para levar o valor ao Gerador PRO.</p></div>
-<div class="panel"><div class="controls"><label>Métrica<select id="pat-metric"><option value="odd">Ímpares</option><option value="sum">Soma</option><option value="repeat">Repetidas</option><option value="prime">Primos</option><option value="fib">Fibonacci</option><option value="m3">Múltiplos de 3</option><option value="border">Moldura</option><option value="center">Miolo</option><option value="run">Maior sequência</option></select></label><button class="btn blue" id="pat-run">Atualizar</button></div></div><div id="pat-out"></div></section>
+<section class="page" data-page="virgins"><div class="head"><h2>31. 🎯 Grupos Premiados / Virgens</h2><p>Compare um ou vários grupos de 15 dezenas contra <b>todo o histórico</b>. PREMIADO = já saiu exatamente com 15/15; VIRGEM = nunca saiu exatamente.</p></div>
+<div class="grid2">
+  <div class="panel">
+    <h3>Verificar grupos informados</h3>
+    <div class="controls"><label>Um grupo por linha<textarea id="vg-input" placeholder="01 02 03 04 05 06 07 08 09 10 11 12 13 14 15&#10;01 03 05 07 09 11 13 15 17 19 21 22 23 24 25"></textarea></label><button class="btn blue" id="vg-check">Verificar histórico completo</button></div>
+    <div class="note">Cada linha deve conter exatamente 15 dezenas distintas entre 01 e 25.</div>
+  </div>
+  <div class="panel">
+    <h3>Indicar grupos virgens</h3>
+    <div class="controls"><label>Quantidade<select id="vg-qty"><option>1</option><option selected>5</option><option>10</option><option>20</option></select></label><label>Amostra para ranking<select id="vg-sample"><option value="5000">5.000</option><option value="10000" selected>10.000</option><option value="25000">25.000</option><option value="50000">50.000</option></select></label><button class="btn green" id="vg-generate">Indicar virgens</button></div>
+    <div class="note good">Os indicados são obrigatoriamente VIRGENS no histórico completo. Entre os virgens avaliados, o ranking usa o mesmo score estrutural da Matriz 51 e respeita o Perfil PRO ativo quando houver regras.</div>
+  </div>
+</div>
+<div id="vg-out"></div></section>
 
 <section class="page" data-page="endings"><div class="head"><h2>32. 0️⃣ Terminações das dezenas</h2><p>Final 0–9 das dezenas sorteadas, com média observada, expectativa matemática, desvio e tendências 10/20/50/100.</p></div><div class="panel"><button class="btn blue" id="end-run">Calcular terminações</button></div><div id="end-out"></div></section>
 
@@ -112,6 +124,31 @@ function renderPatterns(){
  const m=$('#pat-metric').value,a=patternStats(m);$('#pat-out').innerHTML='<div class="kpis">'+[['Métrica',metricLabel(m)],['Concursos',rows().length],['Valores',a.length],['Total observado',fmt(a.reduce((s,x)=>s+x.count,0))],['Universo teórico',fmt(TOTAL)]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['Valor','Ocorrências','%','1 em X','Atraso','Maior atraso','Última ocorrência','Esperado','O/E','Z','Gerador'],a.map(x=>[x.v,x.count,x.pct.toFixed(2)+'%',x.one?x.one.toFixed(2):'—',x.delay,x.maxDelay,x.last?'#'+x.last.concurso:'—',x.expected.toFixed(2),x.ratio.toFixed(3),x.z.toFixed(2),'<button class="btn ghost use-rule" data-m="'+m+'" data-v="'+x.v+'">USAR</button>']))+'</div>';$$('.use-rule').forEach(b=>b.onclick=()=>addExactRule(b.dataset.m,Number(b.dataset.v)))}
 $('#pat-run').onclick=renderPatterns;
 
+function gameKey(g){return g.map(pad).join('-')}
+function historicExactIndex(){const m=new Map();for(const d of H){const k=gameKey(d.dezenas);if(!m.has(k))m.set(k,[]);m.get(k).push(d)}return m}
+function parseGroups15(text){return String(text||'').split(/\n+/).map(x=>parseNums(x)).filter(x=>x.length)}
+function bestHistoricalHit(g){let best=0,contests=[];for(const d of H){const h=hit(g,d.dezenas);if(h>best){best=h;contests=[d.concurso]}else if(h===best)contests.push(d.concurso)}return{best,contests}}
+function currentProPass(g){
+ const rep=LFMatrix51.inspect(g,LFMatrix51.buildContext(H,{window:Math.min(200,Math.max(10,H.length))})),m=rep.metrics||{};
+ for(const r of RULES){let v=null;if(r.metric==='sum')v=m.total;else if(r.metric==='odd')v=m.odds;else if(r.metric==='prime')v=m.primes;else if(r.metric==='fib')v=m.fib;else if(r.metric==='m3')v=m.m3;else if(r.metric==='border')v=m.border;else if(r.metric==='center')v=m.center;else if(r.metric==='repeat')v=m.repeated;else if(r.metric==='run')v=m.run;if(v==null||v<r.min||v>r.max)return false}
+ return true;
+}
+function renderVirginRows(items,mode='check'){
+ const idx=historicExactIndex(),unique=idx.size,virginTotal=TOTAL-unique;
+ const rowsHtml=items.map((g,i)=>{const exact=idx.get(gameKey(g))||[],bh=bestHistoricalHit(g),virgin=!exact.length;return[i+1,'<span class="mono">'+g.map(pad).join(' ')+'</span>',virgin?'<span class="status-ok">VIRGEM</span>':'<span class="status-warn">PREMIADO</span>',exact.length,exact.length?exact.map(d=>'#'+d.concurso).join(', '):'—',bh.best+'/15',bh.contests.slice(0,5).map(x=>'#'+x).join(', ')+(bh.contests.length>5?' …':'')]}).join('');
+ $('#vg-out').innerHTML='<div class="kpis">'+[['Histórico completo',H.length+' concursos'],['Combinações históricas únicas',fmt(unique)],['Universo 15D',fmt(TOTAL)],['Grupos virgens exatos',fmt(virginTotal)],['Analisados/indicados',items.length]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['#','Grupo 15D','Status','Saídas exatas','Concurso(s) 15/15','Melhor histórico','Concursos do melhor'],items.map((g,i)=>{const exact=idx.get(gameKey(g))||[],bh=bestHistoricalHit(g),virgin=!exact.length;return[i+1,'<span class="mono">'+g.map(pad).join(' ')+'</span>',virgin?'<span class="status-ok">VIRGEM</span>':'<span class="status-warn">PREMIADO</span>',exact.length,exact.length?exact.map(d=>'#'+d.concurso).join(', '):'—',bh.best+'/15',bh.contests.slice(0,5).map(x=>'#'+x).join(', ')+(bh.contests.length>5?' …':'')]}))+'</div><div class="note">'+(mode==='generate'?'Todos os grupos indicados acima foram confirmados como VIRGENS contra o histórico completo antes de serem exibidos.':'A verificação usa igualdade exata das 15 dezenas, não apenas similaridade.')+'</div>';
+}
+function renderVirgins(){
+ const idx=historicExactIndex(),unique=idx.size;
+ $('#vg-out').innerHTML='<div class="kpis">'+[['Histórico completo',H.length+' concursos'],['Combinações históricas únicas',fmt(unique)],['Universo 15D',fmt(TOTAL)],['Virgens exatos',fmt(TOTAL-unique)],['Cobertura histórica',(unique/TOTAL*100).toFixed(4)+'%']].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="note good">Informe grupos à esquerda ou clique em <b>Indicar virgens</b>. Todo o histórico é usado, independentemente do período selecionado no topo.</div>';
+}
+$('#vg-check').onclick=()=>{const groups=parseGroups15($('#vg-input').value),valid=groups.filter(g=>g.length===15);if(!valid.length)return alert('Informe ao menos um grupo válido de 15 dezenas.');renderVirginRows(valid,'check')};
+$('#vg-generate').onclick=()=>{
+ const qty=+$('#vg-qty').value,sample=Math.max(qty,+$('#vg-sample').value),idx=historicExactIndex(),ctx=LFMatrix51.buildContext(H,{window:Math.min(200,Math.max(10,H.length))}),pol=policies(),cand=[];
+ for(let i=0;i<sample;i++){const rank=sample===1?0:Math.floor(i*(TOTAL-1)/(sample-1)),g=LFMatrix51.unrank(ALL,15,rank),k=gameKey(g);if(idx.has(k))continue;const rep=LFMatrix51.inspect(g,ctx);if(!LFMatrix51.policyAllows(rep,pol))continue;if(!currentProPass(g))continue;const score=LFMatrix51.candidateScoreFromReport?LFMatrix51.candidateScoreFromReport(rep,ctx,pol):LFMatrix51.candidateScore(g,ctx,pol);if(Number.isFinite(score))cand.push({g,score})}
+ cand.sort((a,b)=>b.score-a.score||gameKey(a.g).localeCompare(gameKey(b.g)));const picked=cand.slice(0,qty).map(x=>x.g);if(!picked.length)return alert('Nenhum grupo virgem aprovado encontrado nesta amostra com as regras atuais. Aumente a amostra ou revise o Perfil PRO.');renderVirginRows(picked,'generate');
+};
+
 function finalK(d){return ALL.filter(n=>n%10===d).length}
 function renderEndings(){
  const rr=rows(),wins=[10,20,50,100],out=[];
@@ -169,7 +206,7 @@ function renderExpected(){
 }
 $('#oe-run').onclick=renderExpected;
 
-function renderTab(n){if(n==='generator')renderRules();else if(n==='patterns')renderPatterns();else if(n==='endings')renderEndings();else if(n==='paircompare')renderPairCompare();else if(n==='neighbors')renderNeighbors();else if(n==='quintiles')renderQuintiles();else if(n==='portfolio')renderPortfolio();else if(n==='expected')renderExpected()}
+function renderTab(n){if(n==='generator')renderRules();else if(n==='virgins')renderVirgins();else if(n==='endings')renderEndings();else if(n==='paircompare')renderPairCompare();else if(n==='neighbors')renderNeighbors();else if(n==='quintiles')renderQuintiles();else if(n==='portfolio')renderPortfolio();else if(n==='expected')renderExpected()}
 async function init(){const r=await fetch('/data/lotofacil-base.json?v='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({...x,concurso:+x.concurso,dezenas:(x.dezenas||[]).map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);FROM=H[0]?.concurso||1;TO=H.at(-1)?.concurso||0;applyRange(FROM,TO);$('#pf-contest').value=TO+1;const h=location.hash.replace('#','');setTab($$('.tab').some(x=>x.dataset.tab===h)?h:'generator')}
 init().catch(e=>{$('.hero p').textContent='Erro ao carregar base: '+e.message});
 </script>
