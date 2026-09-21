@@ -529,8 +529,8 @@
   const navGroups=[...document.querySelectorAll('.nav-group')];
   const openNavGroup=(group,open=true)=>{group.classList.toggle('open',open);group.querySelector('.nav-group-toggle')?.setAttribute('aria-expanded',String(open));};
   document.querySelectorAll('.nav-group-toggle').forEach(t=>t.addEventListener('click',()=>{const g=t.closest('.nav-group');openNavGroup(g,!g.classList.contains('open'));}));
-  const navSearch=$('#nav-search'),navEmpty=$('#nav-empty');
-  if(navSearch)navSearch.addEventListener('input',()=>{const q=navSearch.value.trim().toLowerCase();let visible=0;navGroups.forEach(g=>{let groupVisible=0;g.querySelectorAll('.nav-item').forEach(item=>{const hit=!q||item.textContent.toLowerCase().includes(q);item.hidden=!hit;if(hit){groupVisible++;visible++;}});g.hidden=!!q&&groupVisible===0;if(q&&groupVisible)openNavGroup(g,true);});document.querySelectorAll('.nav-shortcuts .nav-item').forEach(item=>{const hit=!q||item.textContent.toLowerCase().includes(q);item.hidden=!hit;if(hit)visible++;});if(navEmpty)navEmpty.hidden=visible>0;});
+  const navSearch=$('#nav-search'),navEmpty=$('#nav-empty'),navGlobal=$('#nav-global-results');
+  if(navSearch)navSearch.addEventListener('input',()=>{const q=navSearch.value.trim().toLowerCase();let visible=0;navGroups.forEach(g=>{let groupVisible=0;g.querySelectorAll('.nav-item').forEach(item=>{const hit=!q||item.textContent.toLowerCase().includes(q);item.hidden=!hit;if(hit){groupVisible++;visible++;}});g.hidden=!!q&&groupVisible===0;if(q&&groupVisible)openNavGroup(g,true);});document.querySelectorAll('.nav-shortcuts .nav-item').forEach(item=>{const hit=!q||item.textContent.toLowerCase().includes(q);item.hidden=!hit;if(hit)visible++;});if(navEmpty)navEmpty.hidden=visible>0;if(navGlobal){const rs=q&&window.LFGlobalSearch?window.LFGlobalSearch.search(q).slice(0,8):[];navGlobal.hidden=!rs.length;navGlobal.innerHTML=rs.map(x=>'<a href="'+x.url+'"><b>'+x.title+'</b><small>'+x.section+'</small></a>').join('');}});
   $('#menu-button').onclick=()=>$('#sidebar').classList.toggle('open');
   $('#refresh-data').onclick=()=>loadData(true);
   $('#global-period').value=String(state.period);$('#global-period').onchange=e=>{state.period=Number(e.target.value);savePrefs();rebuildContext();state.decision=[];state.decisionIndex=0;state.generationSignature='';state.matrixReport=null;refreshAll();};
@@ -551,6 +551,7 @@
   $('#add-group').onclick=()=>{const name=$('#group-name').value.trim()||`Grupo ${state.groups.length+1}`,numbers=parseNumbers($('#group-numbers').value);if(numbers.length<2)return toast('Informe pelo menos 2 dezenas.');state.groups.push({name,numbers});savePrefs();$('#group-name').value='';$('#group-numbers').value='';renderGroups();};
   $('#run-audit').onclick=runAudit;$('#run-filter-audit').onclick=runFullFilterAudit;$('#cancel-filter-audit').onclick=cancelFilterAudit;$('#export-filter-audit').onclick=exportFilterAudit;$('#history-search').oninput=e=>renderHistory(e.target.value);
   $('#cloud-key').textContent=`${state.cloudId.slice(0,8)}…${state.cloudId.slice(-4)}`;
+  const requestedPage=new URLSearchParams(location.search).get('page');if(requestedPage&&pageInfo[requestedPage])setPage(requestedPage);
   renderMatrix();renderAnalysis();renderStats();renderHistory();loadData().then(()=>{loadPersistedAudit();loadBackendBenchmarkStatus();runIntegratedSelfTest(true);});syncCloud(false);
 
   $('#run-combined-integral')?.addEventListener('click',runCombinedIntegralBenchmark);$('#run-self-test')?.addEventListener('click',()=>runIntegratedSelfTest(false));
