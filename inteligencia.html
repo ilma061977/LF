@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0d10">
+<title>Central de Inteligência · LF Inteligente 2026</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--ink:#111318;--muted:#667085;--line:#e2e8f0;--dark:#0b0d10;--blue:#2563eb;--green:#15803d;--amber:#b45309;--red:#b91c1c;--purple:#7c3aed;--shadow:0 10px 28px rgba(15,23,42,.07)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}.shell{min-height:100vh}.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:14px 20px;background:#0b0d10;color:#fff;border-bottom:1px solid #20242a}.brand{display:flex;align-items:center;gap:10px;min-width:230px}.mark{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#fff;color:#111;font-weight:950}.brand strong{display:block}.brand small{display:block;color:#94a3b8}.top .status{margin-left:auto;color:#cbd5e1;font-size:12px}.home{color:#fff;text-decoration:none;border:1px solid #334155;padding:8px 11px;border-radius:9px}
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:calc(100vh - 67px)}.nav{background:#111419;padding:16px 12px;position:sticky;top:67px;height:calc(100vh - 67px);overflow:auto}.nav h3{font-size:10px;color:#64748b;letter-spacing:.12em;margin:10px 9px}.tab{width:100%;display:flex;align-items:center;gap:9px;border:0;background:transparent;color:#cbd5e1;padding:10px 11px;border-radius:9px;text-align:left;cursor:pointer}.tab:hover,.tab.active{background:#22262d;color:#fff}.tab b{font-size:12px}.main{padding:24px;max-width:1500px}.hero{background:linear-gradient(135deg,#0b0d10,#172033);color:#fff;border-radius:20px;padding:28px;box-shadow:var(--shadow);margin-bottom:20px}.hero span{font-size:10px;letter-spacing:.14em;color:#93c5fd;font-weight:900}.hero h1{margin:6px 0;font-size:34px}.hero p{max-width:900px;color:#cbd5e1;margin:0}.page{display:none}.page.active{display:block}.head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin:4px 0 16px}.head h2{margin:0;font-size:27px}.head p{margin:4px 0 0;color:var(--muted)}.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px}.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.controls label{display:grid;gap:5px;color:#475569;font-size:11px;font-weight:800}.controls input,.controls select,.controls textarea{border:1px solid #cbd5e1;border-radius:9px;padding:9px 10px;background:#fff;min-width:120px}.controls textarea{min-width:310px;min-height:58px}.btn{border:0;border-radius:9px;padding:10px 14px;background:#111827;color:#fff;font-weight:850;cursor:pointer}.btn.blue{background:var(--blue)}.btn.green{background:var(--green)}.btn.ghost{background:#eef2ff;color:#1e3a8a}.btn:disabled{opacity:.45;cursor:not-allowed}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0}.kpi{padding:14px;border-radius:12px;background:#f8fafc;border:1px solid var(--line)}.kpi span{display:block;color:#64748b;font-size:10px;text-transform:uppercase;font-weight:900}.kpi b{display:block;margin-top:4px;font-size:21px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+table{width:100%;border-collapse:collapse}.table{overflow:auto;border:1px solid var(--line);border-radius:12px}.table th{position:sticky;top:0;background:#111827;color:#fff;font-size:10px;text-align:left;padding:9px;white-space:nowrap}.table td{padding:9px;border-bottom:1px solid #eef2f7;white-space:nowrap}.table tbody tr:hover{background:#f8fafc}.sort{cursor:pointer}.balls{display:flex;gap:5px;flex-wrap:wrap}.ball{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#111827;color:#fff;font-size:11px;font-weight:900}.metric-list{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.metric{padding:12px;border:1px solid var(--line);border-radius:11px}.metric span{display:block;color:#64748b;font-size:10px}.metric b{font-size:17px}.note{padding:13px 15px;border-radius:11px;background:#eff6ff;border-left:4px solid #2563eb;margin:12px 0;color:#1e3a8a}.note.warn{background:#fff7ed;border-color:#d97706;color:#92400e}.note.good{background:#ecfdf5;border-color:#16a34a;color:#166534}.progress{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}.progress i{display:block;height:100%;background:#2563eb;width:0}.portfolio-games{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.game{border:1px solid var(--line);border-radius:11px;padding:10px}.game small{color:#64748b}.prob td:nth-child(n+2),.prob th:nth-child(n+2){text-align:right}.badge{display:inline-flex;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:900;background:#e2e8f0}.badge.hot{background:#fee2e2;color:#991b1b}.badge.cold{background:#dbeafe;color:#1e40af}.badge.mid{background:#fef3c7;color:#92400e}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.nav{position:static;height:auto;display:flex;overflow:auto;gap:5px}.nav h3{display:none}.tab{min-width:160px}.main{padding:16px}.grid2,.grid3{grid-template-columns:1fr}.kpis,.metric-list{grid-template-columns:repeat(2,1fr)}.portfolio-games{grid-template-columns:1fr}.brand{min-width:0}.top .status{display:none}}
+@media(max-width:560px){.kpis,.metric-list{grid-template-columns:1fr}.hero h1{font-size:28px}.controls textarea{min-width:100%}}
+</style>
+</head>
+<body><div class="shell">
+<header class="top"><div class="brand"><div class="mark">LF</div><div><strong>Central de Inteligência</strong><small>LF Inteligente 2026</small></div></div><a class="home" href="/">← NOVO INDICADO</a><span class="status" id="base-status">Carregando base…</span></header>
+<div class="layout">
+<nav class="nav"><h3>9 MÓDULOS</h3>
+<button class="tab active" data-tab="raiox">🔬 <b>1. Raio-X</b></button>
+<button class="tab" data-tab="dna">🧬 <b>2. DNA Lotofácil</b></button>
+<button class="tab" data-tab="behavior">▦ <b>3. 25 dezenas</b></button>
+<button class="tab" data-tab="finals">0–9 <b>4. Final concurso</b></button>
+<button class="tab" data-tab="independencia">★ <b>5. Independência</b></button>
+<button class="tab" data-tab="export">↓ <b>6. Exportar base</b></button>
+<button class="tab" data-tab="closures">⌗ <b>7. Fechamentos+</b></button>
+<button class="tab" data-tab="portfolio">◆ <b>8. Portfólio</b></button>
+<button class="tab" data-tab="probability">∑ <b>9. Probabilidades</b></button>
+</nav>
+<main class="main">
+<div class="hero"><span>NOVA CENTRAL · 9 EVOLUÇÕES</span><h1>Inteligência Lotofácil</h1><p>Os módulos abaixo complementam o app sem modificar o NOVO INDICADO. As análises históricas são descritivas; os fechamentos e probabilidades são matemáticos; o portfólio usa a mesma Matriz 51 e o mesmo ranking do fluxo oficial.</p></div>
+
+<section class="page active" data-page="raiox">
+<div class="head"><div><h2>1. Raio-X do Concurso</h2><p>Destrincha um sorteio em padrões numéricos, estruturais e de repetição.</p></div></div>
+<div class="panel"><div class="controls"><label>Concurso<select id="rx-contest"></select></label><button class="btn blue" id="rx-run">Analisar</button></div></div>
+<div id="rx-summary"></div><div class="panel"><h3>Padrões visuais e faixas</h3><div id="rx-patterns" class="table"></div></div>
+</section>
+
+<section class="page" data-page="dna">
+<div class="head"><div><h2>2. DNA Lotofácil</h2><p>Frequência, temperatura, atrasos, sequência e ciclo com filtros prospectivos de período.</p></div></div>
+<div class="panel"><div class="controls">
+<label>Concurso inicial<input id="dna-start" type="number"></label><label>Concurso final<input id="dna-end" type="number"></label>
+<label>Final do concurso<select id="dna-final"><option value="">Todos</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select></label>
+<label>Tipo<select id="dna-special"><option value="all">Todos</option><option value="normal">Normais</option><option value="special">Independência</option></select></label>
+<label>Dezena<select id="dna-number"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option><option>25</option></select></label>
+<button class="btn blue" id="dna-run">Calcular DNA</button></div></div>
+<div id="dna-output"></div>
+</section>
+
+<section class="page" data-page="behavior">
+<div class="head"><div><h2>3. Comportamento das 25 dezenas</h2><p>Tabela ordenável com frequência, atraso, sequência, ciclo e temperatura.</p></div></div>
+<div class="panel"><div class="controls"><label>Janela<select id="beh-window"><option value="50">50</option><option value="100" selected>100</option><option value="200">200</option><option value="0">Todos</option></select></label><button class="btn blue" id="beh-run">Atualizar</button></div></div>
+<div class="panel"><div id="beh-table" class="table"></div></div>
+</section>
+
+<section class="page" data-page="finals">
+<div class="head"><div><h2>4. Análise por final do concurso 0–9</h2><p>Pesquisa histórica; não é filtro eliminatório do NOVO INDICADO.</p></div></div>
+<div class="note warn">Use esta visão para comparar grupos de concursos. Qualquer regra baseada no final 0–9 deve passar por backtest antes de virar critério.</div>
+<div class="panel"><div id="final-table" class="table"></div></div>
+</section>
+
+<section class="page" data-page="independencia">
+<div class="head"><div><h2>5. Lotofácil da Independência</h2><p>As edições especiais ficam separadas para comparação com concursos normais.</p></div></div>
+<div id="ind-kpis"></div><div class="panel"><div id="ind-table" class="table"></div></div>
+</section>
+
+<section class="page" data-page="export">
+<div class="head"><div><h2>6. Exportar base histórica</h2><p>Baixe a base carregada no app em formatos abertos.</p></div></div>
+<div class="panel"><div class="controls"><button class="btn green" data-export="csv">Baixar CSV</button><button class="btn blue" data-export="json">Baixar JSON</button><button class="btn" data-export="txt">Baixar TXT</button></div><div class="note" id="export-note"></div></div>
+</section>
+
+<section class="page" data-page="closures">
+<div class="head"><div><h2>7. Fechamentos+</h2><p>Fechamento padrão, fixas, exclusões, grupos, cobertura máxima e diversificação para bases de 15 a 20 dezenas.</p></div></div>
+<div class="panel"><div class="controls">
+<label>Base (15–20 dezenas)<textarea id="cl-pool">01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17</textarea></label>
+<label>Modo<select id="cl-mode"><option value="coverage">Cobertura máxima</option><option value="standard">Padrão</option><option value="fixed">Com fixas</option><option value="excluded">Com exclusões</option><option value="group">Por grupo</option><option value="diverse">Diversificado</option></select></label>
+<label>Fixas<input id="cl-fixed" placeholder="01 02"></label><label>Excluir<input id="cl-excluded" placeholder="24 25"></label>
+<label>Grupo alvo<input id="cl-group" placeholder="01 03 05 07 09"></label><label>Mín. do grupo<input id="cl-group-min" type="number" value="3" min="0" max="15"></label>
+<label>Jogos<input id="cl-count" type="number" value="10" min="1" max="100"></label><label>Cobrir k<select id="cl-k"><option>11</option><option>12</option><option selected>13</option><option>14</option></select></label>
+<button class="btn blue" id="cl-run">Gerar fechamento</button></div></div>
+<div id="cl-output"></div>
+</section>
+
+<section class="page" data-page="portfolio">
+<div class="head"><div><h2>8. Portfólio Inteligente</h2><p>Carteira separada do NOVO INDICADO: score + diversidade + cobertura, usando a mesma Matriz 51.</p></div></div>
+<div class="note good"><b>O NOVO INDICADO permanece inalterado.</b> Este módulo cria uma carteira adicional a partir dos jogos aprovados pelo ranking atual.</div>
+<div class="panel"><div class="controls"><label>Quantidade<select id="pf-count"><option>5</option><option selected>10</option><option>20</option><option>50</option></select></label><label>Peso diversidade<input id="pf-div" type="range" min="10" max="70" value="45"></label><button class="btn blue" id="pf-run">Buscar e montar portfólio</button></div>
+<div style="margin-top:14px"><div class="progress"><i id="pf-bar"></i></div><small id="pf-status">Aguardando.</small></div></div>
+<div id="pf-output"></div>
+</section>
+
+<section class="page" data-page="probability">
+<div class="head"><div><h2>9. Probabilidades matemáticas</h2><p>Separa chance matemática de cobertura histórica ou score do modelo.</p></div></div>
+<div class="note warn"><b>Importante:</b> filtros e score não alteram a probabilidade de uma combinação individual numa loteria justa.</div>
+<div class="panel"><div id="prob-table" class="table prob"></div></div>
+</section>
+</main></div></div>
+<script src="/matrix-51.js"></script>
+<script>
+const ALL=Array.from({length:25},(_,i)=>i+1), PRIMES=new Set([2,3,5,7,11,13,17,19,23]), FIB=new Set([1,2,3,5,8,13,21]);
+const SPECIAL=new Set([800,952,1102,1255,1408,1557,1708,1861,2030,2320,2610,2900,3190,3480,3780]);
+const PATTERNS={
+  'Moldura':new Set(ALL.filter(n=>{const r=Math.floor((n-1)/5),c=(n-1)%5;return r===0||r===4||c===0||c===4})),
+  'Miolo':new Set([7,8,9,12,13,14,17,18,19]),
+  'Cruz':new Set([3,8,11,12,13,14,15,18,23]),
+  'X':new Set([1,5,7,9,13,17,19,21,25]),
+  'H':new Set([1,5,6,10,11,12,13,14,15,16,20,21,25]),
+  'Estrela':new Set([3,7,9,11,13,15,17,19,23]),
+  'Cantos':new Set([1,5,21,25]),
+  '10 primeiras':new Set(ALL.filter(n=>n<=10)),'10 últimas':new Set(ALL.filter(n=>n>=16)),
+  '15 primeiras':new Set(ALL.filter(n=>n<=15)),'15 últimas':new Set(ALL.filter(n=>n>=11))
+};
+let H=[], sortKey='n', sortDir=1;
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const pad=n=>String(n).padStart(2,'0'), fmt=n=>Number(n).toLocaleString('pt-BR');
+function parseNums(v){return [...new Set(String(v||'').match(/\d+/g)?.map(Number)||[])].filter(n=>n>=1&&n<=25).sort((a,b)=>a-b)}
+function C(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r)}
+function mean(a){return a.length?a.reduce((s,v)=>s+v,0)/a.length:0}
+function overlap(a,b){const s=new Set(b);return a.filter(x=>s.has(x)).length}
+function sum(a){return a.reduce((s,v)=>s+v,0)}
+function maxRun(g){let m=1,c=1;for(let i=1;i<g.length;i++){if(g[i]===g[i-1]+1)c++;else c=1;m=Math.max(m,c)}return m}
+function colorCount(g){return new Set(g.map(n=>n%10)).size}
+function balls(g){return '<div class="balls">'+g.map(n=>'<span class="ball">'+pad(n)+'</span>').join('')+'</div>'}
+function combinations(arr,k){const out=[];function rec(start,p){if(p.length===k){out.push([...p]);return}for(let i=start;i<=arr.length-(k-p.length);i++){p.push(arr[i]);rec(i+1,p);p.pop()}}rec(0,[]);return out}
+function subsetKeys(g,k){return combinations(g,k).map(x=>x.join('-'))}
+function cycleState(rows){let seen=new Set(),cycle=1;for(const d of rows){for(const n of d.dezenas)seen.add(n);if(seen.size===25){cycle++;seen=new Set()}}return{cycle,seen}}
+function numStats(n,rows){const present=rows.map(d=>d.dezenas.includes(n)),freq=present.filter(Boolean).length;let currentDelay=0;for(let i=present.length-1;i>=0&&!present[i];i--)currentDelay++;
+  const idx=[];present.forEach((v,i)=>{if(v)idx.push(i)});const gaps=[];for(let i=1;i<idx.length;i++)gaps.push(idx[i]-idx[i-1]-1);if(idx.length&&idx[0]>0)gaps.unshift(idx[0]);
+  const priorDelay=gaps.length?gaps.at(-1):0,maxDelay=gaps.length?Math.max(...gaps,currentDelay):currentDelay,avgDelay=gaps.length?mean(gaps):currentDelay;
+  let seq=0;for(let i=present.length-1;i>=0&&present[i];i--)seq++;const last=[...rows].reverse().find(d=>d.dezenas.includes(n));
+  const freqs=ALL.map(x=>rows.filter(d=>d.dezenas.includes(x)).length).sort((a,b)=>b-a),rank=1+freqs.filter(v=>v>freq).length,temp=rank<=5?'Quente':rank>=21?'Fria':'Morna';
+  const cyc=cycleState(rows);return{n,freq,rate:rows.length?freq/rows.length*100:0,currentDelay,priorDelay,maxDelay,avgDelay,seq,last:last?.concurso||'—',temp,cycle:cyc.cycle,cycleStatus:cyc.seen.has(n)?'Presente':'Pendente'} }
+function metrics(draw){const g=draw.dezenas,s=new Set(g),ix=H.findIndex(x=>x.concurso===draw.concurso),prev=ix>0?H[ix-1].dezenas:[],p2=ix>1?H[ix-2].dezenas:[],p3=ix>2?H[ix-3].dezenas:[];const shared=overlap(g,prev);
+ const rows=Array(5).fill(0),cols=Array(5).fill(0);g.forEach(n=>{rows[Math.floor((n-1)/5)]++;cols[(n-1)%5]++});
+ return{sum:sum(g),odds:g.filter(n=>n%2).length,evens:g.filter(n=>n%2===0).length,primes:g.filter(n=>PRIMES.has(n)).length,fib:g.filter(n=>FIB.has(n)).length,m3:g.filter(n=>n%3===0).length,m5:g.filter(n=>n%5===0).length,run:maxRun(g),colors:colorCount(g),shared,pairs:C(shared,2),triples:C(shared,3),prev2:new Set([...prev,...p2]),prev3:new Set([...prev,...p2,...p3]),rows,cols,set:s}}
+function setTab(name){$$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));$$('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===name));history.replaceState(null,'','#'+name)}
+$$('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+
+function renderRaioX(){const id=Number($('#rx-contest').value),d=H.find(x=>+x.concurso===id)||H.at(-1),m=metrics(d);
+ $('#rx-summary').innerHTML='<div class="panel"><div class="head"><div><h2>#'+d.concurso+' · '+d.data+'</h2>'+balls(d.dezenas)+'</div></div><div class="metric-list">'+[
+ ['Soma',m.sum],['Ímpares / pares',m.odds+' / '+m.evens],['Primos',m.primes],['Fibonacci',m.fib],['Múltiplos 3 / 5',m.m3+' / '+m.m5],['Sequência máx.',m.run],['Cores',m.colors+'/10'],['Repetidas anterior',m.shared],['Duplas repetidas',m.pairs],['Trincas repetidas',m.triples],['Linhas',m.rows.join('-')],['Colunas',m.cols.join('-')]
+ ].map(x=>'<div class="metric"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div></div>';
+ const pat=Object.entries(PATTERNS).map(([name,set])=>{const q=[...set].filter(n=>m.set.has(n)).length;return '<tr><td><b>'+name+'</b></td><td>'+q+' / '+set.size+'</td><td>'+[...set].map(pad).join(' ')+'</td></tr>'}).join('');
+ $('#rx-patterns').innerHTML='<table><thead><tr><th>Padrão</th><th>No sorteio</th><th>Mapa de dezenas</th></tr></thead><tbody>'+pat+'<tr><td><b>Presentes nos 2 anteriores</b></td><td>'+d.dezenas.filter(n=>m.prev2.has(n)).length+'/15</td><td>União dos dois concursos anteriores</td></tr><tr><td><b>Presentes nos 3 anteriores</b></td><td>'+d.dezenas.filter(n=>m.prev3.has(n)).length+'/15</td><td>União dos três concursos anteriores</td></tr></tbody></table>'}
+
+function dnaRows(){const a=Number($('#dna-start').value)||H[0].concurso,b=Number($('#dna-end').value)||H.at(-1).concurso,fin=$('#dna-final').value,sp=$('#dna-special').value;return H.filter(d=>d.concurso>=a&&d.concurso<=b&&(fin===''||d.concurso%10===Number(fin))&&(sp==='all'||(sp==='special'&&SPECIAL.has(d.concurso))||(sp==='normal'&&!SPECIAL.has(d.concurso))))}
+function renderDNA(){const rows=dnaRows(),n=Number($('#dna-number').value),s=numStats(n,rows);$('#dna-output').innerHTML='<div class="panel"><div class="kpis">'+[
+ ['Concursos',rows.length],['Frequência',s.freq+' ('+s.rate.toFixed(1)+'%)'],['Temperatura','<span class="badge '+(s.temp==='Quente'?'hot':s.temp==='Fria'?'cold':'mid')+'">'+s.temp+'</span>'],['Atraso atual',s.currentDelay],['Atraso anterior',s.priorDelay],['Maior atraso',s.maxDelay],['Média atraso',s.avgDelay.toFixed(2)],['Sequência atual',s.seq],['Último concurso',s.last],['Ciclo '+s.cycle,s.cycleStatus]
+ ].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="note">DNA da dezena <b>'+pad(n)+'</b> calculado sobre '+fmt(rows.length)+' concursos após os filtros selecionados.</div></div>'}
+
+function renderBehavior(){const w=Number($('#beh-window').value),rows=w?H.slice(-w):H,stats=ALL.map(n=>numStats(n,rows));stats.sort((a,b)=>{let x=a[sortKey],y=b[sortKey];if(typeof x==='string')return String(x).localeCompare(String(y))*sortDir;return (x-y)*sortDir});
+ const headers=[['n','Dezena'],['freq','Freq.'],['rate','%'],['currentDelay','Atraso'],['priorDelay','Ant.'],['maxDelay','Máx.'],['avgDelay','Média'],['seq','Seq.'],['last','Último'],['cycleStatus','Ciclo'],['temp','Temp.']];
+ $('#beh-table').innerHTML='<table><thead><tr>'+headers.map(h=>'<th class="sort" data-sort="'+h[0]+'">'+h[1]+'</th>').join('')+'</tr></thead><tbody>'+stats.map(s=>'<tr><td><b>'+pad(s.n)+'</b></td><td>'+s.freq+'</td><td>'+s.rate.toFixed(1)+'</td><td>'+s.currentDelay+'</td><td>'+s.priorDelay+'</td><td>'+s.maxDelay+'</td><td>'+s.avgDelay.toFixed(2)+'</td><td>'+s.seq+'</td><td>'+s.last+'</td><td>'+s.cycleStatus+'</td><td><span class="badge '+(s.temp==='Quente'?'hot':s.temp==='Fria'?'cold':'mid')+'">'+s.temp+'</span></td></tr>').join('')+'</tbody></table>';
+ $$('#beh-table [data-sort]').forEach(th=>th.onclick=()=>{const k=th.dataset.sort;if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=-1}renderBehavior()})}
+
+function renderFinals(){const rows=Array.from({length:10},(_,f)=>{const arr=H.filter(d=>d.concurso%10===f),ms=arr.map(metrics),freq=ALL.map(n=>[n,arr.filter(d=>d.dezenas.includes(n)).length]).sort((a,b)=>b[1]-a[1]||a[0]-b[0]).slice(0,5);return{f,n:arr.length,sum:mean(ms.map(x=>x.sum)),odds:mean(ms.map(x=>x.odds)),primes:mean(ms.map(x=>x.primes)),rep:mean(ms.map(x=>x.shared)),hot:freq.map(x=>pad(x[0])).join(' ')}});$('#final-table').innerHTML='<table><thead><tr><th>Final</th><th>Concursos</th><th>Soma média</th><th>Ímpares</th><th>Primos</th><th>Repetidas</th><th>5 mais frequentes</th></tr></thead><tbody>'+rows.map(x=>'<tr><td><b>'+x.f+'</b></td><td>'+x.n+'</td><td>'+x.sum.toFixed(1)+'</td><td>'+x.odds.toFixed(2)+'</td><td>'+x.primes.toFixed(2)+'</td><td>'+x.rep.toFixed(2)+'</td><td>'+x.hot+'</td></tr>').join('')+'</tbody></table>'}
+
+function renderInd(){const sp=H.filter(d=>SPECIAL.has(d.concurso)),normal=H.filter(d=>!SPECIAL.has(d.concurso)),sm=sp.map(metrics),nm=normal.map(metrics);
+ $('#ind-kpis').innerHTML='<div class="kpis">'+[['Edições',sp.length],['Primeira','#'+sp[0]?.concurso],['Última','#'+sp.at(-1)?.concurso],['Soma média',mean(sm.map(x=>x.sum)).toFixed(1)],['Repetidas média',mean(sm.map(x=>x.shared)).toFixed(2)]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel"><div class="grid2"><div><b>Independência</b><p>Soma '+mean(sm.map(x=>x.sum)).toFixed(1)+' · Ímpares '+mean(sm.map(x=>x.odds)).toFixed(2)+' · Primos '+mean(sm.map(x=>x.primes)).toFixed(2)+'</p></div><div><b>Concursos normais</b><p>Soma '+mean(nm.map(x=>x.sum)).toFixed(1)+' · Ímpares '+mean(nm.map(x=>x.odds)).toFixed(2)+' · Primos '+mean(nm.map(x=>x.primes)).toFixed(2)+'</p></div></div></div>';
+ $('#ind-table').innerHTML='<table><thead><tr><th>Ano</th><th>Concurso</th><th>Data</th><th>Dezenas</th><th>Soma</th><th>Ímpares</th><th>Primos</th></tr></thead><tbody>'+sp.map(d=>{const y=d.data.split('/')[2],m=metrics(d);return '<tr><td>'+y+'</td><td><b>#'+d.concurso+'</b></td><td>'+d.data+'</td><td>'+d.dezenas.map(pad).join(' ')+'</td><td>'+m.sum+'</td><td>'+m.odds+'</td><td>'+m.primes+'</td></tr>'}).join('')+'</tbody></table>'}
+
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
+function exportBase(kind){if(kind==='json')download('lotofacil-base-'+H.at(-1).concurso+'.json',JSON.stringify({latest:H.at(-1).concurso,history:H},null,2),'application/json');if(kind==='csv')download('lotofacil-base-'+H.at(-1).concurso+'.csv','concurso,data,dezenas\n'+H.map(d=>d.concurso+','+d.data+',"'+d.dezenas.map(pad).join(' ')+'"').join('\n'),'text/csv');if(kind==='txt')download('lotofacil-base-'+H.at(-1).concurso+'.txt',H.map(d=>'#'+d.concurso+' '+d.data+' · '+d.dezenas.map(pad).join(' ')).join('\n'),'text/plain')}
+
+function greedyCoverage(cands,count,k,pool,mode){const covered=new Set(),sel=[],remaining=[...cands];for(let step=0;step<count&&remaining.length;step++){let bi=0,bs=-Infinity;for(let i=0;i<remaining.length;i++){const g=remaining[i],keys=subsetKeys(g,k),gain=keys.filter(x=>!covered.has(x)).length,div=sel.length?1-Math.max(...sel.map(s=>overlap(g,s)))/15:1;const score=mode==='standard'?-i:mode==='diverse'?gain+div*keys.length*.8:gain+div*keys.length*.15;if(score>bs){bs=score;bi=i}}const g=remaining.splice(bi,1)[0];sel.push(g);subsetKeys(g,k).forEach(x=>covered.add(x))}return{sel,covered,universe:C(pool.length,k),coverage:C(pool.length,k)?covered.size/C(pool.length,k)*100:0}}
+function renderClosure(){let pool=parseNums($('#cl-pool').value),fixed=parseNums($('#cl-fixed').value),excluded=new Set(parseNums($('#cl-excluded').value)),group=new Set(parseNums($('#cl-group').value)),gmin=Number($('#cl-group-min').value)||0,mode=$('#cl-mode').value,count=Math.max(1,Math.min(100,Number($('#cl-count').value)||10)),k=Number($('#cl-k').value);pool=pool.filter(n=>!excluded.has(n));if(pool.length<15||pool.length>20){$('#cl-output').innerHTML='<div class="note warn">A base final precisa ter entre 15 e 20 dezenas.</div>';return}const fixedSet=new Set(fixed),all=combinations(pool,15);let cands=all.filter(g=>fixed.every(n=>g.includes(n)));if(mode==='group')cands=cands.filter(g=>g.filter(n=>group.has(n)).length>=gmin);if(!cands.length){$('#cl-output').innerHTML='<div class="note warn">Nenhuma combinação atende às restrições.</div>';return}const r=greedyCoverage(cands,count,k,pool,mode);$('#cl-output').innerHTML='<div class="kpis">'+[['Base',pool.length+' dezenas'],['Candidatos',fmt(cands.length)],['Selecionados',r.sel.length],['Subconjuntos k',fmt(r.covered.size)+' / '+fmt(r.universe)],['Cobertura',r.coverage.toFixed(2)+'%']].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel"><div class="portfolio-games">'+r.sel.map((g,i)=>'<div class="game"><b>Jogo '+(i+1)+'</b>'+balls(g)+'</div>').join('')+'</div></div>'}
+
+function defaultPolicies(){const p={},mandatory=new Set([28,29,36]);for(const f of window.LFMatrix51.FILTERS)p[f.id]=mandatory.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore');return p}
+function diversify(games,scores,n,weight){const min=Math.min(...scores),max=Math.max(...scores),sel=[],used=new Set();for(let step=0;step<n&&step<games.length;step++){let best=-1,bestV=-Infinity;for(let i=0;i<games.length;i++){if(used.has(i))continue;const sn=max===min?1:(scores[i]-min)/(max-min),div=sel.length?1-Math.max(...sel.map(j=>overlap(games[i],games[j])))/15:1,v=sn*(1-weight)+div*weight;if(v>bestV){bestV=v;best=i}}if(best<0)break;used.add(best);sel.push(best)}return sel.map(i=>({game:games[i],score:scores[i]}))}
+function portfolioCoverageSample(games,size=50000){const dist={11:0,12:0,13:0,14:0,15:0};for(let i=0;i<size;i++){const rank=Math.floor(i*(C(25,15)-1)/(size-1)),g=window.LFMatrix51.unrank(ALL,15,rank);let best=0;for(const x of games){best=Math.max(best,overlap(g,x));if(best===15)break}for(const h of [11,12,13,14,15])if(best>=h)dist[h]++}return Object.fromEntries(Object.entries(dist).map(([k,v])=>[k,v/size*100]))}
+function runPortfolio(){const btn=$('#pf-run'),bar=$('#pf-bar'),status=$('#pf-status'),n=Number($('#pf-count').value),weight=Number($('#pf-div').value)/100;btn.disabled=true;status.textContent='Busca exaustiva iniciada…';bar.style.width='1%';const worker=new Worker('/analysis-worker.js?portfolio='+Date.now());worker.onmessage=e=>{const d=e.data||{};if(d.type==='progress'){const pct=d.total?Math.floor(d.tested/d.total*100):0;bar.style.width=pct+'%';status.textContent='Validando '+fmt(d.tested||0)+' / '+fmt(d.total||0)+' · aprovados '+fmt(d.approvedCount||0)+' · '+pct+'%'}if(d.type==='done'){worker.terminate();btn.disabled=false;bar.style.width='100%';if(!d.topGames?.length){status.textContent='Nenhum jogo aprovado.';return}status.textContent='Busca concluída: '+fmt(d.approvedCount)+' aprovados. Diversificando os 1.000 melhores…';setTimeout(()=>{const pf=diversify(d.topGames,d.topScores,n,weight),cov=portfolioCoverageSample(pf.map(x=>x.game),50000),ovs=[];for(let i=0;i<pf.length;i++)for(let j=i+1;j<pf.length;j++)ovs.push(overlap(pf[i].game,pf[j].game));$('#pf-output').innerHTML='<div class="kpis">'+[['Aprovados',fmt(d.approvedCount)],['Carteira',pf.length],['Score médio',mean(pf.map(x=>x.score)).toFixed(2)],['Sobreposição média',mean(ovs).toFixed(2)],['Máx. sobreposição',ovs.length?Math.max(...ovs):0]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel"><h3>Cobertura estimada · amostra uniforme de 50.000 resultados</h3><div class="kpis">'+[11,12,13,14,15].map(h=>'<div class="kpi"><span>'+h+'+ pontos</span><b>'+cov[h].toFixed(3)+'%</b></div>').join('')+'</div><div class="portfolio-games">'+pf.map((x,i)=>'<div class="game"><b>#'+(i+1)+' · score '+x.score.toFixed(2)+'</b>'+balls(x.game)+'</div>').join('')+'</div></div>';status.textContent='Concluído. A cobertura exibida é estimativa amostral; os jogos vêm da busca exaustiva aprovada.'},30)}};worker.onerror=()=>{btn.disabled=false;status.textContent='Falha no Worker.'};worker.postMessage({task:'generate',history:H,period:50,policies:defaultPolicies(),excluded:[],deterministic:true,exhaustive:true,rankIndex:0,topLimit:1000})}
+
+function renderProb(){const rows=[];for(let n=15;n<=20;n++){const denom=C(25,n),simple=C(n,15),p15=simple/C(25,15),probs={};for(let h=11;h<=15;h++)probs[h]=C(15,h)*C(10,n-h)/denom;rows.push({n,simple,p15,probs})}$('#prob-table').innerHTML='<table><thead><tr><th>Dezenas</th><th>Equiv. jogos 15</th><th>15 pontos</th><th>1 em</th><th>14 pontos</th><th>13 pontos</th><th>12 pontos</th><th>11 pontos</th></tr></thead><tbody>'+rows.map(r=>'<tr><td><b>'+r.n+'</b></td><td>'+fmt(r.simple)+'</td><td>'+(r.p15*100).toFixed(6)+'%</td><td>'+fmt(Math.round(1/r.p15))+'</td><td>'+(r.probs[14]*100).toFixed(4)+'%</td><td>'+(r.probs[13]*100).toFixed(4)+'%</td><td>'+(r.probs[12]*100).toFixed(3)+'%</td><td>'+(r.probs[11]*100).toFixed(3)+'%</td></tr>').join('')+'</tbody></table>'}
+
+async function init(){const r=await fetch('/data/lotofacil-base.json?ci='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({concurso:Number(x.concurso),data:x.data||'',dezenas:[...x.dezenas].map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);$('#base-status').textContent=fmt(H.length)+' concursos · último #'+H.at(-1).concurso;
+ $('#rx-contest').innerHTML=H.slice().reverse().map(d=>'<option value="'+d.concurso+'">#'+d.concurso+' · '+d.data+'</option>').join('');$('#dna-start').value=Math.max(H[0].concurso,H.at(-1).concurso-199);$('#dna-end').value=H.at(-1).concurso;$('#export-note').innerHTML='Base atual: <b>'+fmt(H.length)+' concursos</b> · #'+H[0].concurso+' até #'+H.at(-1).concurso+'.';
+ renderRaioX();renderDNA();renderBehavior();renderFinals();renderInd();renderProb();const hash=location.hash.replace('#','');if($$('.tab').some(b=>b.dataset.tab===hash))setTab(hash)}
+$('#rx-run').onclick=renderRaioX;$('#dna-run').onclick=renderDNA;$('#beh-run').onclick=renderBehavior;$('#cl-run').onclick=renderClosure;$('#pf-run').onclick=runPortfolio;$$('[data-export]').forEach(b=>b.onclick=()=>exportBase(b.dataset.export));init().catch(e=>{$('#base-status').textContent='Falha ao carregar base';console.error(e)});
+</script>
+</body></html>
