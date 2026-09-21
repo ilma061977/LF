@@ -5,7 +5,7 @@ const ALL=Array.from({length:25},(_,i)=>i+1);
 const MANDATORY_BLOCKS=new Set([28,29,36]);
 function resolvedPolicy(f,policies={}){return MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'));}
 const keyOf=g=>g.map(n=>String(n).padStart(2,'0')).join('-');
-function blockedFailures(report,policies){const out=report.filters.filter(f=>resolvedPolicy(f,policies)==='block'&&!f.passed);if(report?.patternCooldown?.blocked)out.push({id:'PADRAO',name:'Carência de padrão exato'});if(report?.colorRule?.blocked)out.push({id:'CORES',name:'Mínimo obrigatório de 8 cores'});return out;}
+function blockedFailures(report,policies){const out=report.filters.filter(f=>resolvedPolicy(f,policies)==='block'&&!f.passed);if(report?.patternCooldown?.blocked)out.push({id:'PADRAO',name:'Carência de padrão exato'});if(report?.colorRule?.blocked)out.push({id:'CORES',name:'Mínimo obrigatório de 8 cores'});if(report?.lineColumnRepeat?.blocked)out.push({id:'L×C',name:'Linha × Coluna igual ao concurso anterior'});return out;}
 function warnings(report,policies){return report.filters.filter(f=>resolvedPolicy(f,policies)==='warn'&&!f.passed);}
 const COLOR_ORDER=[1,2,3,4,5,6,7,8,9,0];
 const BLOCKED_COLOR_PROFILES=new Set(['3-3-3-3-1-1-1-0-0-0','3-3-3-2-2-2-0-0-0-0','3-2-2-2-2-2-2-0-0-0','3-3-3-1-1-1-1-1-1-0']);
@@ -82,7 +82,7 @@ function virginApprovedPass(report,policies={}){
 function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progressInfo=null,quotaSpec=null,proProfile=null,virginApprovedOnly=false){
   const block=new Set((excluded||[]).map(Number)),pool=ALL.filter(n=>!block.has(n));if(pool.length<15)return{game:null,score:-Infinity,tested:0,total:0,approvedCount:0,eligibleCount:0,rankIndex,topGames:[],topScores:[],diagnostics:null};
   const total=M.nCk(pool.length,15),limit=Math.max(rankIndex+1,Math.min(1000,Number(topLimit)||200)),top=[];let tested=0,approvedCount=0,eligibleCount=0,lastProgress=0,approvedHitDist=Object.fromEntries(Array.from({length:16},(_,i)=>[i,0]));
-  const diag={colorPreRejected:0,patternRejected:0,colorRuleRejected:0,quotaRejected:0,filterFirst:{},filterAny:{}};
+  const diag={colorPreRejected:0,patternRejected:0,colorRuleRejected:0,lineColumnRejected:0,quotaRejected:0,filterFirst:{},filterAny:{}};
   const progressEvery=Math.max(100,Math.min(500,Math.floor(total/1000)));if(!progressInfo)postMessage({type:'progress',tested:0,total,maxAttempts:total,found:0,approvedCount:0,eligibleCount:0,mode:'Busca exaustiva iniciada · preparando varredura integral'});
   eachComb(pool,15,gref=>{const g=[...gref];tested++;
     if(!indicatedColorValid(g)){diag.colorPreRejected++;}
@@ -90,7 +90,7 @@ function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progre
       const report=M.inspect(g,ctx),score=M.candidateScoreFromReport?M.candidateScoreFromReport(report,ctx,policies):M.candidateScore(g,ctx,policies);
       if(!Number.isFinite(score)){
         if(report?.patternCooldown?.blocked)diag.patternRejected++;
-        if(report?.colorRule?.blocked)diag.colorRuleRejected++;
+        if(report?.colorRule?.blocked)diag.colorRuleRejected++;if(report?.lineColumnRepeat?.blocked)diag.lineColumnRejected++;
         const blocked=report?.filters?.filter(f=>resolvedPolicy(f,policies)==='block'&&!f.passed)||[];
         for(const f of blocked)diag.filterAny[f.id]=(diag.filterAny[f.id]||0)+1;
         if(blocked.length)diag.filterFirst[blocked[0].id]=(diag.filterFirst[blocked[0].id]||0)+1;
