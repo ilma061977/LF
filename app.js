@@ -237,7 +237,19 @@
   function loadCombinedCheckpoint(sig){try{const c=JSON.parse(localStorage.getItem(combinedCheckpointKey())||'null');return c&&c.signature===sig?c:null;}catch{return null;}}
   function saveCombinedCheckpoint(c){try{localStorage.setItem(combinedCheckpointKey(),JSON.stringify(c));}catch{}}
   function clearCombinedCheckpoint(){try{localStorage.removeItem(combinedCheckpointKey());}catch{}}
-  function applyDecision(g){state.decision=g||[];state.selection=new Set(g||[]);state.labBase=g?[...g]:[];state.labLocked.clear();state.matrixReport=null;renderDecision();renderAnalysis();renderLab();renderStatsDecision();renderCycleClosure();renderCheckerAuto();renderLineCols();}
+  const DECISION_TRACKER_KEY='lfv3_decision_tracker';
+  function recordDecisionTracker(game){
+    if(!state.decisionStarted||!Array.isArray(game)||game.length!==15||!state.history.length)return;
+    const baseContest=Number(state.history.at(-1)?.concurso||0),targetContest=baseContest+1,id=targetContest+':'+keyOf(game);
+    let rows=[];try{rows=JSON.parse(localStorage.getItem(DECISION_TRACKER_KEY)||'[]');if(!Array.isArray(rows))rows=[];}catch{rows=[];}
+    if(rows.some(x=>x&&x.id===id))return;
+    const md=markerData(),markerCounts=Object.fromEntries(md.map(x=>[x.emoji,game.filter(n=>x.set.has(n)).length]));
+    const markerSummary=Object.entries(markerCounts).map(([e,n])=>e+' '+n).join(' · ');
+    let score=null;try{const s=M.candidateScore(game,state.ctx,state.filterPolicies);if(Number.isFinite(s))score=Number(s);}catch{}
+    rows.push({id,generatedAt:new Date().toISOString(),baseContest,targetContest,game:[...game],score,markerCounts,markerSummary,period:state.period,matrixSchema:M.SCHEMA_VERSION||''});
+    localStorage.setItem(DECISION_TRACKER_KEY,JSON.stringify(rows.slice(-5000)));
+  }
+  function applyDecision(g){state.decision=g||[];state.selection=new Set(g||[]);state.labBase=g?[...g]:[];state.labLocked.clear();state.matrixReport=null;recordDecisionTracker(state.decision);renderDecision();renderAnalysis();renderLab();renderStatsDecision();renderCycleClosure();renderCheckerAuto();renderLineCols();}
   function decisionSearchModeText(){const block=M.FILTERS.filter(f=>state.filterPolicies[f.id]==='block').length,warn=M.FILTERS.filter(f=>state.filterPolicies[f.id]==='warn').length,q=indicatorQuotaSpec().targets;return `Busca exaustiva integral · 51 filtros · metas 🔥${q.hot}/❄️${q.cold}/♻️${q.latest}/⏳${q.delayed}/🔄${q.three} · ${block} bloqueadores · ${warn} avisos · F28 + F29 + F36 obrigatórios`;}
   function formatDuration(sec){if(!Number.isFinite(sec)||sec<0)return '—';sec=Math.round(sec);const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),ss=sec%60;return h?`${h}h ${String(m).padStart(2,'0')}m`:`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
   function setDecisionSearchPanel(meta={}){
