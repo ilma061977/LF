@@ -70,7 +70,7 @@ function table(head,rows){return '<div class="table"><table><thead><tr>'+head.ma
 function rangeRows(){return H.filter(d=>d.concurso>=FROM&&d.concurso<=TO)}
 function setTab(n){$$('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===n));$$('.page').forEach(x=>x.classList.toggle('active',x.dataset.page===n));history.replaceState(null,'','#'+n);renderTab(n)}
 $$('.tab').forEach(x=>x.onclick=()=>setTab(x.dataset.tab));
-function applyRange(from,to){const min=H[0]?.concurso||1,max=H.at(-1)?.concurso||0;FROM=Math.max(min,Number(from)||min);TO=Math.min(max,Number(to)||max);if(FROM>TO)[FROM,TO]=[TO,FROM];$('#range-from').value=FROM;$('#range-to').value=TO;$('#range-label').textContent='#'+FROM+' → #'+TO+' · '+rangeRows().length+' concursos';renderTab($('.tab.active')?.dataset.tab||'order')}
+function applyRange(from,to){const min=H[0]?.concurso||1,max=H.at(-1)?.concurso||0;FROM=Math.max(min,Number(from)||min);TO=Math.min(max,Number(to)||max);if(FROM>TO)[FROM,TO]=[TO,FROM];ORDER=[];$('#range-from').value=FROM;$('#range-to').value=TO;$('#range-label').textContent='#'+FROM+' → #'+TO+' · '+rangeRows().length+' concursos';renderTab($('.tab.active')?.dataset.tab||'order')}
 $('#range-apply').onclick=()=>applyRange($('#range-from').value,$('#range-to').value);
 $('#range-last100').onclick=()=>{const m=H.at(-1)?.concurso||0;applyRange(Math.max(1,m-99),m)};
 $('#range-all').onclick=()=>applyRange(H[0]?.concurso,H.at(-1)?.concurso);
@@ -147,7 +147,7 @@ $('#xls-base').onclick=()=>{const rows=rangeRows();xls('lf-base-'+FROM+'-'+TO+'.
 $('#xls-order').onclick=async()=>{try{const a=await loadOrder();xls('lf-ordem-real-'+FROM+'-'+TO+'.xls',['Concurso','Data',...Array.from({length:15},(_,i)=>(i+1)+'a')],a.map(d=>[d.concurso,d.data,...d.ordemSorteio]))}catch(e){alert(e.message)}};
 $('#pdf-current').onclick=()=>window.print();
 
-function binomProb(n,k,p=.6){if(k<0||k>n)return 0;return combN(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k)}
+function logChoose(n,k){if(k<0||k>n)return-Infinity;k=Math.min(k,n-k);let z=0;for(let i=1;i<=k;i++)z+=Math.log(n-k+i)-Math.log(i);return z}function binomProb(n,k,p=.6){if(k<0||k>n||p<=0||p>=1)return 0;return Math.exp(logChoose(n,k)+k*Math.log(p)+(n-k)*Math.log(1-p))}
 function renderSuits(){
   const rows=rangeRows(),maps=new Map();for(const d of rows){const a=[d.dezenas.filter(n=>n<=9).length,d.dezenas.filter(n=>n>=10&&n<=19).length,d.dezenas.filter(n=>n>=20).length],key=a.join('');maps.set(key,(maps.get(key)||0)+1)}
   const suit=[...maps].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
