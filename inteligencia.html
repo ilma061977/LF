@@ -105,6 +105,7 @@ table{width:100%;border-collapse:collapse}.table{overflow:auto;border:1px solid 
 </section>
 </main></div></div>
 <script src="/ball-colors.js?v=official-colors-20260921"></script>
+<script src="/indicator-emojis.js?v=emojis-20260921"></script>
 <script src="/matrix-51.js"></script>
 <script>
 const ALL=Array.from({length:25},(_,i)=>i+1), PRIMES=new Set([2,3,5,7,11,13,17,19,23]), FIB=new Set([1,2,3,5,8,13,21]);
@@ -120,7 +121,7 @@ const PATTERNS={
   '10 primeiras':new Set(ALL.filter(n=>n<=10)),'10 últimas':new Set(ALL.filter(n=>n>=16)),
   '15 primeiras':new Set(ALL.filter(n=>n<=15)),'15 últimas':new Set(ALL.filter(n=>n>=11))
 };
-let H=[], sortKey='n', sortDir=1, selectedBehavior=1;
+let H=[], EMOJI_CTX=null, sortKey='n', sortDir=1, selectedBehavior=1;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const pad=n=>String(n).padStart(2,'0'), fmt=n=>Number(n).toLocaleString('pt-BR');
 function parseNums(v){return [...new Set(String(v||'').match(/\d+/g)?.map(Number)||[])].filter(n=>n>=1&&n<=25).sort((a,b)=>a-b)}
@@ -130,7 +131,7 @@ function overlap(a,b){const s=new Set(b);return a.filter(x=>s.has(x)).length}
 function sum(a){return a.reduce((s,v)=>s+v,0)}
 function maxRun(g){let m=1,c=1;for(let i=1;i<g.length;i++){if(g[i]===g[i-1]+1)c++;else c=1;m=Math.max(m,c)}return m}
 function colorCount(g){return new Set(g.map(n=>n%10)).size}
-function balls(g){return '<div class="balls">'+g.map(n=>'<span class="ball '+(window.LFOfficialBalls?.className(n)||('c'+(n%10)))+'" title="'+(window.LFOfficialBalls?.title(n)||pad(n))+'">'+pad(n)+'</span>').join('')+'</div>'}
+function balls(g,ctx=EMOJI_CTX){return '<div class="balls">'+g.map(n=>'<span class="ball '+(window.LFOfficialBalls?.className(n)||('c'+(n%10)))+'" title="'+(window.LFOfficialBalls?.title(n)||pad(n))+'">'+pad(n)+(window.LFIndicatorEmojis?.strip(n,ctx)||'')+'</span>').join('')+'</div>'}
 function combinations(arr,k){const out=[];function rec(start,p){if(p.length===k){out.push([...p]);return}for(let i=start;i<=arr.length-(k-p.length);i++){p.push(arr[i]);rec(i+1,p);p.pop()}}rec(0,[]);return out}
 function subsetKeys(g,k){return combinations(g,k).map(x=>x.join('-'))}
 function cycleState(rows){let seen=new Set(),cycle=1;for(const d of rows){for(const n of d.dezenas)seen.add(n);if(seen.size===25){cycle++;seen=new Set()}}return{cycle,seen}}
@@ -147,7 +148,7 @@ function setTab(name){$$('.tab').forEach(b=>b.classList.toggle('active',b.datase
 $$('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 
 function renderRaioX(){const id=Number($('#rx-contest').value),d=H.find(x=>+x.concurso===id)||H.at(-1),m=metrics(d);
- $('#rx-summary').innerHTML='<div class="panel"><div class="head"><div><h2>#'+d.concurso+' · '+d.data+'</h2>'+balls(d.dezenas)+'</div></div><div class="metric-list">'+[
+ $('#rx-summary').innerHTML='<div class="panel"><div class="head"><div><h2>#'+d.concurso+' · '+d.data+'</h2>'+balls(d.dezenas,window.LFIndicatorEmojis?.context(H,Math.max(0,H.findIndex(x=>x.concurso===d.concurso)))||EMOJI_CTX)+'</div></div><div class="metric-list">'+[
  ['Soma',m.sum],['Ímpares / pares',m.odds+' / '+m.evens],['Primos',m.primes],['Fibonacci',m.fib],['Múltiplos 3 / 5',m.m3+' / '+m.m5],['Sequência máx.',m.run],['Cores',m.colors+'/10'],['Repetidas anterior',m.shared],['Duplas repetidas',m.pairs],['Trincas repetidas',m.triples],['Linhas',m.rows.join('-')],['Colunas',m.cols.join('-')]
  ].map(x=>'<div class="metric"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div></div>';
  const pat=Object.entries(PATTERNS).map(([name,set])=>{const q=[...set].filter(n=>m.set.has(n)).length;return '<tr><td><b>'+name+'</b></td><td>'+q+' / '+set.size+'</td><td>'+[...set].map(pad).join(' ')+'</td></tr>'}).join('');
@@ -217,7 +218,7 @@ function runPortfolio(){const btn=$('#pf-run'),bar=$('#pf-bar'),status=$('#pf-st
 
 function renderProb(){const rows=[];for(let n=15;n<=20;n++){const denom=C(25,n),simple=C(n,15),p15=simple/C(25,15),probs={};for(let h=11;h<=15;h++)probs[h]=C(15,h)*C(10,n-h)/denom;rows.push({n,simple,p15,probs})}$('#prob-table').innerHTML='<table><thead><tr><th>Dezenas</th><th>Equiv. jogos 15</th><th>15 pontos</th><th>1 em</th><th>14 pontos</th><th>13 pontos</th><th>12 pontos</th><th>11 pontos</th></tr></thead><tbody>'+rows.map(r=>'<tr><td><b>'+r.n+'</b></td><td>'+fmt(r.simple)+'</td><td>'+(r.p15*100).toFixed(6)+'%</td><td>'+fmt(Math.round(1/r.p15))+'</td><td>'+(r.probs[14]*100).toFixed(4)+'%</td><td>'+(r.probs[13]*100).toFixed(4)+'%</td><td>'+(r.probs[12]*100).toFixed(3)+'%</td><td>'+(r.probs[11]*100).toFixed(3)+'%</td></tr>').join('')+'</tbody></table>'}
 
-async function init(){const r=await fetch('/data/lotofacil-base.json?ci='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({concurso:Number(x.concurso),data:x.data||'',dezenas:[...x.dezenas].map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);$('#base-status').textContent=fmt(H.length)+' concursos · último #'+H.at(-1).concurso;
+async function init(){const r=await fetch('/data/lotofacil-base.json?ci='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({concurso:Number(x.concurso),data:x.data||'',dezenas:[...x.dezenas].map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);EMOJI_CTX=window.LFIndicatorEmojis?.context(H)||null;$('#base-status').textContent=fmt(H.length)+' concursos · último #'+H.at(-1).concurso;
  $('#rx-contest').innerHTML=H.slice().reverse().map(d=>'<option value="'+d.concurso+'">#'+d.concurso+' · '+d.data+'</option>').join('');$('#dna-start').value=Math.max(H[0].concurso,H.at(-1).concurso-199);$('#dna-end').value=H.at(-1).concurso;$('#export-note').innerHTML='Base atual: <b>'+fmt(H.length)+' concursos</b> · #'+H[0].concurso+' até #'+H.at(-1).concurso+'.';
  renderRaioX();renderDNA();renderBehavior();renderFinals();renderInd();renderProb();const hash=location.hash.replace('#','');if($$('.tab').some(b=>b.dataset.tab===hash))setTab(hash)}
 $('#rx-run').onclick=renderRaioX;$('#dna-run').onclick=renderDNA;$('#beh-run').onclick=renderBehavior;$('#beh-filter').onchange=renderBehavior;$('#beh-selected').onchange=e=>{selectedBehavior=Number(e.target.value)||1;renderBehavior();};$('#cl-run').onclick=renderClosure;$('#pf-run').onclick=runPortfolio;$$('[data-export]').forEach(b=>b.onclick=()=>exportBase(b.dataset.export));init().catch(e=>{$('#base-status').textContent='Falha ao carregar base';console.error(e)});
