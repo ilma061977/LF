@@ -91,7 +91,7 @@ function maxRun(g){let m=1,c=1;for(let i=1;i<g.length;i++){c=g[i]===g[i-1]+1?c+1
 function metrics(g){const s=new Set(g),rows=Array(5).fill(0),cols=Array(5).fill(0);g.forEach(n=>{rows[Math.floor((n-1)/5)]++;cols[(n-1)%5]++});const prev=H.at(-1)?.dezenas||[];return{sum:sum(g),odds:g.filter(n=>n%2).length,primes:g.filter(n=>P.has(n)).length,fib:g.filter(n=>FIB.has(n)).length,border:g.filter(n=>{const r=Math.floor((n-1)/5),c=(n-1)%5;return r===0||r===4||c===0||c===4}).length,center:g.filter(n=>[7,8,9,12,13,14,17,18,19].includes(n)).length,run:maxRun(g),colors:new Set(g.map(n=>n%10)).size,repeated:hits(g,prev),lineMax:Math.max(...rows),colMax:Math.max(...cols),m3:g.filter(n=>n%3===0).length,m5:g.filter(n=>n%5===0).length}}
 const FILTER_METRICS={odds:'Ímpares',primes:'Primos',fib:'Fibonacci',sum:'Soma',border:'Moldura',center:'Miolo',run:'Sequência máxima',colors:'Cores',repeated:'Repetidas anterior',lineMax:'Máx. linha',colMax:'Máx. coluna',m3:'Múltiplos de 3',m5:'Múltiplos de 5'};
 function filterPass(g,f){const v=metrics(g)[f.metric];return v>=Number(f.min)&&v<=Number(f.max)}
-function applyCustom(games){return games.filter(g=>state.filters.every(f=>filterPass(g,f)))}
+function applyCustom(games){const blocking=state.filters.filter(f=>f.action!=='avisar');return games.filter(g=>blocking.every(f=>filterPass(g,f)))}
 function setTab(n){$$('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===n));$$('.page').forEach(x=>x.classList.toggle('active',x.dataset.page===n));history.replaceState(null,'','#'+n)}
 $$('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 
