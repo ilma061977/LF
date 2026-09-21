@@ -79,7 +79,7 @@
     {title:'Universo 15–21D',section:'PRO 21–29',url:'/evolucoes-21-29.html#universe',keywords:'combinações 15 16 17 18 19 20 21 universo 25'},
     {title:'Evoluções 30–37',section:'PRO 30–37',url:'/evolucoes-30-37.html',keywords:'estatística gerador 1 em x terminações comparar dezenas vizinhos quintis carteira esperado'},
     {title:'Estatística → Gerador',section:'PRO 30–37',url:'/evolucoes-30-37.html#generator',keywords:'perfil regra usar no gerador busca pro'},
-    {title:'Tabela Universal 1 em X',section:'PRO 30–37',url:'/evolucoes-30-37.html#patterns',keywords:'ocorrências percentual atraso maior atraso ultima esperado oe'},
+    {title:'Grupos Premiados / Virgens',section:'PRO 30–37',url:'/evolucoes-30-37.html#virgins',keywords:'grupos 15 dezenas virgens premiados nunca saíram histórico completo 15 pontos'},
     {title:'Terminações das dezenas',section:'PRO 30–37',url:'/evolucoes-30-37.html#endings',keywords:'final 0 1 2 3 4 5 6 7 8 9 terminações'},
     {title:'Comparar duas dezenas',section:'PRO 30–37',url:'/evolucoes-30-37.html#paircompare',keywords:'duas dezenas juntas separadas ano a ano oe'},
     {title:'Vizinhos consecutivos',section:'PRO 30–37',url:'/evolucoes-30-37.html#neighbors',keywords:'vizinhos adjacentes sequencia esperado combinatório'},
