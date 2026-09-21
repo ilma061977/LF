@@ -218,6 +218,14 @@
     return {history,analysisHistory,window:requested,latest,previous,prev,hash,history14,rank,hot,cold,delay,delayed,persistentAbsent,floating,cycleMissing,flags,linePatterns,columnPatterns,repeatedRange,sumRange,primeRange,oddRange,digitRange,fibRange,m3Range,m5Range,radialRange,terminalBandRange,neighborRange,decadeRanges,persistentAbsentRange,floatingRange,avgDelayRange,endingDeltaRange,opposedRange,cycleRange,calibrated:analysisHistory.length>=20};
   }
 
+  function lineColumnRepeatRule(game,latest=null){
+    const g=normalize(game),prev=normalize(latest?.dezenas||latest);
+    if(!g||!prev)return{blocked:false,passed:true,sameLines:false,sameCols:false,currentLines:[],currentCols:[],previousLines:[],previousCols:[]};
+    const currentLines=counts(g,row),currentCols=counts(g,col),previousLines=counts(prev,row),previousCols=counts(prev,col);
+    const sameLines=currentLines.every((v,i)=>v===previousLines[i]),sameCols=currentCols.every((v,i)=>v===previousCols[i]),blocked=sameLines&&sameCols;
+    return{blocked,passed:!blocked,sameLines,sameCols,currentLines,currentCols,previousLines,previousCols};
+  }
+
   function inspect(game,ctx=buildContext()){
     const g=normalize(game);if(!g)return{valid:false,approved:false,filters:[],failed:[],warnings:[],metrics:{}};
     const set=new Set(g),lines=counts(g,row),cols=counts(g,col),qs=QUADRANTS.map(q=>countSet(g,q)),borderSectors=BORDER_SECTORS.map(q=>countSet(g,q));
@@ -292,13 +300,13 @@
     add(50,true,'Cobertura calculada no módulo Fechamentos; esta posição não elimina isoladamente.');
     add(51,true,'Exportação/carteira operacional; esta posição não elimina isoladamente.');
 
-    const hardFailed=checks.filter(f=>(f.mode==='core'||MANDATORY_BLOCKS.has(f.id))&&!f.passed),warnings=checks.filter(f=>f.mode==='advisory'&&!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]),colorRule=mandatoryColorRule(g);
-    return {valid:true,approved:hardFailed.length===0&&!patternCooldown.blocked&&!colorRule.blocked,filters:checks,failed:hardFailed.map(f=>f.id),warnings:warnings.map(f=>f.id),patternCooldown,colorRule,metrics:{lines,cols,qs,borderSectors,center,border,run,gap,primes,odds,total,repeated,elite,couples,absentRecent,persistentAbsent,delayedCount,floatingCount,cycleCount,opposedBands,hotCount,coldCount,avgDelay,endingDelta,ds,fib,m3,m5,maxHistorical:historicalCeiling,radial,adjacency,colors:colorRule.distinct,colorCounts:colorRule.counts,centroid:cm},calibrated:ctx.calibrated};
+    const hardFailed=checks.filter(f=>(f.mode==='core'||MANDATORY_BLOCKS.has(f.id))&&!f.passed),warnings=checks.filter(f=>f.mode==='advisory'&&!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]),colorRule=mandatoryColorRule(g),lineColumnRepeat=lineColumnRepeatRule(g,ctx.latest);
+    return {valid:true,approved:hardFailed.length===0&&!patternCooldown.blocked&&!colorRule.blocked&&!lineColumnRepeat.blocked,filters:checks,failed:hardFailed.map(f=>f.id),warnings:warnings.map(f=>f.id),patternCooldown,colorRule,lineColumnRepeat,metrics:{lines,cols,qs,borderSectors,center,border,run,gap,primes,odds,total,repeated,elite,couples,absentRecent,persistentAbsent,delayedCount,floatingCount,cycleCount,opposedBands,hotCount,coldCount,avgDelay,endingDelta,ds,fib,m3,m5,maxHistorical:historicalCeiling,radial,adjacency,colors:colorRule.distinct,colorCounts:colorRule.counts,centroid:cm},calibrated:ctx.calibrated};
   }
   function histoSafe(x){return Number.isFinite(x)?x:0;}
 
   function policyAllows(report,policies={}){
-    if(report?.valid===false||report?.patternCooldown?.blocked||report?.colorRule?.blocked)return false;
+    if(report?.valid===false||report?.patternCooldown?.blocked||report?.colorRule?.blocked||report?.lineColumnRepeat?.blocked)return false;
     return report.filters.every(f=>{
       const policy=MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'));
       return policy!=='block'||f.passed;
@@ -308,7 +316,7 @@
   function generate(ctx,quantity=1,maxAttempts=300000,options={}){const target=Math.max(1,Math.min(20,Number(quantity)||1)),out=[],seen=new Set(),excluded=options.excluded||[],policies=options.policies||{};let tested=0;while(out.length<target&&tested<maxAttempts){const g=randomAllowedGame(excluded);if(!g)break;const k=keyOf(g);tested++;if(seen.has(k))continue;seen.add(k);const r=inspect(g,ctx);if(policyAllows(r,policies))out.push(g);}return{games:out,tested,complete:out.length===target};}
 
   function rangeCentral(value,range){if(!Number.isFinite(value)||!range)return 0;const mid=(range[0]+range[1])/2,half=Math.max(.5,(range[1]-range[0])/2);return Math.max(-1,1-Math.abs(value-mid)/half);}
-  function candidateScoreFromReport(r,ctx,policies={}){if(!r?.valid||r.patternCooldown?.blocked||r.colorRule?.blocked)return-Infinity;const blocked=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='block'&&!f.passed).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='warn'&&!f.passed).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
+  function candidateScoreFromReport(r,ctx,policies={}){if(!r?.valid||r.patternCooldown?.blocked||r.colorRule?.blocked||r.lineColumnRepeat?.blocked)return-Infinity;const blocked=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='block'&&!f.passed).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='warn'&&!f.passed).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
   function candidateScore(game,ctx,policies={}){return candidateScoreFromReport(inspect(game,ctx),ctx,policies);}
   function nCk(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);}
   function unrank(pool,k,rank){const out=[];let start=0,r=Math.max(0,Math.floor(rank));for(let need=k;need>0;need--){for(let i=start;i<=pool.length-need;i++){const c=nCk(pool.length-i-1,need-1);if(r<c){out.push(pool[i]);start=i+1;break;}r-=c;}}return out;}
