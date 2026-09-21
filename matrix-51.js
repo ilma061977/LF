@@ -26,7 +26,7 @@
   ];
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
-  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.6.3';
+  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.6.4';
   const THRESHOLD_VERSION = 'LF-M51-2026.09.17-v3.6.3';
   const AUDIT_VERSION = 'LF-M51-AUDIT-3783-F28-F29-F36-v3.7.2';
   const AUDIT_BASE_THROUGH = 3783;
@@ -218,6 +218,13 @@
     return {history,analysisHistory,window:requested,latest,previous,prev,hash,history14,rank,hot,cold,delay,delayed,persistentAbsent,floating,cycleMissing,flags,linePatterns,columnPatterns,repeatedRange,sumRange,primeRange,oddRange,digitRange,fibRange,m3Range,m5Range,radialRange,terminalBandRange,neighborRange,decadeRanges,persistentAbsentRange,floatingRange,avgDelayRange,endingDeltaRange,opposedRange,cycleRange,calibrated:analysisHistory.length>=20};
   }
 
+  function lineRepeatRule(game,latest=null){
+    const g=normalize(game),prev=normalize(latest?.dezenas||latest);
+    if(!g||!prev)return{blocked:false,passed:true,currentLines:[],previousLines:[]};
+    const currentLines=counts(g,row),previousLines=counts(prev,row),blocked=currentLines.every((v,i)=>v===previousLines[i]);
+    return{blocked,passed:!blocked,currentLines,previousLines};
+  }
+
   function lineColumnRepeatRule(game,latest=null){
     const g=normalize(game),prev=normalize(latest?.dezenas||latest);
     if(!g||!prev)return{blocked:false,passed:true,sameLines:false,sameCols:false,currentLines:[],currentCols:[],previousLines:[],previousCols:[]};
@@ -300,13 +307,13 @@
     add(50,true,'Cobertura calculada no módulo Fechamentos; esta posição não elimina isoladamente.');
     add(51,true,'Exportação/carteira operacional; esta posição não elimina isoladamente.');
 
-    const hardFailed=checks.filter(f=>(f.mode==='core'||MANDATORY_BLOCKS.has(f.id))&&!f.passed),warnings=checks.filter(f=>f.mode==='advisory'&&!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]),colorRule=mandatoryColorRule(g),lineColumnRepeat=lineColumnRepeatRule(g,ctx.latest);
-    return {valid:true,approved:hardFailed.length===0&&!patternCooldown.blocked&&!colorRule.blocked&&!lineColumnRepeat.blocked,filters:checks,failed:hardFailed.map(f=>f.id),warnings:warnings.map(f=>f.id),patternCooldown,colorRule,lineColumnRepeat,metrics:{lines,cols,qs,borderSectors,center,border,run,gap,primes,odds,total,repeated,elite,couples,absentRecent,persistentAbsent,delayedCount,floatingCount,cycleCount,opposedBands,hotCount,coldCount,avgDelay,endingDelta,ds,fib,m3,m5,maxHistorical:historicalCeiling,radial,adjacency,colors:colorRule.distinct,colorCounts:colorRule.counts,centroid:cm},calibrated:ctx.calibrated};
+    const hardFailed=checks.filter(f=>(f.mode==='core'||MANDATORY_BLOCKS.has(f.id))&&!f.passed),warnings=checks.filter(f=>f.mode==='advisory'&&!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]),colorRule=mandatoryColorRule(g),lineRepeat=lineRepeatRule(g,ctx.latest),lineColumnRepeat=lineColumnRepeatRule(g,ctx.latest);
+    return {valid:true,approved:hardFailed.length===0&&!patternCooldown.blocked&&!colorRule.blocked&&!lineRepeat.blocked&&!lineColumnRepeat.blocked,filters:checks,failed:hardFailed.map(f=>f.id),warnings:warnings.map(f=>f.id),patternCooldown,colorRule,lineRepeat,lineColumnRepeat,metrics:{lines,cols,qs,borderSectors,center,border,run,gap,primes,odds,total,repeated,elite,couples,absentRecent,persistentAbsent,delayedCount,floatingCount,cycleCount,opposedBands,hotCount,coldCount,avgDelay,endingDelta,ds,fib,m3,m5,maxHistorical:historicalCeiling,radial,adjacency,colors:colorRule.distinct,colorCounts:colorRule.counts,centroid:cm},calibrated:ctx.calibrated};
   }
   function histoSafe(x){return Number.isFinite(x)?x:0;}
 
   function policyAllows(report,policies={}){
-    if(report?.valid===false||report?.patternCooldown?.blocked||report?.colorRule?.blocked||report?.lineColumnRepeat?.blocked)return false;
+    if(report?.valid===false||report?.patternCooldown?.blocked||report?.colorRule?.blocked||report?.lineRepeat?.blocked||report?.lineColumnRepeat?.blocked)return false;
     return report.filters.every(f=>{
       const policy=MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'));
       return policy!=='block'||f.passed;
@@ -316,7 +323,7 @@
   function generate(ctx,quantity=1,maxAttempts=300000,options={}){const target=Math.max(1,Math.min(20,Number(quantity)||1)),out=[],seen=new Set(),excluded=options.excluded||[],policies=options.policies||{};let tested=0;while(out.length<target&&tested<maxAttempts){const g=randomAllowedGame(excluded);if(!g)break;const k=keyOf(g);tested++;if(seen.has(k))continue;seen.add(k);const r=inspect(g,ctx);if(policyAllows(r,policies))out.push(g);}return{games:out,tested,complete:out.length===target};}
 
   function rangeCentral(value,range){if(!Number.isFinite(value)||!range)return 0;const mid=(range[0]+range[1])/2,half=Math.max(.5,(range[1]-range[0])/2);return Math.max(-1,1-Math.abs(value-mid)/half);}
-  function candidateScoreFromReport(r,ctx,policies={}){if(!r?.valid||r.patternCooldown?.blocked||r.colorRule?.blocked||r.lineColumnRepeat?.blocked)return-Infinity;const blocked=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='block'&&!f.passed).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='warn'&&!f.passed).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
+  function candidateScoreFromReport(r,ctx,policies={}){if(!r?.valid||r.patternCooldown?.blocked||r.colorRule?.blocked||r.lineRepeat?.blocked||r.lineColumnRepeat?.blocked)return-Infinity;const blocked=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='block'&&!f.passed).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>(MANDATORY_BLOCKS.has(f.id)?'block':(policies[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))==='warn'&&!f.passed).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
   function candidateScore(game,ctx,policies={}){return candidateScoreFromReport(inspect(game,ctx),ctx,policies);}
   function nCk(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);}
   function unrank(pool,k,rank){const out=[];let start=0,r=Math.max(0,Math.floor(rank));for(let need=k;need>0;need--){for(let i=start;i<=pool.length-need;i++){const c=nCk(pool.length-i-1,need-1);if(r<c){out.push(pool[i]);start=i+1;break;}r-=c;}}return out;}
