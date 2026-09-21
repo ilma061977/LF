@@ -74,6 +74,7 @@
 </section>
 </main></div>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="/ball-colors.js?v=official-colors-20260921"></script>
 <script src="/matrix-51.js"></script>
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)], ALL=Array.from({length:25},(_,i)=>i+1), P=new Set([2,3,5,7,11,13,17,19,23]), FIB=new Set([1,2,3,5,8,13,21]);
@@ -84,7 +85,7 @@ function parseLines(v,min=15,max=20){return String(v||'').split(/\r?\n/).map(par
 function C(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r)}
 function combos(arr,k,limit=Infinity){const out=[];function rec(s,p){if(out.length>=limit)return;if(p.length===k){out.push([...p]);return}for(let i=s;i<=arr.length-(k-p.length);i++){p.push(arr[i]);rec(i+1,p);p.pop();if(out.length>=limit)return}}rec(0,[]);return out}
 function mask(g){let m=0;for(const n of g)m|=(1<<(n-1));return m>>>0}function pop(x){x=x>>>0;x=x-((x>>>1)&0x55555555);x=(x&0x33333333)+((x>>>2)&0x33333333);return (((x+(x>>>4))&0x0F0F0F0F)*0x01010101)>>>24}function hits(a,b){return pop(mask(a)&mask(b))}
-function balls(g){return '<div class="balls">'+g.map(n=>'<span class="ball">'+pad(n)+'</span>').join('')+'</div>'}
+function balls(g){return '<div class="balls">'+g.map(n=>'<span class="ball '+(window.LFOfficialBalls?.className(n)||('c'+(n%10)))+'" title="'+(window.LFOfficialBalls?.title(n)||pad(n))+'">'+pad(n)+'</span>').join('')+'</div>'}
 function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
 function sum(a){return a.reduce((s,v)=>s+v,0)}function mean(a){return a.length?sum(a)/a.length:0}
 function maxRun(g){let m=1,c=1;for(let i=1;i<g.length;i++){c=g[i]===g[i-1]+1?c+1:1;m=Math.max(m,c)}return m}
