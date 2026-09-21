@@ -192,7 +192,7 @@
   }
   function queueCloudSync(){clearTimeout(state.cloudTimer);state.cloudTimer=setTimeout(()=>syncCloud(true),900);}
   function policyApproved(report){return M.policyAllows(report,state.filterPolicies);}
-  function policyFailures(report){const out=report.filters.filter(f=>(isMandatoryBlock(f.id)||state.filterPolicies[f.id]==='block')&&!f.passed);if(report?.patternCooldown?.blocked)out.push({id:'PADRAO',name:'Carência de padrão exato'});if(report?.colorRule?.blocked)out.push({id:'CORES',name:'Mínimo obrigatório de 8 cores'});if(report?.lineColumnRepeat?.blocked)out.push({id:'L×C',name:'Linha × Coluna igual ao concurso anterior'});return out;}
+  function policyFailures(report){const out=report.filters.filter(f=>(isMandatoryBlock(f.id)||state.filterPolicies[f.id]==='block')&&!f.passed);if(report?.patternCooldown?.blocked)out.push({id:'PADRAO',name:'Carência de padrão exato'});if(report?.colorRule?.blocked)out.push({id:'CORES',name:'Mínimo obrigatório de 8 cores'});if(report?.lineRepeat?.blocked)out.push({id:'LINHA',name:'Distribuição de linhas igual ao concurso anterior'});if(report?.lineColumnRepeat?.blocked)out.push({id:'L×C',name:'Linha × Coluna igual ao concurso anterior'});return out;}
   function policyWarnings(report){return report.filters.filter(f=>!isMandatoryBlock(f.id)&&state.filterPolicies[f.id]==='warn'&&!f.passed);}
   function historicalSimilarity(g){return M.maxHistoricalHits(g,state.history);}
   function fullHistoryStatus(){if(!state.history.length)return{complete:false,missing:0};const sorted=[...state.history].sort((a,b)=>a.concurso-b.concurso),min=sorted[0].concurso,max=sorted.at(-1).concurso;const seen=new Set(sorted.map(x=>x.concurso));let missing=0;for(let c=min;c<=max;c++)if(!seen.has(c))missing++;return{complete:min<=1&&missing===0,missing,min,max,total:sorted.length};}
@@ -259,7 +259,7 @@
     localStorage.setItem(DECISION_TRACKER_KEY,JSON.stringify(rows.slice(-5000)));
   }
   function applyDecision(g){state.decision=g||[];state.selection=new Set(g||[]);state.labBase=g?[...g]:[];state.labLocked.clear();state.matrixReport=null;recordDecisionTracker(state.decision);renderDecision();renderAnalysis();renderLab();renderStatsDecision();renderAdvancedAnalytics();renderCycleClosure();renderCheckerAuto();renderLineCols();}
-  function decisionSearchModeText(){const block=M.FILTERS.filter(f=>state.filterPolicies[f.id]==='block').length,warn=M.FILTERS.filter(f=>state.filterPolicies[f.id]==='warn').length,q=indicatorQuotaSpec().targets,pro=getProProfileRules();return `Busca exaustiva integral · ${decisionSelectionModeLabel()} · L×C anterior bloqueado · 51 filtros · metas 🔥${q.hot}/❄️${q.cold}/♻️${q.latest}/⏳${q.delayed}/🔄${q.three} · Perfil PRO ${pro.length?pro.length+' regra(s)':'sem regras'} · ${block} bloqueadores · ${warn} avisos · F28 + F29 + F36 obrigatórios`;}
+  function decisionSearchModeText(){const block=M.FILTERS.filter(f=>state.filterPolicies[f.id]==='block').length,warn=M.FILTERS.filter(f=>state.filterPolicies[f.id]==='warn').length,q=indicatorQuotaSpec().targets,pro=getProProfileRules();return `Busca exaustiva integral · ${decisionSelectionModeLabel()} · Linha anterior bloqueada · L×C anterior bloqueado · 51 filtros · metas 🔥${q.hot}/❄️${q.cold}/♻️${q.latest}/⏳${q.delayed}/🔄${q.three} · Perfil PRO ${pro.length?pro.length+' regra(s)':'sem regras'} · ${block} bloqueadores · ${warn} avisos · F28 + F29 + F36 obrigatórios`;}
   function formatDuration(sec){if(!Number.isFinite(sec)||sec<0)return '—';sec=Math.round(sec);const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),ss=sec%60;return h?`${h}h ${String(m).padStart(2,'0')}m`:`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
   function setDecisionSearchPanel(meta={}){
     const excluded=[...blockedNumbers()],available=25-excluded.length,total=Number(meta.total??(available>=15?M.nCk(available,15):0)),tested=Number(meta.tested||0),approved=Number(meta.approvedCount||0),eligible=Number(meta.eligibleCount??meta.found??0),pct=total?Math.min(100,Math.floor((tested/total)*10000)/100):0,status=meta.status||'idle';
@@ -343,6 +343,7 @@
           ['Colunas',Array.isArray(m.cols)?m.cols.join('-'):'—'],
           ['Quadrantes',Array.isArray(m.qs)?m.qs.join('-'):'—'],
           ['Similaridade histórica',`${sim.max??m.maxHistorical??0}/15`],
+          ['Linha anterior',rep?.lineRepeat?.blocked?'BLOQUEADO · repetiu a distribuição anterior':'OK · distribuição diferente'],
           ['Linha × Coluna anterior',rep?.lineColumnRepeat?.blocked?'BLOQUEADO · repetiu o desenho anterior':'OK · desenho diferente'],
           ['Atraso médio',Number.isFinite(m.avgDelay)?m.avgDelay.toFixed(2):'—'],
           ['Filtros ativos aprovados',`${passed.length}/${active.length}`],
