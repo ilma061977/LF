@@ -104,6 +104,7 @@ table{width:100%;border-collapse:collapse}.table{overflow:auto;border:1px solid 
 <div class="panel"><div id="prob-table" class="table prob"></div></div>
 </section>
 </main></div></div>
+<script src="/ball-colors.js?v=official-colors-20260921"></script>
 <script src="/matrix-51.js"></script>
 <script>
 const ALL=Array.from({length:25},(_,i)=>i+1), PRIMES=new Set([2,3,5,7,11,13,17,19,23]), FIB=new Set([1,2,3,5,8,13,21]);
@@ -129,7 +130,7 @@ function overlap(a,b){const s=new Set(b);return a.filter(x=>s.has(x)).length}
 function sum(a){return a.reduce((s,v)=>s+v,0)}
 function maxRun(g){let m=1,c=1;for(let i=1;i<g.length;i++){if(g[i]===g[i-1]+1)c++;else c=1;m=Math.max(m,c)}return m}
 function colorCount(g){return new Set(g.map(n=>n%10)).size}
-function balls(g){return '<div class="balls">'+g.map(n=>'<span class="ball">'+pad(n)+'</span>').join('')+'</div>'}
+function balls(g){return '<div class="balls">'+g.map(n=>'<span class="ball '+(window.LFOfficialBalls?.className(n)||('c'+(n%10)))+'" title="'+(window.LFOfficialBalls?.title(n)||pad(n))+'">'+pad(n)+'</span>').join('')+'</div>'}
 function combinations(arr,k){const out=[];function rec(start,p){if(p.length===k){out.push([...p]);return}for(let i=start;i<=arr.length-(k-p.length);i++){p.push(arr[i]);rec(i+1,p);p.pop()}}rec(0,[]);return out}
 function subsetKeys(g,k){return combinations(g,k).map(x=>x.join('-'))}
 function cycleState(rows){let seen=new Set(),cycle=1;for(const d of rows){for(const n of d.dezenas)seen.add(n);if(seen.size===25){cycle++;seen=new Set()}}return{cycle,seen}}
@@ -179,7 +180,7 @@ function renderBehaviorDetail(n,rows){
  ].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div>'+
  '<div class="grid2"><div class="metric"><span>Última ocorrência</span><b>#'+s.last+' · '+s.lastDate+'</b><p>Últimos concursos com a dezena: '+last10+'</p></div><div class="metric"><span>Ciclo atual</span><b>Ciclo '+cycle.cycle+' · '+s.cycleStatus+'</b><p>'+cycle.seen.size+'/25 dezenas já apareceram no ciclo corrente.</p></div></div>'+
  '<h3>Presença nos últimos 30 concursos</h3><div class="presence-strip">'+behaviorStrip(n)+'</div>'+
- '<h3>5 dezenas que mais acompanharam '+pad(n)+' na janela</h3><div class="balls">'+s.companion.map(x=>'<span class="ball" title="'+x[1]+' coincidências">'+pad(x[0])+'</span>').join('')+'</div>'+
+ '<h3>5 dezenas que mais acompanharam '+pad(n)+' na janela</h3><div class="balls">'+s.companion.map(x=>'<span class="ball '+(window.LFOfficialBalls?.className(x[0])||('c'+(x[0]%10)))+'" title="'+(window.LFOfficialBalls?.title(x[0])||pad(x[0]))+' · '+x[1]+' coincidências">'+pad(x[0])+'</span>').join('')+'</div>'+
  '<div class="note">Tendência compara a taxa dos <b>20 concursos mais recentes</b> com os <b>20 imediatamente anteriores</b>. É uma descrição histórica, não uma previsão.</div></div>';
 }
 function renderBehavior(){
