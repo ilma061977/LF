@@ -563,6 +563,13 @@
   $$('.filter-chip').forEach(b=>b.onclick=()=>{state.matrixFilter=b.dataset.filterMode;$$('.filter-chip').forEach(x=>x.classList.toggle('active',x===b));renderMatrix();});
   $('#run-backtest').onclick=runBacktest;$('#cancel-backtest').onclick=()=>{if(state.workerTask==='backtest'){cancelWorker();$('#backtest-results').className='backtest-results empty';$('#backtest-results').textContent='Backtest cancelado.';}};$$('[data-lab-swap]').forEach(b=>b.onclick=()=>runLabSwap(Number(b.dataset.labSwap)));
   $('#run-closure').onclick=runClosure;$('#run-compare').onclick=runCompare;$('#run-checker').onclick=runChecker;
+  $('#cycle-filter')?.addEventListener('input',()=>{cycleHistoryPage=0;renderCycleHistoryTable();});
+  $('#cycle-duration-filter')?.addEventListener('change',()=>{cycleHistoryPage=0;renderCycleHistoryTable();});
+  $('#cycle-page-size')?.addEventListener('change',()=>{cycleHistoryPage=0;renderCycleHistoryTable();});
+  $('#cycle-prev')?.addEventListener('click',()=>{if(cycleHistoryPage>0){cycleHistoryPage--;renderCycleHistoryTable();}});
+  $('#cycle-next')?.addEventListener('click',()=>{cycleHistoryPage++;renderCycleHistoryTable();});
+  $('#cycle-clear-filters')?.addEventListener('click',()=>{if($('#cycle-filter'))$('#cycle-filter').value='';if($('#cycle-duration-filter'))$('#cycle-duration-filter').value='all';cycleHistoryPage=0;renderCycleHistoryTable();});
+  $('#cycle-export-csv')?.addEventListener('click',exportCycleHistoryCSV);
   $('#save-decision').onclick=()=>state.decision.length&&saveGames([state.decision]);$('#export-my-games').onclick=()=>exportText(state.savedGames.map(x=>x.game),'LF-Inteligente-Meus-Jogos.txt');
   $('#import-my-games').onclick=importMyGames;$('#check-my-games').onclick=checkMyGames;$('#sync-cloud').onclick=()=>syncCloud(true);$('#copy-cloud-key').onclick=async()=>{try{await navigator.clipboard.writeText(state.cloudId);toast('Chave da carteira copiada.');}catch{toast(`Chave: ${state.cloudId}`);}};$('#restore-cloud').onclick=()=>{const id=$('#restore-cloud-key').value.trim();if(id.length<16)return toast('Chave de carteira inválida.');state.cloudId=id;localStorage.setItem('lfv3_cloud_id',id);$('#cloud-key').textContent=`${id.slice(0,8)}…${id.slice(-4)}`;syncCloud(false);};
   $('#add-group').onclick=()=>{const name=$('#group-name').value.trim()||`Grupo ${state.groups.length+1}`,numbers=parseNumbers($('#group-numbers').value);if(numbers.length<2)return toast('Informe pelo menos 2 dezenas.');state.groups.push({name,numbers});savePrefs();$('#group-name').value='';$('#group-numbers').value='';renderGroups();};
