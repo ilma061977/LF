@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0d10">
+<title>Evoluções 30–37 · LF Inteligente 2026</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#64748b;--line:#e2e8f0;--dark:#0b0d10;--blue:#2563eb;--green:#15803d;--amber:#b45309;--red:#b91c1c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}
+.top{position:sticky;top:0;z-index:30;display:flex;gap:10px;align-items:center;padding:12px 16px;background:var(--dark);color:#fff}.mark{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#fff;color:#111;font-weight:950}.top strong{font-size:15px}.top small{display:block;color:#94a3b8}.top .spacer{flex:1}.top a{color:#fff;text-decoration:none;border:1px solid #334155;border-radius:9px;padding:8px 10px}
+.layout{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:calc(100vh - 62px)}.nav{position:sticky;top:62px;height:calc(100vh - 62px);overflow:auto;background:#111419;padding:12px 9px}.nav h3{font-size:9px;letter-spacing:.12em;color:#64748b;margin:9px}.tab{width:100%;display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center;border:0;background:transparent;color:#cbd5e1;padding:10px;border-radius:9px;text-align:left;cursor:pointer}.tab:hover,.tab.active{background:#22262d;color:#fff}.tab b{font-size:11px}
+.main{padding:22px;max-width:1780px}.hero{padding:24px;border-radius:18px;background:linear-gradient(135deg,#0b0d10,#172033);color:#fff;margin-bottom:12px}.hero span{font-size:9px;letter-spacing:.14em;color:#93c5fd;font-weight:900}.hero h1{font-size:31px;margin:5px 0}.hero p{color:#cbd5e1;max-width:1120px}.page{display:none}.page.active{display:block}.head{margin:4px 0 13px}.head h2{margin:0;font-size:24px}.head p{margin:4px 0;color:var(--muted)}
+.periodbar{position:sticky;top:62px;z-index:20;background:#eef2ff;border:1px solid #c7d2fe;border-radius:13px;padding:10px 12px;margin-bottom:14px;display:flex;gap:8px;align-items:end;flex-wrap:wrap}.periodbar label,.controls label{display:grid;gap:4px;font-size:10px;font-weight:850;color:#475569}.periodbar input,.controls input,.controls select,.controls textarea{border:1px solid #cbd5e1;border-radius:8px;padding:8px 9px;background:#fff}.controls textarea{min-width:360px;min-height:66px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:13px;box-shadow:0 5px 18px rgba(15,23,42,.04)}.controls{display:flex;gap:9px;align-items:end;flex-wrap:wrap}.btn{border:0;border-radius:9px;padding:9px 13px;background:#111827;color:#fff;font-weight:850;cursor:pointer}.btn.blue{background:var(--blue)}.btn.green{background:var(--green)}.btn.ghost{background:#eef2ff;color:#1e3a8a}.btn.red{background:var(--red)}.btn:disabled{opacity:.45}
+.note{padding:11px 13px;border-radius:10px;background:#eff6ff;border-left:4px solid #2563eb;color:#1e3a8a;margin:10px 0}.note.warn{background:#fff7ed;border-color:#d97706;color:#92400e}.note.good{background:#ecfdf5;border-color:#16a34a;color:#166534}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:10px 0}.kpi{border:1px solid var(--line);border-radius:11px;padding:11px;background:#f8fafc}.kpi span{display:block;color:#64748b;font-size:9px;text-transform:uppercase;font-weight:900}.kpi b{display:block;margin-top:3px;font-size:18px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.table{overflow:auto;border:1px solid var(--line);border-radius:10px;max-height:70vh}table{width:100%;border-collapse:collapse}th{position:sticky;top:0;background:#111827;color:#fff;font-size:9px;text-align:left;padding:8px;white-space:nowrap}td{padding:8px;border-bottom:1px solid #eef2f7;white-space:nowrap;font-size:11px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:9px;font-weight:850}.progress{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}.progress i{display:block;height:100%;background:#2563eb;width:0}
+.qheat{display:grid;grid-template-columns:repeat(5,minmax(74px,1fr));gap:9px;max-width:720px}.qcell{border:2px solid transparent;border-radius:13px;padding:12px;text-align:center;background:#fff}.qcell b{font-size:19px}.qcell small{display:block}.q1{background:#fee2e2;border-color:#ef4444}.q2{background:#ffedd5;border-color:#f97316}.q3{background:#fef3c7;border-color:#eab308}.q4{background:#dbeafe;border-color:#3b82f6}.q5{background:#e0e7ff;border-color:#6366f1}
+.rule{display:grid;grid-template-columns:1.2fr 100px 100px auto;gap:8px;align-items:end;padding:9px 0;border-bottom:1px solid #eef2f7}.muted{color:var(--muted)}.status-ok{color:#15803d;font-weight:900}.status-warn{color:#b45309;font-weight:900}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.nav{position:static;height:auto;display:flex;overflow:auto}.nav h3{display:none}.tab{min-width:220px}.grid2,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.main{padding:14px}.periodbar{top:62px}}
+@media(max-width:600px){.kpis{grid-template-columns:1fr}.controls textarea{min-width:min(86vw,360px)}.qheat{grid-template-columns:repeat(5,1fr)}.rule{grid-template-columns:1fr 1fr}.top a:nth-last-child(n+3){display:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="mark">LF</div><div><strong>Evoluções 30–37</strong><small>integração estatística → ação</small></div><div class="spacer"></div><a href="/">App principal</a><a href="/estatisticas-pro.html">PRO 1–20</a><a href="/evolucoes-21-29.html">PRO 21–29</a></header>
+<div class="layout">
+<nav class="nav"><h3>EVOLUÇÕES 30–37</h3>
+<button class="tab active" data-tab="generator">🔗 <b>30. Estatística → Gerador</b></button>
+<button class="tab" data-tab="patterns">📋 <b>31. Tabela Universal “1 em X”</b></button>
+<button class="tab" data-tab="endings">0️⃣ <b>32. Terminações</b></button>
+<button class="tab" data-tab="paircompare">↔️ <b>33. Comparar 2 dezenas</b></button>
+<button class="tab" data-tab="neighbors">🔗 <b>34. Vizinhos + esperado</b></button>
+<button class="tab" data-tab="quintiles">🌡 <b>35. Heatmap por quintis</b></button>
+<button class="tab" data-tab="portfolio">💼 <b>36. Carteira PRO</b></button>
+<button class="tab" data-tab="expected">📐 <b>37. O×E universal</b></button>
+</nav>
+<main class="main">
+<div class="hero"><span>LF INTELIGENTE · PRO 30–37</span><h1>Da estatística para a decisão operacional</h1><p>Esta área acrescenta somente as lacunas novas solicitadas. Não recria frequência, atraso, ciclos, duplas/trincas, ordem real, heatmap básico ou quadrantes. O Gerador PRO fica separado do NOVO INDICADO oficial.</p></div>
+<div class="periodbar"><label>Concurso inicial<input id="from" type="number"></label><label>Concurso final<input id="to" type="number"></label><button class="btn blue" id="apply">Aplicar</button><button class="btn ghost" id="last100">Últimos 100</button><button class="btn ghost" id="all">Todos</button><b id="range-label"></b></div>
+
+<section class="page active" data-page="generator"><div class="head"><h2>30. 🔗 Estatística → Gerador Inteligente</h2><p>Monte um perfil a partir das tabelas e execute uma busca separada usando Matriz 51 + suas restrições estatísticas.</p></div>
+<div class="grid2"><div class="panel"><h3>Perfil de geração</h3><div class="controls"><label>Métrica<select id="rule-metric"><option value="sum">Soma</option><option value="odd">Ímpares</option><option value="prime">Primos</option><option value="fib">Fibonacci</option><option value="m3">Múltiplos de 3</option><option value="border">Moldura</option><option value="center">Miolo</option><option value="repeat">Repetidas</option><option value="run">Maior sequência</option></select></label><label>Mín.<input id="rule-min" type="number"></label><label>Máx.<input id="rule-max" type="number"></label><button class="btn blue" id="rule-add">Adicionar regra</button></div><div id="rules"></div></div>
+<div class="panel"><h3>Busca PRO</h3><div class="note">A busca usa a Matriz 51 e os bloqueios configurados no app, mas <b>não altera o NOVO INDICADO</b>.</div><button class="btn green" id="pro-generate">Gerar com perfil</button><button class="btn ghost" id="rules-clear">Limpar perfil</button><div id="gen-status" class="note">Aguardando.</div><div class="progress"><i id="gen-bar"></i></div><div id="gen-out"></div></div></div></section>
+
+<section class="page" data-page="patterns"><div class="head"><h2>31. 📋 Tabela Universal de Padrões</h2><p>Ocorrências, %, “1 em X”, atraso atual, maior atraso, última ocorrência, esperado matemático, O/E e botão para levar o valor ao Gerador PRO.</p></div>
+<div class="panel"><div class="controls"><label>Métrica<select id="pat-metric"><option value="odd">Ímpares</option><option value="sum">Soma</option><option value="repeat">Repetidas</option><option value="prime">Primos</option><option value="fib">Fibonacci</option><option value="m3">Múltiplos de 3</option><option value="border">Moldura</option><option value="center">Miolo</option><option value="run">Maior sequência</option></select></label><button class="btn blue" id="pat-run">Atualizar</button></div></div><div id="pat-out"></div></section>
+
+<section class="page" data-page="endings"><div class="head"><h2>32. 0️⃣ Terminações das dezenas</h2><p>Final 0–9 das dezenas sorteadas, com média observada, expectativa matemática, desvio e tendências 10/20/50/100.</p></div><div class="panel"><button class="btn blue" id="end-run">Calcular terminações</button></div><div id="end-out"></div></section>
+
+<section class="page" data-page="paircompare"><div class="head"><h2>33. ↔️ Comparador de duas dezenas</h2><p>Frequência individual, juntas, separadas, O/E, atraso conjunto e evolução ano a ano.</p></div><div class="panel"><div class="controls"><label>Dezena A<select id="pa"></select></label><label>Dezena B<select id="pb"></select></label><button class="btn blue" id="pair-run">Comparar</button></div></div><div id="pair-out"></div></section>
+
+<section class="page" data-page="neighbors"><div class="head"><h2>34. 🔗 Vizinhos consecutivos</h2><p>Conta pares adjacentes 01–02, 02–03…24–25 presentes no mesmo sorteio e compara a distribuição com o esperado exato no universo C(25,15).</p></div><div class="panel"><button class="btn blue" id="nei-run">Calcular vizinhos</button></div><div id="nei-out"></div></section>
+
+<section class="page" data-page="quintiles"><div class="head"><h2>35. 🌡 Heatmap por quintis</h2><p>Classifica as 25 dezenas em cinco grupos relativos de frequência. É diferente do heatmap básico: aqui sempre existem 5 dezenas por quintil.</p></div>
+<div class="panel"><div class="controls"><label>Janela calendário<select id="q-window"><option value="3">3 meses</option><option value="6">6 meses</option><option value="12" selected>12 meses</option><option value="24">24 meses</option></select></label><button class="btn blue" id="q-run">Atualizar quintis</button></div></div><div id="q-out"></div></section>
+
+<section class="page" data-page="portfolio"><div class="head"><h2>36. 💼 Carteira PRO de apostas</h2><p>Registra concurso alvo, custo, jogo, pontos, prêmio, saldo e status. Pode importar “Meus Jogos” do app principal.</p></div>
+<div class="panel"><div class="controls"><label>Jogo<textarea id="pf-game">01 02 03 04 05 06 07 08 09 10 11 12 13 14 15</textarea></label><label>Concurso alvo<input id="pf-contest" type="number"></label><label>Custo R$<input id="pf-cost" type="number" min="0" step=".01" value="3.50"></label><button class="btn blue" id="pf-add">Adicionar</button><button class="btn ghost" id="pf-import">Importar Meus Jogos</button><button class="btn green" id="pf-refresh">Conferir carteira</button></div></div><div id="pf-out"></div></section>
+
+<section class="page" data-page="expected"><div class="head"><h2>37. 📐 Observado × Esperado universal</h2><p>Centraliza os desvios das principais métricas com expectativa combinatória definida.</p></div><div class="panel"><button class="btn blue" id="oe-run">Atualizar O×E</button></div><div id="oe-out"></div></section>
+</main></div>
+<script src="/matrix-51.js"></script>
+<script src="/ball-colors.js"></script>
+<script>
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],ALL=Array.from({length:25},(_,i)=>i+1),TOTAL=3268760;
+const PRIME=new Set([2,3,5,7,11,13,17,19,23]),FIB=new Set([1,2,3,5,8,13,21]),BORDER=new Set([1,2,3,4,5,6,10,11,15,16,20,21,22,23,24,25]),CENTER=new Set([7,8,9,12,13,14,17,18,19]);
+let H=[],FROM=1,TO=0,RULES=JSON.parse(localStorage.getItem('lfv3_pro_profile_rules')||'[]'),PORT=JSON.parse(localStorage.getItem('lfv3_bet_portfolio_pro')||'[]'),SUMDIST=null,RUNDIST=null,GENWORKER=null;
+const pad=n=>String(n).padStart(2,'0'),fmt=n=>Number(n||0).toLocaleString('pt-BR'),money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+function mean(a){return a.length?a.reduce((s,x)=>s+x,0)/a.length:0}
+function nCr(n,r){if(r<0||r>n)return 0;r=Math.min(r,n-r);let z=1;for(let i=1;i<=r;i++)z=z*(n-r+i)/i;return Math.round(z)}
+function parseNums(v){return[...new Set(String(v||'').match(/\d+/g)?.map(Number).filter(n=>n>=1&&n<=25)||[])].sort((a,b)=>a-b)}
+function table(h,rows){return '<div class="table"><table><thead><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'}
+function rows(){return H.filter(d=>d.concurso>=FROM&&d.concurso<=TO)}
+function parseDate(s){const m=String(s||'').match(/(\d{2})\/(\d{2})\/(\d{4})/);return m?new Date(Number(m[3]),Number(m[2])-1,Number(m[1])):null}
+function maxRun(g){let mx=0,c=0,p=-99;for(const n of g){c=n===p+1?c+1:1;mx=Math.max(mx,c);p=n}return mx}
+function metricValue(g,m,prev=null){if(m==='sum')return g.reduce((a,b)=>a+b,0);if(m==='odd')return g.filter(n=>n%2).length;if(m==='prime')return g.filter(n=>PRIME.has(n)).length;if(m==='fib')return g.filter(n=>FIB.has(n)).length;if(m==='m3')return g.filter(n=>n%3===0).length;if(m==='border')return g.filter(n=>BORDER.has(n)).length;if(m==='center')return g.filter(n=>CENTER.has(n)).length;if(m==='repeat'){const s=new Set(prev||[]);return g.filter(n=>s.has(n)).length}if(m==='run')return maxRun(g);return 0}
+function metricLabel(m){return{sum:'Soma',odd:'Ímpares',repeat:'Repetidas',prime:'Primos',fib:'Fibonacci',m3:'Múltiplos de 3',border:'Moldura',center:'Miolo',run:'Maior sequência'}[m]||m}
+function hyper(K){const m=new Map();for(let k=0;k<=15;k++){const v=nCr(K,k)*nCr(25-K,15-k);if(v)m.set(k,v)}return m}
+function sumDist(){if(SUMDIST)return SUMDIST;let dp=Array.from({length:16},()=>new Map());dp[0].set(0,1);for(let n=1;n<=25;n++)for(let k=Math.min(15,n);k>=1;k--)for(const [s,c] of dp[k-1])dp[k].set(s+n,(dp[k].get(s+n)||0)+c);SUMDIST=dp[15];return SUMDIST}
+function runDist(){if(RUNDIST)return RUNDIST;let dp=new Map([['0|0|0',1]]);for(let pos=1;pos<=25;pos++){const nd=new Map();for(const [key,ct] of dp){const [ch,cur,mx]=key.split('|').map(Number),k0=ch+'|0|'+mx;nd.set(k0,(nd.get(k0)||0)+ct);if(ch<15){const nc=cur+1,nm=Math.max(mx,nc),k1=(ch+1)+'|'+nc+'|'+nm;nd.set(k1,(nd.get(k1)||0)+ct)}}dp=nd}const o=new Map();for(const [key,ct] of dp){const [ch,,mx]=key.split('|').map(Number);if(ch===15)o.set(mx,(o.get(mx)||0)+ct)}RUNDIST=o;return o}
+function expectedDist(m){if(m==='sum')return sumDist();if(m==='odd')return hyper(13);if(m==='prime')return hyper(9);if(m==='fib')return hyper(7);if(m==='m3')return hyper(8);if(m==='border')return hyper(16);if(m==='center')return hyper(9);if(m==='repeat')return hyper(15);if(m==='run')return runDist();return new Map()}
+function setTab(n){$$('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===n));$$('.page').forEach(x=>x.classList.toggle('active',x.dataset.page===n));history.replaceState(null,'','#'+n);renderTab(n)}
+$$('.tab').forEach(x=>x.onclick=()=>setTab(x.dataset.tab));
+function applyRange(a,b){const min=H[0]?.concurso||1,max=H.at(-1)?.concurso||0;FROM=Math.max(min,Number(a)||min);TO=Math.min(max,Number(b)||max);if(FROM>TO)[FROM,TO]=[TO,FROM];$('#from').value=FROM;$('#to').value=TO;$('#range-label').textContent='#'+FROM+' → #'+TO+' · '+rows().length+' concursos';renderTab($('.tab.active')?.dataset.tab||'generator')}
+$('#apply').onclick=()=>applyRange($('#from').value,$('#to').value);$('#last100').onclick=()=>{const m=H.at(-1)?.concurso||0;applyRange(m-99,m)};$('#all').onclick=()=>applyRange(H[0]?.concurso,H.at(-1)?.concurso);
+
+function saveRules(){localStorage.setItem('lfv3_pro_profile_rules',JSON.stringify(RULES));renderRules()}
+function renderRules(){const el=$('#rules');if(!RULES.length){el.innerHTML='<div class="note">Nenhuma restrição adicional. Use a Tabela Universal ou adicione uma faixa manual.</div>';return}el.innerHTML=RULES.map((r,i)=>'<div class="rule"><b>'+metricLabel(r.metric)+'</b><input data-rmin="'+i+'" type="number" value="'+r.min+'"><input data-rmax="'+i+'" type="number" value="'+r.max+'"><button class="btn red" data-rdel="'+i+'">Excluir</button></div>').join('');$$('[data-rmin]').forEach(x=>x.onchange=()=>{RULES[+x.dataset.rmin].min=Number(x.value);saveRules()});$$('[data-rmax]').forEach(x=>x.onchange=()=>{RULES[+x.dataset.rmax].max=Number(x.value);saveRules()});$$('[data-rdel]').forEach(x=>x.onclick=()=>{RULES.splice(+x.dataset.rdel,1);saveRules()})}
+$('#rule-add').onclick=()=>{const metric=$('#rule-metric').value,min=Number($('#rule-min').value),max=Number($('#rule-max').value);if(!Number.isFinite(min)||!Number.isFinite(max))return alert('Informe mínimo e máximo.');RULES.push({metric,min:Math.min(min,max),max:Math.max(min,max)});saveRules()};
+$('#rules-clear').onclick=()=>{RULES=[];saveRules()};
+function addExactRule(metric,value){const ex=RULES.find(r=>r.metric===metric);if(ex){ex.min=value;ex.max=value}else RULES.push({metric,min:value,max:value});saveRules();setTab('generator')}
+
+function policies(){try{return JSON.parse(localStorage.getItem('lfv3_filter_policies')||'{}')}catch{return{}}}
+function renderGame(g){if(!g)return'';return '<div class="panel"><h3>Jogo PRO gerado</h3><div style="font-size:20px;font-weight:900;letter-spacing:.12em">'+g.map(pad).join(' ')+'</div><div class="note">Este jogo foi produzido pelo Gerador PRO separado; o NOVO INDICADO oficial permanece inalterado.</div></div>'}
+$('#pro-generate').onclick=()=>{
+ if(!RULES.length&&!confirm('O perfil está vazio. Executar somente com a Matriz 51?'))return;
+ if(GENWORKER)GENWORKER.terminate();GENWORKER=new Worker('/analysis-worker.js?v=pro30-37');
+ const status=$('#gen-status'),bar=$('#gen-bar');status.textContent='Iniciando busca exaustiva…';bar.style.width='0%';$('#gen-out').innerHTML='';
+ GENWORKER.onmessage=e=>{const d=e.data||{};if(d.type==='progress'){const total=d.total||d.maxAttempts||TOTAL,p=Math.min(100,Math.round((d.tested||0)/Math.max(1,total)*100));bar.style.width=p+'%';status.textContent=p+'% · '+fmt(d.tested||0)+' testadas · '+fmt(d.eligibleCount??d.found??0)+' elegíveis';}else if(d.type==='done'){bar.style.width='100%';status.innerHTML='<b>100%</b> · '+fmt(d.tested||0)+' testadas · <b>'+fmt(d.eligibleCount??d.games?.length??0)+' elegíveis exatas</b>';$('#gen-out').innerHTML=renderGame(d.games?.[0]||null);GENWORKER.terminate();GENWORKER=null;}};
+ GENWORKER.onerror=()=>{status.textContent='Erro no Worker do Gerador PRO.';GENWORKER=null};
+ GENWORKER.postMessage({task:'generate',history:H,period:Math.min(200,Math.max(10,rows().length)),quantity:1,policies:policies(),deterministic:true,exhaustive:true,topLimit:200,proProfile:{rules:RULES}});
+};
+
+function patternStats(metric){
+ const rr=rows(),dist=expectedDist(metric),vals=[];for(let i=0;i<rr.length;i++){if(metric==='repeat'&&i===0)continue;vals.push({draw:rr[i],v:metricValue(rr[i].dezenas,metric,i?rr[i-1].dezenas:null)})}
+ const possible=[...new Set([...dist.keys(),...vals.map(x=>x.v)])].sort((a,b)=>a-b),out=[];
+ for(const v of possible){const inds=vals.map((x,i)=>x.v===v?i:-1).filter(i=>i>=0),count=inds.length,last=inds.length?vals[inds.at(-1)].draw:null,delay=inds.length?vals.length-1-inds.at(-1):vals.length,gaps=inds.slice(1).map((x,j)=>x-inds[j]-1),maxDelay=Math.max(delay,...gaps,0),expected=vals.length*((dist.get(v)||0)/TOTAL),sd=Math.sqrt(Math.max(.0001,vals.length*((dist.get(v)||0)/TOTAL)*(1-(dist.get(v)||0)/TOTAL)));out.push({v,count,pct:count/Math.max(1,vals.length)*100,one:count?vals.length/count:null,delay,maxDelay,last,expected,ratio:expected?count/expected:0,z:expected?(count-expected)/sd:0})}
+ return out;
+}
+function renderPatterns(){
+ const m=$('#pat-metric').value,a=patternStats(m);$('#pat-out').innerHTML='<div class="kpis">'+[['Métrica',metricLabel(m)],['Concursos',rows().length],['Valores',a.length],['Total observado',fmt(a.reduce((s,x)=>s+x.count,0))],['Universo teórico',fmt(TOTAL)]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['Valor','Ocorrências','%','1 em X','Atraso','Maior atraso','Última ocorrência','Esperado','O/E','Z','Gerador'],a.map(x=>[x.v,x.count,x.pct.toFixed(2)+'%',x.one?x.one.toFixed(2):'—',x.delay,x.maxDelay,x.last?'#'+x.last.concurso:'—',x.expected.toFixed(2),x.ratio.toFixed(3),x.z.toFixed(2),'<button class="btn ghost use-rule" data-m="'+m+'" data-v="'+x.v+'">USAR</button>']))+'</div>';$$('.use-rule').forEach(b=>b.onclick=()=>addExactRule(b.dataset.m,Number(b.dataset.v)))}
+$('#pat-run').onclick=renderPatterns;
+
+function finalK(d){return ALL.filter(n=>n%10===d).length}
+function renderEndings(){
+ const rr=rows(),wins=[10,20,50,100],out=[];
+ for(let d=0;d<10;d++){const vals=rr.map(x=>x.dezenas.filter(n=>n%10===d).length),K=finalK(d),expected=K*.6,tr={};for(const w of wins)tr[w]=mean(vals.slice(-w));out.push({d,K,avg:mean(vals),expected,delta:mean(vals)-expected,last:vals.at(-1)||0,tr})}
+ $('#end-out').innerHTML='<div class="panel">'+table(['Final','Dezenas no universo','Média observada','Esperado','Δ','Último','M10','M20','M50','M100'],out.map(x=>[x.d,x.K,x.avg.toFixed(3),x.expected.toFixed(3),(x.delta>=0?'+':'')+x.delta.toFixed(3),x.last,x.tr[10].toFixed(2),x.tr[20].toFixed(2),x.tr[50].toFixed(2),x.tr[100].toFixed(2)]))+'</div><div class="grid2">'+[0,1,2,3,4,5,6,7,8,9].map(d=>{const K=finalK(d),dist=hyper(K),vals=rr.map(x=>x.dezenas.filter(n=>n%10===d).length);return '<div class="panel"><h3>Final '+d+'</h3>'+table(['Qtd.','Obs.','Esperado','O/E'],[...dist].map(([k,c])=>{const o=vals.filter(v=>v===k).length,e=rr.length*c/TOTAL;return[k,o,e.toFixed(2),e?(o/e).toFixed(3):'—']}))+'</div>'}).join('')+'</div>';
+}
+$('#end-run').onclick=renderEndings;
+
+for(const id of ['pa','pb'])$( '#'+id).innerHTML=ALL.map(n=>'<option value="'+n+'">'+pad(n)+'</option>').join('');$('#pa').value='3';$('#pb').value='20';
+function renderPairCompare(){
+ const a=+$('#pa').value,b=+$('#pb').value;if(a===b)return alert('Escolha dezenas diferentes.');const rr=rows();let ca=0,cb=0,both=0,last=-1;const years=new Map();
+ rr.forEach((d,i)=>{const A=d.dezenas.includes(a),B=d.dezenas.includes(b);if(A)ca++;if(B)cb++;if(A&&B){both++;last=i}const y=(d.data||'').slice(-4)||'—';if(!years.has(y))years.set(y,{n:0,a:0,b:0,both:0});const x=years.get(y);x.n++;if(A)x.a++;if(B)x.b++;if(A&&B)x.both++});
+ const expected=rr.length*(15/25)*(14/24),sd=Math.sqrt(rr.length*.35*.65),delay=last<0?rr.length:rr.length-1-last;
+ $('#pair-out').innerHTML='<div class="kpis">'+[['Dezena '+pad(a),ca+' · '+(ca/Math.max(1,rr.length)*100).toFixed(1)+'%'],['Dezena '+pad(b),cb+' · '+(cb/Math.max(1,rr.length)*100).toFixed(1)+'%'],['Juntas',both],['Esperado juntas',expected.toFixed(2)],['Atraso conjunto',delay]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="note">O/E conjunto: <b>'+(expected?both/expected:0).toFixed(3)+'</b> · Z aproximado: <b>'+(sd?(both-expected)/sd:0).toFixed(2)+'</b> · somente A: '+(ca-both)+' · somente B: '+(cb-both)+' · nenhuma: '+(rr.length-ca-cb+both)+'</div><div class="panel"><h3>Ano a ano</h3>'+table(['Ano','Concursos',pad(a),pad(b),'Juntas','Esperado juntas','O/E'],[...years].map(([y,x])=>[y,x.n,x.a,x.b,x.both,(x.n*.35).toFixed(2),x.n?(x.both/(x.n*.35)).toFixed(3):'—']))+'</div>';
+}
+$('#pair-run').onclick=renderPairCompare;
+
+function neighborCount(g){const s=new Set(g);let c=0;for(let n=1;n<25;n++)if(s.has(n)&&s.has(n+1))c++;return c}
+function neighborExactDist(){const m=new Map();for(let r=1;r<=Math.min(15,11);r++){const cnt=nCr(14,r-1)*nCr(11,r),adj=15-r;if(cnt)m.set(adj,(m.get(adj)||0)+cnt)}return m}
+function renderNeighbors(){
+ const rr=rows(),vals=rr.map(d=>neighborCount(d.dezenas)),dist=neighborExactDist(),expMean=24*.35,obs=mean(vals);
+ $('#nei-out').innerHTML='<div class="kpis">'+[['Média observada',obs.toFixed(3)],['Média esperada',expMean.toFixed(3)],['Δ',(obs-expMean).toFixed(3)],['Último',vals.at(-1)||0],['Concursos',rr.length]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['Pares vizinhos','Observado','%','Esperado exato','O/E'],[...dist].sort((a,b)=>a[0]-b[0]).map(([v,c])=>{const o=vals.filter(x=>x===v).length,e=rr.length*c/TOTAL;return[v,o,(o/Math.max(1,rr.length)*100).toFixed(2)+'%',e.toFixed(2),e?(o/e).toFixed(3):'—']}))+'</div><div class="note">O esperado é combinatório exato: uma combinação com 15 dezenas e r blocos consecutivos possui 15−r pares vizinhos; a contagem usa C(14,r−1)×C(11,r).</div>';
+}
+$('#nei-run').onclick=renderNeighbors;
+
+function calendarRows(months){
+ const latest=parseDate(H.at(-1)?.data);if(!latest)return[];const cut=new Date(latest);cut.setMonth(cut.getMonth()-months);return H.filter(d=>{const x=parseDate(d.data);return x&&x>=cut&&x<=latest})
+}
+function renderQuintiles(){
+ const ms=+$('#q-window').value,rr=calendarRows(ms),f=Object.fromEntries(ALL.map(n=>[n,0]));for(const d of rr)for(const n of d.dezenas)f[n]++;
+ const rank=[...ALL].sort((a,b)=>f[b]-f[a]||a-b),q={};rank.forEach((n,i)=>q[n]=Math.floor(i/5)+1);
+ $('#q-out').innerHTML='<div class="kpis">'+[['Janela',ms+' meses'],['Concursos',rr.length],['Data inicial',rr[0]?.data||'—'],['Data final',rr.at(-1)?.data||'—'],['Esperado/dez.',(rr.length*.6).toFixed(1)]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="qheat">'+ALL.map(n=>'<div class="qcell q'+q[n]+'"><b>'+pad(n)+'</b><small>'+f[n]+' · '+(f[n]/Math.max(1,rr.length)*100).toFixed(1)+'%</small><small>Q'+q[n]+'</small></div>').join('')+'</div><div class="note">Q1 = 5 maiores frequências relativas da janela; Q5 = 5 menores. É classificação histórica relativa, não probabilidade futura.</div>';
+}
+$('#q-run').onclick=renderQuintiles;
+
+function savePort(){localStorage.setItem('lfv3_bet_portfolio_pro',JSON.stringify(PORT));renderPortfolio()}
+function hit(a,b){const s=new Set(b);return a.filter(n=>s.has(n)).length}
+$('#pf-add').onclick=()=>{const game=parseNums($('#pf-game').value),contest=+$('#pf-contest').value,cost=Number($('#pf-cost').value)||0;if(game.length!==15||!contest)return alert('Informe 15 dezenas e concurso alvo.');PORT.push({id:Date.now()+'-'+Math.random().toString(36).slice(2),game,contest,cost,createdAt:new Date().toISOString(),points:null,prize:null,status:'aguardando'});savePort()};
+$('#pf-import').onclick=()=>{let saved=[];try{saved=JSON.parse(localStorage.getItem('lfv3_saved_games')||'[]')}catch{}const contest=(H.at(-1)?.concurso||0)+1,cost=Number($('#pf-cost').value)||0;let n=0;for(const x of saved){const g=x.game||x;if(Array.isArray(g)&&g.length===15&&!PORT.some(p=>p.contest===contest&&p.game.join('-')===g.join('-'))){PORT.push({id:Date.now()+'-'+Math.random().toString(36).slice(2),game:[...g],contest,cost,createdAt:new Date().toISOString(),points:null,prize:null,status:'aguardando'});n++}}savePort();alert(n+' jogo(s) importado(s) para o concurso '+contest+'.')};
+async function refreshPortfolio(){
+ const resolved=PORT.filter(p=>H.some(d=>d.concurso===p.contest)),unique=[...new Set(resolved.map(p=>p.contest))],pm=new Map();
+ for(const c of unique.slice(0,30)){try{const r=await fetch('/api/lotofacil-premios?concurso='+c),j=await r.json();if(j.ok)pm.set(c,j.rows?.[0])}catch{}}
+ for(const p of PORT){const d=H.find(x=>x.concurso===p.contest);if(!d){p.status='aguardando';continue}p.points=hit(p.game,d.dezenas);const pr=pm.get(p.contest);p.prize=p.points>=11?Number(pr?.premios?.[p.points]?.valor||0):0;p.status='conferido'}
+ savePort();
+}
+$('#pf-refresh').onclick=refreshPortfolio;
+function renderPortfolio(){
+ $('#pf-contest').value=$('#pf-contest').value||(H.at(-1)?.concurso||0)+1;const invest=PORT.reduce((s,x)=>s+Number(x.cost||0),0),prize=PORT.reduce((s,x)=>s+Number(x.prize||0),0);
+ $('#pf-out').innerHTML='<div class="kpis">'+[['Apostas',PORT.length],['Investimento',money(invest)],['Prêmios',money(prize)],['Saldo',money(prize-invest)],['Pendentes',PORT.filter(x=>x.status!=='conferido').length]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['Concurso','Jogo','Custo','Pontos','Prêmio','Saldo','Status',''],PORT.slice().reverse().map(p=>['#'+p.contest,'<span class="mono">'+p.game.map(pad).join(' ')+'</span>',money(p.cost),p.points??'—',p.prize==null?'—':money(p.prize),p.prize==null?'—':money(p.prize-p.cost),p.status,'<button class="btn red pf-del" data-id="'+p.id+'">Excluir</button>']))+'</div>';$$('.pf-del').forEach(b=>b.onclick=()=>{PORT=PORT.filter(x=>x.id!==b.dataset.id);savePort()})}
+
+function renderExpected(){
+ const metrics=['odd','sum','repeat','prime','fib','m3','border','center','run'],all=[];for(const m of metrics){for(const x of patternStats(m)){if(x.count||x.expected>=1)all.push({...x,m})}}
+ all.sort((a,b)=>Math.abs(b.z)-Math.abs(a.z));
+ $('#oe-out').innerHTML='<div class="kpis">'+[['Métricas',metrics.length],['Linhas avaliadas',all.length],['Janela',rows().length+' concursos'],['Maior |Z|',all[0]?Math.abs(all[0].z).toFixed(2):'—'],['Método','combinatório exato']].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['Métrica','Valor','Observado','Esperado','O/E','Z','% obs.','1 em X'],all.slice(0,250).map(x=>[metricLabel(x.m),x.v,x.count,x.expected.toFixed(2),x.ratio.toFixed(3),x.z.toFixed(2),x.pct.toFixed(2)+'%',x.one?x.one.toFixed(2):'—']))+'</div><div class="note">A tabela é ordenada por |Z| apenas para diagnóstico. Desvio histórico não implica vantagem preditiva no próximo sorteio.</div>';
+}
+$('#oe-run').onclick=renderExpected;
+
+function renderTab(n){if(n==='generator')renderRules();else if(n==='patterns')renderPatterns();else if(n==='endings')renderEndings();else if(n==='paircompare')renderPairCompare();else if(n==='neighbors')renderNeighbors();else if(n==='quintiles')renderQuintiles();else if(n==='portfolio')renderPortfolio();else if(n==='expected')renderExpected()}
+async function init(){const r=await fetch('/data/lotofacil-base.json?v='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({...x,concurso:+x.concurso,dezenas:(x.dezenas||[]).map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);FROM=H[0]?.concurso||1;TO=H.at(-1)?.concurso||0;applyRange(FROM,TO);$('#pf-contest').value=TO+1;const h=location.hash.replace('#','');setTab($$('.tab').some(x=>x.dataset.tab===h)?h:'generator')}
+init().catch(e=>{$('.hero p').textContent='Erro ao carregar base: '+e.message});
+</script>
+</body></html>
