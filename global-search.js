@@ -76,7 +76,16 @@
     {title:'Premiações e simulador financeiro',section:'PRO 21–29',url:'/evolucoes-21-29.html#finance',keywords:'premios caixa custo retorno roi 11 12 13 14 15'},
     {title:'Quadrantes PRO',section:'PRO 21–29',url:'/evolucoes-21-29.html#quadrants',keywords:'quadrante médias 10 20 50 100'},
     {title:'Naipes e Bernoulli',section:'PRO 21–29',url:'/evolucoes-21-29.html#suits',keywords:'naipes 01 09 10 19 20 25 bernoulli binomial'},
-    {title:'Universo 15–21D',section:'PRO 21–29',url:'/evolucoes-21-29.html#universe',keywords:'combinações 15 16 17 18 19 20 21 universo 25'}
+    {title:'Universo 15–21D',section:'PRO 21–29',url:'/evolucoes-21-29.html#universe',keywords:'combinações 15 16 17 18 19 20 21 universo 25'},
+    {title:'Evoluções 30–37',section:'PRO 30–37',url:'/evolucoes-30-37.html',keywords:'estatística gerador 1 em x terminações comparar dezenas vizinhos quintis carteira esperado'},
+    {title:'Estatística → Gerador',section:'PRO 30–37',url:'/evolucoes-30-37.html#generator',keywords:'perfil regra usar no gerador busca pro'},
+    {title:'Tabela Universal 1 em X',section:'PRO 30–37',url:'/evolucoes-30-37.html#patterns',keywords:'ocorrências percentual atraso maior atraso ultima esperado oe'},
+    {title:'Terminações das dezenas',section:'PRO 30–37',url:'/evolucoes-30-37.html#endings',keywords:'final 0 1 2 3 4 5 6 7 8 9 terminações'},
+    {title:'Comparar duas dezenas',section:'PRO 30–37',url:'/evolucoes-30-37.html#paircompare',keywords:'duas dezenas juntas separadas ano a ano oe'},
+    {title:'Vizinhos consecutivos',section:'PRO 30–37',url:'/evolucoes-30-37.html#neighbors',keywords:'vizinhos adjacentes sequencia esperado combinatório'},
+    {title:'Heatmap por Quintis',section:'PRO 30–37',url:'/evolucoes-30-37.html#quintiles',keywords:'quintis 3 6 12 24 meses quente frio'},
+    {title:'Carteira PRO',section:'PRO 30–37',url:'/evolucoes-30-37.html#portfolio',keywords:'apostas custo pontos prêmio saldo roi meus jogos'},
+    {title:'Observado × Esperado Universal',section:'PRO 30–37',url:'/evolucoes-30-37.html#expected',keywords:'observado esperado oe z diagnóstico todas métricas'}
   ]);
   function norm(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
   function search(q){const n=norm(q).trim();if(!n)return ITEMS.slice(0,20);const toks=n.split(/\s+/);return ITEMS.map(x=>{const h=norm(x.title+' '+x.section+' '+x.keywords);let score=0;for(const t of toks){if(norm(x.title).includes(t))score+=5;if(norm(x.section).includes(t))score+=2;if(h.includes(t))score+=1}return{x,score}}).filter(z=>z.score>0).sort((a,b)=>b.score-a.score||a.x.title.localeCompare(b.x.title)).map(z=>z.x)}
