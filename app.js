@@ -25,7 +25,7 @@
   const makeCloudId=()=>{try{return crypto.randomUUID()}catch{return `lf-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}};
   const cloudId=localStorage.getItem('lfv3_cloud_id')||makeCloudId();localStorage.setItem('lfv3_cloud_id',cloudId);
   const state={
-    history:[],ctx:M.buildContext([]),period:Number(localStorage.getItem('lfv3_period'))||50,decision:[],selection:new Set(),generated:[],
+    history:[],ctx:M.buildContext([]),period:10,decision:[],selection:new Set(),generated:[],
     exclusions:new Set(safeJSON('lfv3_exclusions',[])),emojiLocks:new Set(safeJSON('lfv3_emoji_locks',[])),labBase:[],labLocked:new Set(),
     matrixReport:null,matrixFilter:'all',page:'decision',worker:null,workerTask:null,filterAuditCache:new Map(),
     filterPolicies:restoredPolicies,savedGames:safeJSON('lfv3_saved_games',[]),groups:safeJSON('lfv3_groups',[]),
