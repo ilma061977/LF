@@ -18,7 +18,7 @@ module.exports = async function handler(req, res) {
     { name: 'Base contínua', pass: live.baseValidation?.valid === true && live.baseValidation?.missingCount === 0, detail: `${live.baseValidation?.missingCount || 0} lacunas` },
     { name: 'Metadados sincronizados', pass: metadataSynced, detail: `histórico #${latest || '—'} · latest #${declaredLatest || '—'} · validação #${validatedLatest || '—'}` },
     { name: 'Último concurso', pass: latest !== null, detail: `#${latest || '—'}` },
-    { name: 'CAIXA ao vivo', pass: live.liveUpdate?.ok === true, detail: live.liveUpdate?.ok ? 'consulta oficial em tempo real OK' : (live.liveUpdate?.error || 'indisponível') },
+    { name: 'Atualização ao vivo', pass: live.liveUpdate?.ok === true, detail: live.liveUpdate?.ok ? `${live.liveUpdate?.mode||'caixa'} · ${live.liveUpdate?.source||''}` : (live.liveUpdate?.error || 'indisponível') },
     { name: 'Alerta de atualização', pass: live.freshnessAlert?.possibleNewContest !== true, detail: live.freshnessAlert?.message || 'sem concurso novo pendente' },
     { name: 'Último concurso válido 15 dezenas', pass: g.length === 15 && new Set(g).size === 15, detail: g.length === 15 ? g.map(n=>String(n).padStart(2,'0')).join(' ') : 'inválido' },
     { name: 'Perfis Linha/Coluna calculáveis', pass: g.length === 15 && lines.reduce((a,b)=>a+b,0) === 15 && cols.reduce((a,b)=>a+b,0) === 15, detail: `L ${lines.join('-')} · C ${cols.join('-')}` }
