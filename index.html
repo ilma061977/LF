@@ -270,7 +270,7 @@
                 </div>
                 <div class="decision-search-timing" aria-label="Informações auxiliares da busca"><div><span>Tempo decorrido · não é total</span><b id="decision-search-elapsed">00:00</b></div><div><span>Velocidade</span><b id="decision-search-speed">0/s</b></div><div><span>Tempo estimado</span><b id="decision-search-eta">—</b></div><div><span>Concurso-base</span><b id="decision-search-base">—</b></div></div>
                 <div class="decision-search-track"><i id="decision-search-bar"></i></div>
-                <div class="decision-search-meta"><span><strong>Modo:</strong> <em id="decision-search-mode">Busca exaustiva integral · Linha e Coluna anteriores bloqueadas · 51 filtros · F28 + F29 + F36 obrigatórios</em></span><span><strong>Regras ativas:</strong> <em id="decision-search-rules">—</em></span><span><strong>Resultado:</strong> <em id="decision-search-result">Aguardando processamento.</em></span></div>
+                <div class="decision-search-meta"><span><strong>Modo:</strong> <em id="decision-search-mode">Busca exaustiva integral · Linha e Coluna anteriores bloqueadas · 51 filtros · F28 + F29 + F36 + F37 obrigatórios</em></span><span><strong>Regras ativas:</strong> <em id="decision-search-rules">—</em></span><span><strong>Resultado:</strong> <em id="decision-search-result">Aguardando processamento.</em></span></div>
               </section>
               <div id="decision-board" class="board board-dark decision-5x5" aria-label="NOVO INDICADO em grade 5 por 5"></div><div id="decision-result-origin" class="decision-result-origin"><span class="origin-label">Forma de escolha</span><b id="decision-result-origin-badge" class="origin-badge complete">MANUAL</b></div>
               <div class="emoji-locks" id="emoji-locks"></div>
@@ -407,7 +407,7 @@
           </article>
           <article class="panel" id="matrix-random-panel" hidden><h2>Diagnóstico combinado rápido · o benchmark oficial Integral 1:1 fica abaixo</h2><div id="matrix-random-results" class="audit-grid"></div></article>
           <article class="panel audit-pro-controls" id="combined-integral-controls">
-            <div><h2>Benchmark combinado Integral 1:1 · BACKEND</h2><p>Benchmark oficial equivalente ao NOVO INDICADO: mesmos 51 filtros/políticas, F28 + F29 + F36 obrigatórios, candidateScore e busca exaustiva completa por alvo. O cálculo pesado agora roda em lotes no backend; o navegador apenas coordena e exibe o progresso. O checkpoint é persistido e o resultado final fica salvo por versão/concurso/período/políticas.</p></div>
+            <div><h2>Benchmark combinado Integral 1:1 · BACKEND</h2><p>Benchmark oficial equivalente ao NOVO INDICADO: mesmos 51 filtros/políticas, F28 + F29 + F36 + F37 obrigatórios, candidateScore e busca exaustiva completa por alvo. O cálculo pesado agora roda em lotes no backend; o navegador apenas coordena e exibe o progresso. O checkpoint é persistido e o resultado final fica salvo por versão/concurso/período/políticas.</p></div>
             <label>Séries aleatórias por alvo<select id="combined-integral-series"><option>5</option><option selected>10</option><option>20</option><option>50</option></select></label>
             <button class="btn primary" id="run-combined-integral">Executar benchmark integral 1:1</button>
             <button class="btn ghost" id="cancel-combined-integral">Pausar</button>
