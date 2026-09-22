@@ -58,7 +58,7 @@ table{width:100%;border-collapse:collapse}.table{overflow:auto;border:1px solid 
 <label>Detalhar dezena<select id="beh-selected"><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option></select></label>
 <button class="btn blue" id="beh-run">Atualizar painel</button></div></div>
 <div id="beh-summary"></div>
-<div class="panel"><h3>Visão comparativa · clique em uma dezena para detalhar</h3><div id="beh-table" class="table"></div></div>
+<div class="panel"><h3>Visão comparativa · clique em uma dezena para detalhar</h3><p class="muted">Inclui o atraso equivalente em ciclos calculado sobre os últimos 10 sorteios.</p><div id="beh-table" class="table"></div></div>
 <div id="beh-detail"></div>
 </section>
 
@@ -135,6 +135,21 @@ function balls(g,ctx=EMOJI_CTX){return '<div class="balls">'+g.map(n=>'<span cla
 function combinations(arr,k){const out=[];function rec(start,p){if(p.length===k){out.push([...p]);return}for(let i=start;i<=arr.length-(k-p.length);i++){p.push(arr[i]);rec(i+1,p);p.pop()}}rec(0,[]);return out}
 function subsetKeys(g,k){return combinations(g,k).map(x=>x.join('-'))}
 function cycleState(rows){let seen=new Set(),cycle=1;for(const d of rows){for(const n of d.dezenas)seen.add(n);if(seen.size===25){cycle++;seen=new Set()}}return{cycle,seen}}
+function recentCycleReference(){
+  const cutoff=Math.max(0,H.length-10),closed=[];let seen=new Set(),startIx=0;
+  for(let i=0;i<H.length;i++){
+    H[i].dezenas.forEach(n=>seen.add(n));
+    if(seen.size===25){closed.push({startIx,endIx:i,length:i-startIx+1,start:H[startIx]?.concurso,end:H[i]?.concurso});seen=new Set();startIx=i+1;}
+  }
+  const recent=closed.filter(x=>x.endIx>=cutoff),currentLength=Math.max(1,H.length-startIx),avg=recent.length?mean(recent.map(x=>x.length)):currentLength;
+  return{avg:Math.max(1,avg),closed:recent,currentLength,cutoffContest:H[cutoff]?.concurso||null};
+}
+function cycleDelay10(n){
+  const rows=H.slice(-10);let drawDelay=0;for(let i=rows.length-1;i>=0&&!rows[i].dezenas.includes(n);i--)drawDelay++;
+  const ref=recentCycleReference(),capped=rows.length===10&&drawDelay===10;
+  return{drawDelay,cycles:drawDelay/ref.avg,avgCycle:ref.avg,closedCycles:ref.closed.length,capped};
+}
+function cycleDelay10Label(x){return (x.capped?'≥':'')+x.cycles.toFixed(1);}
 function numStats(n,rows){const present=rows.map(d=>d.dezenas.includes(n)),freq=present.filter(Boolean).length;let currentDelay=0;for(let i=present.length-1;i>=0&&!present[i];i--)currentDelay++;
   const idx=[];present.forEach((v,i)=>{if(v)idx.push(i)});const gaps=[];for(let i=1;i<idx.length;i++)gaps.push(idx[i]-idx[i-1]-1);if(idx.length&&idx[0]>0)gaps.unshift(idx[0]);
   const priorDelay=gaps.length?gaps.at(-1):0,maxDelay=gaps.length?Math.max(...gaps,currentDelay):currentDelay,avgDelay=gaps.length?mean(gaps):currentDelay;
@@ -168,7 +183,8 @@ function behaviorStats(n,rows){
  const appearances=rows.filter(d=>d.dezenas.includes(n)),avgPosition=appearances.length?mean(appearances.map(d=>d.dezenas.indexOf(n)+1)):0;
  const companion=ALL.filter(x=>x!==n).map(x=>[x,appearances.filter(d=>d.dezenas.includes(x)).length]).sort((a,b)=>b[1]-a[1]||a[0]-b[0]).slice(0,5);
  const lastDraw=[...H].reverse().find(d=>d.dezenas.includes(n));
- return{...base,f10:wf(10),f20:wf(20),f50:wf(50),f100:wf(100),trend20,medianGap,gapSd,maxSeq,totalAbsent:rows.length-base.freq,lastDate:lastDraw?.data||'—',avgPosition,companion};
+ const cycleDelay=cycleDelay10(n);
+ return{...base,f10:wf(10),f20:wf(20),f50:wf(50),f100:wf(100),trend20,medianGap,gapSd,maxSeq,totalAbsent:rows.length-base.freq,lastDate:lastDraw?.data||'—',avgPosition,companion,cycleDelay10:cycleDelay.cycles,cycleDelayDraws10:cycleDelay.drawDelay,cycleAvg10:cycleDelay.avgCycle,cycleDelayCapped10:cycleDelay.capped};
 }
 function trendHTML(v){const cls=v>0.01?'trend-up':v<-.01?'trend-down':'trend-flat',sym=v>0?'▲':v<0?'▼':'•';return '<span class="'+cls+'">'+sym+' '+Math.abs(v).toFixed(1)+' pp</span>'}
 function behaviorStrip(n){return H.slice(-30).map(d=>'<span class="presence '+(d.dezenas.includes(n)?'on':'')+'" title="#'+d.concurso+' · '+d.data+'">'+(d.dezenas.includes(n)?'●':'·')+'</span>').join('')}
@@ -177,23 +193,23 @@ function renderBehaviorDetail(n,rows){
  $('#beh-detail').innerHTML='<div class="panel"><div class="head"><div><span class="badge '+(s.temp==='Quente'?'hot':s.temp==='Fria'?'cold':'mid')+'">'+s.temp+'</span><h2 style="margin-top:7px">Dezena '+pad(n)+'</h2><p>Detalhe individual sobre '+fmt(rows.length)+' concursos da janela principal.</p></div>'+balls([n])+'</div>'+
  '<div class="kpis">'+[
  ['Freq. janela',s.freq+' · '+s.rate.toFixed(1)+'%'],['F10 / F20',s.f10+' / '+s.f20],['F50 / F100',s.f50+' / '+s.f100],['Tendência 20×20',trendHTML(s.trend20)],['Atraso atual',s.currentDelay],
- ['Atraso ant. / máx.',s.priorDelay+' / '+s.maxDelay],['Média / mediana',s.avgDelay.toFixed(2)+' / '+s.medianGap.toFixed(1)],['Desvio intervalos',s.gapSd.toFixed(2)],['Seq. atual / máx.',s.seq+' / '+s.maxSeq],['Posição média D',s.avgPosition?s.avgPosition.toFixed(2):'—']
+ ['Atraso ant. / máx.',s.priorDelay+' / '+s.maxDelay],['Atraso em ciclos (10)',(s.cycleDelayCapped10?'≥':'')+s.cycleDelay10.toFixed(1)+' ciclo(s)'],['Média / mediana',s.avgDelay.toFixed(2)+' / '+s.medianGap.toFixed(1)],['Desvio intervalos',s.gapSd.toFixed(2)],['Seq. atual / máx.',s.seq+' / '+s.maxSeq],['Posição média D',s.avgPosition?s.avgPosition.toFixed(2):'—']
  ].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div>'+
- '<div class="grid2"><div class="metric"><span>Última ocorrência</span><b>#'+s.last+' · '+s.lastDate+'</b><p>Últimos concursos com a dezena: '+last10+'</p></div><div class="metric"><span>Ciclo atual</span><b>Ciclo '+cycle.cycle+' · '+s.cycleStatus+'</b><p>'+cycle.seen.size+'/25 dezenas já apareceram no ciclo corrente.</p></div></div>'+
+ '<div class="grid2"><div class="metric"><span>Última ocorrência</span><b>#'+s.last+' · '+s.lastDate+'</b><p>Últimos concursos com a dezena: '+last10+'</p></div><div class="metric"><span>Ciclo atual</span><b>Ciclo '+cycle.cycle+' · '+s.cycleStatus+'</b><p>'+cycle.seen.size+'/25 dezenas já apareceram no ciclo corrente.</p></div><div class="metric"><span>Atraso em ciclos · últimos 10</span><b>'+(s.cycleDelayCapped10?'≥':'')+s.cycleDelay10.toFixed(1)+' ciclo(s)</b><p>'+s.cycleDelayDraws10+(s.cycleDelayCapped10?'+':'')+' sorteio(s) consecutivo(s) sem sair ÷ duração média recente de '+s.cycleAvg10.toFixed(2)+' sorteio(s) por ciclo.</p></div></div>'+
  '<h3>Presença nos últimos 30 concursos</h3><div class="presence-strip">'+behaviorStrip(n)+'</div>'+
  '<h3>5 dezenas que mais acompanharam '+pad(n)+' na janela</h3><div class="balls">'+s.companion.map(x=>'<span class="ball '+(window.LFOfficialBalls?.className(x[0])||('c'+(x[0]%10)))+'" title="'+(window.LFOfficialBalls?.title(x[0])||pad(x[0]))+' · '+x[1]+' coincidências">'+pad(x[0])+'</span>').join('')+'</div>'+
- '<div class="note">Tendência compara a taxa dos <b>20 concursos mais recentes</b> com os <b>20 imediatamente anteriores</b>. É uma descrição histórica, não uma previsão.</div></div>';
+ '<div class="note">Tendência compara a taxa dos <b>20 concursos mais recentes</b> com os <b>20 imediatamente anteriores</b>. <b>Atraso em ciclos (10)</b> converte a sequência de ausências nos últimos 10 sorteios pela duração média dos ciclos que atingem essa janela. É uma descrição histórica, não uma previsão.</div></div>';
 }
 function renderBehavior(){
  const w=Number($('#beh-window').value),rows=w?H.slice(-w):H,filter=$('#beh-filter').value,allStats=ALL.map(n=>behaviorStats(n,rows)),cycle=cycleState(H);
  const hot=[...allStats].sort((a,b)=>b.freq-a.freq||a.n-b.n).slice(0,5).map(x=>pad(x.n)).join(' '),cold=[...allStats].sort((a,b)=>a.freq-b.freq||a.n-b.n).slice(0,5).map(x=>pad(x.n)).join(' ');
  $('#beh-summary').innerHTML='<div class="kpis">'+[
- ['Janela',fmt(rows.length)+' concursos'],['5 mais frequentes',hot],['5 menos frequentes',cold],['Atraso médio atual',mean(allStats.map(x=>x.currentDelay)).toFixed(2)],['Pendentes ciclo',(25-cycle.seen.size)+'/25']
+ ['Janela',fmt(rows.length)+' concursos'],['5 mais frequentes',hot],['5 menos frequentes',cold],['Atraso médio atual',mean(allStats.map(x=>x.currentDelay)).toFixed(2)],['Maior atraso ciclos (10)',Math.max(...allStats.map(x=>x.cycleDelay10)).toFixed(1)],['Pendentes ciclo',(25-cycle.seen.size)+'/25']
  ].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div>';
  let stats=allStats.filter(s=>filter==='all'||(filter==='hot'&&s.temp==='Quente')||(filter==='mid'&&s.temp==='Morna')||(filter==='cold'&&s.temp==='Fria')||(filter==='pending'&&s.cycleStatus==='Pendente'));
  stats.sort((a,b)=>{let x=a[sortKey],y=b[sortKey];if(typeof x==='string')return String(x).localeCompare(String(y))*sortDir;return ((x??0)-(y??0))*sortDir});
- const headers=[['n','Dezena'],['f10','F10'],['f20','F20'],['f50','F50'],['f100','F100'],['rate','% janela'],['trend20','Tend. 20×20'],['currentDelay','Atraso'],['priorDelay','Ant.'],['maxDelay','Máx.'],['avgDelay','Média'],['medianGap','Mediana'],['gapSd','Regularid. σ'],['seq','Seq.'],['maxSeq','Seq. máx.'],['last','Último'],['cycleStatus','Ciclo'],['temp','Temp.']];
- $('#beh-table').innerHTML='<table><thead><tr>'+headers.map(h=>'<th class="sort" data-sort="'+h[0]+'">'+h[1]+'</th>').join('')+'</tr></thead><tbody>'+stats.map(s=>'<tr class="beh-row '+(s.n===selectedBehavior?'selected':'')+'" data-n="'+s.n+'"><td><b>'+pad(s.n)+'</b></td><td>'+s.f10+'</td><td>'+s.f20+'</td><td>'+s.f50+'</td><td>'+s.f100+'</td><td>'+s.rate.toFixed(1)+'</td><td>'+trendHTML(s.trend20)+'</td><td>'+s.currentDelay+'</td><td>'+s.priorDelay+'</td><td>'+s.maxDelay+'</td><td>'+s.avgDelay.toFixed(2)+'</td><td>'+s.medianGap.toFixed(1)+'</td><td>'+s.gapSd.toFixed(2)+'</td><td>'+s.seq+'</td><td>'+s.maxSeq+'</td><td>'+s.last+'</td><td>'+s.cycleStatus+'</td><td><span class="badge '+(s.temp==='Quente'?'hot':s.temp==='Fria'?'cold':'mid')+'">'+s.temp+'</span></td></tr>').join('')+'</tbody></table>';
+ const headers=[['n','Dezena'],['f10','F10'],['f20','F20'],['f50','F50'],['f100','F100'],['rate','% janela'],['trend20','Tend. 20×20'],['currentDelay','Atraso'],['cycleDelay10','Atraso ciclos (10)'],['priorDelay','Ant.'],['maxDelay','Máx.'],['avgDelay','Média'],['medianGap','Mediana'],['gapSd','Regularid. σ'],['seq','Seq.'],['maxSeq','Seq. máx.'],['last','Último'],['cycleStatus','Ciclo'],['temp','Temp.']];
+ $('#beh-table').innerHTML='<table><thead><tr>'+headers.map(h=>'<th class="sort" data-sort="'+h[0]+'">'+h[1]+'</th>').join('')+'</tr></thead><tbody>'+stats.map(s=>'<tr class="beh-row '+(s.n===selectedBehavior?'selected':'')+'" data-n="'+s.n+'"><td><b>'+pad(s.n)+'</b></td><td>'+s.f10+'</td><td>'+s.f20+'</td><td>'+s.f50+'</td><td>'+s.f100+'</td><td>'+s.rate.toFixed(1)+'</td><td>'+trendHTML(s.trend20)+'</td><td>'+s.currentDelay+'</td><td>'+(s.cycleDelayCapped10?'≥':'')+s.cycleDelay10.toFixed(1)+'</td><td>'+s.priorDelay+'</td><td>'+s.maxDelay+'</td><td>'+s.avgDelay.toFixed(2)+'</td><td>'+s.medianGap.toFixed(1)+'</td><td>'+s.gapSd.toFixed(2)+'</td><td>'+s.seq+'</td><td>'+s.maxSeq+'</td><td>'+s.last+'</td><td>'+s.cycleStatus+'</td><td><span class="badge '+(s.temp==='Quente'?'hot':s.temp==='Fria'?'cold':'mid')+'">'+s.temp+'</span></td></tr>').join('')+'</tbody></table>';
  $('#beh-table [data-sort]').forEach(th=>th.onclick=()=>{const k=th.dataset.sort;if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=-1}renderBehavior()});
  $('#beh-table .beh-row').forEach(tr=>tr.onclick=()=>{selectedBehavior=Number(tr.dataset.n);$('#beh-selected').value=String(selectedBehavior);renderBehaviorDetail(selectedBehavior,rows);$('#beh-table .beh-row').forEach(x=>x.classList.toggle('selected',Number(x.dataset.n)===selectedBehavior))});
  $('#beh-selected').value=String(selectedBehavior);renderBehaviorDetail(selectedBehavior,rows);
@@ -218,7 +234,7 @@ function runPortfolio(){const btn=$('#pf-run'),bar=$('#pf-bar'),status=$('#pf-st
 
 function renderProb(){const rows=[];for(let n=15;n<=20;n++){const denom=C(25,n),simple=C(n,15),p15=simple/C(25,15),probs={};for(let h=11;h<=15;h++)probs[h]=C(15,h)*C(10,n-h)/denom;rows.push({n,simple,p15,probs})}$('#prob-table').innerHTML='<table><thead><tr><th>Dezenas</th><th>Equiv. jogos 15</th><th>15 pontos</th><th>1 em</th><th>14 pontos</th><th>13 pontos</th><th>12 pontos</th><th>11 pontos</th></tr></thead><tbody>'+rows.map(r=>'<tr><td><b>'+r.n+'</b></td><td>'+fmt(r.simple)+'</td><td>'+(r.p15*100).toFixed(6)+'%</td><td>'+fmt(Math.round(1/r.p15))+'</td><td>'+(r.probs[14]*100).toFixed(4)+'%</td><td>'+(r.probs[13]*100).toFixed(4)+'%</td><td>'+(r.probs[12]*100).toFixed(3)+'%</td><td>'+(r.probs[11]*100).toFixed(3)+'%</td></tr>').join('')+'</tbody></table>'}
 
-async function init(){const r=await fetch('/data/lotofacil-base.json?ci='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({concurso:Number(x.concurso),data:x.data||'',dezenas:[...x.dezenas].map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);EMOJI_CTX=window.LFIndicatorEmojis?.context(H)||null;$('#base-status').textContent=fmt(H.length)+' concursos · último #'+H.at(-1).concurso;
+async function init(){const r=await fetch('/api/lotofacil?all=1&ci='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({concurso:Number(x.concurso),data:x.data||'',dezenas:[...x.dezenas].map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);EMOJI_CTX=window.LFIndicatorEmojis?.context(H)||null;$('#base-status').textContent=fmt(H.length)+' concursos · último #'+H.at(-1).concurso;
  $('#rx-contest').innerHTML=H.slice().reverse().map(d=>'<option value="'+d.concurso+'">#'+d.concurso+' · '+d.data+'</option>').join('');$('#dna-start').value=Math.max(H[0].concurso,H.at(-1).concurso-199);$('#dna-end').value=H.at(-1).concurso;$('#export-note').innerHTML='Base atual: <b>'+fmt(H.length)+' concursos</b> · #'+H[0].concurso+' até #'+H.at(-1).concurso+'.';
  renderRaioX();renderDNA();renderBehavior();renderFinals();renderInd();renderProb();const hash=location.hash.replace('#','');if($$('.tab').some(b=>b.dataset.tab===hash))setTab(hash)}
 $('#rx-run').onclick=renderRaioX;$('#dna-run').onclick=renderDNA;$('#beh-run').onclick=renderBehavior;$('#beh-filter').onchange=renderBehavior;$('#beh-selected').onchange=e=>{selectedBehavior=Number(e.target.value)||1;renderBehavior();};$('#cl-run').onclick=renderClosure;$('#pf-run').onclick=runPortfolio;$$('[data-export]').forEach(b=>b.onclick=()=>exportBase(b.dataset.export));init().catch(e=>{$('#base-status').textContent='Falha ao carregar base';console.error(e)});
