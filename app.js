@@ -260,7 +260,7 @@
     const panel=$('#virgin-score-panel');if(!panel)return;const active=state.decisionSelectionMode==='virgin'&&state.decision.length===15,meta=active?currentVirginMeta():null,cache=state.decisionRankingCache||{};
     panel.hidden=!active;if(!active)return;
     const grid=$('#virgin-score-grid'),pct=$('#virgin-percentile'),sens=$('#virgin-sensitivity'),top=$('#virgin-top-list'),stats=cache.virginStats||{};
-    if(pct)pct.textContent=Number.isFinite(Number(stats.percentile))?`P${stats.percentile} · média ${Number(stats.meanScore||0).toFixed(1)}`:'Ranking Virgem';
+    if(pct)pct.textContent=Number.isFinite(Number(meta?.percentile))?`P${meta.percentile} · média ${Number(stats.meanScore||0).toFixed(1)}`:'Ranking Virgem';
     if(!meta){if(grid)grid.innerHTML='<div><span>Ranking</span><b>—</b><small>metadados não disponíveis neste cache</small></div>';if(sens)sens.innerHTML='';if(top)top.innerHTML='';return;}
     if(grid)grid.innerHTML=[
       ['Score Matriz',`${Number(meta.matrixNorm||0).toFixed(1)}/100`,`score bruto ${Number(meta.matrixScore||0).toFixed(2)}`],
