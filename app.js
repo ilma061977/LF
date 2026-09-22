@@ -185,7 +185,7 @@
   function mergeCloudGames(remote=[]){const map=new Map();for(const raw of [...state.savedGames,...remote]){const x=normalizeSavedEntry(raw);if(!x)continue;const k=keyOf(x.game),prev=map.get(k);if(!prev||String(x.updatedAt)>String(prev.updatedAt))map.set(k,x);}state.savedGames=[...map.values()].sort((a,b)=>String(a.savedAt).localeCompare(String(b.savedAt))).slice(-500);savePrefs();renderMyGames();}
   async function syncCloud(push=true){
     try{
-      const key=`lfv372_wallet_${state.cloudId}`;
+      const key=`lfv374_wallet_${state.cloudId}`;
       if(push){localStorage.setItem(key,JSON.stringify({games:state.savedGames,updatedAt:new Date().toISOString()}));setCloudStatus(`Backup local atualizado · ${state.savedGames.length} jogo(s)`,'ok');}
       else{const saved=safeJSON(key,{games:[]});if(saved?.games?.length)mergeCloudGames(saved.games);setCloudStatus(saved?.games?.length?`Backup local carregado · ${saved.games.length} jogo(s)`:'Carteira local pronta','ok');}
     }catch(e){setCloudStatus('Armazenamento local indisponível','warn');}
@@ -237,12 +237,12 @@
   function proProfileSummary(rules=getProProfileRules()){return rules.length?`PRO ${rules.length} regra(s): ${rules.map(proProfileRuleLabel).join(' · ')}`:'Perfil PRO sem regras';}
   function proProfilePass(game,rules=getProProfileRules()){if(!Array.isArray(game)||game.length!==15)return false;const rep=M.inspect(game,state.ctx),m=rep.metrics||{};for(const r of rules){let v=null;if(r.metric==='sum')v=m.total;else if(r.metric==='odd')v=m.odds;else if(r.metric==='prime')v=m.primes;else if(r.metric==='fib')v=m.fib;else if(r.metric==='m3')v=m.m3;else if(r.metric==='border')v=m.border;else if(r.metric==='center')v=m.center;else if(r.metric==='repeat')v=m.repeated;else if(r.metric==='run')v=m.run;else if(String(r.metric).startsWith('ending:')){const d=Number(String(r.metric).split(':')[1]);v=game.filter(n=>n%10===d).length;}if(!Number.isFinite(Number(v))||v<r.min||v>r.max)return false;}return true;}
   function generationSignature(){const q=indicatorQuotaSpec(),proRules=getProProfileRules();return JSON.stringify({contest:state.history.at(-1)?.concurso||0,period:state.period,excluded:[...blockedNumbers()].sort((a,b)=>a-b),policies:M.FILTERS.map(f=>state.filterPolicies[f.id]||''),indicatorTargets:q.targets,indicatorGroups:q.groups,proRules,decisionSelectionMode:state.decisionSelectionMode,indicatorMode:state.indicatorMode,schema:M.SCHEMA_VERSION,threshold:M.THRESHOLD_VERSION});}
-  function decisionCacheKey(){return 'lfv372_decision_exhaustive_cache_filters_v2';}
+  function decisionCacheKey(){return 'lfv374_decision_exhaustive_cache_filters_v2';}
   function loadPersistentDecisionCache(sig){try{const c=JSON.parse(localStorage.getItem(decisionCacheKey())||'null');return c&&c.signature===sig&&Array.isArray(c.games)?c:null;}catch{return null;}}
   function savePersistentDecisionCache(cache){try{localStorage.setItem(decisionCacheKey(),JSON.stringify(cache));}catch{}}
   function combinedIntegralSignature(){return JSON.stringify({contest:state.history.at(-1)?.concurso||0,period:state.period,policies:M.FILTERS.map(f=>state.filterPolicies[f.id]||''),indicatorTargets:indicatorQuotaSpec().targets,schema:M.SCHEMA_VERSION,threshold:M.THRESHOLD_VERSION,mode:'backend-integral-1to1'});}
   function filterAuditSignature(series=Number($('#filter-audit-series')?.value)||20,sampleSize=Number($('#filter-audit-sample')?.value)||1000){return JSON.stringify({contest:state.history.at(-1)?.concurso||0,period:state.period,series,sampleSize,schema:M.SCHEMA_VERSION,threshold:M.THRESHOLD_VERSION,mode:'filter-audit-full-history'});}
-  function combinedCheckpointKey(){return 'lfv372_combined_integral_checkpoint';}
+  function combinedCheckpointKey(){return 'lfv374_combined_integral_checkpoint';}
   function loadCombinedCheckpoint(sig){try{const c=JSON.parse(localStorage.getItem(combinedCheckpointKey())||'null');return c&&c.signature===sig?c:null;}catch{return null;}}
   function saveCombinedCheckpoint(c){try{localStorage.setItem(combinedCheckpointKey(),JSON.stringify(c));}catch{}}
   function clearCombinedCheckpoint(){try{localStorage.removeItem(combinedCheckpointKey());}catch{}}
@@ -563,59 +563,31 @@
     return {signature:cp.signature,historyUniverse:cp.historyUniverse,warmup:cp.warmup,eligibleTargets:cp.totalTargets,tests:cp.tests,skipped:cp.skipped,latestContest:cp.latestContest,period:cp.period,series:cp.series,strategyMean,randomMean,percentile,strategy13plus:cp.strategy13plus||0,random13plusMean:mean(cp.random13plus||[]),strategyDist:cp.strategyDist,randomAvgDist:Object.fromEntries([11,12,13,14,15].map(k=>[k,mean((cp.randomDist||[]).map(x=>x[k]||0))])),method:'Integral 1:1 no backend: cada alvo walk-forward usa busca exaustiva completa com o mesmo candidateScore e os bloqueios obrigatórios F28 + F29 + F36 + F37 do NOVO INDICADO.',combinationsPerContest:3268760,schemaVersion:M.SCHEMA_VERSION,thresholdVersion:M.THRESHOLD_VERSION,engine:'backend-exact-v1',completedAt:new Date().toISOString()};
   }
   function renderCombinedIntegralBenchmark(){
-    const r=state.combinedIntegralBenchmark,p=$('#combined-integral-progress'),out=$('#combined-integral-results'),btn=$('#run-combined-integral'),sig=combinedIntegralSignature(),cp=loadCombinedCheckpoint(sig);
-    if(btn)btn.textContent=cp&&cp.nextIndex<(cp.totalTargets||Infinity)?`Retomar benchmark backend · ${cp.nextIndex}/${cp.totalTargets}`:'Executar benchmark backend Integral 1:1';
-    if(!r){if(out)out.innerHTML='<div class="notice">Benchmark oficial ainda não concluído. O processamento pesado ocorre no backend em lotes exatos e pode ser retomado.</div>';if(p&&cp)p.textContent=`Checkpoint local: ${cp.nextIndex||0}/${cp.totalTargets||0} alvos concluídos.`;return;}
-    if(p)p.textContent=`Concluído e persistido · ${r.tests.toLocaleString('pt-BR')} alvos válidos · backend Integral 1:1.`;
-    if(out)out.innerHTML=[['Histórico carregado',r.historyUniverse.toLocaleString('pt-BR')],['Aquecimento',r.warmup],['Alvos válidos',r.eligibleTargets.toLocaleString('pt-BR')],['Alvos processados',r.tests.toLocaleString('pt-BR')],['Combinações por alvo',Number(r.combinationsPerContest||3268760).toLocaleString('pt-BR')],['Média jogo indicado histórico',Number(r.strategyMean||0).toFixed(3)],['Média aleatória',Number(r.randomMean||0).toFixed(3)],['Percentil vs séries aleatórias',`P${r.percentile||0}`],['13+ estratégia / aleatório médio',`${r.strategy13plus||0} / ${Number(r.random13plusMean||0).toFixed(2)}`],['Motor','Backend exato · checkpoint persistente'],['Método',r.method],['Schema',r.schemaVersion],['Threshold',r.thresholdVersion]].map(([a,b])=>`<article class="audit-card"><span>${a}</span><b>${b}</b></article>`).join('');
+    const p=$('#combined-integral-progress'),out=$('#combined-integral-results'),btn=$('#run-combined-integral');
+    if(btn)btn.textContent='Abrir Backtest Integral';
+    if(p)p.textContent='Benchmark backend antigo removido: use o Backtest Integral exato, que executa o motor real no Web Worker.';
+    if(out)out.innerHTML='<div class="notice">O endpoint backend 501 não é mais usado. O cálculo integral real está disponível em <b>Backtest → Integral exato</b>, com progresso por combinação e sem informação futura.</div>';
   }
-  async function loadBackendBenchmarkStatus(){if(!state.history.length)return;const sig=combinedIntegralSignature(),cp=loadCombinedCheckpoint(sig);if(!cp)return;if(cp.status==='complete'&&cp.result)state.combinedIntegralBenchmark=cp.result;renderCombinedIntegralBenchmark();}
+  async function loadBackendBenchmarkStatus(){renderCombinedIntegralBenchmark();}
   async function persistBenchmarkCheckpoint(cp){saveCombinedCheckpoint(cp);}
   async function runCombinedIntegralBenchmark(){
-    if(state.dataBlocked||!state.history.length)return toast('Base indisponível ou suspensa — benchmark bloqueado.');
-    if(state.backendBenchmarkRunning)return;
-    const sig=combinedIntegralSignature(),series=Math.max(1,Math.min(100,Number($('#combined-integral-series')?.value)||10)),progress=$('#combined-integral-progress');
-    let cp=loadCombinedCheckpoint(sig);
-    if(!cp||cp.series!==series||cp.period!==state.period)cp=emptyBenchmarkCheckpoint(sig,series);
-    state.backendBenchmarkRunning=true;state.combinedIntegralBenchmark=null;renderCombinedIntegralBenchmark();
-    try{
-      while(state.backendBenchmarkRunning&&cp.nextIndex<cp.totalTargets){
-        let partial=cp.partial&&cp.partial.targetIndex===cp.nextIndex?cp.partial:{targetIndex:cp.nextIndex,offset:0,bestGame:null,bestScore:null,approvedCount:0};
-        while(state.backendBenchmarkRunning&&partial.offset<3268760){
-          const data=await window.LFAppApi.post('/api/benchmark-integral/chunk',{signature:sig,targetIndex:cp.nextIndex,offset:partial.offset,bestGame:partial.bestGame,bestScore:partial.bestScore,approvedCount:partial.approvedCount,chunkSize:5000,period:cp.period,series:cp.series,policies:state.filterPolicies,indicatorTargets:cp.indicatorTargets||indicatorQuotaSpec().targets});
-          partial={targetIndex:cp.nextIndex,offset:data.offset,bestGame:data.bestGame,bestScore:data.bestScore,approvedCount:data.approvedCount};
-          cp.partial=partial;saveCombinedCheckpoint(cp);
-          const pct=data.total?Math.floor(data.offset/data.total*10000)/100:0;progress.textContent=`Backend · alvo ${cp.nextIndex+1}/${cp.totalTargets} · concurso ${data.contest} · ${Number(data.offset).toLocaleString('pt-BR')}/${Number(data.total).toLocaleString('pt-BR')} combinações (${pct.toFixed(2)}%)`;
-          if(data.complete){
-            cp.partial=null;if(data.bestGame){cp.tests++;cp.strategySum+=Number(data.targetHits||0);if(Number(data.targetHits||0)>=13)cp.strategy13plus++;if(Number(data.targetHits||0)>=11)cp.strategyDist[data.targetHits]=(cp.strategyDist[data.targetHits]||0)+1;for(let si=0;si<cp.series;si++){const rh=Number(data.randomHits?.[si]||0);cp.randomSums[si]=(cp.randomSums[si]||0)+rh;if(rh>=13)cp.random13plus[si]=(cp.random13plus[si]||0)+1;if(rh>=11)cp.randomDist[si][rh]=(cp.randomDist[si][rh]||0)+1;}}else cp.skipped++;cp.nextIndex++;await persistBenchmarkCheckpoint(cp);break;
-          }
-        }
-      }
-      if(state.backendBenchmarkRunning&&cp.nextIndex>=cp.totalTargets){cp.status='complete';cp.result=finalizeBenchmark(cp);state.combinedIntegralBenchmark=cp.result;await persistBenchmarkCheckpoint(cp);clearCombinedCheckpoint();toast('Benchmark Integral 1:1 concluído e salvo no backend.');}
-    }catch(e){progress.textContent=`Pausado por erro: ${String(e?.message||e)}. Checkpoint preservado.`;await persistBenchmarkCheckpoint(cp);}
-    finally{state.backendBenchmarkRunning=false;renderCombinedIntegralBenchmark();}
+    const mode=$('#backtest-mode');if(mode)mode.value='integral';
+    setPage('backtest');
+    toast('Backtest Integral exato selecionado. Ajuste a janela e clique em Executar backtest.');
   }
-  function cancelCombinedIntegralBenchmark(){if(state.backendBenchmarkRunning){state.backendBenchmarkRunning=false;$('#combined-integral-progress').textContent='Benchmark pausado. Checkpoint local/backend preservado.';renderCombinedIntegralBenchmark();}}
-  function auditLocalKey(){return 'lfv372_audit_'+btoa(unescape(encodeURIComponent(filterAuditSignature()))).slice(0,80).replace(/[^a-z0-9]/gi,'_');}
+  function cancelCombinedIntegralBenchmark(){toast('O benchmark backend antigo foi removido; use o controle de cancelar do Backtest Integral.');}
+  function auditLocalKey(){return 'lfv374_audit_'+btoa(unescape(encodeURIComponent(filterAuditSignature()))).slice(0,80).replace(/[^a-z0-9]/gi,'_');}
   async function loadPersistedAudit(){if(!state.history.length)return;try{const data=safeJSON(auditLocalKey(),null);if(data?.result){state.fullFilterAudit=data.result;renderFullFilterAudit();$('#filter-audit-progress').textContent=`Auditoria local carregada · ${state.fullFilterAudit.targets.toLocaleString('pt-BR')} alvos.`;}}catch{}}
   async function persistAuditResult(result,series,sampleSize){try{localStorage.setItem(auditLocalKey(),JSON.stringify({result,contest:state.history.at(-1)?.concurso||null,period:state.period,series,sampleSize,createdAt:new Date().toISOString()}));}catch(e){console.warn('Falha ao persistir auditoria local',e);}}
   function renderSelfTest(){
     const el=$('#self-test-results');if(!el)return;const r=state.selfTest;if(!r){el.innerHTML='<div class="notice">Autoteste aguardando execução.</div>';return;}el.innerHTML=`<div class="audit-grid">${r.checks.map(x=>`<article class="audit-card ${x.pass?'ok':'danger'}"><span>${x.name}</span><b>${x.pass?'PASS':'FAIL'}</b><small>${x.detail||''}</small></article>`).join('')}</div><p class="muted">Resultado: ${r.passed}/${r.total} · ${r.ok?'PASS':'REVISAR'} · ${r.checkedAt||''}</p>`;
   }
-  function f28FourAlertReachable(){
-    const primeSet=new Set([2,3,5,7,11,13,17,19,23]);
-    let dp=new Set(['0|0|0|0']);
-    for(const n of ALL){
-      const next=new Set(dp);
-      for(const key of dp){
-        const [picked,total,odds,primes]=key.split('|').map(Number);
-        if(picked>=15)continue;
-        const np=picked+1,ns=total+n,no=odds+(n%2),nr=primes+(primeSet.has(n)?1:0);
-        if(np<=15&&ns<=220&&no<=9&&nr<=6)next.add(`${np}|${ns}|${no}|${nr}`);
-      }
-      dp=next;
-    }
-    return dp.has('15|220|9|6');
+  function findF28SelfTestCase(ctx){
+    const preferred=[1,2,3,4,5,6,7,8,9,11,12,14,15,17,25],tryGame=g=>{const r=M.inspect(g,ctx),f28=r.filters.find(x=>x.id===28);return f28&&!f28.passed?{game:g,report:r,detail:f28.detail}:null;};
+    let found=tryGame(preferred);if(found)return found;
+    const total=Math.min(10000,M.nCk(25,15));
+    for(let rank=0;rank<total;rank++){found=tryGame(M.unrank(ALL,15,rank));if(found)return found;}
+    return null;
   }
   function findF37SelfTestCase(ctx,latest){
     const selected=new Set(latest),missing=ALL.filter(n=>!selected.has(n));
@@ -654,8 +626,8 @@
     const c36=findF36SelfTestCase(ctx);
     const t36={name:'F36 · 3 falhas F30–F35 bloqueiam',pass:Boolean(c36&&!M.policyAllows(c36.report,state.filterPolicies)),detail:c36?`${c36.detail} · falhas ${c36.fails.map(x=>'F'+x.id).join(', ')}`:'Nenhum caso com 3 falhas encontrado nos casos de prova'};
 
-    const f28Reachable=f28FourAlertReachable(),probe28=[1,2,3,4,5,6,7,8,9,11,12,14,15,17,25],probe28Report=M.inspect(probe28,ctx),probe28Filter=probe28Report.filters.find(x=>x.id===28);
-    const t28={name:'F28 · 4 alertas máximos são alcançáveis',pass:f28Reachable,detail:f28Reachable?'Existe estado combinatório capaz de acionar o bloqueio':'FAIL REAL: soma=220 + ímpares=9 + primos=6 é impossível em 15 dezenas; logo F28 nunca chega a 4 alertas. Caso de 3 alertas continua passando: '+(probe28Filter?.detail||'')};
+    const c28=findF28SelfTestCase(ctx);
+    const t28={name:'F28 · 3 alertas máximos bloqueiam',pass:Boolean(c28&&!M.policyAllows(c28.report,state.filterPolicies)),detail:c28?`${gameText(c28.game)} · ${c28.detail}`:'Nenhum caso com 3 alertas encontrado'};
 
     const badColor=[1,2,3,4,5,11,12,13,14,15,21,22,23,24,25],colorRule=M.mandatoryColorRule(badColor),colorReport=M.inspect(badColor,ctx);
     const tColor={name:'Cores · jogo fora da regra é recusado',pass:Boolean(colorRule.blocked&&!colorReport.approved&&!M.policyAllows(colorReport,state.filterPolicies)),detail:`${gameText(badColor)} · ${colorRule.distinct} cores · ${colorRule.complete} cores completas`};
@@ -684,7 +656,7 @@
       state.selfTest={ok:false,passed:0,total:1,checks:[{name:'API autoteste',pass:false,detail:String(e?.message||e)}],checkedAt:new Date().toISOString()};renderSelfTest();
     }finally{if(btn)btn.disabled=false;}
   }
-  function exportFilterAudit(){const r=state.fullFilterAudit;if(!r)return toast('Execute a auditoria integral antes de exportar.');const payload={app:'LF Inteligente V3.7.2',generatedAt:new Date().toISOString(),matrixSchema:M.SCHEMA_VERSION,thresholdVersion:M.THRESHOLD_VERSION,latestContest:state.history.at(-1)?.concurso||null,result:r,combinedIntegralBenchmark:state.combinedIntegralBenchmark};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`LF-Matriz51-Auditoria-${state.history.at(-1)?.concurso||'base'}.json`;a.click();URL.revokeObjectURL(a.href);}
+  function exportFilterAudit(){const r=state.fullFilterAudit;if(!r)return toast('Execute a auditoria integral antes de exportar.');const payload={app:'LF Inteligente V3.7.4',generatedAt:new Date().toISOString(),matrixSchema:M.SCHEMA_VERSION,thresholdVersion:M.THRESHOLD_VERSION,latestContest:state.history.at(-1)?.concurso||null,result:r,combinedIntegralBenchmark:state.combinedIntegralBenchmark};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`LF-Matriz51-Auditoria-${state.history.at(-1)?.concurso||'base'}.json`;a.click();URL.revokeObjectURL(a.href);}
   function renderHistory(filter=''){const q=String(filter).trim(),rows=state.history.slice().reverse().filter(d=>!q||String(d.concurso).includes(q)),shown=rows.slice(0,500),summary=$('#history-summary');if(summary)summary.textContent=q?`${rows.length} concurso(s) encontrado(s) · exibindo até 500`:`${state.history.length.toLocaleString('pt-BR')} concursos carregados · exibindo os 500 mais recentes; a busca consulta toda a base`;$('#history-body').innerHTML=shown.map(d=>`<tr><td><b>${d.concurso}</b></td><td>${d.data||'—'}</td><td><div class="history-balls">${d.dezenas.map(mini).join('')}</div></td></tr>`).join('')||'<tr><td colspan="3">Nenhum concurso carregado.</td></tr>';}
 
   function renderPage(name){({decision:renderDecision,analysis:renderAnalysis,generator:renderGenerated,matrix:renderMatrix,statistics:()=>{renderStats();renderStatsDecision();renderAdvancedAnalytics();},lab:renderLab,vertical:renderVertical,vertical2:renderVertical2,cycles:renderCycleClosure,compare:runCompare,checker:renderCheckerAuto,mygames:renderMyGames,linecols:renderLineCols,charts:renderCharts,pairs:renderPairs,positions:renderPositions,groups:renderGroups,audit:runAudit,history:renderHistory}[name]||(()=>{}))();}
