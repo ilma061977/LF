@@ -28,8 +28,9 @@ module.exports=async function handler(req,res){
     const r=await fetch(SOURCE,{headers:{'user-agent':'Mozilla/5.0 LF-Inteligente/1.0'}});
     if(!r.ok)throw new Error('Fonte secundária retornou HTTP '+r.status);
     const rows=parse(clean(await r.text()));
-    const from=Math.max(1,Number(req.query?.from||1));
-    const to=Math.max(from,Number(req.query?.to||999999));
+    const u=new URL(req.url,'https://lf.local');
+    const from=Math.max(1,Number(u.searchParams.get('from')||1));
+    const to=Math.max(from,Number(u.searchParams.get('to')||999999));
     const selected=rows.filter(x=>x.concurso>=from&&x.concurso<=to);
     res.setHeader('Cache-Control','public, max-age=0, s-maxage=21600, stale-while-revalidate=86400');
     res.status(200).json({ok:true,source:'As Loterias · ordem real de sorteio',sourceUrl:SOURCE,count:selected.length,totalParsed:rows.length,from,to,rows:selected});
