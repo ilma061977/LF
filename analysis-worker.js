@@ -65,11 +65,43 @@ function proProfileAllows(game,report,profile){
   return true;
 }
 
-function exhaustiveCompare(a,b){return b.score-a.score||keyOf(a.game).localeCompare(keyOf(b.game));}
+function clamp01(x){return Math.max(0,Math.min(100,Number(x)||0));}
+function mask25(game){let m=0;for(const n of game||[])m|=(1<<(Number(n)-1));return m>>>0;}
+function popcount32(x){x=x>>>0;x=x-((x>>>1)&0x55555555);x=(x&0x33333333)+((x>>>2)&0x33333333);return (((x+(x>>>4))&0x0F0F0F0F)*0x01010101)>>>24;}
+function buildVirginRankContext(history=[],previousVirginGames=[]){
+  const hist=(history||[]).map(d=>({contest:Number(d.concurso)||0,mask:mask25(d.dezenas||[])})),pairFreq=new Int32Array(26*26),triFreq=new Int32Array(26*26*26);
+  for(const d of history||[]){const g=(d.dezenas||[]).map(Number).sort((a,b)=>a-b);for(let i=0;i<g.length;i++)for(let j=i+1;j<g.length;j++)pairFreq[g[i]*26+g[j]]++;for(let i=0;i<g.length;i++)for(let j=i+1;j<g.length;j++)for(let k=j+1;k<g.length;k++)triFreq[(g[i]*26+g[j])*26+g[k]]++;}
+  let pairMin=Infinity,pairMax=-Infinity,triMin=Infinity,triMax=-Infinity;
+  for(let a=1;a<=25;a++)for(let b=a+1;b<=25;b++){const v=pairFreq[a*26+b];pairMin=Math.min(pairMin,v);pairMax=Math.max(pairMax,v);for(let d=b+1;d<=25;d++){const t=triFreq[(a*26+b)*26+d];triMin=Math.min(triMin,t);triMax=Math.max(triMax,t);}}
+  return{hist,h10:hist.slice(-10),h50:hist.slice(-50),h100:hist.slice(-100),pairFreq,triFreq,pairMin,pairMax,triMin,triMax,previous:(previousVirginGames||[]).map(mask25).filter(Boolean)};
+}
+function recentOverlapMax(mask,arr){let mx=0;for(const d of arr){const h=popcount32(mask&d.mask);if(h>mx)mx=h;}return mx;}
+function virginRankMetrics(game,matrixScore,vc,profile='strong'){
+  const mask=mask25(game),top=[],counts={12:0,13:0,14:0,15:0};let max=0;
+  for(const d of vc.hist){const h=popcount32(mask&d.mask);if(h>max)max=h;if(h>=12&&h<=15)counts[h]++;if(top.length<10){top.push(h);top.sort((a,b)=>b-a);}else if(h>top[9]){top[9]=h;top.sort((a,b)=>b-a);}}
+  const top10avg=top.length?mean(top):0,recent10=recentOverlapMax(mask,vc.h10),recent50=recentOverlapMax(mask,vc.h50),recent100=recentOverlapMax(mask,vc.h100);
+  let pairSum=0,pairN=0,triSum=0,triN=0;
+  for(let i=0;i<game.length;i++)for(let j=i+1;j<game.length;j++){pairSum+=vc.pairFreq[game[i]*26+game[j]];pairN++;for(let k=j+1;k<game.length;k++){triSum+=vc.triFreq[(game[i]*26+game[j])*26+game[k]];triN++;}}
+  const pairAvg=pairN?pairSum/pairN:0,triAvg=triN?triSum/triN:0,pairNovel=clamp01((vc.pairMax-pairAvg)/Math.max(1,vc.pairMax-vc.pairMin)*100),triNovel=clamp01((vc.triMax-triAvg)/Math.max(1,vc.triMax-vc.triMin)*100),pairTripleScore=(pairNovel+triNovel)/2;
+  let priorMax=0;for(const pm of vc.previous)priorMax=Math.max(priorMax,popcount32(mask&pm));const diversityScore=vc.previous.length?clamp01((15-priorMax)/5*100):100;
+  const score13=clamp01(100-counts[13]*10),score12=clamp01(100-Math.max(0,counts[12]-30)*1.5),neighborScore=clamp01((13.5-top10avg)/1.5*100);
+  const overlapScore=x=>clamp01((13-x)/4*100),recentScore=.5*overlapScore(recent10)+.3*overlapScore(recent50)+.2*overlapScore(recent100);
+  const virginScore=clamp01(.35*score13+.25*score12+.20*neighborScore+.10*recentScore+.05*pairTripleScore+.05*diversityScore);
+  const matrixNorm=clamp01((Number(matrixScore)-70)/18*100),weights=profile==='light'?{matrix:.7,virgin:.3}:profile==='max'?{matrix:.3,virgin:.7}:{matrix:.5,virgin:.5},rankScore=weights.matrix*matrixNorm+weights.virgin*virginScore;
+  const sensitivity={light:.7*matrixNorm+.3*virginScore,strong:.5*matrixNorm+.5*virginScore,max:.3*matrixNorm+.7*virginScore};
+  return{matrixScore:Number(matrixScore),matrixNorm:+matrixNorm.toFixed(2),virginScore:+virginScore.toFixed(2),rankScore:+rankScore.toFixed(2),profile,maxHistorical:max,n13:counts[13],n12:counts[12],top10Avg:+top10avg.toFixed(2),recent10,recent50,recent100,pairAvg:+pairAvg.toFixed(2),triAvg:+triAvg.toFixed(2),pairTripleScore:+pairTripleScore.toFixed(2),previousVirginMaxOverlap:priorMax||null,diversityScore:+diversityScore.toFixed(2),sensitivity:{light:+sensitivity.light.toFixed(2),strong:+sensitivity.strong.toFixed(2),max:+sensitivity.max.toFixed(2)}};
+}
+function paretoUpdate(front,entry){
+  const e=entry.virginMeta;if(!e)return;
+  if(front.some(x=>x.virginMeta.matrixNorm>=e.matrixNorm&&x.virginMeta.virginScore>=e.virginScore&&(x.virginMeta.matrixNorm>e.matrixNorm||x.virginMeta.virginScore>e.virginScore)))return;
+  for(let i=front.length-1;i>=0;i--){const x=front[i].virginMeta;if(e.matrixNorm>=x.matrixNorm&&e.virginScore>=x.virginScore&&(e.matrixNorm>x.matrixNorm||e.virginScore>x.virginScore))front.splice(i,1);}
+  front.push(entry);
+}
+function exhaustiveCompare(a,b){const ar=Number(a.rankScore??a.score),br=Number(b.rankScore??b.score);return br-ar||Number(b.score)-Number(a.score)||keyOf(a.game).localeCompare(keyOf(b.game));}
 function insertExhaustiveTop(top,entry,limit){let lo=0,hi=top.length;while(lo<hi){const mid=(lo+hi)>>1;if(exhaustiveCompare(entry,top[mid])<0)hi=mid;else lo=mid+1;}top.splice(lo,0,entry);if(top.length>limit)top.pop();}
-function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progressInfo=null,quotaSpec=null,proProfile=null){
+function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progressInfo=null,quotaSpec=null,proProfile=null,rankingConfig=null){
   const block=new Set((excluded||[]).map(Number)),pool=ALL.filter(n=>!block.has(n));if(pool.length<15)return{game:null,score:-Infinity,tested:0,total:0,approvedCount:0,eligibleCount:0,rankIndex,topGames:[],topScores:[],diagnostics:null};
-  const total=M.nCk(pool.length,15),limit=Math.max(rankIndex+1,Math.min(1000,Number(topLimit)||200)),top=[];let tested=0,approvedCount=0,eligibleCount=0,lastProgress=0,approvedHitDist=Object.fromEntries(Array.from({length:16},(_,i)=>[i,0]));
+  const total=M.nCk(pool.length,15),limit=Math.max(rankIndex+1,Math.min(1000,Number(topLimit)||200)),top=[],virginMode=rankingConfig?.mode==='virgin',virginProfile=rankingConfig?.profile||'strong',virginCtx=virginMode?buildVirginRankContext(ctx.history||[],rankingConfig?.previousVirginGames||[]):null,pareto=[];let tested=0,approvedCount=0,eligibleCount=0,lastProgress=0,virginScoreSum=0,virginScoreCount=0,approvedHitDist=Object.fromEntries(Array.from({length:16},(_,i)=>[i,0])),virginHistogram=Array(101).fill(0);
   const diag={colorPreRejected:0,patternRejected:0,colorRuleRejected:0,lineRepeatRejected:0,columnRepeatRejected:0,lineColumnRejected:0,quotaRejected:0,filterFirst:{},filterAny:{}};
   const progressEvery=Math.max(100,Math.min(500,Math.floor(total/1000)));if(!progressInfo)postMessage({type:'progress',tested:0,total,maxAttempts:total,found:0,approvedCount:0,eligibleCount:0,mode:'Busca exaustiva iniciada · preparando varredura integral'});
   eachComb(pool,15,gref=>{const g=[...gref];tested++;
@@ -84,12 +116,14 @@ function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progre
         if(blocked.length)diag.filterFirst[blocked[0].id]=(diag.filterFirst[blocked[0].id]||0)+1;
       }else{
         approvedCount++;if(progressInfo?.targetDraw)approvedHitDist[hits(g,progressInfo.targetDraw)]++;
-        if(quotaAllows(g,quotaSpec)&&proProfileAllows(g,report,proProfile)){eligibleCount++;insertExhaustiveTop(top,{game:g,score},limit);}else diag.quotaRejected++;
+        if(quotaAllows(g,quotaSpec)&&proProfileAllows(g,report,proProfile)){eligibleCount++;if(virginMode){const virginMeta=virginRankMetrics(g,score,virginCtx,virginProfile),entry={game:g,score,rankScore:virginMeta.rankScore,virginMeta};virginScoreSum+=virginMeta.virginScore;virginScoreCount++;virginHistogram[Math.max(0,Math.min(100,Math.round(virginMeta.virginScore)))]++;insertExhaustiveTop(top,entry,limit);paretoUpdate(pareto,entry);}else insertExhaustiveTop(top,{game:g,score},limit);}else diag.quotaRejected++;
       }
     }
     if(tested-lastProgress>=progressEvery||tested===total){lastProgress=tested;const provisional=top[Math.min(rankIndex,Math.max(0,top.length-1))]||top[0]||null;if(progressInfo?.type==='backtest'){const grandTested=(progressInfo.current-1)*total+tested,grandTotal=progressInfo.targets*total;postMessage({type:'backtest-integral-progress',contest:progressInfo.contest,current:progressInfo.current,total:progressInfo.targets,comboTested:tested,comboTotal:total,grandTested,grandTotal,approvedCount,eligibleCount});}else if(progressInfo?.type==='combined-integral')postMessage({type:'combined-integral-combo-progress',contest:progressInfo.contest,current:progressInfo.current,total:progressInfo.targets,comboTested:tested,comboTotal:total,approvedCount,eligibleCount});else postMessage({type:'progress',tested,total,maxAttempts:total,found:eligibleCount,approvedCount,eligibleCount,provisionalGame:provisional?.game||null,provisionalScore:provisional?.score??null,mode:'Busca exaustiva integral · 51 filtros · F28 + F29 + F36 + F37 obrigatórios'});}});
-  const picked=top[rankIndex]||null;const diagnostics={...diag,tested,total,approvedCount,eligibleCount,generatedAt:new Date().toISOString()};
-  return{game:picked?.game||null,score:picked?.score??-Infinity,tested,total,approvedCount,eligibleCount,rankIndex,topGames:top.map(x=>x.game),topScores:top.map(x=>x.score),approvedHitDist,diagnostics};
+  const picked=top[rankIndex]||null,paretoTop=pareto.sort(exhaustiveCompare).slice(0,10);let percentile=null;if(virginMode&&picked?.virginMeta&&virginScoreCount){let le=0;for(let i=0;i<=Math.round(picked.virginMeta.virginScore);i++)le+=virginHistogram[i];percentile=Math.round(le/virginScoreCount*100);}
+  const virginStats=virginMode?{profile:virginProfile,meanScore:virginScoreCount?+(virginScoreSum/virginScoreCount).toFixed(2):null,percentile,eligibleScored:virginScoreCount,paretoCount:pareto.length}:null;
+  const diagnostics={...diag,tested,total,approvedCount,eligibleCount,generatedAt:new Date().toISOString(),virginStats};
+  return{game:picked?.game||null,score:picked?.score??-Infinity,rankScore:picked?.rankScore??picked?.score??-Infinity,tested,total,approvedCount,eligibleCount,rankIndex,topGames:top.map(x=>x.game),topScores:top.map(x=>x.score),topMeta:top.map(x=>x.virginMeta||null),paretoGames:paretoTop.map(x=>x.game),paretoMeta:paretoTop.map(x=>x.virginMeta),virginStats,approvedHitDist,diagnostics};
 }
 
 self.onmessage=e=>{const d=e.data||{};if(d.task==='generate')return runGenerate(d);if(d.task==='lab')return runLab(d);if(d.task==='backtest')return runBacktest(d);if(d.task==='filter-audit')return runFilterAudit(d);if(d.task==='combined-integral')return runCombinedIntegral(d);if(d.task==='closure')return runClosure(d);};
@@ -98,7 +132,7 @@ function runGenerate(d){
   const ctx=M.buildContext(d.history||[],{window:d.period||10}),target=1,maxAttempts=Math.max(1000,Number(d.maxAttempts)||250000),quotaSpec=d.indicatorQuotas||(d.indicatorTargets?buildIndicatorQuotaSpec(d.history||[],d.indicatorTargets):null);
   if(d.colorBalanced&&!colorFeasible(d.excluded||[])){postMessage({type:'done',games:[],tested:0,complete:false,maxAttempts,reason:'As exclusões impedem formar um jogo com 8–10 cores sem cair nas estruturas bloqueadas.'});return;}
   if(d.deterministic&&!d.colorBalanced){
-    if(d.exhaustive){const best=exhaustiveBest(ctx,d.policies||{},d.excluded||[],Math.max(0,Number(d.rankIndex)||0),Math.max(50,Number(d.topLimit)||200),null,quotaSpec,d.proProfile||null);postMessage({type:'done',games:best.game?[best.game]:[],tested:best.tested,total:best.total,complete:true,maxAttempts:best.total,deterministic:true,exhaustive:true,mode:'Busca exaustiva integral · 51 filtros · F28 + F29 + F36 + F37 obrigatórios',score:best.score,approvedCount:best.approvedCount,eligibleCount:best.eligibleCount,rankIndex:best.rankIndex,topGames:best.topGames,topScores:best.topScores,diagnostics:best.diagnostics});return;}
+    if(d.exhaustive){const rankingConfig=d.rankingMode==='virgin'?{mode:'virgin',profile:d.virginProfile||'strong',previousVirginGames:d.previousVirginGames||[]}:null,best=exhaustiveBest(ctx,d.policies||{},d.excluded||[],Math.max(0,Number(d.rankIndex)||0),Math.max(50,Number(d.topLimit)||200),null,quotaSpec,d.proProfile||null,rankingConfig);postMessage({type:'done',games:best.game?[best.game]:[],tested:best.tested,total:best.total,complete:true,maxAttempts:best.total,deterministic:true,exhaustive:true,mode:d.rankingMode==='virgin'?'Busca exaustiva integral · Ranking Virgem exclusivo · F29 + F37 obrigatórios':'Busca exaustiva integral · 51 filtros · F28 + F29 + F36 + F37 obrigatórios',score:best.score,rankScore:best.rankScore,approvedCount:best.approvedCount,eligibleCount:best.eligibleCount,rankIndex:best.rankIndex,topGames:best.topGames,topScores:best.topScores,topMeta:best.topMeta,paretoGames:best.paretoGames,paretoMeta:best.paretoMeta,virginStats:best.virginStats,diagnostics:best.diagnostics});return;}
     const ex=new Set((d.excluded||[]).map(Number)),games=sampledGames(Math.max(1000,Math.min(50000,Number(d.sampleSize)||12000))).filter(g=>{if(!g.every(n=>!ex.has(n))||!indicatedColorValid(g)||!quotaAllows(g,quotaSpec))return false;const rr=M.inspect(g,ctx);return proProfileAllows(g,rr,d.proProfile||null)}),best=deterministicBestFromPool(ctx,d.policies||{},games);
     postMessage({type:'done',games:best.game?[best.game]:[],tested:best.tested,total:best.total,complete:!!best.game,maxAttempts:best.tested,deterministic:true,exhaustive:false,score:best.score,approvedCount:best.approvedCount,rankIndex:best.rankIndex});return;
   }
@@ -120,7 +154,7 @@ function runBacktest(d){
   for(let i=startTarget;i<targets.length;i++){
     const target=targets[i],ix=history.findIndex(x=>x.concurso===target.concurso),prior=history.slice(0,ix);if(prior.length<10){sendCheckpoint(i+1);continue;}eligible++;
     const ctx=M.buildContext(prior,{window:period}),quota=buildIndicatorQuotaSpec(prior,d.indicatorTargets||{});
-    const best=mode==='integral'?exhaustiveBest(ctx,policies,[],0,1,{type:'backtest',contest:target.concurso,current:i+1,targets:targets.length,targetDraw:target.dezenas},quota):deterministicBestFromPool(ctx,policies,sampledGames(sampleSize).filter(g=>quotaAllows(g,quota)));
+    const rankingConfig=d.selectionMode==='virgin'?{mode:'virgin',profile:d.virginProfile||'strong',previousVirginGames:[]}:null,best=mode==='integral'?exhaustiveBest(ctx,policies,[],0,1,{type:'backtest',contest:target.concurso,current:i+1,targets:targets.length,targetDraw:target.dezenas},quota,null,rankingConfig):deterministicBestFromPool(ctx,policies,sampledGames(sampleSize).filter(g=>quotaAllows(g,quota)));
     const gen=best.game;if(mode==='integral'){integralTargetsProcessed++;approvedTotal+=Number(best.approvedCount||0);for(let p=0;p<=15;p++)approvedHitDist[p]+=Number(best.approvedHitDist?.[p]||0);}
     if(!gen){skipped++;sendCheckpoint(i+1);postMessage({type:'backtest-progress',current:i+1,total:targets.length,tests:strat.length,skipped,mode,resumedFrom:startTarget});continue;}
     strat.push({contest:target.concurso,h:hits(gen,target.dezenas),score:best.score});blockPass.push(blockedFailures(M.inspect(target.dezenas,ctx),policies).length===0?1:0);
