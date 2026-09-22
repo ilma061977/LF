@@ -13,6 +13,7 @@ module.exports = async function handler(req, res) {
   const lines = [0,0,0,0,0], cols = [0,0,0,0,0];
   for (const n of g) if (n >= 1 && n <= 25) { lines[Math.floor((n-1)/5)]++; cols[(n-1)%5]++; }
   const metadataSynced = latest !== null && latest === declaredLatest && latest === validatedLatest && history.length === loadedCount;
+  const staleLockConsistent = Boolean(live.analysisSuspended) === Boolean(live.freshnessAlert?.possibleNewContest);
   const checks = [
     { name: 'API histórica', pass: history.length > 0, detail: `${history.length} concursos` },
     { name: 'Base contínua', pass: live.baseValidation?.valid === true && live.baseValidation?.missingCount === 0, detail: `${live.baseValidation?.missingCount || 0} lacunas` },
@@ -20,6 +21,7 @@ module.exports = async function handler(req, res) {
     { name: 'Último concurso', pass: latest !== null, detail: `#${latest || '—'}` },
     { name: 'Atualização ao vivo', pass: live.liveUpdate?.ok === true, detail: live.liveUpdate?.ok ? `${live.liveUpdate?.mode||'caixa'} · ${live.liveUpdate?.source||''}` : (live.liveUpdate?.error || 'indisponível') },
     { name: 'Alerta de atualização', pass: live.freshnessAlert?.possibleNewContest !== true, detail: live.freshnessAlert?.message || 'sem concurso novo pendente' },
+    { name: 'Trava de base atrasada', pass: staleLockConsistent, detail: live.analysisSuspended ? 'análises suspensas enquanto concurso esperado não chega' : 'base liberada dentro da janela esperada' },
     { name: 'Último concurso válido 15 dezenas', pass: g.length === 15 && new Set(g).size === 15, detail: g.length === 15 ? g.map(n=>String(n).padStart(2,'0')).join(' ') : 'inválido' },
     { name: 'Perfis Linha/Coluna calculáveis', pass: g.length === 15 && lines.reduce((a,b)=>a+b,0) === 15 && cols.reduce((a,b)=>a+b,0) === 15, detail: `L ${lines.join('-')} · C ${cols.join('-')}` }
   ];
