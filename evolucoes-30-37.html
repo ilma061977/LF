@@ -135,7 +135,7 @@ function currentProPass(g){
 }
 
 function lfBlockingFailures(g){
- const pol=policies(),ctx=LFMatrix51.buildContext(H,{window:Math.min(200,Math.max(10,H.length))}),rep=LFMatrix51.inspect(g,ctx),mandatory=new Set([28,29,36]),fails=[];
+ const pol=policies(),ctx=LFMatrix51.buildContext(H,{window:Math.min(200,Math.max(10,H.length))}),rep=LFMatrix51.inspect(g,ctx),mandatory=new Set([28,29,36,37]),fails=[];
  for(const f of rep.filters||[]){const p=mandatory.has(f.id)?'block':(pol[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'));if(p==='block'&&!f.passed)fails.push({id:'F'+String(f.id).padStart(2,'0'),name:f.name||('Filtro '+f.id)});}
  if(rep?.patternCooldown?.blocked)fails.push({id:'PADRÃO',name:'Carência de padrão exato'});
  if(rep?.colorRule?.blocked)fails.push({id:'CORES',name:'Regra obrigatória de cores'});if(rep?.lineRepeat?.blocked)fails.push({id:'LINHA',name:'Distribuição de linhas igual ao concurso anterior'});if(rep?.columnRepeat?.blocked)fails.push({id:'COLUNA',name:'Distribuição de colunas igual ao concurso anterior'});
