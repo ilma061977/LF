@@ -104,6 +104,7 @@ $('#rules-clear').onclick=()=>{RULES=[];saveRules()};
 function addExactRule(metric,value){const ex=RULES.find(r=>r.metric===metric);if(ex){ex.min=value;ex.max=value}else RULES.push({metric,min:value,max:value});saveRules();setTab('generator')}
 
 function policies(){try{return JSON.parse(localStorage.getItem('lfv3_filter_policies')||'{}')}catch{return{}}}
+function lfAnalysisWindow(){const p=Number(localStorage.getItem('lfv3_period'))||50;return Math.max(10,Math.min(200,p));}
 function renderGame(g){if(!g)return'';return '<div class="panel"><h3>Jogo PRO gerado</h3><div style="font-size:20px;font-weight:900;letter-spacing:.12em">'+g.map(pad).join(' ')+'</div><div class="note">Este é um teste local do mesmo Perfil PRO. O Jogo Indicado oficial será recalculado no app principal por busca exaustiva 100% usando as regras atualmente salvas.</div></div>'}
 $('#pro-generate').onclick=()=>{
  if(!RULES.length&&!confirm('O perfil está vazio. Executar somente com a Matriz 51?'))return;
@@ -129,13 +130,13 @@ function historicExactIndex(){const m=new Map();for(const d of H){const k=gameKe
 function parseGroups15(text){return String(text||'').split(/\n+/).map(x=>parseNums(x)).filter(x=>x.length)}
 function bestHistoricalHit(g){let best=0,contests=[];for(const d of H){const h=hit(g,d.dezenas);if(h>best){best=h;contests=[d.concurso]}else if(h===best)contests.push(d.concurso)}return{best,contests}}
 function currentProPass(g){
- const rep=LFMatrix51.inspect(g,LFMatrix51.buildContext(H,{window:Math.min(200,Math.max(10,H.length))})),m=rep.metrics||{};
+ const rep=LFMatrix51.inspect(g,LFMatrix51.buildContext(H,{window:lfAnalysisWindow()})),m=rep.metrics||{};
  for(const r of RULES){let v=null;if(r.metric==='sum')v=m.total;else if(r.metric==='odd')v=m.odds;else if(r.metric==='prime')v=m.primes;else if(r.metric==='fib')v=m.fib;else if(r.metric==='m3')v=m.m3;else if(r.metric==='border')v=m.border;else if(r.metric==='center')v=m.center;else if(r.metric==='repeat')v=m.repeated;else if(r.metric==='run')v=m.run;if(v==null||v<r.min||v>r.max)return false}
  return true;
 }
 
 function lfBlockingFailures(g){
- const pol=policies(),ctx=LFMatrix51.buildContext(H,{window:Math.min(200,Math.max(10,H.length))}),rep=LFMatrix51.inspect(g,ctx),mandatory=new Set([28,29,36,37]),fails=[];
+ const pol=policies(),ctx=LFMatrix51.buildContext(H,{window:lfAnalysisWindow()}),rep=LFMatrix51.inspect(g,ctx),mandatory=new Set([28,29,36,37]),fails=[];
  for(const f of rep.filters||[]){const p=mandatory.has(f.id)?'block':(pol[f.id]||(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'));if(p==='block'&&!f.passed)fails.push({id:'F'+String(f.id).padStart(2,'0'),name:f.name||('Filtro '+f.id)});}
  if(rep?.patternCooldown?.blocked)fails.push({id:'PADRÃO',name:'Carência de padrão exato'});
  if(rep?.colorRule?.blocked)fails.push({id:'CORES',name:'Regra obrigatória de cores'});if(rep?.lineRepeat?.blocked)fails.push({id:'LINHA',name:'Distribuição de linhas igual ao concurso anterior'});if(rep?.columnRepeat?.blocked)fails.push({id:'COLUNA',name:'Distribuição de colunas igual ao concurso anterior'});
@@ -145,7 +146,7 @@ function renderVirginRows(items,mode='check'){
  const idx=historicExactIndex(),unique=idx.size,virginTotal=TOTAL-unique;
  const prepared=items.map(g=>{const exact=idx.get(gameKey(g))||[],bh=bestHistoricalHit(g),virgin=!exact.length,lf=lfBlockingFailures(g),proOk=currentProPass(g),status=!virgin?'PREMIADO':lf.fails.length?'VIRGEM BLOQUEADO':'VIRGEM APROVADO';return{g,exact,bh,virgin,lf,proOk,status}});
  const blocked=prepared.filter(x=>x.status==='VIRGEM BLOQUEADO').length,approved=prepared.filter(x=>x.status==='VIRGEM APROVADO').length,premiado=prepared.filter(x=>x.status==='PREMIADO').length;
- $('#vg-out').innerHTML='<div class="kpis">'+[['Histórico completo',H.length+' concursos'],['Virgens no universo',fmt(virginTotal)],['Virgem aprovado',approved],['Virgem bloqueado',blocked],['Premiado',premiado]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['#','Grupo 15D','Status','Filtros LF que bloqueiam','Perfil PRO','Saídas exatas','Concurso(s) 15/15','Melhor histórico'],prepared.map((x,i)=>[i+1,'<span class="mono">'+x.g.map(pad).join(' ')+'</span>',x.status==='VIRGEM APROVADO'?'<span class="status-ok">'+x.status+'</span>':'<span class="status-warn">'+x.status+'</span>',x.lf.fails.length?x.lf.fails.map(f=>'<b>'+f.id+'</b> '+f.name).join(' · '):'—',x.proOk?'<span class="status-ok">ATENDE</span>':'<span class="status-warn">NÃO ATENDE</span>',x.exact.length,x.exact.length?x.exact.map(d=>'#'+d.concurso).join(', '):'—',x.bh.best+'/15']))+'</div><div class="note">'+(mode==='generate'?'Todos os indicados foram confirmados como <b>VIRGEM APROVADO</b>: nunca saíram 15/15 e não falham em filtro ativo de bloqueio do LF.':'Definição usada: <b>VIRGEM BLOQUEADO</b> = nunca saiu 15/15 e falha em pelo menos um filtro atualmente configurado como Bloquear. Avisos e filtros ignorados não transformam o grupo em bloqueado.')+'</div>';
+ $('#vg-out').innerHTML='<div class="kpis">'+[['Histórico completo',H.length+' concursos'],['Virgens no universo',fmt(virginTotal)],['Virgem aprovado',approved],['Virgem bloqueado',blocked],['Premiado',premiado],['Janela LF oficial',lfAnalysisWindow()+' concursos']].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['#','Grupo 15D','Status','Filtros LF que bloqueiam','Perfil PRO','Saídas exatas','Concurso(s) 15/15','Melhor histórico'],prepared.map((x,i)=>[i+1,'<span class="mono">'+x.g.map(pad).join(' ')+'</span>',x.status==='VIRGEM APROVADO'?'<span class="status-ok">'+x.status+'</span>':'<span class="status-warn">'+x.status+'</span>',x.lf.fails.length?x.lf.fails.map(f=>'<b>'+f.id+'</b> '+f.name).join(' · '):'—',x.proOk?'<span class="status-ok">ATENDE</span>':'<span class="status-warn">NÃO ATENDE</span>',x.exact.length,x.exact.length?x.exact.map(d=>'#'+d.concurso).join(', '):'—',x.bh.best+'/15']))+'</div><div class="note">'+(mode==='generate'?'Todos os indicados foram confirmados como <b>VIRGEM APROVADO</b>: nunca saíram 15/15 e não falham em filtro ativo de bloqueio do LF.':'Definição usada: <b>VIRGEM BLOQUEADO</b> = nunca saiu 15/15 e falha em pelo menos um filtro atualmente configurado como Bloquear. Avisos e filtros ignorados não transformam o grupo em bloqueado.')+'</div>';
 }
 function renderVirgins(){
  const idx=historicExactIndex(),unique=idx.size;
@@ -153,7 +154,7 @@ function renderVirgins(){
 }
 $('#vg-check').onclick=()=>{const groups=parseGroups15($('#vg-input').value),valid=groups.filter(g=>g.length===15);if(!valid.length)return alert('Informe ao menos um grupo válido de 15 dezenas.');renderVirginRows(valid,'check')};
 $('#vg-generate').onclick=()=>{
- const qty=+$('#vg-qty').value,sample=Math.max(qty,+$('#vg-sample').value),idx=historicExactIndex(),ctx=LFMatrix51.buildContext(H,{window:Math.min(200,Math.max(10,H.length))}),pol=policies(),cand=[];
+ const qty=+$('#vg-qty').value,sample=Math.max(qty,+$('#vg-sample').value),idx=historicExactIndex(),ctx=LFMatrix51.buildContext(H,{window:lfAnalysisWindow()}),pol=policies(),cand=[];
  for(let i=0;i<sample;i++){const rank=sample===1?0:Math.floor(i*(TOTAL-1)/(sample-1)),g=LFMatrix51.unrank(ALL,15,rank),k=gameKey(g);if(idx.has(k))continue;const rep=LFMatrix51.inspect(g,ctx);if(!LFMatrix51.policyAllows(rep,pol))continue;if(!currentProPass(g))continue;const score=LFMatrix51.candidateScoreFromReport?LFMatrix51.candidateScoreFromReport(rep,ctx,pol):LFMatrix51.candidateScore(g,ctx,pol);if(Number.isFinite(score))cand.push({g,score})}
  cand.sort((a,b)=>b.score-a.score||gameKey(a.g).localeCompare(gameKey(b.g)));const picked=cand.slice(0,qty).map(x=>x.g);if(!picked.length)return alert('Nenhum grupo virgem aprovado encontrado nesta amostra com as regras atuais. Aumente a amostra ou revise o Perfil PRO.');renderVirginRows(picked,'generate');
 };
