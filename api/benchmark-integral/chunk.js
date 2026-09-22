@@ -1,5 +1,9 @@
 module.exports = function handler(req, res) {
-  res.status(501).json({
-    error: 'Benchmark Integral 1:1 de backend não habilitado nesta edição. Use o Backtest rápido ou integral no Worker.'
+  res.setHeader('Cache-Control','no-store');
+  res.status(200).json({
+    ok:true,
+    retired:true,
+    mode:'worker-backtest-integral',
+    message:'O benchmark backend antigo foi retirado. Use Backtest Integral exato no Web Worker.'
   });
 }
