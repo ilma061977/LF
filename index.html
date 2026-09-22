@@ -138,6 +138,12 @@
 .virgin-score-panel{margin-top:12px;padding:13px;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.055)}.virgin-score-panel[hidden]{display:none}.virgin-score-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.virgin-score-head h3{margin:3px 0 0;font-size:15px}.virgin-score-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px}.virgin-score-grid>div{padding:9px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(0,0,0,.18)}.virgin-score-grid span,.virgin-score-grid small{display:block;font-size:8px;opacity:.72}.virgin-score-grid b{display:block;margin:3px 0;font-size:16px}.virgin-sensitivity{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.virgin-sensitivity>span{padding:7px 8px;border-radius:9px;background:rgba(255,255,255,.07);font-size:9px}.virgin-sensitivity b{display:block;font-size:11px;margin-top:2px}.virgin-top-details{margin-top:9px;border-top:1px solid rgba(255,255,255,.12);padding-top:8px}.virgin-top-details summary{cursor:pointer;font-size:9px;font-weight:850}.virgin-top-row{display:grid;grid-template-columns:30px 1fr 62px 62px;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:8px}.virgin-top-row b{font-size:9px}.virgin-score-note{font-size:8px;line-height:1.45;opacity:.65;margin:8px 0 0}
 @media(max-width:620px){.virgin-score-grid{grid-template-columns:1fr 1fr}.virgin-sensitivity{grid-template-columns:1fr}.virgin-top-row{grid-template-columns:26px 1fr 50px}}
 .virgin-explanation{margin:8px 0 0;padding:8px 9px;border-radius:9px;background:rgba(255,255,255,.07);font-size:9px;line-height:1.45}.virgin-portfolio{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:7px}.virgin-portfolio>span{padding:7px;border-radius:9px;background:rgba(255,255,255,.06);font-size:8px}.virgin-portfolio b{display:block;font-size:11px;margin-top:2px}@media(max-width:620px){.virgin-portfolio{grid-template-columns:1fr 1fr}}
+
+.virgin-flow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:9px 0 11px;font-size:8px;opacity:.75}.virgin-flow span{padding:4px 7px;border-radius:999px;background:rgba(255,255,255,.08);font-weight:800}.virgin-flow span.active{background:rgba(34,197,94,.18)}.virgin-flow i{font-style:normal;opacity:.5}
+.virgin-section-details{margin-top:9px;border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:0 10px;background:rgba(0,0,0,.12)}.virgin-section-details>summary{cursor:pointer;padding:10px 0;font-size:10px;font-weight:900}.virgin-section-details h4{font-size:10px;margin:10px 0 6px}.virgin-oe-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.virgin-oe-grid>div{padding:8px;border-radius:9px;background:rgba(255,255,255,.06)}.virgin-oe-grid span,.virgin-oe-grid small{display:block;font-size:8px;opacity:.72}.virgin-oe-grid b{font-size:13px;display:block;margin:2px 0}.virgin-oe-grid .rarer b{color:#86efac}.virgin-oe-grid .denser b{color:#fdba74}
+.virgin-history-row{display:grid;grid-template-columns:65px 1fr 60px 60px 55px;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:8px}.virgin-history-row b{font-size:9px}.virgin-history-row .pending{opacity:.6}.virgin-mini-result{font-size:9px;margin-top:8px;line-height:1.45}.virgin-pareto-note{display:block;margin-top:7px;opacity:.7}
+.virgin-backtest-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.virgin-backtest-summary>div{border:1px solid var(--line);border-radius:10px;padding:9px}.virgin-backtest-summary span{display:block;font-size:9px;color:var(--muted)}.virgin-backtest-summary b{display:block;font-size:18px;margin-top:2px}
+@media(max-width:620px){.virgin-oe-grid{grid-template-columns:1fr 1fr}.virgin-history-row{grid-template-columns:52px 1fr 46px}.virgin-history-row span:nth-last-child(-n+2){display:none}.virgin-backtest-summary{grid-template-columns:1fr}}
 </style>
 <style>
 /* Em Monte sua seleção, somente as dezenas copiadas/escolhidas ficam em destaque. */
@@ -316,12 +322,34 @@
                 <div class="validation-line" id="decision-validation">Aguardando base histórica.</div>
                 <div class="historical-lock" id="historical-lock"></div>
                 <section class="virgin-score-panel" id="virgin-score-panel" hidden>
-                  <div class="virgin-score-head"><div><span class="eyebrow">RANKING VIRGEM</span><h3>Score Matriz × Score Virgindade</h3></div><span id="virgin-percentile" class="target-mode-pill">—</span></div>
-                  <div class="virgin-score-grid" id="virgin-score-grid"></div>
-                  <div class="virgin-sensitivity" id="virgin-sensitivity"></div>
+                  <div class="virgin-score-head"><div><span class="eyebrow">🎯 RESUMO VIRGEM</span><h3>Qualidade × distância histórica</h3></div><span id="virgin-percentile" class="target-mode-pill">—</span></div>
+                  <div class="virgin-flow"><span class="active">Resumo</span><i>→</i><span>Análise completa</span><i>→</i><span>Top 10</span><i>→</i><span>Backtest</span><i>→</i><span>Histórico</span></div>
+                  <div class="virgin-score-grid virgin-summary-grid" id="virgin-score-grid"></div>
                   <p class="virgin-explanation" id="virgin-explanation"></p>
-                  <div class="virgin-portfolio" id="virgin-portfolio"></div>
-                  <details class="virgin-top-details"><summary>Top Virgem · Pareto e melhores candidatos</summary><div id="virgin-top-list"></div></details>
+                  <details class="virgin-section-details" open>
+                    <summary>2. Análise completa de Virgindade</summary>
+                    <div class="virgin-score-grid" id="virgin-analysis-grid"></div>
+                    <h4>Observado × Esperado entre os elegíveis</h4>
+                    <div class="virgin-oe-grid" id="virgin-observed-expected"></div>
+                    <div class="virgin-sensitivity" id="virgin-sensitivity"></div>
+                  </details>
+                  <details class="virgin-section-details">
+                    <summary>3. Top 10 Virgens diversificados</summary>
+                    <div class="virgin-portfolio" id="virgin-portfolio"></div>
+                    <div id="virgin-top-list"></div>
+                    <small class="virgin-pareto-note" id="virgin-pareto-note"></small>
+                  </details>
+                  <details class="virgin-section-details">
+                    <summary>4. Backtest Virgem</summary>
+                    <p class="muted">Compara Leve × Forte × Máximo no mesmo walk-forward e mostra 11–15 pontos sem usar informação futura.</p>
+                    <button class="btn tiny" id="virgin-open-backtest" type="button">Abrir Backtest Virgem</button>
+                    <div id="virgin-backtest-last" class="virgin-mini-result"></div>
+                  </details>
+                  <details class="virgin-section-details">
+                    <summary>5. Histórico de desempenho</summary>
+                    <p class="muted">Indicações Virgens ficam registradas com perfil, scores e pontos quando o concurso-alvo já estiver na base.</p>
+                    <div id="virgin-performance-history"></div>
+                  </details>
                   <p class="virgin-score-note">Virgindade mede distância e densidade histórica; não aumenta a probabilidade matemática de uma combinação individual ser sorteada.</p>
                 </section>
               </div>
@@ -451,6 +479,11 @@
           <div class="page-heading"><div><span class="eyebrow dark">VALIDAÇÃO</span><h1>Backtest profissional</h1><p>Ranking determinístico, walk-forward sem futuro, intervalos de confiança, estratégia × séries aleatórias e holdout final intocado.</p></div></div>
           <article class="panel backtest-controls"><label>Modo<select id="backtest-mode"><option value="quick" selected>Rápido · amostra determinística</option><option value="integral">Integral exato · 3.268.760 combinações por concurso</option></select></label><label>Concursos<select id="backtest-window"><option>1</option><option>5</option><option selected>10</option><option>20</option><option>50</option><option>100</option><option>200</option></select></label><label>Séries aleatórias<input id="random-series" type="number" min="10" max="5000" value="200" /></label><button class="btn primary" id="run-backtest">Executar backtest</button><button class="btn ghost" id="cancel-backtest">Cancelar</button><span id="backtest-note" class="muted">No Integral, cada concurso varre exatamente C(25,15)=3.268.760 combinações. O progresso é salvo ao concluir cada concurso e pode ser retomado.</span></article>
           <div id="backtest-results" class="backtest-results empty">Execute para comparar estratégia e aleatório.</div>
+          <article class="panel virgin-backtest-panel" id="virgin-backtest-panel" hidden>
+            <div class="panel-head"><div><span class="eyebrow dark">🎯 BACKTEST VIRGEM</span><h2>Leve × Forte × Máximo</h2><p class="muted">Os três perfis são comparados na mesma passagem walk-forward.</p></div></div>
+            <div id="virgin-backtest-summary" class="virgin-backtest-summary"></div>
+            <div class="table-wrap"><table><thead><tr><th>Perfil</th><th>Média</th><th>11 pts</th><th>12 pts</th><th>13 pts</th><th>14 pts</th><th>15 pts</th></tr></thead><tbody id="virgin-backtest-body"></tbody></table></div>
+          </article>
           <article class="panel" id="backtest-distribution-panel" hidden><h2>Distribuição 11–15 pontos</h2><div id="backtest-distribution" class="comparison-bars"></div></article>
         </section>
 
