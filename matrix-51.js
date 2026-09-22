@@ -10,6 +10,7 @@
 
   const ALL = Array.from({ length: 25 }, (_, i) => i + 1);
   const MANDATORY_BLOCKS=new Set([28,29,36,37]);
+  const BLOCKED_COLOR_PROFILES=new Set(['3-3-3-3-1-1-1-0-0-0','3-3-3-2-2-2-0-0-0-0','3-2-2-2-2-2-2-0-0-0','3-3-3-1-1-1-1-1-1-0']);
   const PRIMES = new Set([2,3,5,7,11,13,17,19,23]);
   const FIB = new Set([1,2,3,5,8,13,21]);
   const CENTER = new Set([7,8,9,12,13,14,17,18,19]);
@@ -26,7 +27,7 @@
   ];
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
-  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.6.6';
+  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.6.7';
   const THRESHOLD_VERSION = 'LF-M51-2026.09.17-v3.6.3';
   const AUDIT_VERSION = 'LF-M51-AUDIT-3784-F28-F29-F36-F37-v3.7.3';
   const AUDIT_BASE_THROUGH = 3783;
@@ -80,10 +81,12 @@
   function maxHistoricalHits(game,history=[]){const g=normalize(game);if(!g)return{max:0,contests:[]};let max=0,contests=[];for(const d of history){const h=intersections(g,d.dezenas||[]);if(h>max){max=h;contests=[d.concurso];}else if(h===max)contests.push(d.concurso);}return{max,contests};}
   function mandatoryColorRule(game){
     const g=normalize(game),colorCounts=Array(10).fill(0);
-    if(!g)return{blocked:true,passed:false,distinct:0,min:8,max:10,counts:colorCounts};
+    if(!g)return{blocked:true,passed:false,distinct:0,min:8,max:10,counts:colorCounts,profile:'',complete:0,blockedProfile:false};
     g.forEach(n=>colorCounts[n%10]++);
-    const distinct=colorCounts.filter(Boolean).length,passed=distinct>=8&&distinct<=10;
-    return{blocked:!passed,passed,distinct,min:8,max:10,counts:colorCounts};
+    const distinct=colorCounts.filter(Boolean).length,profile=[...colorCounts].sort((a,b)=>b-a).join('-');
+    const complete=[1,2,3,4,5].filter(d=>colorCounts[d]===3).length,blockedProfile=BLOCKED_COLOR_PROFILES.has(profile);
+    const passed=distinct>=8&&distinct<=10&&!blockedProfile&&complete<=2;
+    return{blocked:!passed,passed,distinct,min:8,max:10,counts:colorCounts,profile,complete,blockedProfile};
   }
   function exactPatternCooldown(lineCounts,history=[]){
     const pattern=(lineCounts||[]).join('-'),interval=PATTERN_COOLDOWNS[pattern]||null;
