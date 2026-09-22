@@ -24,11 +24,8 @@ module.exports = function handler(req, res) {
     { name: 'Último concurso', pass: latest !== null, detail: `#${latest || '—'}` },
     { name: 'Verificação externa', pass: sourceVerified, detail: base.officialVerification?.status === 'verified' ? 'CAIXA oficial' : (base.secondaryVerification?.source || 'fonte secundária') },
     { name: 'Alerta de atualização', pass: base.freshnessAlert?.possibleNewContest !== true, detail: base.freshnessAlert?.message || 'sem concurso novo pendente' },
-    { name: 'Bloqueios oficiais', pass: true, detail: 'F28 + F29 + F36 + F37' },
-    { name: 'Bloqueio Linha anterior', pass: g.length === 15, detail: lines.join('-') },
-    { name: 'Bloqueio Coluna anterior', pass: g.length === 15, detail: cols.join('-') },
-    { name: 'Bloqueio obrigatório de cores', pass: true, detail: '8–10 cores · até 2 cores completas · perfis extremos bloqueados' },
-    { name: 'Composição aleatória', pass: true, detail: 'base exata · 🔥/❄️ 1–4 · união 1–8 · sem repetição' }
+    { name: 'Último concurso válido 15 dezenas', pass: g.length === 15 && new Set(g).size === 15, detail: g.length === 15 ? g.map(n=>String(n).padStart(2,'0')).join(' ') : 'inválido' },
+    { name: 'Perfis Linha/Coluna calculáveis', pass: g.length === 15 && lines.reduce((a,b)=>a+b,0) === 15 && cols.reduce((a,b)=>a+b,0) === 15, detail: `L ${lines.join('-')} · C ${cols.join('-')}` }
   ];
   res.setHeader('Cache-Control', 'no-store');
   res.status(200).json({ ok: checks.every(x => x.pass), checks, checkedAt: new Date().toISOString() });
