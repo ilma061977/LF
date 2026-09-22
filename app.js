@@ -223,6 +223,7 @@
         else{state.history=[];state.apiOk=false;state.dataBlocked=true;state.officialVerified=false;state.dataSource='indisponível';state.dataWarning=msg;rebuildContext();status.textContent='Não foi possível confirmar uma base completa';dot.className='status-dot warn';const text='BASE INDISPONÍVEL OU INCOMPLETA — ANÁLISE BLOQUEADA';$('#base-meta').textContent=text;const baseInfo=$('#base-info');if(baseInfo){baseInfo.textContent=text;baseInfo.classList.add('base-blocked');}toast(text);}
       }
     }
+    if(!state.dataBlocked&&state.history.length)updateDecisionTrackerResults();
     let restoredCache=null;if(!state.dataBlocked&&state.history.length){const sig=generationSignature(),cache=loadPersistentDecisionCache(sig);if(cache&&cache.tested===cache.total&&cache.games?.length){state.generationSignature=sig;state.decisionRankingCache=cache;state.decisionStarted=true;state.decisionIndex=0;state.decision=[...cache.games[0]];state.selection=new Set(state.decision);state.labBase=[...state.decision];restoredCache=cache;}}
     refreshAll();if(restoredCache)setDecisionSearchPanel({status:'done',total:restoredCache.total,tested:restoredCache.tested,approvedCount:restoredCache.approvedCount,eligibleCount:restoredCache.eligibleCount,game:state.decision,mode:`${restoredCache.mode} · resultado concluído restaurado`});
   }
@@ -240,17 +241,22 @@
   function decisionCacheKey(){return 'lfv374_decision_exhaustive_cache_filters_v2';}
   function loadPersistentDecisionCache(sig){try{const c=JSON.parse(localStorage.getItem(decisionCacheKey())||'null');return c&&c.signature===sig&&Array.isArray(c.games)?c:null;}catch{return null;}}
   function savePersistentDecisionCache(cache){try{localStorage.setItem(decisionCacheKey(),JSON.stringify(cache));}catch{}}
-  function combinedIntegralSignature(){return JSON.stringify({contest:state.history.at(-1)?.concurso||0,period:state.period,policies:M.FILTERS.map(f=>state.filterPolicies[f.id]||''),indicatorTargets:indicatorQuotaSpec().targets,schema:M.SCHEMA_VERSION,threshold:M.THRESHOLD_VERSION,mode:'backend-integral-1to1'});}
+  function combinedIntegralSignature(){return JSON.stringify({contest:state.history.at(-1)?.concurso||0,period:state.period,policies:M.FILTERS.map(f=>state.filterPolicies[f.id]||''),indicatorTargets:indicatorQuotaSpec().targets,selectionMode:state.decisionSelectionMode,virginProfile:state.virginProfile,schema:M.SCHEMA_VERSION,threshold:M.THRESHOLD_VERSION,mode:'backend-integral-1to1'});}
   function filterAuditSignature(series=Number($('#filter-audit-series')?.value)||20,sampleSize=Number($('#filter-audit-sample')?.value)||1000){return JSON.stringify({contest:state.history.at(-1)?.concurso||0,period:state.period,series,sampleSize,schema:M.SCHEMA_VERSION,threshold:M.THRESHOLD_VERSION,mode:'filter-audit-full-history'});}
   function combinedCheckpointKey(){return 'lfv374_combined_integral_checkpoint';}
   function loadCombinedCheckpoint(sig){try{const c=JSON.parse(localStorage.getItem(combinedCheckpointKey())||'null');return c&&c.signature===sig?c:null;}catch{return null;}}
   function saveCombinedCheckpoint(c){try{localStorage.setItem(combinedCheckpointKey(),JSON.stringify(c));}catch{}}
   function clearCombinedCheckpoint(){try{localStorage.removeItem(combinedCheckpointKey());}catch{}}
   const DECISION_TRACKER_KEY='lfv3_decision_tracker';
-  function previousVirginGames(limit=100){
-    let rows=[];try{rows=JSON.parse(localStorage.getItem(DECISION_TRACKER_KEY)||'[]');if(!Array.isArray(rows))rows=[];}catch{}
-    return rows.filter(x=>x?.decisionSelectionMode==='virgin'&&Array.isArray(x.game)&&x.game.length===15).slice(-Math.max(1,limit)).map(x=>x.game);
+  function decisionTrackerRows(){let rows=[];try{rows=JSON.parse(localStorage.getItem(DECISION_TRACKER_KEY)||'[]');if(!Array.isArray(rows))rows=[];}catch{}return rows;}
+  function saveDecisionTrackerRows(rows){try{localStorage.setItem(DECISION_TRACKER_KEY,JSON.stringify((rows||[]).slice(-5000)));}catch{}}
+  function previousVirginGames(limit=100){return decisionTrackerRows().filter(x=>x?.decisionSelectionMode==='virgin'&&Array.isArray(x.game)&&x.game.length===15).slice(-Math.max(1,limit)).map(x=>x.game);}
+  function updateDecisionTrackerResults(){
+    if(!state.history.length)return;const byContest=new Map(state.history.map(d=>[Number(d.concurso),d])),rows=decisionTrackerRows();let changed=false;
+    for(const x of rows){if(!x||!Array.isArray(x.game)||x.game.length!==15)continue;const draw=byContest.get(Number(x.targetContest));if(!draw)continue;const pts=hits(x.game,draw.dezenas||[]);if(x.points!==pts||x.resultContest!==Number(draw.concurso)){x.points=pts;x.resultContest=Number(draw.concurso);x.resultDate=draw.data||'';x.resolvedAt=new Date().toISOString();changed=true;}}
+    if(changed)saveDecisionTrackerRows(rows);
   }
+  function virginPerformanceRows(limit=30){return decisionTrackerRows().filter(x=>x?.decisionSelectionMode==='virgin'&&Array.isArray(x.game)&&x.game.length===15).slice(-Math.max(1,limit)).reverse();}
   function currentVirginMeta(){
     if(state.decisionSelectionMode!=='virgin')return null;
     const cache=state.decisionRankingCache,index=Math.max(0,Math.min(Number(state.decisionIndex)||0,(cache?.topMeta?.length||1)-1));
@@ -281,13 +287,13 @@
   function recordDecisionTracker(game){
     if(!state.decisionStarted||!Array.isArray(game)||game.length!==15||!state.history.length)return;
     const baseContest=Number(state.history.at(-1)?.concurso||0),targetContest=baseContest+1,id=targetContest+':'+keyOf(game);
-    let rows=[];try{rows=JSON.parse(localStorage.getItem(DECISION_TRACKER_KEY)||'[]');if(!Array.isArray(rows))rows=[];}catch{rows=[];}
+    let rows=decisionTrackerRows();
     if(rows.some(x=>x&&x.id===id))return;
     const md=markerData(),markerCounts=Object.fromEntries(md.map(x=>[x.emoji,game.filter(n=>x.set.has(n)).length]));
     const markerSummary=Object.entries(markerCounts).map(([e,n])=>e+' '+n).join(' · ');
     let score=null;try{const s=M.candidateScore(game,state.ctx,state.filterPolicies);if(Number.isFinite(s))score=Number(s);}catch{}
     rows.push({id,generatedAt:new Date().toISOString(),baseContest,targetContest,game:[...game],score,markerCounts,markerSummary,period:state.period,matrixSchema:M.SCHEMA_VERSION||'',proProfileRules:getProProfileRules(),decisionSelectionMode:state.decisionSelectionMode,indicatorMode:state.indicatorMode,decisionOrigin:decisionOriginInfo().label,virginProfile:state.virginProfile,virginMeta:currentVirginMeta()});
-    localStorage.setItem(DECISION_TRACKER_KEY,JSON.stringify(rows.slice(-5000)));
+    saveDecisionTrackerRows(rows);
   }
   function publishCurrentDecision(game){
     if(!Array.isArray(game)||game.length!==15||!state.history.length)return;
