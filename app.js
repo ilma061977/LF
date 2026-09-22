@@ -602,9 +602,87 @@
   function renderSelfTest(){
     const el=$('#self-test-results');if(!el)return;const r=state.selfTest;if(!r){el.innerHTML='<div class="notice">Autoteste aguardando execução.</div>';return;}el.innerHTML=`<div class="audit-grid">${r.checks.map(x=>`<article class="audit-card ${x.pass?'ok':'danger'}"><span>${x.name}</span><b>${x.pass?'PASS':'FAIL'}</b><small>${x.detail||''}</small></article>`).join('')}</div><p class="muted">Resultado: ${r.passed}/${r.total} · ${r.ok?'PASS':'REVISAR'} · ${r.checkedAt||''}</p>`;
   }
+  function f28FourAlertReachable(){
+    const primeSet=new Set([2,3,5,7,11,13,17,19,23]);
+    let dp=new Set(['0|0|0|0']);
+    for(const n of ALL){
+      const next=new Set(dp);
+      for(const key of dp){
+        const [picked,total,odds,primes]=key.split('|').map(Number);
+        if(picked>=15)continue;
+        const np=picked+1,ns=total+n,no=odds+(n%2),nr=primes+(primeSet.has(n)?1:0);
+        if(np<=15&&ns<=220&&no<=9&&nr<=6)next.add(`${np}|${ns}|${no}|${nr}`);
+      }
+      dp=next;
+    }
+    return dp.has('15|220|9|6');
+  }
+  function findF37SelfTestCase(ctx,latest){
+    const selected=new Set(latest),missing=ALL.filter(n=>!selected.has(n));
+    for(const remove of latest)for(const add of missing){
+      const g=latest.filter(n=>n!==remove).concat(add).sort((a,b)=>a-b),r=M.inspect(g,ctx),f29=r.filters.find(x=>x.id===29),f37=r.filters.find(x=>x.id===37);
+      if(f29?.passed&&!f37?.passed)return{game:g,report:r,detail:f37.detail};
+    }
+    return null;
+  }
+  function findF36SelfTestCase(ctx){
+    const preferred=[1,2,3,4,5,6,7,8,9,10,11,13,16,19,20],tryGame=g=>{const r=M.inspect(g,ctx),f36=r.filters.find(x=>x.id===36),fails=r.filters.filter(x=>x.id>=30&&x.id<=35&&!x.passed);return f36&&!f36.passed&&fails.length>=3?{game:g,report:r,fails,detail:f36.detail}:null;};
+    let found=tryGame(preferred);if(found)return found;
+    const total=Math.min(5000,M.nCk(25,15));
+    for(let rank=0;rank<total;rank++){found=tryGame(M.unrank(ALL,15,rank));if(found)return found;}
+    return null;
+  }
+  function findLineColumnSelfTestCase(ctx,latest){
+    const selected=new Set(latest),missing=ALL.filter(n=>!selected.has(n)),row=n=>Math.floor((n-1)/5),col=n=>(n-1)%5,counts=(g,fn)=>{const a=[0,0,0,0,0];g.forEach(n=>a[fn(n)]++);return a;},same=(a,b)=>a.every((v,i)=>v===b[i]),baseRows=counts(latest,row),baseCols=counts(latest,col);
+    for(let i=0;i<latest.length;i++)for(let j=i+1;j<latest.length;j++)for(let a=0;a<missing.length;a++)for(let b=a+1;b<missing.length;b++){
+      const remove=new Set([latest[i],latest[j]]),g=latest.filter(n=>!remove.has(n)).concat([missing[a],missing[b]]).sort((x,y)=>x-y);
+      if(!same(counts(g,row),baseRows)||!same(counts(g,col),baseCols))continue;
+      const r=M.inspect(g,ctx);if(r.lineRepeat?.blocked&&r.columnRepeat?.blocked)return{game:g,report:r};
+    }
+    return null;
+  }
+  function runFunctionalSelfTests(){
+    const ctx=state.ctx,latestRow=state.history.at(-1),latest=latestRow?.dezenas||[],gameText=g=>(g||[]).map(pad).join(' ');
+    if(!ctx||latest.length!==15)return[{name:'Testes funcionais Matriz 51',pass:false,detail:'Histórico/contexto indisponível'}];
+
+    const exact=M.inspect(latest,ctx),f29=exact.filters.find(x=>x.id===29);
+    const t29={name:'F29 · histórico 15/15 bloqueia',pass:Boolean(f29&&!f29.passed&&!M.policyAllows(exact,state.filterPolicies)),detail:`#${latestRow.concurso} · ${f29?.detail||'F29 não encontrado'}`};
+
+    const c37=findF37SelfTestCase(ctx,latest);
+    const t37={name:'F37 · similaridade 14/15 bloqueia',pass:Boolean(c37&&!M.policyAllows(c37.report,state.filterPolicies)),detail:c37?`${gameText(c37.game)} · ${c37.detail}`:'Nenhum caso 14/15 isolado encontrado'};
+
+    const c36=findF36SelfTestCase(ctx);
+    const t36={name:'F36 · 3 falhas F30–F35 bloqueiam',pass:Boolean(c36&&!M.policyAllows(c36.report,state.filterPolicies)),detail:c36?`${c36.detail} · falhas ${c36.fails.map(x=>'F'+x.id).join(', ')}`:'Nenhum caso com 3 falhas encontrado nos casos de prova'};
+
+    const f28Reachable=f28FourAlertReachable(),probe28=[1,2,3,4,5,6,7,8,9,11,12,14,15,17,25],probe28Report=M.inspect(probe28,ctx),probe28Filter=probe28Report.filters.find(x=>x.id===28);
+    const t28={name:'F28 · 4 alertas máximos são alcançáveis',pass:f28Reachable,detail:f28Reachable?'Existe estado combinatório capaz de acionar o bloqueio':'FAIL REAL: soma=220 + ímpares=9 + primos=6 é impossível em 15 dezenas; logo F28 nunca chega a 4 alertas. Caso de 3 alertas continua passando: '+(probe28Filter?.detail||'')};
+
+    const badColor=[1,2,3,4,5,11,12,13,14,15,21,22,23,24,25],colorRule=M.mandatoryColorRule(badColor),colorReport=M.inspect(badColor,ctx);
+    const tColor={name:'Cores · jogo fora da regra é recusado',pass:Boolean(colorRule.blocked&&!colorReport.approved&&!M.policyAllows(colorReport,state.filterPolicies)),detail:`${gameText(badColor)} · ${colorRule.distinct} cores · ${colorRule.complete} cores completas`};
+
+    const lc=findLineColumnSelfTestCase(ctx,latest),lcBlocked=lc&&lc.report.lineRepeat?.blocked&&lc.report.columnRepeat?.blocked&&lc.report.lineColumnRepeat?.blocked;
+    const tLC={name:'Linha/Coluna · perfil idêntico ao anterior bloqueia',pass:Boolean(lcBlocked&&!M.policyAllows(lc.report,state.filterPolicies)),detail:lc?`${gameText(lc.game)} · linhas ${lc.report.lineRepeat.currentLines.join('-')} · colunas ${lc.report.columnRepeat.currentCols.join('-')}`:'Nenhum jogo alternativo com os dois perfis idênticos foi encontrado'};
+
+    return[t29,t37,t36,t28,tColor,tLC];
+  }
   async function runIntegratedSelfTest(silent=false){
     const btn=$('#run-self-test');if(btn)btn.disabled=true;
-    try{const backend=await window.LFAppApi.get('/api/self-test'),pc=M.exactPatternCooldown([4,1,3,3,4],state.history);const local=[{name:'Frontend Matriz 51',pass:M.FILTERS.length===51,detail:`${M.FILTERS.length}/51`},{name:'F23 UI informativo',pass:Boolean(document.querySelector('[data-page-panel="matrix"]')),detail:'política oficial Ignorar'},{name:'Carência por ordem exata',pass:pc.blocked&&pc.nextEligibleContest===4075,detail:`4-1-3-3-4 até #${pc.nextEligibleContest||'—'}`},{name:'Worker disponível',pass:typeof Worker==='function',detail:'Web Worker'},{name:'Cache V3.7.2',pass:decisionCacheKey().includes('372'),detail:decisionCacheKey()}];const checks=[...(backend.checks||[]),...local],passed=checks.filter(x=>x.pass).length;state.selfTest={ok:passed===checks.length,passed,total:checks.length,checks,checkedAt:new Date().toISOString()};renderSelfTest();if(!silent)toast(`Autoteste integrado: ${passed}/${checks.length} PASS`);}catch(e){state.selfTest={ok:false,passed:0,total:1,checks:[{name:'API autoteste',pass:false,detail:String(e?.message||e)}],checkedAt:new Date().toISOString()};renderSelfTest();}finally{if(btn)btn.disabled=false;}
+    try{
+      const backend=await window.LFAppApi.get('/api/self-test'),pc=M.exactPatternCooldown([4,1,3,3,4],state.history),functional=runFunctionalSelfTests();
+      const local=[
+        {name:'Frontend Matriz 51',pass:M.FILTERS.length===51,detail:`${M.FILTERS.length}/51`},
+        {name:'F23 UI informativo',pass:Boolean(document.querySelector('[data-page-panel="matrix"]')),detail:'política oficial Ignorar'},
+        {name:'Carência por ordem exata',pass:pc.blocked&&pc.nextEligibleContest===4075,detail:`4-1-3-3-4 até #${pc.nextEligibleContest||'—'}`},
+        {name:'Worker disponível',pass:typeof Worker==='function',detail:'Web Worker'},
+        {name:'Janela estatística inicial',pass:state.period===10,detail:`período atual ${state.period}`},
+        ...functional
+      ];
+      const checks=[...(backend.checks||[]),...local],passed=checks.filter(x=>x.pass).length;
+      state.selfTest={ok:passed===checks.length,passed,total:checks.length,checks,checkedAt:new Date().toISOString()};renderSelfTest();
+      if(!silent)toast(`Autoteste integrado: ${passed}/${checks.length} PASS`);
+    }catch(e){
+      state.selfTest={ok:false,passed:0,total:1,checks:[{name:'API autoteste',pass:false,detail:String(e?.message||e)}],checkedAt:new Date().toISOString()};renderSelfTest();
+    }finally{if(btn)btn.disabled=false;}
   }
   function exportFilterAudit(){const r=state.fullFilterAudit;if(!r)return toast('Execute a auditoria integral antes de exportar.');const payload={app:'LF Inteligente V3.7.2',generatedAt:new Date().toISOString(),matrixSchema:M.SCHEMA_VERSION,thresholdVersion:M.THRESHOLD_VERSION,latestContest:state.history.at(-1)?.concurso||null,result:r,combinedIntegralBenchmark:state.combinedIntegralBenchmark};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`LF-Matriz51-Auditoria-${state.history.at(-1)?.concurso||'base'}.json`;a.click();URL.revokeObjectURL(a.href);}
   function renderHistory(filter=''){const q=String(filter).trim(),rows=state.history.slice().reverse().filter(d=>!q||String(d.concurso).includes(q)),shown=rows.slice(0,500),summary=$('#history-summary');if(summary)summary.textContent=q?`${rows.length} concurso(s) encontrado(s) · exibindo até 500`:`${state.history.length.toLocaleString('pt-BR')} concursos carregados · exibindo os 500 mais recentes; a busca consulta toda a base`;$('#history-body').innerHTML=shown.map(d=>`<tr><td><b>${d.concurso}</b></td><td>${d.data||'—'}</td><td><div class="history-balls">${d.dezenas.map(mini).join('')}</div></td></tr>`).join('')||'<tr><td colspan="3">Nenhum concurso carregado.</td></tr>';}
