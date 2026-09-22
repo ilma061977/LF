@@ -309,7 +309,14 @@
     const cache=state.decisionRankingCache;
     if(cache&&cache.signature===sig){
       if(!cache.games.length){applyDecision(null);setDecisionSearchPanel({status:'done',total:cache.total,tested:cache.tested,approvedCount:cache.approvedCount,eligibleCount:cache.eligibleCount,resultText:'Nenhum jogo elegível na composição após busca exaustiva completa.',mode:cache.mode});return;}
-      if(advance&&state.decision.length===15){const next=(state.decisionIndex+1)%cache.games.length;state.decisionRankingCache=null;startDecisionExhaustive(sig,excluded,total,next);return;}
+      if(advance&&state.decision.length===15){
+        const next=(state.decisionIndex+1)%cache.games.length;
+        state.decisionIndex=next;
+        const g=cache.games[next];
+        applyDecision(g);
+        setDecisionSearchPanel({status:'done',total:cache.total,tested:cache.tested,approvedCount:cache.approvedCount,eligibleCount:cache.eligibleCount,game:g,mode:`${cache.mode} · indicação #${state.decisionIndex+1}/${Math.min(1000,cache.games.length)}`});
+        return;
+      }
       const g=cache.games[state.decisionIndex];applyDecision(g);setDecisionSearchPanel({status:'done',total:cache.total,tested:cache.tested,approvedCount:cache.approvedCount,eligibleCount:cache.eligibleCount,game:g,mode:`${cache.mode} · indicação #${state.decisionIndex+1}/${Math.min(1000,cache.games.length)}`});return;
     }
     if(state.decisionWorker&&state.decisionWorkerSignature===sig){setDecisionSearchPanel({status:'running',total:state.decisionSearchMeta.total||total,tested:state.decisionSearchMeta.tested||0,approvedCount:state.decisionSearchMeta.approvedCount||0,resultText:'Jogo oficial será definido somente em 100%.',mode:decisionSearchModeText()});if(advance)toast('Aguarde a busca exaustiva chegar a 100% para liberar o NOVO INDICADO oficial.');return;}
