@@ -101,7 +101,7 @@ function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progre
 self.onmessage=e=>{const d=e.data||{};if(d.task==='generate')return runGenerate(d);if(d.task==='lab')return runLab(d);if(d.task==='backtest')return runBacktest(d);if(d.task==='filter-audit')return runFilterAudit(d);if(d.task==='combined-integral')return runCombinedIntegral(d);if(d.task==='closure')return runClosure(d);};
 
 function runGenerate(d){
-  const ctx=M.buildContext(d.history||[],{window:d.period||50}),target=1,maxAttempts=Math.max(1000,Number(d.maxAttempts)||250000),quotaSpec=d.indicatorQuotas||(d.indicatorTargets?buildIndicatorQuotaSpec(d.history||[],d.indicatorTargets):null);
+  const ctx=M.buildContext(d.history||[],{window:d.period||10}),target=1,maxAttempts=Math.max(1000,Number(d.maxAttempts)||250000),quotaSpec=d.indicatorQuotas||(d.indicatorTargets?buildIndicatorQuotaSpec(d.history||[],d.indicatorTargets):null);
   if(d.colorBalanced&&!colorFeasible(d.excluded||[])){postMessage({type:'done',games:[],tested:0,complete:false,maxAttempts,reason:'As exclusões impedem formar um jogo com 8–10 cores sem cair nas estruturas bloqueadas.'});return;}
   if(d.deterministic&&!d.colorBalanced){
     if(d.exhaustive){const best=exhaustiveBest(ctx,d.policies||{},d.excluded||[],Math.max(0,Number(d.rankIndex)||0),Math.max(50,Number(d.topLimit)||200),null,quotaSpec,d.proProfile||null,!!d.virginApprovedOnly);postMessage({type:'done',games:best.game?[best.game]:[],tested:best.tested,total:best.total,complete:true,maxAttempts:best.total,deterministic:true,exhaustive:true,mode:'Busca exaustiva integral · 51 filtros · F28 + F29 + F36 + F37 obrigatórios',score:best.score,approvedCount:best.approvedCount,eligibleCount:best.eligibleCount,rankIndex:best.rankIndex,topGames:best.topGames,topScores:best.topScores,diagnostics:best.diagnostics});return;}
@@ -114,7 +114,7 @@ function runGenerate(d){
 }
 
 function runBacktest(d){
-  const history=d.history||[],w=Math.max(10,Math.min(200,Number(d.testWindow)||200)),series=Math.max(10,Math.min(5000,Number(d.series)||200)),period=Math.max(10,Math.min(200,Number(d.period)||50)),policies=d.policies||{},sampleSize=Math.max(1000,Math.min(12000,Number(d.sampleSize)||4000)),mode=d.mode==='integral'?'integral':'quick';
+  const history=d.history||[],w=Math.max(10,Math.min(200,Number(d.testWindow)||200)),series=Math.max(10,Math.min(5000,Number(d.series)||200)),period=Math.max(10,Math.min(200,Number(d.period)||10)),policies=d.policies||{},sampleSize=Math.max(1000,Math.min(12000,Number(d.sampleSize)||4000)),mode=d.mode==='integral'?'integral':'quick';
   if(history.length<20){postMessage({type:'backtest-done',error:'Histórico insuficiente.'});return;}
   const targets=history.slice(-Math.min(w,Math.max(0,history.length-10))),strat=[],randomSeries=Array.from({length:series},()=>[]),blockPass=[],approvedHitDist=Object.fromEntries(Array.from({length:16},(_,i)=>[i,0]));let eligible=0,skipped=0,approvedTotal=0;
   const baseSeed=((history.at(-1)?.concurso||0)*2654435761 + period*97 + w*53 + series)>>>0,rng=makeRng(baseSeed),combinationsPerContest=M.nCk(25,15);
@@ -137,7 +137,7 @@ function runBacktest(d){
 function addHistoryIndex(draw,hash,h14){if(!draw?.dezenas?.length)return;hash.add(M.keyOf(draw.dezenas));for(let i=0;i<15;i++){const k=M.keyOf(draw.dezenas.filter((_,j)=>j!==i));if(!h14.has(k))h14.set(k,draw.concurso);}}
 function diffCI(p1,n1,p2,n2){if(!n1||!n2)return[0,0];const d=p1-p2,se=Math.sqrt((p1*(1-p1))/n1+(p2*(1-p2))/n2),m=1.96*se;return[d-m,d+m];}
 function runFilterAudit(d){
-  const history=(d.history||[]).map(x=>({concurso:Number(x.concurso),data:x.data||'',dezenas:M.normalize(x.dezenas)})).filter(x=>x.dezenas).sort((a,b)=>a.concurso-b.concurso),period=Math.max(10,Math.min(200,Number(d.period)||50)),series=Math.max(1,Math.min(100,Number(d.series)||20)),sampleSize=Math.max(100,Math.min(5000,Number(d.sampleSize)||1000)),policies=d.policies||{};
+  const history=(d.history||[]).map(x=>({concurso:Number(x.concurso),data:x.data||'',dezenas:M.normalize(x.dezenas)})).filter(x=>x.dezenas).sort((a,b)=>a.concurso-b.concurso),period=Math.max(10,Math.min(200,Number(d.period)||10)),series=Math.max(1,Math.min(100,Number(d.series)||20)),sampleSize=Math.max(100,Math.min(5000,Number(d.sampleSize)||1000)),policies=d.policies||{};
   if(history.length<20){postMessage({type:'filter-audit-done',error:'Histórico insuficiente para a auditoria integral.'});return;}
   const fs=Object.fromEntries(M.FILTERS.map(f=>[f.id,{id:f.id,realPass:0,realTotal:0,randomPass:0,randomTotal:0,realScoreN:0,realScoreSum:0,realScoreSq:0,randomScoreN:0,randomScoreSum:0,randomScoreSq:0,pairedN:0,pairedSum:0,pairedSq:0,scorePairedN:0,scorePairedSum:0,scorePairedSq:0,activations:0,blockedReal:0}])),hash=new Set(),h14=new Map(),minPrior=10,totalTargets=Math.max(0,history.length-minPrior),seed=((history.at(-1)?.concurso||0)*2246822519+period*3266489917+series*668265263)>>>0,rng=makeRng(seed),strategyHits=[];
   const lineFreq=new Map(),colFreq=new Map(),delay=Object.fromEntries(ALL.map(n=>[n,0]));
@@ -164,7 +164,7 @@ function runFilterAudit(d){
 
 function runCombinedIntegral(d){
   const history=(d.history||[]).map(x=>({concurso:Number(x.concurso),data:x.data||'',dezenas:M.normalize(x.dezenas)})).filter(x=>x.dezenas).sort((a,b)=>a.concurso-b.concurso);
-  const period=Math.max(10,Math.min(200,Number(d.period)||50)),policies=d.policies||{},series=Math.max(1,Math.min(100,Number(d.series)||10)),minPrior=10,targets=history.slice(minPrior),totalTargets=targets.length;
+  const period=Math.max(10,Math.min(200,Number(d.period)||10)),policies=d.policies||{},series=Math.max(1,Math.min(100,Number(d.series)||10)),minPrior=10,targets=history.slice(minPrior),totalTargets=targets.length;
   if(history.length<20){postMessage({type:'combined-integral-done',error:'Histórico insuficiente.'});return;}
   const signature=String(d.signature||''),resume=d.resume&&d.resume.signature===signature?d.resume:null;
   let nextIndex=Math.max(0,Math.min(totalTargets,Number(resume?.nextIndex)||0)),tests=Number(resume?.tests)||0,skipped=Number(resume?.skipped)||0,strategySum=Number(resume?.strategySum)||0,strategy13plus=Number(resume?.strategy13plus)||0;
@@ -186,7 +186,7 @@ function runCombinedIntegral(d){
 }
 
 function runLab(d){
-  const history=d.history||[],ctx=M.buildContext(history,{window:d.period||50}),base=M.normalize(d.base)||[],locked=new Set(d.locked||[]),excluded=new Set(d.excluded||[]),q=Number(d.swap)||2,limit=Math.max(3,Math.min(10,Number(d.scenarios)||5));
+  const history=d.history||[],ctx=M.buildContext(history,{window:d.period||10}),base=M.normalize(d.base)||[],locked=new Set(d.locked||[]),excluded=new Set(d.excluded||[]),q=Number(d.swap)||2,limit=Math.max(3,Math.min(10,Number(d.scenarios)||5));
   if(base.length!==15){postMessage({type:'lab-done',scenarios:[],tested:0});return;}
   const removable=base.filter(n=>!locked.has(n)),outside=ALL.filter(n=>!base.includes(n)&&!excluded.has(n));if(removable.length<q||outside.length<q){postMessage({type:'lab-done',scenarios:[],tested:0});return;}
   const rems=comb(removable,q),adds=comb(outside,q),best=[];let tested=0;const maxTests=q===5?25000:Infinity;
@@ -203,7 +203,7 @@ function runLab(d){
 function subsetKey(a){return a.join('-');}
 function coverageKeys(game,k){const keys=[];eachComb(game,k,p=>keys.push(subsetKey(p)));return keys;}
 function runClosure(d){
-  const history=d.history||[],ctx=M.buildContext(history,{window:d.period||50}),pool=[...new Set((d.pool||[]).map(Number))].filter(n=>n>=1&&n<=25).sort((a,b)=>a-b),count=Math.max(1,Math.min(100,Number(d.count)||10)),targetK=Math.max(11,Math.min(14,Number(d.targetK)||13)),policies=d.policies||{};
+  const history=d.history||[],ctx=M.buildContext(history,{window:d.period||10}),pool=[...new Set((d.pool||[]).map(Number))].filter(n=>n>=1&&n<=25).sort((a,b)=>a-b),count=Math.max(1,Math.min(100,Number(d.count)||10)),targetK=Math.max(11,Math.min(14,Number(d.targetK)||13)),policies=d.policies||{};
   if(pool.length<15||pool.length>20){postMessage({type:'closure-done',error:'O grupo-base deve ter de 15 a 20 dezenas.'});return;}
   const all=comb(pool,15),eligible=[];for(let i=0;i<all.length;i++){const g=all[i];if(!indicatedColorValid(g)){if(i%1000===0)postMessage({type:'closure-progress',phase:'Matriz',current:i,total:all.length});continue;}const r=M.inspect(g,ctx),historicalExact=r.filters[28]&&!r.filters[28].passed;if(!historicalExact){const blocks=blockedFailures(r,policies).length,warns=warnings(r,policies).length;eligible.push({game:g,score:100-blocks*10-warns,blocks,warns});}if(i%1000===0)postMessage({type:'closure-progress',phase:'Matriz',current:i,total:all.length});}
   if(!eligible.length){postMessage({type:'closure-done',error:'Todas as combinações do grupo-base coincidem com resultados históricos bloqueados.'});return;}
