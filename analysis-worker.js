@@ -67,13 +67,7 @@ function proProfileAllows(game,report,profile){
 
 function exhaustiveCompare(a,b){return b.score-a.score||keyOf(a.game).localeCompare(keyOf(b.game));}
 function insertExhaustiveTop(top,entry,limit){let lo=0,hi=top.length;while(lo<hi){const mid=(lo+hi)>>1;if(exhaustiveCompare(entry,top[mid])<0)hi=mid;else lo=mid+1;}top.splice(lo,0,entry);if(top.length>limit)top.pop();}
-function virginApprovedPass(report,policies={}){
-  if(!report||report.valid===false||report.patternCooldown?.blocked||report.colorRule?.blocked)return false;
-  const f29=(report.filters||[]).find(f=>Number(f.id)===29);
-  if(!f29?.passed)return false;
-  return !(report.filters||[]).some(f=>resolvedPolicy(f,policies)==='block'&&!f.passed);
-}
-function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progressInfo=null,quotaSpec=null,proProfile=null,virginApprovedOnly=false){
+function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progressInfo=null,quotaSpec=null,proProfile=null){
   const block=new Set((excluded||[]).map(Number)),pool=ALL.filter(n=>!block.has(n));if(pool.length<15)return{game:null,score:-Infinity,tested:0,total:0,approvedCount:0,eligibleCount:0,rankIndex,topGames:[],topScores:[],diagnostics:null};
   const total=M.nCk(pool.length,15),limit=Math.max(rankIndex+1,Math.min(1000,Number(topLimit)||200)),top=[];let tested=0,approvedCount=0,eligibleCount=0,lastProgress=0,approvedHitDist=Object.fromEntries(Array.from({length:16},(_,i)=>[i,0]));
   const diag={colorPreRejected:0,patternRejected:0,colorRuleRejected:0,lineRepeatRejected:0,columnRepeatRejected:0,lineColumnRejected:0,quotaRejected:0,filterFirst:{},filterAny:{}};
@@ -90,7 +84,7 @@ function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progre
         if(blocked.length)diag.filterFirst[blocked[0].id]=(diag.filterFirst[blocked[0].id]||0)+1;
       }else{
         approvedCount++;if(progressInfo?.targetDraw)approvedHitDist[hits(g,progressInfo.targetDraw)]++;
-        if((!virginApprovedOnly||virginApprovedPass(report,policies))&&quotaAllows(g,quotaSpec)&&proProfileAllows(g,report,proProfile)){eligibleCount++;insertExhaustiveTop(top,{game:g,score},limit);}else diag.quotaRejected++;
+        if(quotaAllows(g,quotaSpec)&&proProfileAllows(g,report,proProfile)){eligibleCount++;insertExhaustiveTop(top,{game:g,score},limit);}else diag.quotaRejected++;
       }
     }
     if(tested-lastProgress>=progressEvery||tested===total){lastProgress=tested;const provisional=top[Math.min(rankIndex,Math.max(0,top.length-1))]||top[0]||null;if(progressInfo?.type==='backtest'){const grandTested=(progressInfo.current-1)*total+tested,grandTotal=progressInfo.targets*total;postMessage({type:'backtest-integral-progress',contest:progressInfo.contest,current:progressInfo.current,total:progressInfo.targets,comboTested:tested,comboTotal:total,grandTested,grandTotal,approvedCount,eligibleCount});}else if(progressInfo?.type==='combined-integral')postMessage({type:'combined-integral-combo-progress',contest:progressInfo.contest,current:progressInfo.current,total:progressInfo.targets,comboTested:tested,comboTotal:total,approvedCount,eligibleCount});else postMessage({type:'progress',tested,total,maxAttempts:total,found:eligibleCount,approvedCount,eligibleCount,provisionalGame:provisional?.game||null,provisionalScore:provisional?.score??null,mode:'Busca exaustiva integral · 51 filtros · F28 + F29 + F36 + F37 obrigatórios'});}});
@@ -104,12 +98,12 @@ function runGenerate(d){
   const ctx=M.buildContext(d.history||[],{window:d.period||10}),target=1,maxAttempts=Math.max(1000,Number(d.maxAttempts)||250000),quotaSpec=d.indicatorQuotas||(d.indicatorTargets?buildIndicatorQuotaSpec(d.history||[],d.indicatorTargets):null);
   if(d.colorBalanced&&!colorFeasible(d.excluded||[])){postMessage({type:'done',games:[],tested:0,complete:false,maxAttempts,reason:'As exclusões impedem formar um jogo com 8–10 cores sem cair nas estruturas bloqueadas.'});return;}
   if(d.deterministic&&!d.colorBalanced){
-    if(d.exhaustive){const best=exhaustiveBest(ctx,d.policies||{},d.excluded||[],Math.max(0,Number(d.rankIndex)||0),Math.max(50,Number(d.topLimit)||200),null,quotaSpec,d.proProfile||null,!!d.virginApprovedOnly);postMessage({type:'done',games:best.game?[best.game]:[],tested:best.tested,total:best.total,complete:true,maxAttempts:best.total,deterministic:true,exhaustive:true,mode:'Busca exaustiva integral · 51 filtros · F28 + F29 + F36 + F37 obrigatórios',score:best.score,approvedCount:best.approvedCount,eligibleCount:best.eligibleCount,rankIndex:best.rankIndex,topGames:best.topGames,topScores:best.topScores,diagnostics:best.diagnostics});return;}
-    const ex=new Set((d.excluded||[]).map(Number)),games=sampledGames(Math.max(1000,Math.min(50000,Number(d.sampleSize)||12000))).filter(g=>{if(!g.every(n=>!ex.has(n))||!indicatedColorValid(g)||!quotaAllows(g,quotaSpec))return false;const rr=M.inspect(g,ctx);return proProfileAllows(g,rr,d.proProfile||null)&&(!d.virginApprovedOnly||virginApprovedPass(rr,d.policies||{}))}),best=deterministicBestFromPool(ctx,d.policies||{},games);
+    if(d.exhaustive){const best=exhaustiveBest(ctx,d.policies||{},d.excluded||[],Math.max(0,Number(d.rankIndex)||0),Math.max(50,Number(d.topLimit)||200),null,quotaSpec,d.proProfile||null);postMessage({type:'done',games:best.game?[best.game]:[],tested:best.tested,total:best.total,complete:true,maxAttempts:best.total,deterministic:true,exhaustive:true,mode:'Busca exaustiva integral · 51 filtros · F28 + F29 + F36 + F37 obrigatórios',score:best.score,approvedCount:best.approvedCount,eligibleCount:best.eligibleCount,rankIndex:best.rankIndex,topGames:best.topGames,topScores:best.topScores,diagnostics:best.diagnostics});return;}
+    const ex=new Set((d.excluded||[]).map(Number)),games=sampledGames(Math.max(1000,Math.min(50000,Number(d.sampleSize)||12000))).filter(g=>{if(!g.every(n=>!ex.has(n))||!indicatedColorValid(g)||!quotaAllows(g,quotaSpec))return false;const rr=M.inspect(g,ctx);return proProfileAllows(g,rr,d.proProfile||null)}),best=deterministicBestFromPool(ctx,d.policies||{},games);
     postMessage({type:'done',games:best.game?[best.game]:[],tested:best.tested,total:best.total,complete:!!best.game,maxAttempts:best.tested,deterministic:true,exhaustive:false,score:best.score,approvedCount:best.approvedCount,rankIndex:best.rankIndex});return;
   }
   const out=[],seen=new Set();let tested=0;
-  while(out.length<target&&tested<maxAttempts){const g=randomCandidate(d.excluded||[],!!d.colorBalanced);tested++;if(!g)continue;const k=keyOf(g);if(seen.has(k))continue;seen.add(k);const r=M.inspect(g,ctx);if(M.policyAllows(r,d.policies||{})&&(!d.virginApprovedOnly||virginApprovedPass(r,d.policies||{}))&&quotaAllows(g,quotaSpec)&&proProfileAllows(g,r,d.proProfile||null)&&(d.colorBalanced?colorRuleValid(g):indicatedColorValid(g)))out.push(g);if(tested%5000===0)postMessage({type:'progress',tested,found:out.length,maxAttempts});}
+  while(out.length<target&&tested<maxAttempts){const g=randomCandidate(d.excluded||[],!!d.colorBalanced);tested++;if(!g)continue;const k=keyOf(g);if(seen.has(k))continue;seen.add(k);const r=M.inspect(g,ctx);if(M.policyAllows(r,d.policies||{})&&quotaAllows(g,quotaSpec)&&proProfileAllows(g,r,d.proProfile||null)&&(d.colorBalanced?colorRuleValid(g):indicatedColorValid(g)))out.push(g);if(tested%5000===0)postMessage({type:'progress',tested,found:out.length,maxAttempts});}
   postMessage({type:'done',games:out,tested,complete:out.length===target,maxAttempts});
 }
 
