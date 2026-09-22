@@ -68,7 +68,7 @@
     25:{what:'Participação das dezenas com atraso atual de 3 ou mais concursos.',action:'Com duas ou mais atrasadas disponíveis, use parte do grupo, sem zerar nem selecionar o grupo inteiro.'},
     26:{what:'Flutuantes: dezenas que alternaram presença/ausência pelo menos duas vezes nos últimos quatro concursos.',action:'Mantenha 5 ou 6 flutuantes quando esse grupo estiver disponível.'},
     27:{what:'Dispersão entre a primeira e a quinta linha.',action:'Mantenha a diferença de ocupação das linhas opostas abaixo de 3.'},
-    28:{what:'Conta quantas métricas canônicas ficaram exatamente em seu limite máximo.',action:'Evite acumular mais de três limites máximos simultaneamente.'},
+    28:{what:'Conta quantas métricas canônicas ficaram exatamente em seu limite máximo.',action:'Evite acumular três ou mais limites máximos simultaneamente; o máximo permitido é 2.'},
     29:{what:'Trava obrigatória: impede repetir exatamente um resultado histórico de 15 dezenas.',action:'Troque pelo menos uma dezena. Este filtro não pode ser desativado.'},
     30:{what:'Repetidas com Termômetro: recalibra a quantidade de repetidas pela faixa histórica walk-forward, sem substituir o F15 fixo.',action:'Compare a regra fixa F15 com a faixa dinâmica; trate divergências como aviso até o backtest justificar bloqueio.'},
     31:{what:'Ausentes persistentes: mede o retorno de dezenas que não apareceram nos dois concursos anteriores.',action:'Ajuste o retorno desse grupo à faixa histórica calculada somente com concursos passados.'},
@@ -258,7 +258,12 @@
     rows.push({id,generatedAt:new Date().toISOString(),baseContest,targetContest,game:[...game],score,markerCounts,markerSummary,period:state.period,matrixSchema:M.SCHEMA_VERSION||'',proProfileRules:getProProfileRules(),decisionSelectionMode:state.decisionSelectionMode,indicatorMode:state.indicatorMode,decisionOrigin:decisionOriginInfo().label});
     localStorage.setItem(DECISION_TRACKER_KEY,JSON.stringify(rows.slice(-5000)));
   }
-  function applyDecision(g){state.decision=g||[];state.selection=new Set(g||[]);state.labBase=g?[...g]:[];state.labLocked.clear();state.matrixReport=null;recordDecisionTracker(state.decision);renderDecision();renderAnalysis();renderLab();renderStatsDecision();renderAdvancedAnalytics();renderCycleClosure();renderCheckerAuto();renderLineCols();}
+  function publishCurrentDecision(game){
+    if(!Array.isArray(game)||game.length!==15||!state.history.length)return;
+    const payload={game:[...game].map(Number).sort((a,b)=>a-b),baseContest:Number(state.history.at(-1)?.concurso||0),targetContest:Number(state.history.at(-1)?.concurso||0)+1,generatedAt:new Date().toISOString(),matrixSchema:M.SCHEMA_VERSION||''};
+    try{localStorage.setItem('lfv374_current_decision',JSON.stringify(payload));}catch{}
+  }
+  function applyDecision(g){state.decision=g||[];state.selection=new Set(g||[]);state.labBase=g?[...g]:[];state.labLocked.clear();state.matrixReport=null;recordDecisionTracker(state.decision);publishCurrentDecision(state.decision);renderDecision();renderAnalysis();renderLab();renderStatsDecision();renderAdvancedAnalytics();renderCycleClosure();renderCheckerAuto();renderLineCols();}
   function decisionSearchModeText(){const block=M.FILTERS.filter(f=>state.filterPolicies[f.id]==='block').length,warn=M.FILTERS.filter(f=>state.filterPolicies[f.id]==='warn').length,q=indicatorQuotaSpec().targets,pro=getProProfileRules();return `Busca exaustiva integral · ${decisionSelectionModeLabel()} · Linha anterior bloqueada · Coluna anterior bloqueada · 51 filtros · metas 🔥${q.hot}/❄️${q.cold}/♻️${q.latest}/⏳${q.delayed}/🔄${q.three} · Perfil PRO ${pro.length?pro.length+' regra(s)':'sem regras'} · ${block} bloqueadores · ${warn} avisos · F28 + F29 + F36 + F37 obrigatórios`;}
   function formatDuration(sec){if(!Number.isFinite(sec)||sec<0)return '—';sec=Math.round(sec);const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),ss=sec%60;return h?`${h}h ${String(m).padStart(2,'0')}m`:`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
   function setDecisionSearchPanel(meta={}){
