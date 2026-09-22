@@ -30,8 +30,8 @@ async function getOne(concurso){try{return await getCaixa(concurso)}catch(e){ret
 async function pool(nums,limit=5){const out=[];let i=0;async function worker(){while(i<nums.length){const idx=i++;out[idx]=await getOne(nums[idx])}}await Promise.all(Array.from({length:Math.min(limit,nums.length)},worker));return out}
 module.exports=async function handler(req,res){
   try{
-    const contest=Number(req.query?.concurso||0);let nums=[];
-    if(contest)nums=[contest];else{const from=Math.max(1,Number(req.query?.from||0)),to=Math.max(from,Number(req.query?.to||from));if(!from||!to)throw new Error('Informe concurso ou intervalo from/to.');if(to-from>49)throw new Error('Intervalo máximo por consulta: 50 concursos.');nums=Array.from({length:to-from+1},(_,i)=>from+i)}
+    const u=new URL(req.url,'https://lf.local'),contest=Number(u.searchParams.get('concurso')||0);let nums=[];
+    if(contest)nums=[contest];else{const from=Math.max(1,Number(u.searchParams.get('from')||0)),to=Math.max(from,Number(u.searchParams.get('to')||from));if(!from||!to)throw new Error('Informe concurso ou intervalo from/to.');if(to-from>49)throw new Error('Intervalo máximo por consulta: 50 concursos.');nums=Array.from({length:to-from+1},(_,i)=>from+i)}
     const rows=await pool(nums);
     res.setHeader('Cache-Control','public, max-age=0, s-maxage=3600, stale-while-revalidate=21600');
     res.status(200).json({ok:true,source:'CAIXA com contingência As Loterias',count:rows.length,rows});
