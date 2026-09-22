@@ -263,26 +263,47 @@
     return cache?.topMeta?.[index]||null;
   }
   function renderVirginPanel(){
-    const panel=$('#virgin-score-panel');if(!panel)return;const active=state.decisionSelectionMode==='virgin'&&state.decision.length===15,meta=active?currentVirginMeta():null,cache=state.decisionRankingCache||{};
+    const panel=$('#virgin-score-panel');if(!panel)return;const active=state.decisionSelectionMode==='virgin'&&state.decision.length===15,meta=active?currentVirginMeta():null,cache=state.decisionRankingCache||{},stats=cache.virginStats||{};
     panel.hidden=!active;if(!active)return;
-    const grid=$('#virgin-score-grid'),pct=$('#virgin-percentile'),sens=$('#virgin-sensitivity'),top=$('#virgin-top-list'),stats=cache.virginStats||{};
+    const summary=$('#virgin-score-grid'),analysis=$('#virgin-analysis-grid'),pct=$('#virgin-percentile'),sens=$('#virgin-sensitivity'),oe=$('#virgin-observed-expected'),top=$('#virgin-top-list'),historyEl=$('#virgin-performance-history'),lastBt=$('#virgin-backtest-last');
     if(pct)pct.textContent=Number.isFinite(Number(meta?.percentile))?`P${meta.percentile} · média ${Number(stats.meanScore||0).toFixed(1)}`:'Ranking Virgem';
-    if(!meta){if(grid)grid.innerHTML='<div><span>Ranking</span><b>—</b><small>metadados não disponíveis neste cache</small></div>';if(sens)sens.innerHTML='';if(top)top.innerHTML='';return;}
-    if(grid)grid.innerHTML=[
-      ['Score Matriz',`${Number(meta.matrixNorm||0).toFixed(1)}/100`,`score bruto ${Number(meta.matrixScore||0).toFixed(2)}`],
+    if(!meta){if(summary)summary.innerHTML='<div><span>Ranking</span><b>—</b><small>metadados não disponíveis neste cache</small></div>';return;}
+    const sim=historicalSimilarity(state.decision),f29ok=sim.max<15,f37ok=sim.max<14;
+    if(summary)summary.innerHTML=[
+      ['Score Matriz',`${Number(meta.matrixNorm||0).toFixed(1)}/100`,`bruto ${Number(meta.matrixScore||0).toFixed(2)}`],
       ['Score Virgindade',`${Number(meta.virginScore||0).toFixed(1)}/100`,`perfil ${state.virginProfile}`],
+      ['F29 · 15/15',f29ok?'0 · OK':'BLOQUEADO','combinação exata já sorteada'],
+      ['F37 · 14/15',f37ok?'0 · OK':'BLOQUEADO','vizinhos históricos'],
+      ['13/15',meta.n13??0,'pontua · não bloqueia'],
+      ['Último concurso',`${meta.lastOverlap??'—'}/15`,'dezenas em comum']
+    ].map(([a,b,d])=>`<div><span>${a}</span><b>${b}</b><small>${d}</small></div>`).join('');
+    if(analysis)analysis.innerHTML=[
       ['Vizinhos 13/15',meta.n13??0,'ranking · não bloqueia'],
       ['Vizinhos 12/15',meta.n12??0,'ranking · não bloqueia'],
       ['10 vizinhos mais próximos',Number(meta.top10Avg||0).toFixed(2)+'/15','média de sobreposição'],
-      ['Distância recente',`${meta.recent10??'—'} · ${meta.recent50??'—'} · ${meta.recent100??'—'}`,'máx. em 10 / 50 / 100'],
+      ['Últimos 10',`${meta.recent10??'—'}/15`,'maior proximidade'],
+      ['Últimos 20',`${meta.recent20??'—'}/15`,'maior proximidade'],
+      ['Últimos 50',`${meta.recent50??'—'}/15`,'maior proximidade'],
+      ['Últimos 100',`${meta.recent100??'—'}/15`,'maior proximidade'],
+      ['Histórico completo',`${meta.maxHistorical??'—'}/15`,'maior parentesco'],
       ['Duplas + trincas',`${Number(meta.pairTripleScore||0).toFixed(1)}/100`,'novidade histórica'],
       ['Diversidade',`${Number(meta.diversityScore||0).toFixed(1)}/100`,meta.previousVirginMaxOverlap==null?'sem Virgem anterior':`máx. ${meta.previousVirginMaxOverlap}/15 com Virgens anteriores`]
     ].map(([a,b,d])=>`<div><span>${a}</span><b>${b}</b><small>${d}</small></div>`).join('');
+    const expected=stats.expected||{},oeItems=[
+      ['13/15',Number(meta.n13||0),expected.n13,0],
+      ['12/15',Number(meta.n12||0),expected.n12,0],
+      ['10 vizinhos',Number(meta.top10Avg||0),expected.top10Avg,2],
+      ['Último concurso',Number(meta.lastOverlap||0),expected.lastOverlap,1]
+    ];
+    if(oe)oe.innerHTML=oeItems.map(([name,obs,exp,digits])=>{const has=Number.isFinite(Number(exp)),delta=has?obs-Number(exp):0,cls=has?(delta<-.01?'rarer':delta>.01?'denser':''):'',reading=!has?'aguardando média':Math.abs(delta)<.01?'na média':delta<0?'mais distante que a média':'mais próximo/denso que a média';return `<div class="${cls}"><span>${name}</span><b>${Number(obs).toFixed(digits)} × ${has?Number(exp).toFixed(digits):'—'}</b><small>observado × esperado · ${reading}</small></div>`;}).join('');
     if(sens){const x=meta.sensitivity||{};sens.innerHTML=[['Leve · 30%',x.light],['Forte · 50%',x.strong],['Máximo · 70%',x.max]].map(([a,b])=>`<span>${a}<b>${Number(b||0).toFixed(1)}</b></span>`).join('');}
     const explanation=$('#virgin-explanation'),portfolio=$('#virgin-portfolio'),cov=stats.coverage||{},pf=stats.portfolio||{};
-    if(explanation)explanation.textContent=`Classificado como Virgem ${state.virginProfile}: F29 confirma que a combinação exata 15/15 nunca saiu; F37 confirma 0 vizinhos 14/15. O ranking usa ${meta.n13??0} vizinho(s) 13/15, ${meta.n12??0} vizinho(s) 12/15, média ${Number(meta.top10Avg||0).toFixed(2)}/15 dos 10 mais próximos e distância recente 10/50/100 = ${meta.recent10??'—'}/${meta.recent50??'—'}/${meta.recent100??'—'}. 13/15 e 12/15 pontuam, mas não bloqueiam.`;
+    if(explanation)explanation.textContent=`Virgem ${state.virginProfile}: F29 bloqueia repetição exata 15/15 e F37 bloqueia 14/15. Este candidato tem ${meta.n13??0} vizinho(s) 13/15, ${meta.n12??0} vizinho(s) 12/15 e média ${Number(meta.top10Avg||0).toFixed(2)}/15 nos 10 históricos mais próximos. Distância recente 10/20/50/100 = ${meta.recent10??'—'}/${meta.recent20??'—'}/${meta.recent50??'—'}/${meta.recent100??'—'}.`;
     if(portfolio)portfolio.innerHTML=[['Top diversificado',cov.games||cache.games?.length||0],['Cobertura dezenas',`${cov.numbers??'—'}/25`],['Duplas únicas',cov.pairs==null?'—':`${cov.pairs}/300 · ${cov.pairPct}%`],['Trincas únicas',cov.triples==null?'—':`${cov.triples}/2300 · ${cov.triplePct}%`],['Diversidade carteira',pf.score==null?'—':`${pf.score}/100`],['Sobreposição média',pf.meanOverlap==null?'—':pf.meanOverlap],['Sobreposição máxima',pf.maxOverlap==null?'—':`${pf.maxOverlap}/15`],['Pareto',stats.paretoCount??'—']].map(([a,b])=>`<span>${a}<b>${b}</b></span>`).join('');
-    if(top){const games=(cache.paretoGames?.length?cache.paretoGames:cache.games||[]).slice(0,10),metas=(cache.paretoGames?.length?cache.paretoMeta:cache.topMeta)||[];top.innerHTML=games.map((g,i)=>{const m=metas[i]||{};return `<div class="virgin-top-row"><b>#${i+1}</b><span>${g.map(pad).join(' ')}</span><span>V ${Number(m.virginScore||0).toFixed(1)}</span><span>M ${Number(m.matrixNorm||0).toFixed(1)}</span></div>`;}).join('')||'<p class="muted">Top Virgem indisponível.</p>';}
+    if(top){const games=(cache.games||[]).slice(0,10),metas=cache.topMeta||[];top.innerHTML=games.map((g,i)=>{const m=metas[i]||{};return `<div class="virgin-top-row"><b>#${i+1}</b><span>${g.map(pad).join(' ')}</span><span>V ${Number(m.virginScore||0).toFixed(1)}</span><span>M ${Number(m.matrixNorm||0).toFixed(1)}</span></div>`;}).join('')||'<p class="muted">Top Virgem indisponível.</p>';}
+    const paretoNote=$('#virgin-pareto-note');if(paretoNote)paretoNote.textContent=`Pareto: ${stats.paretoCount??0} candidato(s) não dominados na relação Matriz × Virgindade. O botão Próximo Virgem usa o Top 10 diversificado.`;
+    const bt=safeJSON('lfv374_last_virgin_backtest',null);if(lastBt)lastBt.textContent=bt?.result?.profileCompare?`Último backtest: Leve ${Number(bt.result.profileCompare.light?.avg||0).toFixed(2)} · Forte ${Number(bt.result.profileCompare.strong?.avg||0).toFixed(2)} · Máximo ${Number(bt.result.profileCompare.max?.avg||0).toFixed(2)} pontos médios · ${bt.result.tests||0} concursos.`:'Nenhum backtest Virgem comparativo salvo ainda.';
+    if(historyEl){const rows=virginPerformanceRows(30);historyEl.innerHTML=rows.length?rows.map(x=>`<div class="virgin-history-row"><b>#${x.targetContest||'—'}</b><span>${(x.game||[]).map(pad).join(' ')}</span><span>${x.virginProfile||'—'}</span><span>V ${Number(x.virginMeta?.virginScore||0).toFixed(1)}</span><span class="${x.points==null?'pending':''}">${x.points==null?'pendente':x.points+' pts'}</span></div>`).join(''):'<p class="muted">Nenhuma indicação Virgem registrada ainda.</p>';}
   }
   function recordDecisionTracker(game){
     if(!state.decisionStarted||!Array.isArray(game)||game.length!==15||!state.history.length)return;
