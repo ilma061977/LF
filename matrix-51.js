@@ -27,10 +27,10 @@
   ];
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
-  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.6.7';
-  const THRESHOLD_VERSION = 'LF-M51-2026.09.17-v3.6.3';
-  const AUDIT_VERSION = 'LF-M51-AUDIT-3784-F28-F29-F36-F37-v3.7.3';
-  const AUDIT_BASE_THROUGH = 3783;
+  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.4';
+  const THRESHOLD_VERSION = 'LF-M51-2026.09.22-v3.7.4';
+  const AUDIT_VERSION = 'LF-M51-AUDIT-3785-F28-F29-F36-F37-v3.7.4';
+  const AUDIT_BASE_THROUGH = 3785;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
   const PATTERN_COOLDOWNS = Object.freeze({
@@ -73,7 +73,7 @@
     return g.length===15?g:null;
   }
   function delays(history){const out={};ALL.forEach(n=>{let d=0;for(let i=history.length-1;i>=0&&!history[i].dezenas.includes(n);i--)d++;out[n]=d;});return out;}
-  function frequencyRank(history,window=50){const rows=history.slice(-window),f=Object.fromEntries(ALL.map(n=>[n,0]));rows.forEach(d=>d.dezenas.forEach(n=>f[n]++));return [...ALL].sort((a,b)=>f[b]-f[a]||a-b);}
+  function frequencyRank(history,window=10){const rows=history.slice(-window),f=Object.fromEntries(ALL.map(n=>[n,0]));rows.forEach(d=>d.dezenas.forEach(n=>f[n]++));return [...ALL].sort((a,b)=>f[b]-f[a]||a-b);}
   function topPatterns(history,fn){const m=new Map();for(const d of history){const k=signature(counts(d.dezenas,fn));m.set(k,(m.get(k)||0)+1);}return new Set([...m].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,7).map(([k])=>k));}
   function floatingSet(prior4){const set=new Set();if(prior4.length<4)return set;for(const n of ALL){const bits=prior4.map(d=>d.dezenas.includes(n)?1:0),appears=sum(bits);let switches=0;for(let i=1;i<bits.length;i++)if(bits[i]!==bits[i-1])switches++;if(appears>=1&&appears<=3&&switches>=2)set.add(n);}return set;}
   function cycleMissingSet(history){if(!history.length)return new Set(ALL);let seen=new Set(),start=0,completedAt=-1;for(let i=history.length-1;i>=0;i--){for(const n of history[i].dezenas)seen.add(n);if(seen.size===25){completedAt=i;break;}}start=completedAt>=0?completedAt+1:0;seen=new Set();for(let i=start;i<history.length;i++)for(const n of history[i].dezenas)seen.add(n);return new Set(ALL.filter(n=>!seen.has(n)));}
@@ -130,7 +130,7 @@
     ['Atrasadas parcialmente presentes (somente com 2 ou mais atrasadas)','Canônica F01–F29','advisory'],
     ['Inércia flutuante entre 5 e 6','Canônica F01–F29','advisory'],
     ['Dispersão das linhas opostas','Canônica F01–F29','advisory'],
-    ['Até 3 alertas nos limites máximos','Canônica F01–F29','advisory'],
+    ['Até 2 alertas nos limites máximos','Canônica F01–F29','advisory'],
     ['Jogo inédito no histórico','Canônica F01–F29','core'],
     ['Repetidas com Termômetro','Complementar F30–F44','advisory'],
     ['Ausentes Persistentes de 2 Concursos','Complementar F30–F44','advisory'],
@@ -164,7 +164,7 @@
     10:{type:'fixed',rule:'|superior−inferior|≤4'},11:{type:'fixed',rule:'|esquerda−direita|≤4'},12:{type:'fixed',rule:'Primos 5–6'},13:{type:'fixed',rule:'Ímpares 7–9'},14:{type:'fixed',rule:'Soma 166–220'},15:{type:'fixed',rule:'Repetidas 8–10'},
     16:{type:'fixed',rule:'<3 colunas com paridade homogênea'},17:{type:'fixed',rule:'<3 linhas com paridade homogênea'},18:{type:'fixed',rule:'Não usar as 5 da elite'},19:{type:'fixed',rule:'Usar ≥1 da elite'},
     20:{type:'conditional',rule:'Se anterior terminou baixo, evitar 21–23 no final'},21:{type:'conditional',rule:'Se anterior iniciou 04/05, iniciar abaixo de 04'},22:{type:'conditional',rule:'Se bloco extremo veio completo, não repeti-lo completo'},
-    23:{type:'conditional',rule:'Casais 01–02, 03–04, 05–06, 07–08, 09–10: se o anterior teve exatamente 1 casal, exigir pelo menos 2'},24:{type:'fixed',rule:'Ausentes do anterior 5–6'},25:{type:'conditional',rule:'Com ≥2 atrasadas (≥3), usar parte do grupo'},26:{type:'fixed',rule:'Inércia flutuante: dezenas que alternaram presença/ausência ≥2 vezes nos últimos 4 concursos; usar 5–6 quando o grupo comporta a regra'},27:{type:'fixed',rule:'|L1−L5|≤2'},28:{type:'fixed',rule:'No máximo 3 métricas no limite máximo'},29:{type:'historical-lock',rule:'Não repetir combinação histórica 15/15'},
+    23:{type:'conditional',rule:'Casais 01–02, 03–04, 05–06, 07–08, 09–10: se o anterior teve exatamente 1 casal, exigir pelo menos 2'},24:{type:'fixed',rule:'Ausentes do anterior 5–6'},25:{type:'conditional',rule:'Com ≥2 atrasadas (≥3), usar parte do grupo'},26:{type:'fixed',rule:'Inércia flutuante: dezenas que alternaram presença/ausência ≥2 vezes nos últimos 4 concursos; usar 5–6 quando o grupo comporta a regra'},27:{type:'fixed',rule:'|L1−L5|≤2'},28:{type:'fixed',rule:'No máximo 2 métricas no limite máximo'},29:{type:'historical-lock',rule:'Não repetir combinação histórica 15/15'},
     30:{type:'walk-forward-80',rule:'Repetidas dentro da faixa central histórica de 80%'},31:{type:'walk-forward-80',rule:'Retorno de ausentes persistentes (2 concursos) na faixa de 80%'},32:{type:'walk-forward-80',rule:'Média de atraso na faixa histórica de 80%'},33:{type:'walk-forward-80',rule:'Mudança do perfil de finais na faixa histórica de 80%'},34:{type:'walk-forward-80',rule:'Balanço L1+L5 vs L2+L4 na faixa histórica de 80%'},35:{type:'walk-forward-80',rule:'Pendentes do ciclo na faixa histórica de 80%'},36:{type:'derived',rule:'≤2 falhas simultâneas em F30–F35'},
     37:{type:'historical-warning',rule:'Sem similaridade histórica 14/15'},38:{type:'fixed',rule:'Cadeia posicional de paridade ≤5'},39:{type:'walk-forward-80',rule:'Terminação binária reformulada: finais 0–4 vs 5–9; maior cadeia dentro da faixa histórica de 80%'},40:{type:'walk-forward-80',rule:'Variância radial na faixa histórica de 80%'},41:{type:'walk-forward-80',rule:'Faixas 01–09/10–19/20–25 dentro das faixas históricas'},42:{type:'fixed',rule:'Sem assinatura mecânica extrema'},43:{type:'walk-forward-80',rule:'Conectividade ortogonal na faixa histórica de 80%'},44:{type:'fixed',rule:'Distância do centro de massa ≤0,85'},
     45:{type:'experimental',rule:'Score Matrix Shear 3D; não eliminatório'},46:{type:'experimental',rule:'Score Rebote Elástico; não eliminatório'},47:{type:'experimental',rule:'Score Densidade Fractal; não eliminatório'},48:{type:'experimental',rule:'Score Ressonância Harmônica; não eliminatório'},49:{type:'experimental',rule:'Score Mapa de Calor; não eliminatório'},50:{type:'operational',rule:'Cobertura avaliada no módulo Fechamentos'},51:{type:'operational',rule:'Exportação/carteira; não estatístico'}
@@ -176,12 +176,12 @@
     // dados sem alterar a regra estatística. Isso elimina o custo quadrático de reprocessar
     // todo o passado a cada concurso.
     const history=options.normalized===true?(historyRaw||[]):(historyRaw||[]).map(d=>({concurso:Number(d.concurso),data:d.data||'',dezenas:normalize(d.dezenas)})).filter(d=>d.dezenas).sort((a,b)=>a.concurso-b.concurso);
-    const requested=Math.max(10,Math.min(200,Number(options.window)||50));
+    const requested=Math.max(10,Math.min(200,Number(options.window)||10));
     const analysisHistory=history.slice(-Math.min(requested,history.length||requested));
     const latest=history.at(-1)||null, previous=history.at(-2)||null, prev=new Set(latest?.dezenas||[]), hash=options.historyHash instanceof Set?options.historyHash:new Set(history.map(d=>keyOf(d.dezenas)));
     const history14=options.history14 instanceof Map?options.history14:new Map();if(!(options.history14 instanceof Map)){for(const d of history){for(let i=0;i<15;i++){const k=keyOf(d.dezenas.filter((_,j)=>j!==i));if(!history14.has(k))history14.set(k,d.concurso);}}}
     const temperatureHistory=history.slice(-Math.min(10,history.length||10)),temperatureFrequency=Object.fromEntries(ALL.map(n=>[n,0]));temperatureHistory.forEach(d=>d.dezenas.forEach(n=>temperatureFrequency[n]++));const rank=[...ALL].sort((a,b)=>temperatureFrequency[b]-temperatureFrequency[a]||a-b),hot=new Set(rank.slice(0,5)),cold=new Set([...ALL].sort((a,b)=>temperatureFrequency[a]-temperatureFrequency[b]||a-b).slice(0,5)),delay=options.delay&&typeof options.delay==='object'?options.delay:delays(history);
-    const linePatterns=options.linePatterns instanceof Set?options.linePatterns:topPatterns(history,row),columnPatterns=options.columnPatterns instanceof Set?options.columnPatterns:topPatterns(history,col);
+    const linePatterns=topPatterns(analysisHistory,row),columnPatterns=topPatterns(analysisHistory,col);
     const repeatedRange=range80(historicalSeries(analysisHistory,(d,prior)=>intersections(d.dezenas,prior.at(-1)?.dezenas||[]),1),[8,10]);
     const sumRange=range80(analysisHistory.map(d=>sum(d.dezenas)),[166,220]);
     const primeRange=range80(analysisHistory.map(d=>countSet(d.dezenas,PRIMES)),[5,6]);
@@ -289,7 +289,7 @@
     add(25,ctx.delayed.size<2||(delayedCount>0&&delayedCount<ctx.delayed.size),`${delayedCount}/${ctx.delayed.size} atrasadas ≥3 · aplica somente com 2+ disponíveis`);
     add(26,ctx.floating.size<5||(floatingCount>=5&&floatingCount<=6),`${floatingCount}/${ctx.floating.size} flutuantes · regra canônica corrigida 5–6`);
     add(27,Math.abs(lines[0]-lines[4])<3,`Linha 1 ${lines[0]} × linha 5 ${lines[4]} · diferença ${Math.abs(lines[0]-lines[4])}`);
-    add(28,boundaryAlerts<=3,`${boundaryAlerts} métricas exatamente no limite máximo canônico`);
+    add(28,boundaryAlerts<=2,`${boundaryAlerts} métricas exatamente no limite máximo canônico · máximo 2`);
     add(29,!exactHistorical,exactHistorical?'Jogo de 15 dezenas já sorteado':'Jogo inédito no histórico carregado');
 
     // F30–F44: complementares, sempre definidos para não repetir mecanicamente F01–F29.
