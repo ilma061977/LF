@@ -122,7 +122,7 @@ function patternStats(metric){
 }
 function renderPatterns(){
  const m=$('#pat-metric').value,a=patternStats(m);$('#pat-out').innerHTML='<div class="kpis">'+[['Métrica',metricLabel(m)],['Concursos',rows().length],['Valores',a.length],['Total observado',fmt(a.reduce((s,x)=>s+x.count,0))],['Universo teórico',fmt(TOTAL)]].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')+'</div><div class="panel">'+table(['Valor','Ocorrências','%','1 em X','Atraso','Maior atraso','Última ocorrência','Esperado','O/E','Z','Gerador'],a.map(x=>[x.v,x.count,x.pct.toFixed(2)+'%',x.one?x.one.toFixed(2):'—',x.delay,x.maxDelay,x.last?'#'+x.last.concurso:'—',x.expected.toFixed(2),x.ratio.toFixed(3),x.z.toFixed(2),'<button class="btn ghost use-rule" data-m="'+m+'" data-v="'+x.v+'">USAR</button>']))+'</div>';$$('.use-rule').forEach(b=>b.onclick=()=>addExactRule(b.dataset.m,Number(b.dataset.v)))}
-$('#pat-run').onclick=renderPatterns;
+const _patRun=$('#pat-run');if(_patRun)_patRun.onclick=renderPatterns;
 
 function gameKey(g){return g.map(pad).join('-')}
 function historicExactIndex(){const m=new Map();for(const d of H){const k=gameKey(d.dezenas);if(!m.has(k))m.set(k,[]);m.get(k).push(d)}return m}
