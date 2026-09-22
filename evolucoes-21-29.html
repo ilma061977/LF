@@ -34,7 +34,7 @@
 </nav>
 <main class="main">
 <div class="hero"><span>LF INTELIGENTE · EVOLUÇÃO COMPETITIVA</span><h1>9 lacunas transformadas em módulos</h1><p>Esta área é histórica, descritiva e auditável. Não altera a Matriz 51 nem o NOVO INDICADO. Ordem real usa fonte secundária explícita; premiações usam a API pública da CAIXA quando disponível.</p></div>
-<div class="periodbar"><label>Concurso inicial<input id="range-from" type="number"></label><label>Concurso final<input id="range-to" type="number"></label><button class="btn blue" id="range-apply">Aplicar a todos</button><button class="btn ghost" id="range-last100">Últimos 100</button><button class="btn ghost" id="range-all">Todos</button><b id="range-label"></b></div>
+<div class="periodbar"><label>Concurso inicial<input id="range-from" type="number"></label><label>Concurso final<input id="range-to" type="number"></label><button class="btn blue" id="range-apply">Aplicar a todos</button><button class="btn ghost" id="range-last10">Últimos 10</button><button class="btn ghost" id="range-last100">Últimos 100</button><button class="btn ghost" id="range-all">Todos</button><b id="range-label"></b></div>
 
 <section class="page active" data-page="order"><div class="head"><h2>21. 🎱 Ordem real de extração</h2><p>Sequência 1ª→15ª bola e estatística por posição real. Não deriva ordem a partir das dezenas crescentes.</p></div><div class="panel"><div class="controls"><button class="btn blue" id="order-load">Carregar ordem real</button><button class="btn green" id="order-csv">CSV da janela</button></div></div><div id="order-out"></div></section>
 
@@ -72,6 +72,7 @@ function setTab(n){$$('.tab').forEach(x=>x.classList.toggle('active',x.dataset.t
 $$('.tab').forEach(x=>x.onclick=()=>setTab(x.dataset.tab));
 function applyRange(from,to){const min=H[0]?.concurso||1,max=H.at(-1)?.concurso||0;FROM=Math.max(min,Number(from)||min);TO=Math.min(max,Number(to)||max);if(FROM>TO)[FROM,TO]=[TO,FROM];ORDER=[];$('#range-from').value=FROM;$('#range-to').value=TO;$('#range-label').textContent='#'+FROM+' → #'+TO+' · '+rangeRows().length+' concursos';renderTab($('.tab.active')?.dataset.tab||'order')}
 $('#range-apply').onclick=()=>applyRange($('#range-from').value,$('#range-to').value);
+$('#range-last10').onclick=()=>{const m=H.at(-1)?.concurso||0;applyRange(Math.max(1,m-9),m)};
 $('#range-last100').onclick=()=>{const m=H.at(-1)?.concurso||0;applyRange(Math.max(1,m-99),m)};
 $('#range-all').onclick=()=>applyRange(H[0]?.concurso,H.at(-1)?.concurso);
 

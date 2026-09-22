@@ -42,15 +42,15 @@
 </section>
 
 <section class="page" data-page="runs"><div class="head"><h2>3. Sequências e Saltos Históricos</h2><p>Frequência de sequências consecutivas e dos saltos entre dezenas ordenadas.</p></div>
-<div class="panel"><div class="controls"><label>Período<select id="run-window"><option value="50">50</option><option value="100" selected>100</option><option value="200">200</option><option value="500">500</option><option value="0">Todos</option></select></label><label>Tamanho sequência<select id="run-k"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label><button class="btn blue" id="run-go">Analisar</button></div></div><div id="run-out"></div>
+<div class="panel"><div class="controls"><label>Período<select id="run-window"><option value="10">10</option><option value="50">50</option><option value="100" selected>100</option><option value="200">200</option><option value="500">500</option><option value="0">Todos</option></select></label><label>Tamanho sequência<select id="run-k"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label><button class="btn blue" id="run-go">Analisar</button></div></div><div id="run-out"></div>
 </section>
 
 <section class="page" data-page="siblings"><div class="head"><h2>4. Matriz 25×25 de Dezenas Acompanhantes</h2><p>Coocorrência completa de pares, com frequência e probabilidade condicional histórica.</p></div>
-<div class="panel"><div class="controls"><label>Período<select id="sib-window"><option value="50">50</option><option value="100">100</option><option value="200">200</option><option value="500" selected>500</option><option value="0">Todos</option></select></label><button class="btn blue" id="sib-run">Atualizar matriz</button></div></div><div id="sib-detail"></div><div class="panel"><div id="sib-out" class="table"></div></div>
+<div class="panel"><div class="controls"><label>Período<select id="sib-window"><option value="10">10</option><option value="50">50</option><option value="100">100</option><option value="200">200</option><option value="500" selected>500</option><option value="0">Todos</option></select></label><button class="btn blue" id="sib-run">Atualizar matriz</button></div></div><div id="sib-detail"></div><div class="panel"><div id="sib-out" class="table"></div></div>
 </section>
 
 <section class="page" data-page="binary"><div class="head"><h2>5. Tabela Binária Histórica</h2><p>1 = dezena presente; 0 = ausente. Visualização direta por concurso.</p></div>
-<div class="panel"><div class="controls"><label>Últimos<select id="bin-window"><option>20</option><option selected>50</option><option>100</option><option>200</option></select></label><button class="btn blue" id="bin-run">Atualizar</button></div></div><div class="panel"><div id="bin-out" class="table"></div></div>
+<div class="panel"><div class="controls"><label>Últimos<select id="bin-window"><option>10</option><option>20</option><option selected>50</option><option>100</option><option>200</option></select></label><button class="btn blue" id="bin-run">Atualizar</button></div></div><div class="panel"><div id="bin-out" class="table"></div></div>
 </section>
 
 <section class="page" data-page="g21"><div class="head"><h2>6. Análise de Grupos de 21 dezenas</h2><p>Distribuição histórica de pontos para grupos grandes, inclusive frequência de conter as 15 sorteadas.</p></div>
@@ -58,7 +58,7 @@
 </section>
 
 <section class="page" data-page="absent"><div class="head"><h2>7. Ausências por Concurso</h2><p>As 10 ausentes de cada concurso, repetição de ausências e retorno no concurso seguinte.</p></div>
-<div class="panel"><div class="controls"><label>Últimos<select id="ab-window"><option>20</option><option>50</option><option selected>100</option><option>200</option><option value="0">Todos</option></select></label><button class="btn blue" id="ab-run">Atualizar</button></div></div><div id="ab-summary"></div><div class="panel"><div id="ab-out" class="table"></div></div>
+<div class="panel"><div class="controls"><label>Últimos<select id="ab-window"><option>10</option><option>20</option><option>50</option><option selected>100</option><option>200</option><option value="0">Todos</option></select></label><button class="btn blue" id="ab-run">Atualizar</button></div></div><div id="ab-summary"></div><div class="panel"><div id="ab-out" class="table"></div></div>
 </section>
 
 <section class="page" data-page="patterns"><div class="head"><h2>8. Painel de Padrões Históricos</h2><p>Escolha uma métrica e veja a distribuição nas janelas 10, 20, 50, 100 e histórico completo.</p></div>
