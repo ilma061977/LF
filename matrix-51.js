@@ -9,7 +9,7 @@
   'use strict';
 
   const ALL = Array.from({ length: 25 }, (_, i) => i + 1);
-  const MANDATORY_BLOCKS=new Set([28,29,36]);
+  const MANDATORY_BLOCKS=new Set([28,29,36,37]);
   const PRIMES = new Set([2,3,5,7,11,13,17,19,23]);
   const FIB = new Set([1,2,3,5,8,13,21]);
   const CENTER = new Set([7,8,9,12,13,14,17,18,19]);
@@ -26,9 +26,9 @@
   ];
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
-  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.6.5';
+  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.6.6';
   const THRESHOLD_VERSION = 'LF-M51-2026.09.17-v3.6.3';
-  const AUDIT_VERSION = 'LF-M51-AUDIT-3783-F28-F29-F36-v3.7.2';
+  const AUDIT_VERSION = 'LF-M51-AUDIT-3784-F28-F29-F36-F37-v3.7.3';
   const AUDIT_BASE_THROUGH = 3783;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
