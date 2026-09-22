@@ -132,6 +132,11 @@
 .global-search-progress{display:grid;grid-template-columns:auto auto;grid-template-areas:"label pct" "bar bar";align-items:center;gap:2px 8px;min-width:160px;padding:7px 9px;border:1px solid #d8dde5;border-radius:10px;background:#fff;color:#111827;cursor:pointer;text-align:left}.global-search-progress[hidden]{display:none}.global-search-progress-label{grid-area:label;font-size:8px;font-weight:850;color:#64748b;text-transform:uppercase;letter-spacing:.04em}.global-search-progress>b{grid-area:pct;font-size:11px;text-align:right}.global-search-progress>i{grid-area:bar;display:block;height:4px;background:#e5e7eb;border-radius:999px;overflow:hidden}.global-search-progress>i>em{display:block;width:0;height:100%;background:#111827;border-radius:999px;transition:width .18s ease}.global-search-progress.running{border-color:#bfdbfe;background:#eff6ff}.global-search-progress.done{border-color:#bbf7d0;background:#f0fdf4}.global-search-progress.done>i>em{background:#16a34a}
 @media(max-width:980px){.global-search-progress{min-width:120px}.global-search-progress-label{display:none}.global-search-progress{grid-template-columns:1fr;grid-template-areas:"pct" "bar"}.global-search-progress>b{text-align:left}}
 @media(max-width:680px){.global-search-progress{min-width:76px;padding:6px 7px}.global-search-progress>b{font-size:10px}}
+
+/* Ranking Virgem */
+.decision-selection-mode{flex-wrap:wrap}.decision-selection-mode label{display:flex;align-items:center;gap:6px}.decision-selection-mode #virgin-profile-wrap select{min-width:170px}
+.virgin-score-panel{margin-top:12px;padding:13px;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.055)}.virgin-score-panel[hidden]{display:none}.virgin-score-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.virgin-score-head h3{margin:3px 0 0;font-size:15px}.virgin-score-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px}.virgin-score-grid>div{padding:9px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(0,0,0,.18)}.virgin-score-grid span,.virgin-score-grid small{display:block;font-size:8px;opacity:.72}.virgin-score-grid b{display:block;margin:3px 0;font-size:16px}.virgin-sensitivity{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.virgin-sensitivity>span{padding:7px 8px;border-radius:9px;background:rgba(255,255,255,.07);font-size:9px}.virgin-sensitivity b{display:block;font-size:11px;margin-top:2px}.virgin-top-details{margin-top:9px;border-top:1px solid rgba(255,255,255,.12);padding-top:8px}.virgin-top-details summary{cursor:pointer;font-size:9px;font-weight:850}.virgin-top-row{display:grid;grid-template-columns:30px 1fr 62px 62px;gap:7px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:8px}.virgin-top-row b{font-size:9px}.virgin-score-note{font-size:8px;line-height:1.45;opacity:.65;margin:8px 0 0}
+@media(max-width:620px){.virgin-score-grid{grid-template-columns:1fr 1fr}.virgin-sensitivity{grid-template-columns:1fr}.virgin-top-row{grid-template-columns:26px 1fr 50px}}
 </style>
 <style>
 /* Em Monte sua seleção, somente as dezenas copiadas/escolhidas ficam em destaque. */
@@ -302,13 +307,20 @@
             <article class="panel dark-panel suggested-card focus-card">
               <div class="panel-head decision-main-head"><div><span class="eyebrow">JOGO OFICIAL</span><h2>NOVO INDICADO · 15 DEZENAS</h2><p>O resultado só é liberado quando a busca atingir 100%.</p></div><button class="btn light decision-primary-action" id="decision-generate">Iniciar busca exaustiva</button></div>
 
-              <div class="decision-selection-mode"><label>Modo <select id="decision-selection-mode"><option value="manual">✋ Manual</option><option value="random">🎲 Aleatório</option><option value="virgin">🎯 Virgem</option></select></label><span id="decision-selection-mode-note">✋ Manual: você define as metas dos indicadores; o LF aplica Matriz 51 + filtros + Perfil PRO.</span></div>
+              <div class="decision-selection-mode"><label>Modo <select id="decision-selection-mode"><option value="manual">✋ Manual</option><option value="random">🎲 Aleatório</option><option value="virgin">🎯 Virgem</option></select></label><label id="virgin-profile-wrap" hidden>Perfil Virgem <select id="virgin-profile"><option value="light">Leve · 30% Virgindade</option><option value="strong" selected>Forte · 50% Virgindade</option><option value="max">Máximo · 70% Virgindade</option></select></label><span id="decision-selection-mode-note">✋ Manual: você define as metas dos indicadores; o LF aplica Matriz 51 + filtros + Perfil PRO.</span></div>
 
               <div class="decision-result-zone">
                 <div id="decision-board" class="board board-dark decision-5x5" aria-label="NOVO INDICADO em grade 5 por 5"></div>
                 <div id="decision-result-origin" class="decision-result-origin"><span class="origin-label">Forma de escolha</span><b id="decision-result-origin-badge" class="origin-badge complete">MANUAL</b></div>
                 <div class="validation-line" id="decision-validation">Aguardando base histórica.</div>
                 <div class="historical-lock" id="historical-lock"></div>
+                <section class="virgin-score-panel" id="virgin-score-panel" hidden>
+                  <div class="virgin-score-head"><div><span class="eyebrow">RANKING VIRGEM</span><h3>Score Matriz × Score Virgindade</h3></div><span id="virgin-percentile" class="target-mode-pill">—</span></div>
+                  <div class="virgin-score-grid" id="virgin-score-grid"></div>
+                  <div class="virgin-sensitivity" id="virgin-sensitivity"></div>
+                  <details class="virgin-top-details"><summary>Top Virgem · Pareto e melhores candidatos</summary><div id="virgin-top-list"></div></details>
+                  <p class="virgin-score-note">Virgindade mede distância e densidade histórica; não aumenta a probabilidade matemática de uma combinação individual ser sorteada.</p>
+                </section>
               </div>
 
               <details class="decision-drawer">
@@ -403,7 +415,7 @@
         </section>
 
         <section class="page" data-page-panel="matrix">
-          <div class="page-heading"><div><span class="eyebrow dark">MATRIZ OFICIAL</span><h1>51 filtros e posições</h1><p>F01–F29 restauram a matriz canônica original; F30–F44 são complementares e diferenciados. Os limiares possuem versão formal e auditoria walk-forward. Cada posição pode operar como Bloquear, Avisar ou Ignorar.</p><p><strong>F23 Casais:</strong> Política oficial <b>IGNORAR</b> · Auditoria histórica <b>IGNORAR</b> · permanece apenas informativo. <strong>F28 + F29 + F36 + F37:</strong> bloqueios obrigatórios.</p></div><div class="matrix-totals"><b>51</b><span>posições</span></div></div>
+          <div class="page-heading"><div><span class="eyebrow dark">MATRIZ OFICIAL</span><h1>51 filtros e posições</h1><p>F01–F29 restauram a matriz canônica original; F30–F44 são complementares e diferenciados. Os limiares possuem versão formal e auditoria walk-forward. Cada posição pode operar como Bloquear, Avisar ou Ignorar.</p><p><strong>F23 Casais:</strong> Política oficial <b>IGNORAR</b> · Auditoria histórica <b>IGNORAR</b> · permanece apenas informativo. <strong>F29:</strong> bloqueia a combinação exata de 15 dezenas se ela já foi sorteada. <strong>F37:</strong> bloqueia qualquer candidato com 14/15 de um resultado histórico. <strong>F28 + F29 + F36 + F37:</strong> bloqueios obrigatórios.</p></div><div class="matrix-totals"><b>51</b><span>posições</span></div></div>
           <article class="panel matrix-control"><div><label for="matrix-game-input">Jogo para validar</label><input id="matrix-game-input" placeholder="01 02 03 ... 15" /></div><button class="btn primary" id="validate-matrix">Validar</button><button class="btn" id="matrix-use-decision">Usar NOVO INDICADO</button></article>
           <div class="matrix-summary" id="matrix-summary"></div>
           <div class="matrix-priority-legend"><b>Ordem de prioridade:</b><span>P1 Obrigatórios</span><span>P2 Bloqueios reprovados</span><span>P3 Demais bloqueios</span><span>P4 Avisos presentes</span><span>P5 Demais avisos</span><span>P6 Ignorados</span></div>
@@ -524,8 +536,8 @@
   <script src="/ball-colors.js?v=official-colors-20260921"></script>
   <script src="/global-search.js?v=global-search-20260921"></script>
   <script src="./matrix-51.js?v=374-audit-fixes-20260922"></script>
-  <script>window.__LF_WORKER_URL="/analysis-worker.js?v=374-stale-backtest-r2-20260922";</script>
-  <script type="module" src="/main.js?v=374-virgin-random-20260922"></script>
+  <script>window.__LF_WORKER_URL="/analysis-worker.js?v=374-virgin-ranking-20260922";</script>
+  <script type="module" src="/main.js?v=374-virgin-ranking-20260922"></script>
 <!-- deploy-stamp: line-column-block-v3.6.5 -->
 </body>
 </html>
