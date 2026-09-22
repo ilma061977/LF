@@ -7,14 +7,8 @@ function resolvedPolicy(f,policies={}){return MANDATORY_BLOCKS.has(f.id)?'block'
 const keyOf=g=>g.map(n=>String(n).padStart(2,'0')).join('-');
 function blockedFailures(report,policies){const out=report.filters.filter(f=>resolvedPolicy(f,policies)==='block'&&!f.passed);if(report?.patternCooldown?.blocked)out.push({id:'PADRAO',name:'Carência de padrão exato'});if(report?.colorRule?.blocked)out.push({id:'CORES',name:'Regra obrigatória de cores do indicado'});if(report?.lineRepeat?.blocked)out.push({id:'LINHA',name:'Distribuição de linhas igual ao concurso anterior'});if(report?.columnRepeat?.blocked)out.push({id:'COLUNA',name:'Distribuição de colunas igual ao concurso anterior'});if(report?.lineColumnRepeat?.blocked)out.push({id:'L×C',name:'Linha × Coluna igual ao concurso anterior'});return out;}
 function warnings(report,policies){return report.filters.filter(f=>resolvedPolicy(f,policies)==='warn'&&!f.passed);}
-const COLOR_ORDER=[1,2,3,4,5,6,7,8,9,0];
-const BLOCKED_COLOR_PROFILES=new Set(['3-3-3-3-1-1-1-0-0-0','3-3-3-2-2-2-0-0-0-0','3-2-2-2-2-2-2-0-0-0','3-3-3-1-1-1-1-1-1-0']);
-const MIOLO_NUMBERS=[7,8,9,12,13,14,17,18,19],MOLDURA_NUMBERS=[1,2,3,4,5,6,10,11,15,16,20,21,22,23,24,25];
-function colorCounts(game){const c=Object.fromEntries(COLOR_ORDER.map(f=>[f,0]));for(const n of game)c[n%10]=(c[n%10]||0)+1;return c;}
-function completeColorCount(game){const c=colorCounts(game);return[1,2,3,4,5].filter(f=>c[f]===3).length;}
-function colorBaseValid(game){if(!game||game.length!==15)return false;const c=colorCounts(game),present=COLOR_ORDER.filter(f=>c[f]>0).length,profile=COLOR_ORDER.map(f=>c[f]).sort((a,b)=>b-a).join('-'),s=new Set(game);if(present<8||present>10)return false;if(BLOCKED_COLOR_PROFILES.has(profile))return false;if(MIOLO_NUMBERS.every(n=>s.has(n)))return false;if(MOLDURA_NUMBERS.every(n=>s.has(n)))return false;return true;}
-function indicatedColorValid(game){return colorBaseValid(game)&&completeColorCount(game)<=2;}
-function colorRuleValid(game){return colorBaseValid(game)&&completeColorCount(game)===1;}
+function indicatedColorValid(game){return !!M.mandatoryColorRule(game)?.passed;}
+function colorRuleValid(game){const r=M.mandatoryColorRule(game);return !!r?.passed&&Number(r.complete)===1;}
 function colorFeasible(excluded){const block=new Set(excluded||[]),pool=ALL.filter(n=>!block.has(n));if(pool.length<15)return false;for(let t=0;t<800;t++){const a=[...pool];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}if(colorRuleValid(a.slice(0,15)))return true;}return false;}
 function randomColorCandidate(excluded){const block=new Set(excluded||[]),pool=ALL.filter(n=>!block.has(n));if(pool.length<15)return null;for(let t=0;t<400;t++){const a=[...pool];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}const g=a.slice(0,15).sort((x,y)=>x-y);if(colorRuleValid(g))return g;}return null;}
 function randomCandidate(excluded,colorBalanced){const block=new Set(excluded||[]),pool=ALL.filter(n=>!block.has(n));if(pool.length<15)return null;if(colorBalanced)return randomColorCandidate(excluded);for(let t=0;t<160;t++){const a=[...pool];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}const g=a.slice(0,15).sort((x,y)=>x-y);if(indicatedColorValid(g))return g;}return null;}
