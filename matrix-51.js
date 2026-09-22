@@ -131,7 +131,7 @@
     ['Inércia flutuante entre 5 e 6','Canônica F01–F29','advisory'],
     ['Dispersão das linhas opostas','Canônica F01–F29','advisory'],
     ['Até 2 alertas nos limites máximos','Canônica F01–F29','advisory'],
-    ['Jogo inédito no histórico','Canônica F01–F29','core'],
+    ['Bloqueia combinação exata de 15 dezenas já sorteada','Canônica F01–F29','core'],
     ['Repetidas com Termômetro','Complementar F30–F44','advisory'],
     ['Ausentes Persistentes de 2 Concursos','Complementar F30–F44','advisory'],
     ['Média de Atraso','Complementar F30–F44','advisory'],
@@ -290,7 +290,7 @@
     add(26,ctx.floating.size<5||(floatingCount>=5&&floatingCount<=6),`${floatingCount}/${ctx.floating.size} flutuantes · regra canônica corrigida 5–6`);
     add(27,Math.abs(lines[0]-lines[4])<3,`Linha 1 ${lines[0]} × linha 5 ${lines[4]} · diferença ${Math.abs(lines[0]-lines[4])}`);
     add(28,boundaryAlerts<=2,`${boundaryAlerts} métricas exatamente no limite máximo canônico · máximo 2`);
-    add(29,!exactHistorical,exactHistorical?'Jogo de 15 dezenas já sorteado':'Jogo inédito no histórico carregado');
+    add(29,!exactHistorical,exactHistorical?'Combinação exata de 15 dezenas já sorteada — bloqueada':'Combinação exata de 15 dezenas ainda não sorteada');
 
     // F30–F44: complementares, sempre definidos para não repetir mecanicamente F01–F29.
     add(30,repeated==null||inRange(repeated,ctx.repeatedRange),repeated==null?'Aguardando concurso anterior':`${repeated} repetidas · termômetro histórico ${ctx.repeatedRange.join('–')}`);
