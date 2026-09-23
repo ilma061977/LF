@@ -52,7 +52,7 @@
   <div class="panel">
     <h3>Indicar grupos virgens</h3>
     <div class="controls"><label>Quantidade<select id="vg-qty"><option>1</option><option selected>5</option><option>10</option><option>20</option></select></label><label>Amostra para ranking<select id="vg-sample"><option value="5000">5.000</option><option value="10000" selected>10.000</option><option value="25000">25.000</option><option value="50000">50.000</option></select></label><button class="btn green" id="vg-generate">Indicar virgens</button></div>
-    <div class="note good">Os indicados são obrigatoriamente VIRGENS no histórico completo. Entre os virgens avaliados, o ranking usa o mesmo score estrutural da Matriz 51 e respeita o Perfil PRO ativo quando houver regras.</div>
+    <div class="note good">Os indicados usam o <b>Ranking Virgem atual</b>: F29 bloqueia 15/15 exato já sorteado, F37 bloqueia 14/15 histórico e os aprovados são reordenados por Score Matriz + Score Virgindade. O Perfil PRO ativo também é respeitado.</div>
   </div>
 </div>
 <div id="vg-out"></div></section>
@@ -77,7 +77,7 @@
 'use strict';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],ALL=Array.from({length:25},(_,i)=>i+1),TOTAL=3268760;
 const PRIME=new Set([2,3,5,7,11,13,17,19,23]),FIB=new Set([1,2,3,5,8,13,21]),BORDER=new Set([1,2,3,4,5,6,10,11,15,16,20,21,22,23,24,25]),CENTER=new Set([7,8,9,12,13,14,17,18,19]);
-let H=[],FROM=1,TO=0,RULES=JSON.parse(localStorage.getItem('lfv3_pro_profile_rules')||'[]'),PORT=JSON.parse(localStorage.getItem('lfv3_bet_portfolio_pro')||'[]'),SUMDIST=null,RUNDIST=null,GENWORKER=null;
+let H=[],FROM=1,TO=0,BASE_SUSPENDED=false,RULES=JSON.parse(localStorage.getItem('lfv3_pro_profile_rules')||'[]'),PORT=JSON.parse(localStorage.getItem('lfv3_bet_portfolio_pro')||'[]'),SUMDIST=null,RUNDIST=null,GENWORKER=null;
 const pad=n=>String(n).padStart(2,'0'),fmt=n=>Number(n||0).toLocaleString('pt-BR'),money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function mean(a){return a.length?a.reduce((s,x)=>s+x,0)/a.length:0}
 function nCr(n,r){if(r<0||r>n)return 0;r=Math.min(r,n-r);let z=1;for(let i=1;i<=r;i++)z=z*(n-r+i)/i;return Math.round(z)}
@@ -107,6 +107,7 @@ function policies(){try{return JSON.parse(localStorage.getItem('lfv3_filter_poli
 function lfAnalysisWindow(){const p=Number(localStorage.getItem('lfv3_period'))||50;return Math.max(10,Math.min(200,p));}
 function renderGame(g){if(!g)return'';return '<div class="panel"><h3>Jogo PRO gerado</h3><div style="font-size:20px;font-weight:900;letter-spacing:.12em">'+g.map(pad).join(' ')+'</div><div class="note">Este é um teste local do mesmo Perfil PRO. O Jogo Indicado oficial será recalculado no app principal por busca exaustiva 100% usando as regras atualmente salvas.</div></div>'}
 $('#pro-generate').onclick=()=>{
+ if(BASE_SUSPENDED)return alert('Geração suspensa: a base aguarda atualização/validação do concurso mais recente.');
  if(!RULES.length&&!confirm('O perfil está vazio. Executar somente com a Matriz 51?'))return;
  if(GENWORKER)GENWORKER.terminate();GENWORKER=new Worker('/analysis-worker.js?v=pro30-37');
  const status=$('#gen-status'),bar=$('#gen-bar');status.textContent='Iniciando busca exaustiva…';bar.style.width='0%';$('#gen-out').innerHTML='';
@@ -154,9 +155,13 @@ function renderVirgins(){
 }
 $('#vg-check').onclick=()=>{const groups=parseGroups15($('#vg-input').value),valid=groups.filter(g=>g.length===15);if(!valid.length)return alert('Informe ao menos um grupo válido de 15 dezenas.');renderVirginRows(valid,'check')};
 $('#vg-generate').onclick=()=>{
- const qty=+$('#vg-qty').value,sample=Math.max(qty,+$('#vg-sample').value),idx=historicExactIndex(),ctx=LFMatrix51.buildContext(H,{window:lfAnalysisWindow()}),pol=policies(),cand=[];
- for(let i=0;i<sample;i++){const rank=sample===1?0:Math.floor(i*(TOTAL-1)/(sample-1)),g=LFMatrix51.unrank(ALL,15,rank),k=gameKey(g);if(idx.has(k))continue;const rep=LFMatrix51.inspect(g,ctx);if(!LFMatrix51.policyAllows(rep,pol))continue;if(!currentProPass(g))continue;const score=LFMatrix51.candidateScoreFromReport?LFMatrix51.candidateScoreFromReport(rep,ctx,pol):LFMatrix51.candidateScore(g,ctx,pol);if(Number.isFinite(score))cand.push({g,score})}
- cand.sort((a,b)=>b.score-a.score||gameKey(a.g).localeCompare(gameKey(b.g)));const picked=cand.slice(0,qty).map(x=>x.g);if(!picked.length)return alert('Nenhum grupo virgem aprovado encontrado nesta amostra com as regras atuais. Aumente a amostra ou revise o Perfil PRO.');renderVirginRows(picked,'generate');
+ if(BASE_SUSPENDED)return alert('Geração Virgem suspensa: a base aguarda atualização/validação do concurso mais recente.');
+ const qty=+$('#vg-qty').value,profile=['light','strong','max'].includes(localStorage.getItem('lfv3_virgin_profile'))?localStorage.getItem('lfv3_virgin_profile'):'strong',prev=(()=>{try{const a=JSON.parse(localStorage.getItem('lfv3_decision_tracker')||'[]');return(Array.isArray(a)?a:[]).filter(x=>x?.decisionSelectionMode==='virgin'&&Array.isArray(x.game)&&x.game.length===15).slice(-100).map(x=>x.game)}catch{return[]}})();
+ const btn=$('#vg-generate');btn.disabled=true;$('#vg-out').innerHTML='<div class="note">Executando busca exaustiva com Ranking Virgem '+profile+'…</div>';
+ if(GENWORKER)GENWORKER.terminate();GENWORKER=new Worker('/analysis-worker.js?vg='+Date.now());
+ GENWORKER.onmessage=e=>{const d=e.data||{};if(d.type==='progress'){$('#vg-out').innerHTML='<div class="note">Busca '+Math.floor((d.tested||0)/Math.max(1,d.total||TOTAL)*100)+'% · '+fmt(d.approvedCount||0)+' aprovados · '+fmt(d.eligibleCount||0)+' elegíveis</div>';}else if(d.type==='done'){btn.disabled=false;const games=(qty<=10&&d.virginDiverseGames?.length?d.virginDiverseGames:d.topGames||[]).slice(0,qty);GENWORKER.terminate();GENWORKER=null;if(!games.length){$('#vg-out').innerHTML='<div class="note warn">Nenhum Virgem elegível encontrado com as regras atuais.</div>';return;}renderVirginRows(games,'generate');const note=document.createElement('div');note.className='note good';note.innerHTML='<b>Ranking Virgem '+profile+'</b> · '+fmt(d.eligibleCount||0)+' elegíveis avaliados · '+games.length+' exibidos.';$('#vg-out').prepend(note);}};
+ GENWORKER.onerror=()=>{btn.disabled=false;GENWORKER=null;$('#vg-out').innerHTML='<div class="note warn">Falha no Worker do Ranking Virgem.</div>';};
+ GENWORKER.postMessage({task:'generate',history:H,period:lfAnalysisWindow(),policies:policies(),excluded:[],deterministic:true,exhaustive:true,rankIndex:0,topLimit:1000,proProfile:{rules:RULES},rankingMode:'virgin',virginProfile:profile,previousVirginGames:prev});
 };
 
 function finalK(d){return ALL.filter(n=>n%10===d).length}
@@ -217,7 +222,7 @@ function renderExpected(){
 $('#oe-run').onclick=renderExpected;
 
 function renderTab(n){if(n==='generator')renderRules();else if(n==='virgins')renderVirgins();else if(n==='endings')renderEndings();else if(n==='paircompare')renderPairCompare();else if(n==='neighbors')renderNeighbors();else if(n==='quintiles')renderQuintiles();else if(n==='portfolio')renderPortfolio();else if(n==='expected')renderExpected()}
-async function init(){const r=await fetch('/data/lotofacil-base.json?v='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({...x,concurso:+x.concurso,dezenas:(x.dezenas||[]).map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);FROM=H[0]?.concurso||1;TO=H.at(-1)?.concurso||0;applyRange(FROM,TO);$('#pf-contest').value=TO+1;const h=location.hash.replace('#','');setTab($$('.tab').some(x=>x.dataset.tab===h)?h:'generator')}
+async function init(){const r=await fetch('/api/lotofacil?all=1&ev3037='+Date.now()),b=await r.json();if(!r.ok||b?.analysisBlocked||b?.baseValidation?.valid===false)throw new Error(b?.error||'Base histórica inválida');H=(b.history||[]).map(x=>({...x,concurso:+x.concurso,dezenas:(x.dezenas||[]).map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);BASE_SUSPENDED=Boolean(b?.analysisSuspended);FROM=H[0]?.concurso||1;TO=H.at(-1)?.concurso||0;applyRange(FROM,TO);$('#pf-contest').value=TO+1;if(BASE_SUSPENDED){$('#gen-status').className='note warn';$('#gen-status').textContent=b?.freshnessAlert?.message||'Base aguardando atualização; gerações suspensas.';}const h=location.hash.replace('#','');setTab($('.tab').some(x=>x.dataset.tab===h)?h:'generator')}
 init().catch(e=>{$('.hero p').textContent='Erro ao carregar base: '+e.message});
 </script>
 </body></html>
