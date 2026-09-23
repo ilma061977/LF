@@ -167,7 +167,7 @@ $('#uni-csv').onclick=()=>{if(!UNI_ROWS.length)universePage();download('lf-unive
 
 function renderTab(n){if(n==='order')renderOrder();else if(n==='patterns32')renderPatterns32();else if(n==='custom')renderCustom();else if(n==='period')renderPeriod();else if(n==='quadrants')renderQuadrants();else if(n==='suits')renderSuits();else if(n==='universe')universePage();else if(n==='export')$('#export-out').innerHTML='<div class="kpis"><div class="kpi"><span>Janela</span><b>#'+FROM+'–#'+TO+'</b></div><div class="kpi"><span>Registros</span><b>'+rangeRows().length+'</b></div></div>'}
 async function init(){
-  const r=await fetch('/data/lotofacil-base.json?v='+Date.now()),b=await r.json();H=(b.history||[]).map(x=>({...x,concurso:Number(x.concurso),dezenas:(x.dezenas||[]).map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);FROM=H[0]?.concurso||1;TO=H.at(-1)?.concurso||0;applyRange(FROM,TO);const hash=location.hash.replace('#','');setTab($$('.tab').some(x=>x.dataset.tab===hash)?hash:'order')
+  const r=await fetch('/api/lotofacil?all=1&v='+Date.now()),b=await r.json();if(!r.ok||b?.analysisBlocked||b?.baseValidation?.valid===false)throw new Error(b?.error||'Base histórica inválida');H=(b.history||[]).map(x=>({...x,concurso:Number(x.concurso),dezenas:(x.dezenas||[]).map(Number).sort((a,b)=>a-b)})).sort((a,b)=>a.concurso-b.concurso);FROM=H[0]?.concurso||1;TO=H.at(-1)?.concurso||0;applyRange(FROM,TO);const hash=location.hash.replace('#','');setTab($$('.tab').some(x=>x.dataset.tab===hash)?hash:'order')
 }
 init().catch(e=>{$('.hero p').textContent='Erro ao carregar base: '+e.message});
 </script>
