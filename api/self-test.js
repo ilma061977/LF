@@ -9,6 +9,8 @@ module.exports = async function handler(req, res) {
   const declaredLatest = Number(live.latest?.concurso) || null;
   const validatedLatest = Number(live.baseValidation?.lastContest) || null;
   const loadedCount = Number(live.baseValidation?.loadedCount) || 0;
+  const embeddedLatest = Number(base?.history?.at?.(-1)?.concurso || base?.latest?.concurso) || 0;
+  const embeddedLag = latest === null ? null : Math.max(0, latest - embeddedLatest);
   const g = Array.isArray(latestRow?.dezenas) ? latestRow.dezenas.map(Number) : [];
   const lines = [0,0,0,0,0], cols = [0,0,0,0,0];
   for (const n of g) if (n >= 1 && n <= 25) { lines[Math.floor((n-1)/5)]++; cols[(n-1)%5]++; }
@@ -17,6 +19,7 @@ module.exports = async function handler(req, res) {
   const checks = [
     { name: 'API histórica', pass: history.length > 0, detail: `${history.length} concursos` },
     { name: 'Base contínua', pass: live.baseValidation?.valid === true && live.baseValidation?.missingCount === 0, detail: `${live.baseValidation?.missingCount || 0} lacunas` },
+    { name: 'Base incorporada de contingência', pass: embeddedLatest > 0 && embeddedLag <= 1, detail: `incorporada #${embeddedLatest || '—'} · ao vivo #${latest || '—'} · defasagem ${embeddedLag ?? '—'}` },
     { name: 'Metadados sincronizados', pass: metadataSynced, detail: `histórico #${latest || '—'} · latest #${declaredLatest || '—'} · validação #${validatedLatest || '—'}` },
     { name: 'Último concurso', pass: latest !== null, detail: `#${latest || '—'}` },
     { name: 'Atualização ao vivo', pass: live.liveUpdate?.ok === true, detail: live.liveUpdate?.ok ? `${live.liveUpdate?.mode||'caixa'} · ${live.liveUpdate?.source||''}` : (live.liveUpdate?.error || 'indisponível') },
