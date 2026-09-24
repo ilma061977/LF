@@ -247,6 +247,14 @@
     if(end!=null&&(end<15||end>25))return false;
     return !(start!=null&&end!=null&&end-start+1<15);
   }
+  function decisionBoundaryUniverse(excluded=[...blockedNumbers()]){
+    const block=new Set((excluded||[]).map(Number)),start=state.decisionStartNumber,end=state.decisionEndNumber;
+    if(!decisionBoundaryValid(start,end))return 0;
+    const forced=[...new Set([start,end].filter(Number.isFinite))];
+    if(forced.some(n=>block.has(n)))return 0;
+    const pool=ALL.filter(n=>!block.has(n)&&(start==null||n>=start)&&(end==null||n<=end)&&!forced.includes(n)),choose=15-forced.length;
+    return choose>=0&&pool.length>=choose?M.nCk(pool.length,choose):0;
+  }
   function decisionBoundarySummary(){
     const s=state.decisionStartNumber,e=state.decisionEndNumber;
     if(s!=null&&e!=null)return `Faixa exata ${pad(s)}→${pad(e)}`;
@@ -366,7 +374,7 @@
   function decisionSearchModeText(){const block=M.FILTERS.filter(f=>state.filterPolicies[f.id]==='block').length,warn=M.FILTERS.filter(f=>state.filterPolicies[f.id]==='warn').length,q=indicatorQuotaSpec().targets,pro=getProProfileRules();return `Busca exaustiva integral · ${decisionSelectionModeLabel()}${state.decisionSelectionMode==='virgin'?` · Perfil ${state.virginProfile}`:''} · ${decisionBoundarySummary()} · Linha anterior bloqueada · Coluna anterior bloqueada · 51 filtros · metas 🔥${q.hot}/❄️${q.cold}/♻️${q.latest}/⏳${q.delayed}/🔄${q.three} · Perfil PRO ${pro.length?pro.length+' regra(s)':'sem regras'} · ${block} bloqueadores · ${warn} avisos · F28 + F29 + F36 + F37 obrigatórios`;}
   function formatDuration(sec){if(!Number.isFinite(sec)||sec<0)return '—';sec=Math.round(sec);const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),ss=sec%60;return h?`${h}h ${String(m).padStart(2,'0')}m`:`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
   function setDecisionSearchPanel(meta={}){
-    const excluded=[...blockedNumbers()],available=25-excluded.length,total=Number(meta.total??(available>=15?M.nCk(available,15):0)),tested=Number(meta.tested||0),approved=Number(meta.approvedCount||0),eligible=Number(meta.eligibleCount??meta.found??0),pct=total?Math.min(100,Math.floor((tested/total)*10000)/100):0,status=meta.status||'idle';
+    const excluded=[...blockedNumbers()],available=25-excluded.length,total=Number(meta.total??decisionBoundaryUniverse(excluded)),tested=Number(meta.tested||0),approved=Number(meta.approvedCount||0),eligible=Number(meta.eligibleCount??meta.found??0),pct=total?Math.min(100,Math.floor((tested/total)*10000)/100):0,status=meta.status||'idle';
     const previousStart=state.decisionSearchMeta?.startedAt||null,startedAt=status==='running'?(previousStart||Date.now()):(meta.startedAt||previousStart),endedAt=status==='done'?Date.now():null,elapsedSec=startedAt?Math.max(.001,((endedAt||Date.now())-startedAt)/1000):0,speed=tested>0&&elapsedSec>0?tested/elapsedSec:0,eta=status==='running'&&speed>0?Math.max(0,(total-tested)/speed):null;
     state.decisionSearchMeta={status,tested,total,approvedCount:approved,eligibleCount:eligible,pct,startedAt,elapsedSec,speed,eta};
     const totalEl=$('#decision-search-total'),testedEl=$('#decision-search-tested'),pctEl=$('#decision-search-percent'),approvedEl=$('#decision-search-approved'),eligibleEl=$('#decision-search-eligible'),rejectedEl=$('#decision-search-rejected'),checksumEl=$('#decision-search-checksum'),approvedNote=$('#decision-search-approved-note'),approvedLabel=$('#decision-search-approved-label'),elapsedEl=$('#decision-search-elapsed'),speedEl=$('#decision-search-speed'),etaEl=$('#decision-search-eta'),baseEl=$('#decision-search-base'),rulesEl=$('#decision-search-rules'),bar=$('#decision-search-bar'),mode=$('#decision-search-mode'),result=$('#decision-search-result'),pill=$('#decision-search-status'),btn=$('#decision-generate');
@@ -410,8 +418,8 @@
     if(state.dataBlocked||!state.history.length){applyDecision(null);setDecisionSearchPanel({status:'warn',resultText:'Base incompleta ou indisponível — análise bloqueada.'});return;}
     const sig=generationSignature();
     if(sig!==state.generationSignature){state.generationSignature=sig;state.decisionIndex=0;state.decisionRankingCache=null;if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{} state.decisionWorker=null;state.decisionWorkerSignature='';}}
-    const excluded=[...blockedNumbers()],available=25-excluded.length,total=available>=15?M.nCk(available,15):0;
-    if(available<15){applyDecision(null);setDecisionSearchPanel({status:'warn',total,resultText:'Bloqueios demais para formar 15 dezenas.'});toast('Bloqueios demais para formar 15 dezenas.');return;}
+    const excluded=[...blockedNumbers()],available=25-excluded.length,total=decisionBoundaryUniverse(excluded);
+    if(available<15){applyDecision(null);setDecisionSearchPanel({status:'warn',total,resultText:'Bloqueios demais para formar 15 dezenas.'});toast('Bloqueios demais para formar 15 dezenas.');return;}if(total<=0){applyDecision(null);setDecisionSearchPanel({status:'warn',total:0,resultText:'A faixa inicial/final escolhida não permite formar 15 dezenas com as exclusões atuais.',mode:decisionBoundarySummary()});toast('Faixa inicial/final incompatível com as exclusões atuais.');return;}
     // Cada novo clique executa outra varredura real e escolhe a próxima posição
     // do ranking, para que progresso e aprovados parciais recomecem em zero.
     const cache=state.decisionRankingCache;
