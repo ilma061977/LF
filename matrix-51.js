@@ -27,9 +27,9 @@
   ];
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
-  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.4';
-  const THRESHOLD_VERSION = 'LF-M51-2026.09.22-v3.7.4';
-  const AUDIT_VERSION = 'LF-M51-AUDIT-3787-F28-F29-F36-F37-v3.7.4';
+  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.5';
+  const THRESHOLD_VERSION = 'LF-M51-2026.09.24-v3.7.5';
+  const AUDIT_VERSION = 'LF-M51-AUDIT-3787-F28-F29-F36-F37-v3.7.5';
   const AUDIT_BASE_THROUGH = 3787;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
@@ -130,7 +130,7 @@
     ['Atrasadas parcialmente presentes (somente com 2 ou mais atrasadas)','Canônica F01–F29','advisory'],
     ['Inércia flutuante entre 5 e 6','Canônica F01–F29','advisory'],
     ['Dispersão das linhas opostas','Canônica F01–F29','advisory'],
-    ['Até 2 alertas nos limites máximos','Canônica F01–F29','advisory'],
+    ['Até 3 alertas nos limites máximos','Canônica F01–F29','advisory'],
     ['Bloqueia combinação exata de 15 dezenas já sorteada','Canônica F01–F29','core'],
     ['Repetidas com Termômetro','Complementar F30–F44','advisory'],
     ['Ausentes Persistentes de 2 Concursos','Complementar F30–F44','advisory'],
@@ -164,7 +164,7 @@
     10:{type:'fixed',rule:'|superior−inferior|≤4'},11:{type:'fixed',rule:'|esquerda−direita|≤4'},12:{type:'fixed',rule:'Primos 5–6'},13:{type:'fixed',rule:'Ímpares 7–9'},14:{type:'fixed',rule:'Soma 166–220'},15:{type:'fixed',rule:'Repetidas 8–10'},
     16:{type:'fixed',rule:'<3 colunas com paridade homogênea'},17:{type:'fixed',rule:'<3 linhas com paridade homogênea'},18:{type:'fixed',rule:'Não usar as 5 da elite'},19:{type:'fixed',rule:'Usar ≥1 da elite'},
     20:{type:'conditional',rule:'Se anterior terminou baixo, evitar 21–23 no final'},21:{type:'conditional',rule:'Se anterior iniciou 04/05, iniciar abaixo de 04'},22:{type:'conditional',rule:'Se bloco extremo veio completo, não repeti-lo completo'},
-    23:{type:'conditional',rule:'Casais 01–02, 03–04, 05–06, 07–08, 09–10: se o anterior teve exatamente 1 casal, exigir pelo menos 2'},24:{type:'fixed',rule:'Ausentes do anterior 5–6'},25:{type:'conditional',rule:'Com ≥2 atrasadas (≥3), usar parte do grupo'},26:{type:'fixed',rule:'Inércia flutuante: dezenas que alternaram presença/ausência ≥2 vezes nos últimos 4 concursos; usar 5–6 quando o grupo comporta a regra'},27:{type:'fixed',rule:'|L1−L5|≤2'},28:{type:'fixed',rule:'No máximo 2 métricas no limite máximo'},29:{type:'historical-lock',rule:'Não repetir combinação histórica 15/15'},
+    23:{type:'conditional',rule:'Casais 01–02, 03–04, 05–06, 07–08, 09–10: se o anterior teve exatamente 1 casal, exigir pelo menos 2'},24:{type:'fixed',rule:'Ausentes do anterior 5–6'},25:{type:'conditional',rule:'Com ≥2 atrasadas (≥3), usar parte do grupo'},26:{type:'fixed',rule:'Inércia flutuante: dezenas que alternaram presença/ausência ≥2 vezes nos últimos 4 concursos; usar 5–6 quando o grupo comporta a regra'},27:{type:'fixed',rule:'|L1−L5|≤2'},28:{type:'fixed',rule:'No máximo 3 métricas no limite máximo; 4+ bloqueiam'},29:{type:'historical-lock',rule:'Não repetir combinação histórica 15/15'},
     30:{type:'walk-forward-80',rule:'Repetidas dentro da faixa central histórica de 80%'},31:{type:'walk-forward-80',rule:'Retorno de ausentes persistentes (2 concursos) na faixa de 80%'},32:{type:'walk-forward-80',rule:'Média de atraso na faixa histórica de 80%'},33:{type:'walk-forward-80',rule:'Mudança do perfil de finais na faixa histórica de 80%'},34:{type:'walk-forward-80',rule:'Balanço L1+L5 vs L2+L4 na faixa histórica de 80%'},35:{type:'walk-forward-80',rule:'Pendentes do ciclo na faixa histórica de 80%'},36:{type:'derived',rule:'≤2 falhas simultâneas em F30–F35'},
     37:{type:'historical-warning',rule:'Sem similaridade histórica 14/15'},38:{type:'fixed',rule:'Cadeia posicional de paridade ≤5'},39:{type:'walk-forward-80',rule:'Terminação binária reformulada: finais 0–4 vs 5–9; maior cadeia dentro da faixa histórica de 80%'},40:{type:'walk-forward-80',rule:'Variância radial na faixa histórica de 80%'},41:{type:'walk-forward-80',rule:'Faixas 01–09/10–19/20–25 dentro das faixas históricas'},42:{type:'fixed',rule:'Sem assinatura mecânica extrema'},43:{type:'walk-forward-80',rule:'Conectividade ortogonal na faixa histórica de 80%'},44:{type:'fixed',rule:'Distância do centro de massa ≤0,85'},
     45:{type:'experimental',rule:'Score Matrix Shear 3D; não eliminatório'},46:{type:'experimental',rule:'Score Rebote Elástico; não eliminatório'},47:{type:'experimental',rule:'Score Densidade Fractal; não eliminatório'},48:{type:'experimental',rule:'Score Ressonância Harmônica; não eliminatório'},49:{type:'experimental',rule:'Score Mapa de Calor; não eliminatório'},50:{type:'operational',rule:'Cobertura avaliada no módulo Fechamentos'},51:{type:'operational',rule:'Exportação/carteira; não estatístico'}
@@ -289,7 +289,7 @@
     add(25,ctx.delayed.size<2||(delayedCount>0&&delayedCount<ctx.delayed.size),`${delayedCount}/${ctx.delayed.size} atrasadas ≥3 · aplica somente com 2+ disponíveis`);
     add(26,ctx.floating.size<5||(floatingCount>=5&&floatingCount<=6),`${floatingCount}/${ctx.floating.size} flutuantes · regra canônica corrigida 5–6`);
     add(27,Math.abs(lines[0]-lines[4])<3,`Linha 1 ${lines[0]} × linha 5 ${lines[4]} · diferença ${Math.abs(lines[0]-lines[4])}`);
-    add(28,boundaryAlerts<=2,`${boundaryAlerts} métricas exatamente no limite máximo canônico · máximo 2`);
+    add(28,boundaryAlerts<=3,`${boundaryAlerts} métricas exatamente no limite máximo canônico · máximo 3; 4+ bloqueiam`);
     add(29,!exactHistorical,exactHistorical?'Combinação exata de 15 dezenas já sorteada — bloqueada':'Combinação exata de 15 dezenas ainda não sorteada');
 
     // F30–F44: complementares, sempre definidos para não repetir mecanicamente F01–F29.
