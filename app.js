@@ -988,7 +988,7 @@
   }
   function installVersionUpdateNotice(){
     const banner=document.createElement('div');banner.className='version-update-notice';banner.hidden=true;banner.setAttribute('role','status');banner.innerHTML='<span>Há uma versão nova do painel disponível.</span><button type="button">Atualizar painel</button>';document.body.append(banner);banner.querySelector('button').addEventListener('click',()=>location.reload());
-    const check=async()=>{if(document.hidden)return;try{const response=await fetch(`/version.json?check=${Date.now()}`,{cache:'no-store',headers:{accept:'application/json'}});if(!response.ok)return;const remote=await response.json();if(remote.version&&remote.version!==LF_BUILD_VERSION)banner.hidden=false;}catch{}};
+    const check=async()=>{if(document.hidden)return;try{const response=await fetch(`/api/version?check=${Date.now()}`,{cache:'no-store',headers:{accept:'application/json'}});if(!response.ok)return;const remote=await response.json();if(remote.version&&remote.version!==LF_BUILD_VERSION)banner.hidden=false;}catch{}};
     check();setInterval(check,120000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();});
   }
   function findF28SelfTestCase(ctx){
