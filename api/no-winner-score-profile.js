@@ -70,7 +70,7 @@ function cadenceByPattern(noWinner,latestContest){
 }
 module.exports=async function handler(req,res){
   try{
-    const live=await buildLiveBase(base,{force:false}),pages=[],latestContest=Number(live.latest?.concurso||live.history.at(-1)?.concurso||live.history.length||0),pageCount=Math.max(1,Math.ceil(latestContest/50)+1);
+    const live=await buildLiveBase(base,{force:false}),pages=[],latestContestNumber=Number(live.latest?.concurso||live.history.at(-1)?.concurso||live.history.length||0),pageCount=Math.max(1,Math.ceil(latestContestNumber/50)+1);
     for(let start=1;start<=pageCount;start+=12){
       const nums=Array.from({length:Math.min(12,pageCount-start+1)},(_,i)=>start+i);
       pages.push(...await Promise.all(nums.map(fetchPage)));
