@@ -1021,13 +1021,18 @@
   function refreshAll(){renderDecision();renderDecisionIdleState();renderSignals();renderAnalysis();renderGenerated();renderMatrix();renderStats();renderStatsDecision();renderAdvancedAnalytics();renderNoWinnerProfile();renderLab();renderVertical();renderVertical2();renderVertical3();renderCycleClosure();renderCheckerAuto();renderMyGames();renderLineCols();renderCharts();renderPairs();renderPositions();renderGroups();renderHistory();}
 
   // Eventos
-  document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.addEventListener('click',()=>setPage(b.dataset.page)));
+  document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.addEventListener('click',()=>{setPage(b.dataset.page);$('#sidebar')?.classList.remove('open');}));
   const navGroups=[...document.querySelectorAll('.nav-group')];
-  const openNavGroup=(group,open=true)=>{group.classList.toggle('open',open);group.querySelector('.nav-group-toggle')?.setAttribute('aria-expanded',String(open));};
-  document.querySelectorAll('.nav-group-toggle').forEach(t=>t.addEventListener('click',()=>{const g=t.closest('.nav-group');openNavGroup(g,!g.classList.contains('open'));}));
-  const navSearch=$('#nav-search'),navEmpty=$('#nav-empty'),navGlobal=$('#nav-global-results');
-  if(navSearch)navSearch.addEventListener('input',()=>{const q=navSearch.value.trim().toLowerCase();let visible=0;navGroups.forEach(g=>{let groupVisible=0;g.querySelectorAll('.nav-item').forEach(item=>{const hit=!q||item.textContent.toLowerCase().includes(q);item.hidden=!hit;if(hit){groupVisible++;visible++;}});g.hidden=!!q&&groupVisible===0;if(q&&groupVisible)openNavGroup(g,true);});document.querySelectorAll('.nav-shortcuts .nav-item').forEach(item=>{const hit=!q||item.textContent.toLowerCase().includes(q);item.hidden=!hit;if(hit)visible++;});if(navEmpty)navEmpty.hidden=visible>0;if(navGlobal){const rs=q&&window.LFGlobalSearch?window.LFGlobalSearch.search(q).slice(0,8):[];navGlobal.hidden=!rs.length;navGlobal.innerHTML=rs.map(x=>'<a href="'+x.url+'"><b>'+x.title+'</b><small>'+x.section+'</small></a>').join('');}});
+  const openNavGroup=(group,open=true)=>{if(!group)return;group.classList.toggle('open',open);group.querySelector('.nav-group-toggle')?.setAttribute('aria-expanded',String(open));};
+  document.querySelectorAll('.nav-group-toggle').forEach(t=>t.addEventListener('click',()=>{const g=t.closest('.nav-group'),next=!g.classList.contains('open');navGroups.forEach(x=>{if(x!==g)openNavGroup(x,false);});openNavGroup(g,next);}));
+  const navSearch=$('#nav-search'),navEmpty=$('#nav-empty'),navGlobal=$('#nav-global-results'),navClear=$('#nav-search-clear');
+  const resetNavSearch=()=>{if(navSearch)navSearch.value='';document.body.classList.remove('nav-searching');if(navGlobal){navGlobal.hidden=true;navGlobal.innerHTML='';}if(navEmpty)navEmpty.hidden=true;if(navClear)navClear.hidden=true;};
+  const renderNavSearch=()=>{if(!navSearch)return;const q=navSearch.value.trim(),active=!!q;document.body.classList.toggle('nav-searching',active);if(navClear)navClear.hidden=!active;if(!active){if(navGlobal){navGlobal.hidden=true;navGlobal.innerHTML='';}if(navEmpty)navEmpty.hidden=true;return;}const rs=window.LFGlobalSearch?window.LFGlobalSearch.search(q).slice(0,12):[];if(navGlobal){navGlobal.hidden=!rs.length;navGlobal.innerHTML=rs.map(x=>'<a href="'+x.url+'"><b>'+x.title+'</b><em>ABRIR</em><small>'+x.section+'</small></a>').join('');}if(navEmpty)navEmpty.hidden=rs.length>0;};
+  navSearch?.addEventListener('input',renderNavSearch);
+  navSearch?.addEventListener('keydown',e=>{if(e.key==='Escape'){resetNavSearch();navSearch.blur();}});
+  navClear?.addEventListener('click',()=>{resetNavSearch();navSearch?.focus();});
   $('#menu-button').onclick=()=>$('#sidebar').classList.toggle('open');
+  $('#sidebar-close')?.addEventListener('click',()=>$('#sidebar')?.classList.remove('open'));
   $('#global-search-progress')?.addEventListener('click',()=>setPage('decision'));
   document.querySelectorAll('a.nav-item[href]').forEach(link=>link.addEventListener('click',e=>{if(state.decisionSearchMeta?.status==='running'&&state.decisionWorker){e.preventDefault();window.open(link.href,'_blank','noopener');toast('A busca do NOVO INDICADO continua nesta aba. O módulo foi aberto em nova aba.');}}));
   window.addEventListener('beforeunload',e=>{if(state.decisionSearchMeta?.status==='running'&&state.decisionWorker){e.preventDefault();e.returnValue='';}});
