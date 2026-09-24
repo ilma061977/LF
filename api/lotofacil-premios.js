@@ -35,5 +35,5 @@ module.exports=async function handler(req,res){
     const rows=await pool(nums);
     res.setHeader('Cache-Control','public, max-age=0, s-maxage=3600, stale-while-revalidate=21600');
     res.status(200).json({ok:true,source:'CAIXA com contingência As Loterias',count:rows.length,rows});
-  }catch(e){res.status(502).json({ok:false,error:e.message});}
+  }catch(e){const msg=String(e&&e.message||e),bad=/Informe concurso|intervalo from\/to|Intervalo máximo/.test(msg);res.status(bad?400:502).json({ok:false,error:msg});}
 };
