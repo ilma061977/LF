@@ -76,8 +76,8 @@ function profile(history,accumulated){
 }
 module.exports=async function handler(req,res){
   try{
-    const live=await buildLiveBase(base,{force:false}),pages=[];
-    for(let start=1;start<=76;start+=12){const nums=Array.from({length:Math.min(12,77-start)},(_,i)=>start+i);pages.push(...await Promise.all(nums.map(fetchPage)));}
+    const live=await buildLiveBase(base,{force:false}),pages=[],latestContest=Number(live.latest?.concurso||live.history.at(-1)?.concurso||live.history.length||0),pageCount=Math.max(1,Math.ceil(latestContest/50)+1);
+    for(let start=1;start<=pageCount;start+=12){const nums=Array.from({length:Math.min(12,pageCount-start+1)},(_,i)=>start+i);pages.push(...await Promise.all(nums.map(fetchPage)));}
     const accumulated=pages.flat().sort((a,b)=>a.concurso-b.concurso);
     if(accumulated.length<400)throw new Error('Fonte retornou quantidade insuficiente de concursos acumulados.');
     const data=profile(live.history,accumulated);
