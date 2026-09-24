@@ -22,11 +22,18 @@ function quantile(values,p){if(!values.length)return 0;const a=[...values].sort(
 function dist(rows,key){const o={};for(const x of rows){const v=x[key];if(v==null)continue;o[v]=(o[v]||0)+1;}return o;}
 function profile(history,accumulated){
   const setAcc=new Set(accumulated.map(x=>x.concurso)),centerS=new Set([7,8,9,12,13,14,17,18,19]),all=[],acc=[];
+  const colorDefs=[
+    {name:'Vermelha',key:1,nums:[1,11,21]},{name:'Amarela',key:2,nums:[2,12,22]},{name:'Verde',key:3,nums:[3,13,23]},
+    {name:'Marrom',key:4,nums:[4,14,24]},{name:'Azul',key:5,nums:[5,15,25]},{name:'Rosa',key:6,nums:[6,16]},
+    {name:'Preta',key:7,nums:[7,17]},{name:'Cinza',key:8,nums:[8,18]},{name:'Laranja',key:9,nums:[9,19]},{name:'Branca',key:0,nums:[10,20]}
+  ];
   for(let i=0;i<history.length;i++){
     const d=history[i],nums=d.dezenas,set=new Set(nums),lines=[0,0,0,0,0],cols=[0,0,0,0,0];
     for(const n of nums){lines[Math.floor((n-1)/5)]++;cols[(n-1)%5]++;}
     let adjacent=0;for(let n=1;n<25;n++)if(set.has(n)&&set.has(n+1))adjacent++;
-    const row={concurso:d.concurso,data:d.data,dezenas:nums,sum:nums.reduce((a,b)=>a+b,0),odd:nums.filter(n=>n%2).length,repeat:i?nums.filter(n=>history[i-1].dezenas.includes(n)).length:null,center:nums.filter(n=>centerS.has(n)).length,lines,cols,adjacent};
+    const colorCounts={};let distinctColors=0,fullColors=0,absentColors=0;
+    for(const color of colorDefs){const count=color.nums.filter(n=>set.has(n)).length;colorCounts[color.name]=count;if(count>0)distinctColors++;else absentColors++;if(count===color.nums.length)fullColors++;}
+    const row={concurso:d.concurso,data:d.data,dezenas:nums,sum:nums.reduce((a,b)=>a+b,0),odd:nums.filter(n=>n%2).length,repeat:i?nums.filter(n=>history[i-1].dezenas.includes(n)).length:null,center:nums.filter(n=>centerS.has(n)).length,lines,cols,adjacent,colorCounts,distinctColors,fullColors,absentColors};
     all.push(row);if(setAcc.has(d.concurso))acc.push(row);
   }
   if(acc.length!==accumulated.length)throw new Error('Há concursos acumulados ausentes na base histórica.');
@@ -36,6 +43,15 @@ function profile(history,accumulated){
   const repA=acc.filter(x=>x.repeat!=null),repAll=all.filter(x=>x.repeat!=null),extreme=(rows,k)=>rows.filter(x=>Math.max(...x[k])===5||Math.min(...x[k])===0).length/Math.max(1,rows.length)*100;
   const sums=acc.map(x=>x.sum),odds=acc.map(x=>x.odd),reps=repA.map(x=>x.repeat),adjs=acc.map(x=>x.adjacent);
   const sumsAll=all.map(x=>x.sum),oddsAll=all.map(x=>x.odd),repsAll=repAll.map(x=>x.repeat),adjsAll=all.map(x=>x.adjacent);
+  const winners=all.filter(x=>!setAcc.has(x.concurso));
+  const colorDist=rows=>rows.reduce((o,x)=>{o[x.distinctColors]=(o[x.distinctColors]||0)+1;return o;},{});
+  const colorSummary=colorDefs.map(color=>{
+    const a=acc.map(x=>x.colorCounts[color.name]),w=winners.map(x=>x.colorCounts[color.name]),size=color.nums.length;
+    const absentAcc=a.filter(v=>v===0).length/Math.max(1,a.length)*100,absentWin=w.filter(v=>v===0).length/Math.max(1,w.length)*100;
+    const fullAcc=a.filter(v=>v===size).length/Math.max(1,a.length)*100,fullWin=w.filter(v=>v===size).length/Math.max(1,w.length)*100;
+    return{name:color.name,key:color.key,nums:color.nums,size,meanAcc:mean(a),meanWin:mean(w),deltaMean:mean(a)-mean(w),absentAcc,absentWin,absentDelta:absentAcc-absentWin,fullAcc,fullWin,fullDelta:fullAcc-fullWin};
+  });
+  const rose=colorSummary.find(x=>x.name==='Rosa');
   const q=a=>({p10:quantile(a,.10),p50:quantile(a,.50),p90:quantile(a,.90)});
   return{
     count:acc.length,allCount:all.length,pct:acc.length/Math.max(1,all.length)*100,
@@ -44,7 +60,17 @@ function profile(history,accumulated){
     averages:{sum:mean(sums),sumAll:mean(sumsAll),repeat:mean(reps),repeatAll:mean(repsAll),center:mean(acc.map(x=>x.center)),centerAll:mean(all.map(x=>x.center)),adjacent:mean(adjs),adjacentAll:mean(adjsAll),lineExtreme:extreme(acc,'lines'),lineExtremeAll:extreme(all,'lines'),colExtreme:extreme(acc,'cols'),colExtremeAll:extreme(all,'cols')},
     ranges:{sum:q(sums),sumAll:q(sumsAll),odd:q(odds),oddAll:q(oddsAll),repeat:q(reps),repeatAll:q(repsAll),adjacent:q(adjs),adjacentAll:q(adjsAll)},
     oddDist:dist(acc,'odd'),oddDistAll:dist(all,'odd'),repeatDist:dist(acc,'repeat'),repeatDistAll:dist(all,'repeat'),
-    numbers:nums,yearCounts:acc.reduce((o,x)=>{const y=String(x.data||'').slice(-4);o[y]=(o[y]||0)+1;return o;},{}),
+    colors:{
+      winnerCount:winners.length,
+      distinctAcc:colorDist(acc),distinctWin:colorDist(winners),
+      meanDistinctAcc:mean(acc.map(x=>x.distinctColors)),meanDistinctWin:mean(winners.map(x=>x.distinctColors)),
+      pct8to10Acc:acc.filter(x=>x.distinctColors>=8).length/Math.max(1,acc.length)*100,pct8to10Win:winners.filter(x=>x.distinctColors>=8).length/Math.max(1,winners.length)*100,
+      pct9to10Acc:acc.filter(x=>x.distinctColors>=9).length/Math.max(1,acc.length)*100,pct9to10Win:winners.filter(x=>x.distinctColors>=9).length/Math.max(1,winners.length)*100,
+      meanAbsentAcc:mean(acc.map(x=>x.absentColors)),meanAbsentWin:mean(winners.map(x=>x.absentColors)),
+      meanFullAcc:mean(acc.map(x=>x.fullColors)),meanFullWin:mean(winners.map(x=>x.fullColors)),
+      rose,byColor:colorSummary
+    },
+    numbers:nums,yearCounts:acc.reduce((o,x)=>{const y=String(x.data||'').slice(-4);o[y]=(o[y]||0)+1;return o;}),
     latestIds:acc.slice(-12).map(x=>x.concurso)
   };
 }
