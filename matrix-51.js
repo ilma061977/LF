@@ -1,4 +1,4 @@
-/* LF Inteligente V3.7.4 — Matriz 51 canônica restaurada, versionada e auditável.
+/* LF Inteligente V3.7.5 — Matriz 51 canônica restaurada, versionada e auditável.
  * F01–F29 preservam a matriz canônica e foram diferenciados para evitar redundâncias exatas.
  * F30–F44 ampliam a análise com métricas não duplicadas.
  * F45–F49 são experimentais (score/hipótese; não eliminam por padrão).
