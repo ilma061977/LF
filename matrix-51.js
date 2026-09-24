@@ -1,4 +1,4 @@
-/* LF Inteligente V3.6.3 — Matriz 51 canônica restaurada, versionada e auditável.
+/* LF Inteligente V3.7.4 — Matriz 51 canônica restaurada, versionada e auditável.
  * F01–F29 preservam a matriz canônica e foram diferenciados para evitar redundâncias exatas.
  * F30–F44 ampliam a análise com métricas não duplicadas.
  * F45–F49 são experimentais (score/hipótese; não eliminam por padrão).
@@ -29,8 +29,8 @@
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
   const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.4';
   const THRESHOLD_VERSION = 'LF-M51-2026.09.22-v3.7.4';
-  const AUDIT_VERSION = 'LF-M51-AUDIT-3785-F28-F29-F36-F37-v3.7.4';
-  const AUDIT_BASE_THROUGH = 3785;
+  const AUDIT_VERSION = 'LF-M51-AUDIT-3787-F28-F29-F36-F37-v3.7.4';
+  const AUDIT_BASE_THROUGH = 3787;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
   const PATTERN_COOLDOWNS = Object.freeze({
