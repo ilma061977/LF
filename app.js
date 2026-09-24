@@ -506,6 +506,24 @@
       $('#no-winner-comparison').innerHTML=cards.map(([name,a,b,kind,digits])=>{a=Number(a||0);b=Number(b||0);const delta=a-b,fmt=kind==='pp'?v=>v.toFixed(digits)+'%':v=>v.toFixed(digits),cls=delta>.005?'delta-pos':delta<-.005?'delta-neg':'';return`<div class="no-winner-compare-card"><span>${name}</span><b>${fmt(a)} <small>× geral ${fmt(b)}</small></b><small class="${cls}">Δ ${delta>=0?'+':''}${delta.toFixed(digits)}${kind==='pp'?' p.p.':''}</small></div>`;}).join('');
       renderNoWinnerDistribution('#no-winner-odd-bars',data.oddDist,data.oddDistAll,data.count,data.allCount,' ímp.');
       renderNoWinnerDistribution('#no-winner-repeat-bars',data.repeatDist,data.repeatDistAll,data.count,Math.max(1,Number(data.allCount||0)-1),' rep.');
+      const colors=data.colors||{},winnerCount=Number(colors.winnerCount||0),rose=colors.rose||{};
+      const colorPct=(obj,k,total)=>Number(obj?.[k]||0)/Math.max(1,total)*100;
+      const colorDistEl=$('#no-winner-color-dist');
+      if(colorDistEl)colorDistEl.innerHTML=[8,9,10].map(k=>{const pa=colorPct(colors.distinctAcc,k,data.count),pw=colorPct(colors.distinctWin,k,winnerCount);return `<div class="dual-dist-row"><span class="dual-dist-label">${k} cores</span><div class="dual-dist-track" title="Sem ganhador ${pa.toFixed(1)}% · Com ganhador ${pw.toFixed(1)}%"><i style="width:${Math.min(100,pa)}%"></i><em style="width:${Math.min(100,pw)}%"></em></div><span class="dual-dist-values">sem ganh. ${pa.toFixed(1)}% · com ganh. ${pw.toFixed(1)}%</span></div>`;}).join('');
+      const colorKpis=$('#no-winner-color-kpis');if(colorKpis)colorKpis.innerHTML=[
+        ['8–10 cores',Number(colors.pct8to10Acc||0).toFixed(2)+'%',`com ganhador ${Number(colors.pct8to10Win||0).toFixed(2)}%`],
+        ['9–10 cores',Number(colors.pct9to10Acc||0).toFixed(2)+'%',`com ganhador ${Number(colors.pct9to10Win||0).toFixed(2)}%`],
+        ['Rosa 06/16 · média',Number(rose.meanAcc||0).toFixed(3),`com ganhador ${Number(rose.meanWin||0).toFixed(3)}`],
+        ['Cores diferentes · média',Number(colors.meanDistinctAcc||0).toFixed(2),`com ganhador ${Number(colors.meanDistinctWin||0).toFixed(2)}`]
+      ].map(([a,b,s])=>`<article><span>${a}</span><b>${b}</b><small>${s}</small></article>`).join('');
+      const colorSummary=$('#no-winner-color-summary');if(colorSummary)colorSummary.innerHTML=[
+        ['Cores ausentes · média',`${Number(colors.meanAbsentAcc||0).toFixed(2)} × ${Number(colors.meanAbsentWin||0).toFixed(2)}`],
+        ['Cores completas · média',`${Number(colors.meanFullAcc||0).toFixed(2)} × ${Number(colors.meanFullWin||0).toFixed(2)}`],
+        ['Rosa ausente',`${Number(rose.absentAcc||0).toFixed(2)}% × ${Number(rose.absentWin||0).toFixed(2)}%`],
+        ['Rosa completa 06+16',`${Number(rose.fullAcc||0).toFixed(2)}% × ${Number(rose.fullWin||0).toFixed(2)}%`]
+      ].map(([a,b])=>`<div class="summary-row"><span>${a}</span><b>${b}</b></div>`).join('');
+      const colorHex={Vermelha:'#dc2626',Amarela:'#facc15',Verde:'#16a34a',Marrom:'#7c4a2d',Azul:'#2563eb',Rosa:'#ec4899',Preta:'#111827',Cinza:'#9ca3af',Laranja:'#f97316',Branca:'#ffffff'};
+      const colorBody=$('#no-winner-color-body');if(colorBody)colorBody.innerHTML=(colors.byColor||[]).map(x=>{const dm=Number(x.deltaMean||0),reading=Math.abs(dm)>=.08?(dm>0?'Mais presente':'Menos presente'):'Próxima do grupo com ganhador',cls=dm>.03?'delta-pos':dm<-.03?'delta-neg':'delta-neutral';return`<tr><td><i class="color-dot-inline" style="background:${colorHex[x.name]||'#cbd5e1'}"></i>${x.name}</td><td>${(x.nums||[]).map(pad).join(' · ')}</td><td><b>${Number(x.meanAcc||0).toFixed(3)}</b></td><td>${Number(x.meanWin||0).toFixed(3)}</td><td>${Number(x.absentAcc||0).toFixed(2)}%</td><td>${Number(x.absentWin||0).toFixed(2)}%</td><td>${Number(x.fullAcc||0).toFixed(2)}%</td><td>${Number(x.fullWin||0).toFixed(2)}%</td><td class="${cls}"><span class="color-reading">${reading}</span></td></tr>`;}).join('');
       $('#no-winner-number-body').innerHTML=(data.numbers||[]).map(x=>{const delta=Number(x.delta||0),cls=delta>.25?'delta-pos':delta<-.25?'delta-neg':'delta-neutral',reading=delta>=2.5?'Mais frequente':delta<=-2.5?'Menos frequente':'Próximo do geral';return`<tr><td>${mini(Number(x.n))}</td><td><b>${Number(x.count||0)}</b></td><td>${Number(x.pct||0).toFixed(2)}%</td><td>${Number(x.allPct||0).toFixed(2)}%</td><td class="${cls}">${delta>=0?'+':''}${delta.toFixed(2)}</td><td><span class="status-pill ${Math.abs(delta)>=2.5?(delta>0?'ok':'warn'):''}">${reading}</span></td></tr>`;}).join('');
       renderNoWinnerIndicated(data);
       const source=$('#no-winner-source'),checked=data.checkedAt?new Date(data.checkedAt).toLocaleString('pt-BR'):'—';if(source)source.textContent=`Fonte dos acumulados: ${data.sourceLabel||'tabela histórica'} · base LF até #${data.liveBase?.latest||data.allCount||'—'} · conferido em ${checked}. Atualização automática com cache de 6 horas.`;
