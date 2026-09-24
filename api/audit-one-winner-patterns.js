@@ -14,7 +14,8 @@ async function fetchPage(pg){
    const concurso=Number((cells[0].match(/\d+/)||[])[0]),data=(cells[1].match(/\d{2}\/\d{2}\/\d{4}/)||[])[0],raw=cells[17];
    if(!Number.isInteger(concurso)||!data)continue;
    const accumulated=/^Acum\.?$/i.test(raw),winners=accumulated?0:Number((raw.match(/\d+/)||[])[0]);
-   out.push({concurso,data,winners:Number.isFinite(winners)?winners:null,accumulated});
+   const betsRaw=cells[19]||'',bets=/\d/.test(betsRaw)?Number(betsRaw.replace(/\D/g,'')):null;
+   out.push({concurso,data,winners:Number.isFinite(winners)?winners:null,accumulated,bets:Number.isFinite(bets)?bets:null});
   }return out;
  }finally{clearTimeout(timer);}
 }
@@ -64,13 +65,13 @@ module.exports=async function(req,res){
   for(let i=0;i<live.history.length;i++){
    const d=live.history[i],w=winMap.get(d.concurso);if(!w)continue;
    const prev=i?live.history[i-1]:null,prevW=prev?winMap.get(prev.concurso):null;
-   all.push({...d,...feat(d,prev),winners:w.winners,accumulated:w.accumulated,afterAccum:!!prevW?.accumulated,prevAccum:!!prevW?.accumulated,prevWinners:prevW?.winners??null});
+   all.push({...d,...feat(d,prev),winners:w.winners,accumulated:w.accumulated,bets:w.bets,afterAccum:!!prevW?.accumulated,prevAccum:!!prevW?.accumulated,prevWinners:prevW?.winners??null,prevBets:prevW?.bets??null});
   }
   const one=all.filter(x=>x.winners===1),multi=all.filter(x=>x.winners>=2),nonOneWin=all.filter(x=>x.winners>=2);
   const after=all.filter(x=>x.afterAccum),afterOne=after.filter(x=>x.winners===1),afterMulti=after.filter(x=>x.winners>=2),afterAccumAgain=after.filter(x=>x.winners===0);
   const oneNotAfter=one.filter(x=>!x.afterAccum);
   const years=[...new Set(all.map(x=>String(x.data).slice(-4)))];
-  const featureNames=['sum','odd','repeat','center','prime','fib','m3','low13','adjacent','longest','min','max','span','maxLine','minLine','lineExtreme','maxCol','minCol','colExtreme','distinctColors','fullColors','absentColors','sumChange'];
+  const featureNames=['sum','odd','repeat','center','prime','fib','m3','low13','adjacent','longest','min','max','span','maxLine','minLine','lineExtreme','maxCol','minCol','colExtreme','distinctColors','fullColors','absentColors','sumChange','bets'];
   const oneVsMulti=summarize(one,multi,featureNames,years);
   const afterOneVsAfterMulti=summarize(afterOne,afterMulti,featureNames,years);
   const afterOneVsOtherOne=summarize(afterOne,oneNotAfter,featureNames,years);
@@ -84,6 +85,9 @@ module.exports=async function(req,res){
     return{name,nums,aMean:mean(aa),bMean:mean(bb),delta:mean(aa)-mean(bb),absentA:aa.filter(x=>x===0).length/Math.max(1,aa.length)*100,absentB:bb.filter(x=>x===0).length/Math.max(1,bb.length)*100,fullA:aa.filter(x=>x===nums.length).length/Math.max(1,aa.length)*100,fullB:bb.filter(x=>x===nums.length).length/Math.max(1,bb.length)*100};
   }).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
   const repeatPairs=dist(afterOne,'repeat');
+  const med=a=>{const b=a.filter(Number.isFinite).sort((x,y)=>x-y);if(!b.length)return null;const m=Math.floor(b.length/2);return b.length%2?b[m]:(b[m-1]+b[m])/2;};
+  const betSummary=rows=>{const a=rows.map(x=>x.bets).filter(Number.isFinite);return{n:a.length,mean:mean(a),median:med(a),min:a.length?Math.min(...a):null,max:a.length?Math.max(...a):null};};
+  const bets={one:betSummary(one),multi:betSummary(multi),afterOne:betSummary(afterOne),afterMulti:betSummary(afterMulti),oneNotAfter:betSummary(oneNotAfter)};
   const recent={};
   for(const w of [50,100,200,500]){const tail=all.slice(-w),a=tail.filter(x=>x.winners===1),b=tail.filter(x=>x.afterAccum&&x.winners===1);recent[w]={one:a.length,onePct:a.length/tail.length*100,afterOne:b.length,afterOnePct:b.length/tail.length*100};}
   res.setHeader('Cache-Control','no-store');res.status(200).json({
@@ -92,7 +96,7 @@ module.exports=async function(req,res){
    numsOneVsMulti:freqCompare(one,multi),numsAfterOneVsAfterMulti:freqCompare(afterOne,afterMulti),numsAfterOneVsOtherOne:freqCompare(afterOne,oneNotAfter),
    colorsOneVsMulti:colorCompare(one,multi),colorsAfterOneVsAfterMulti:colorCompare(afterOne,afterMulti),
    dist:{oneOdd:dist(one,'odd'),oneRepeat:dist(one,'repeat'),afterOneOdd:dist(afterOne,'odd'),afterOneRepeat:repeatPairs,afterOneColors:dist(afterOne,'distinctColors')},
-   recent,
+   bets,recent,
    latestAfterOne:afterOne.slice(-20).map(x=>({concurso:x.concurso,data:x.data,dezenas:x.dezenas,repeat:x.repeat,sum:x.sum,odd:x.odd,distinctColors:x.distinctColors}))
   });
  }catch(e){res.status(500).json({ok:false,error:String(e&&e.stack||e)})}
