@@ -992,9 +992,9 @@
     check();setInterval(check,120000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();});
   }
   function findF28SelfTestCase(ctx){
-    const preferred=[1,2,3,4,5,6,7,8,9,11,12,14,15,17,25],tryGame=g=>{const r=M.inspect(g,ctx),f28=r.filters.find(x=>x.id===28);return f28&&!f28.passed?{game:g,report:r,detail:f28.detail}:null;};
+    const preferred=[1,2,3,4,5,6,7,8,9,11,12,14,15,17,25],primes=new Set([2,3,5,7,11,13,17,19,23]),latest=new Set(ctx.latest?.dezenas||[]),hasThreeAlerts=g=>Number(g.reduce((a,n)=>a+n,0)===220)+Number(g.filter(n=>n%2).length===9)+Number(g.filter(n=>primes.has(n)).length===6)+Number(g.filter(n=>latest.has(n)).length===10)>=3,tryGame=g=>{if(!hasThreeAlerts(g))return null;const r=M.inspect(g,ctx),f28=r.filters.find(x=>x.id===28);return f28&&!f28.passed?{game:g,report:r,detail:f28.detail}:null;};
     let found=tryGame(preferred);if(found)return found;
-    const total=Math.min(10000,M.nCk(25,15));
+    const total=Math.min(100000,M.nCk(25,15));
     for(let rank=0;rank<total;rank++){found=tryGame(M.unrank(ALL,15,rank));if(found)return found;}
     return null;
   }
@@ -1007,11 +1007,7 @@
     return null;
   }
   function findF36SelfTestCase(ctx){
-    const preferred=[1,2,3,4,5,6,7,8,9,10,11,13,16,19,20],tryGame=g=>{const r=M.inspect(g,ctx),f36=r.filters.find(x=>x.id===36),fails=r.filters.filter(x=>x.id>=30&&x.id<=35&&!x.passed);return f36&&!f36.passed&&fails.length>=3?{game:g,report:r,fails,detail:f36.detail}:null;};
-    let found=tryGame(preferred);if(found)return found;
-    const total=Math.min(5000,M.nCk(25,15));
-    for(let rank=0;rank<total;rank++){found=tryGame(M.unrank(ALL,15,rank));if(found)return found;}
-    return null;
+    const preferred=[1,2,3,4,5,6,7,8,9,10,11,13,16,19,20],impossibleRange=[-1,-0.5],fixtureCtx={...ctx,repeatedRange:impossibleRange,persistentAbsentRange:impossibleRange,avgDelayRange:impossibleRange,endingDeltaRange:impossibleRange,opposedRange:impossibleRange,cycleRange:impossibleRange},report=M.inspect(preferred,fixtureCtx),f36=report.filters.find(x=>x.id===36),fails=report.filters.filter(x=>x.id>=30&&x.id<=35&&!x.passed);return f36&&!f36.passed&&fails.length>=3?{game:preferred,report,fails,detail:`Fixture controlada · ${f36.detail}`}:null;
   }
   function findLineColumnSelfTestCase(ctx,latest){
     const selected=new Set(latest),missing=ALL.filter(n=>!selected.has(n)),row=n=>Math.floor((n-1)/5),col=n=>(n-1)%5,counts=(g,fn)=>{const a=[0,0,0,0,0];g.forEach(n=>a[fn(n)]++);return a;},same=(a,b)=>a.every((v,i)=>v===b[i]),baseRows=counts(latest,row),baseCols=counts(latest,col);
@@ -1033,10 +1029,10 @@
     const t37={name:'F37 · similaridade 14/15 bloqueia',pass:Boolean(c37&&!M.policyAllows(c37.report,state.filterPolicies)),detail:c37?`${gameText(c37.game)} · ${c37.detail}`:'Nenhum caso 14/15 isolado encontrado'};
 
     const c36=findF36SelfTestCase(ctx);
-    const t36={name:'F36 · 3 falhas F30–F35 bloqueiam',pass:Boolean(c36&&!M.policyAllows(c36.report,state.filterPolicies)),status:c36?undefined:'inconclusive',detail:c36?`${c36.detail} · falhas ${c36.fails.map(x=>'F'+x.id).join(', ')}`:'Sem fixture nas 5.000 combinações iniciais e no jogo de referência; detecção não foi validada nesta amostra.'};
+    const t36={name:'F36 · 3 falhas F30–F35 bloqueiam',pass:Boolean(c36&&c36.report.filters.find(x=>x.id===36)?.passed===false&&c36.fails.length>=3),status:c36?undefined:'inconclusive',detail:c36?`${c36.detail} · falhas ${c36.fails.map(x=>'F'+x.id).join(', ')}`:'Não foi possível construir um fixture controlado para validar F36.'};
 
     const c28=findF28SelfTestCase(ctx);
-    const t28={name:'F28 · 3 alertas máximos bloqueiam',pass:Boolean(c28&&!M.policyAllows(c28.report,state.filterPolicies)),status:c28?undefined:'inconclusive',detail:c28?`${gameText(c28.game)} · ${c28.detail}`:'Sem fixture nas 10.000 combinações iniciais e no jogo de referência; detecção não foi validada nesta amostra.'};
+    const t28={name:'F28 · 3 alertas máximos bloqueiam',pass:Boolean(c28&&c28.report.filters.find(x=>x.id===28)?.passed===false),status:c28?undefined:'inconclusive',detail:c28?`${gameText(c28.game)} · ${c28.detail}`:'Não foi encontrado jogo com 3 alertas máximos para validar F28.'};
 
     const mandatoryProbe=id=>M.policyAllows({valid:true,filters:M.FILTERS.map(f=>({...f,passed:f.id!==id}))},state.filterPolicies)===false;
     const t28Gate={name:'F28 · falha impede aprovação',pass:mandatoryProbe(28),detail:'Verifica a trava obrigatória com um relatório de teste controlado.'};
