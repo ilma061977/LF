@@ -241,6 +241,23 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
 .secondary-search-kpis{grid-template-columns:1fr 1fr!important}.decision-search-timing{grid-template-columns:repeat(4,1fr)!important}
 @media(max-width:900px){.primary-search-kpis{grid-template-columns:1fr 1fr!important}.decision-search-timing{grid-template-columns:1fr 1fr!important}}
 @media(max-width:520px){.primary-search-kpis{grid-template-columns:1fr 1fr!important}.search-head-v2{align-items:flex-start!important}.search-head-v2 .search-status-pill{margin-top:4px}}
+
+.compact-search{padding:14px!important;border-radius:16px!important;background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.035))!important}
+.search-head-v2{align-items:center!important}.search-head-v2 h3{font-size:17px!important}.search-head-v2 p{margin:4px 0 0;color:#9ca3af;font-size:9px}
+.primary-search-kpis{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;margin-top:12px!important}
+.primary-search-kpis .search-kpi{grid-column:auto!important;min-height:74px!important;padding:11px!important;border:1px solid rgba(255,255,255,.09)!important;background:rgba(0,0,0,.14)!important}
+.primary-search-kpis .search-kpi span{font-size:8px!important;color:#9da8b6!important}
+.primary-search-kpis .search-kpi b{font-size:22px!important;line-height:1.05!important;margin-top:6px!important}
+.primary-search-kpis .search-kpi small{font-size:7.5px!important;color:#7f8a99!important;margin-top:5px!important}
+.primary-search-kpis .decision-approved-kpi{border-color:rgba(59,130,246,.42)!important;background:rgba(37,99,235,.12)!important;box-shadow:none!important}
+.primary-search-kpis .search-kpi-final{border-color:rgba(34,197,94,.4)!important;background:rgba(22,163,74,.10)!important}
+.decision-search-track{height:7px!important;margin:11px 0 8px!important;border-radius:999px!important}
+.search-tech-details{margin-top:8px!important;background:rgba(0,0,0,.08)!important}
+.search-tech-details>summary{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;padding:9px 11px!important}
+.search-tech-details>summary span{font-size:9px;font-weight:800;color:#d1d5db}.search-tech-details>summary small{font-size:7.5px;color:#7f8a99}
+.secondary-search-kpis{grid-template-columns:1fr 1fr!important}.secondary-search-kpis>div{min-height:auto!important}
+@media(max-width:1050px){.primary-search-kpis{grid-template-columns:1fr 1fr!important}}
+@media(max-width:560px){.primary-search-kpis{grid-template-columns:1fr!important}.search-head-v2{align-items:flex-start!important;flex-direction:column!important}}
 </style>
 </head>
 <body>
@@ -418,14 +435,14 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
               <section class="decision-search-panel compact-search" id="decision-search-panel" aria-live="polite">
                 <div class="decision-search-head search-head-v2"><div><span class="eyebrow">BUSCA DO JOGO</span><h3>Buscar novo indicado</h3><p>O resultado é liberado quando a varredura chegar a 100%.</p></div><span class="search-status-pill" id="decision-search-status">Aguardando</span></div>
                 <div class="decision-search-kpis primary-search-kpis">
-                  <div><span>Total</span><b id="decision-search-total">—</b></div>
-                  <div><span>Progresso</span><b id="decision-search-percent">0%</b></div>
-                  <div class="decision-approved-kpi"><span id="decision-search-approved-label">APROVADOS PARCIAIS</span><b id="decision-search-approved">0</b><small id="decision-search-approved-note">durante a busca</small></div>
-                  <div><span>Elegíveis finais</span><b id="decision-search-eligible">0</b><small>Matriz + metas + PRO</small></div>
+                  <div class="search-kpi"><span>Total a avaliar</span><b id="decision-search-total">—</b><small>universo desta busca</small></div>
+                  <div class="search-kpi search-kpi-progress"><span>Progresso</span><b id="decision-search-percent">0%</b><small>varredura concluída</small></div>
+                  <div class="search-kpi decision-approved-kpi"><span id="decision-search-approved-label">Aprovados</span><b id="decision-search-approved">0</b><small id="decision-search-approved-note">Matriz 51</small></div>
+                  <div class="search-kpi search-kpi-final"><span>Elegíveis finais</span><b id="decision-search-eligible">0</b><small>após todas as regras</small></div>
                 </div>
                 <div class="decision-search-track"><i id="decision-search-bar"></i></div>
                 <details class="search-tech-details">
-                  <summary>Detalhes técnicos da busca</summary>
+                  <summary><span>Ver detalhes técnicos</span><small>validadas, reprovadas, velocidade, tempo e regras</small></summary>
                   <div class="decision-search-kpis secondary-search-kpis">
                     <div><span>Validadas</span><b id="decision-search-tested">0</b></div>
                     <div><span>Reprovados</span><b id="decision-search-rejected">0</b><small id="decision-search-checksum">aprovados + reprovados = validados</small></div>
