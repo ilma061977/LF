@@ -94,6 +94,18 @@ module.exports=async function handler(req,res){
       latest:{contest:latestContest,date:all.at(-1)?.data||null},
       counts:{noWinner:noWinner.length,winner:winner.length,all:all.length},
       weights:{lines:40,sequences:30,diversity:15,startEnd:10,cadence:5},
+      guidance:{
+        colorsLt8:{count:noWinner.filter(x=>x.distinctColors<8).length,pct:noWinner.filter(x=>x.distinctColors<8).length/Math.max(1,noWinner.length)*100,action:'block-existing',penalty:12,label:'Menos de 8 cores'},
+        startGte5:{count:noWinner.filter(x=>x.min>=5).length,pct:noWinner.filter(x=>x.min>=5).length/Math.max(1,noWinner.length)*100,action:'strong-warning',penalty:8,label:'Início 05+'},
+        endLte22:{count:noWinner.filter(x=>x.max<=22).length,pct:noWinner.filter(x=>x.max<=22).length/Math.max(1,noWinner.length)*100,action:'warning',penalty:5,label:'Final 22 ou menor'},
+        fullColorsLte1:{count:noWinner.filter(x=>x.fullColors<=1).length,pct:noWinner.filter(x=>x.fullColors<=1).length/Math.max(1,noWinner.length)*100,action:'score-penalty',penalty:3,label:'0–1 cor completa'},
+        neutral:[
+          {key:'startEndCommon',label:'01→25 e 04→25',action:'score-only'},
+          {key:'lineExtreme',label:'Linha extrema 0/5',action:'score-only'},
+          {key:'sequences',label:'Sequências +1 / maior sequência',action:'score-only'}
+        ],
+        bottom5:{action:'monitor-only',label:'Bottom 5% de compatibilidade',note:'Não bloquear sem validação walk-forward específica.'}
+      },
       model:featureDistributions(noWinner,winner,keys),
       patterns,
       cadence:cadenceByPattern(noWinner,latestContest),
