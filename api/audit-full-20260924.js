@@ -29,9 +29,11 @@ module.exports=async function(req,res){
   add('Cores <8 são bloqueadas',color.blocked===true&&color.distinct<8,'Cores distintas '+color.distinct+' · blocked '+color.blocked);
   add('Linha igual ao último bloqueia',exact.lineRepeat?.blocked===true,'blocked '+exact.lineRepeat?.blocked+' · '+(exact.lineRepeat?.currentLines||[]).join('-'));
   add('Coluna igual ao último bloqueia',exact.columnRepeat?.blocked===true,'blocked '+exact.columnRepeat?.blocked+' · '+(exact.columnRepeat?.currentCols||[]).join('-'));
-  let f36case=null;
-  const total=M.nCk(25,15);for(let i=0;i<Math.min(total,120000);i+=31){const g=M.unrank(Array.from({length:25},(_,j)=>j+1),15,i),r=M.inspect(g,ctx),f36=r.filters.find(f=>f.id===36);if(f36&&!f36.passed){f36case={g,r,f36};break;}}
-  add('F36 bloqueia 3+ falhas F30–F35',!!f36case,f36case?f36case.f36.detail:'Nenhum caso encontrado na amostra');
+  let f36case=null;const pool25=Array.from({length:25},(_,j)=>j+1),total=M.nCk(25,15);
+  const probes=[Array.from({length:15},(_,i)=>i+1),Array.from({length:15},(_,i)=>i+11),[1,2,3,4,5,6,7,8,9,17,18,19,23,24,25],[1,2,3,7,8,9,10,11,12,13,14,20,21,24,25]];
+  for(const g of probes){const r=M.inspect(g,ctx),f36=r.filters.find(f=>f.id===36);if(f36&&!f36.passed){f36case={g,r,f36};break;}}
+  if(!f36case){const samples=50000;for(let i=0;i<samples;i++){const rank=Math.floor(i*(total-1)/Math.max(1,samples-1)),g=M.unrank(pool25,15,rank),r=M.inspect(g,ctx),f36=r.filters.find(f=>f.id===36);if(f36&&!f36.passed){f36case={g,r,f36,rank};break;}}}
+  add('F36 bloqueia 3+ falhas F30–F35',!!f36case,f36case?f36case.f36.detail+' · jogo '+f36case.g.join(','):'Nenhum caso encontrado em probes + 50.000 ranks uniformes');
   const repeated=latest.dezenas,absent=Array.from({length:25},(_,i)=>i+1).filter(n=>!lastSet.has(n));let f28case=null;
   const choose10=[];const cb10=x=>{choose10.push(x);if(choose10.length>=4000)cb10.stop=true};comb(repeated,10,cb10);
   const choose5=[];const cb5=x=>choose5.push(x);comb(absent,5,cb5);
