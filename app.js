@@ -575,14 +575,25 @@
   }
   function noWinnerScore(game,data){
     const f=oneWinnerGameFeatures(game);if(!f||!data||!data.model)return null;
-    const m=data.model||{};
+    const m=data.model||{},guidance=data.guidance||{};
     const lines=noWinnerComponent(m,f,['minLine','maxLine','lineExtreme']);
     const sequences=noWinnerComponent(m,f,['adjacent','longest']);
     const diversity=noWinnerComponent(m,f,['distinctColors','minCol','maxCol','colExtreme','fullColors']);
     const startEnd=noWinnerFeatureSupport(m.startEnd,f.startEnd);
     const cadenceInfo=(data.cadence||{})[f.startEnd]||null,cadence=noWinnerCadenceScore(cadenceInfo);
-    const total=lines*.40+sequences*.30+diversity*.15+startEnd*.10+cadence*.05;
-    return{total:Math.max(0,Math.min(100,total)),lines,sequences,diversity,startEnd,cadence,cadenceInfo,features:f,patternInfo:(data.patterns||{})[f.startEnd]||null};
+    const baseTotal=lines*.40+sequences*.30+diversity*.15+startEnd*.10+cadence*.05,adjustments=[];
+    const add=(key,condition,fallbackPenalty,kind,label)=>{
+      if(!condition)return;
+      const g=guidance[key]||{},penalty=Math.max(0,Number(g.penalty??fallbackPenalty)||0);
+      adjustments.push({key,penalty,kind:g.action||kind,label:g.label||label,pct:Number(g.pct||0),count:Number(g.count||0)});
+    };
+    add('colorsLt8',f.distinctColors<8,12,'block-existing','Menos de 8 cores');
+    add('startGte5',f.min>=5,8,'strong-warning','Início 05+');
+    add('endLte22',f.max<=22,5,'warning','Final 22 ou menor');
+    add('fullColorsLte1',f.fullColors<=1,3,'score-penalty','0–1 cor completa');
+    const penalty=adjustments.reduce((s,x)=>s+x.penalty,0),total=Math.max(0,Math.min(100,baseTotal-penalty));
+    const compatibility=adjustments.some(x=>x.kind==='block-existing')?'Bloqueio existente':adjustments.some(x=>x.kind==='strong-warning')?'Aviso forte':adjustments.length?'Ajuste de cautela':'Compatível';
+    return{total,baseTotal,penalty,adjustments,compatibility,lines,sequences,diversity,startEnd,cadence,cadenceInfo,features:f,patternInfo:(data.patterns||{})[f.startEnd]||null};
   }
   async function loadNoWinnerScoreProfile(force=false){
     if(force){noWinnerScoreCache=null;noWinnerScorePromise=null;}
@@ -600,17 +611,19 @@
       const s=noWinnerScore(game,data);if(!s){el.innerHTML='<div class="summary-fallback"><b>Perfil indisponível</b><span>O jogo continua válido; este score é apenas informativo.</span></div>';return;}
       const counts=data.counts||{},p=s.patternInfo||{},ci=s.cadenceInfo||{},label=s.total>=60?'Mais próximo do perfil histórico sem ganhador':s.total>=45?'Perfil misto / intermediário':'Mais próximo do perfil histórico com ganhador';
       const pattern=pad(s.features.min)+'→'+pad(s.features.max),cadenceText=ci&&Number(ci.count||0)>=3?('último #'+ci.lastContest+' · intervalo atual '+ci.currentGap+' · mediana '+Number(ci.medianInterval).toFixed(0)+' · máx. '+ci.maxInterval):'amostra insuficiente · componente neutro';
+      const adj=s.adjustments.length?s.adjustments.map(x=>'<span class="no-winner-adjust '+(x.kind==='block-existing'?'block':x.kind==='strong-warning'?'strong':'warn')+'"><b>'+x.label+'</b> −'+x.penalty+' pts <small>'+x.count+'/'+Number(counts.noWinner||0).toLocaleString('pt-BR')+' sem ganhador · '+x.pct.toFixed(2)+'%</small></span>').join(''):'<span class="no-winner-adjust ok"><b>Sem ajustes de cautela</b><small>Nenhuma das condições raras foi acionada.</small></span>';
       el.innerHTML=
-        '<div class="one-winner-score-head"><div class="one-winner-score-ring" style="--score:'+s.total.toFixed(1)+'%"><b>'+s.total.toFixed(0)+'</b></div><div class="one-winner-score-copy"><span>Semelhança histórica · 0–100</span><strong>'+label+'</strong><small>Compara o jogo com '+Number(counts.noWinner||0).toLocaleString('pt-BR')+' concursos sem ganhador e '+Number(counts.winner||0).toLocaleString('pt-BR')+' com ganhador. Não é previsão de acumulação.</small></div></div>'+
+        '<div class="one-winner-score-head"><div class="one-winner-score-ring" style="--score:'+s.total.toFixed(1)+'%"><b>'+s.total.toFixed(0)+'</b></div><div class="one-winner-score-copy"><span>Compatibilidade histórica · 0–100</span><strong>'+label+'</strong><small>Score base '+s.baseTotal.toFixed(1)+' · ajustes −'+s.penalty.toFixed(0)+' · status: '+s.compatibility+'. Compara '+Number(counts.noWinner||0).toLocaleString('pt-BR')+' sem ganhador × '+Number(counts.winner||0).toLocaleString('pt-BR')+' com ganhador.</small></div></div>'+
         '<div class="one-winner-components">'+
           '<div class="one-winner-component"><span>Linhas · 40%</span><b>'+s.lines.toFixed(0)+'/100</b><small>'+s.features.lines.join('-')+' · mín. '+s.features.minLine+' · máx. '+s.features.maxLine+'</small></div>'+
           '<div class="one-winner-component"><span>Sequências · 30%</span><b>'+s.sequences.toFixed(0)+'/100</b><small>+1: '+s.features.adjacent+' · maior: '+s.features.longest+'</small></div>'+
-          '<div class="one-winner-component"><span>Cores/colunas · 15%</span><b>'+s.diversity.toFixed(0)+'/100</b><small>'+s.features.distinctColors+' cores · colunas '+s.features.cols.join('-')+'</small></div>'+
+          '<div class="one-winner-component"><span>Cores/colunas · 15%</span><b>'+s.diversity.toFixed(0)+'/100</b><small>'+s.features.distinctColors+' cores · '+s.features.fullColors+' completas · colunas '+s.features.cols.join('-')+'</small></div>'+
           '<div class="one-winner-component"><span>Início×Fim · 10%</span><b>'+s.startEnd.toFixed(0)+'/100</b><small>'+pattern+' · sem ganh. '+Number(p.noWinnerPct||0).toFixed(2)+'% × com ganh. '+Number(p.winnerPct||0).toFixed(2)+'%</small></div>'+
           '<div class="one-winner-component '+(ci&&Number(ci.count||0)>=3?'':'cadence-neutral')+'"><span>Cadência · 5%</span><b>'+s.cadence.toFixed(0)+'/100</b><small>'+cadenceText+'</small></div>'+
         '</div>'+
+        '<div class="no-winner-adjustments">'+adj+'</div>'+
         '<p class="no-winner-pattern-line">Padrão atual <b>'+pattern+'</b> · ocorrências sem ganhador: <b>'+Number(p.noWinner||0)+'</b> · com ganhador: <b>'+Number(p.winner||0)+'</b>.</p>'+
-        '<p class="one-winner-note">Score descritivo. Peso: 40% linhas + 30% sequências + 15% cores/colunas + 10% início×fim + 5% cadência. Cadência mede semelhança com intervalos históricos e nunca significa “está na hora de sair”. Não bloqueia nem altera a chance matemática do sorteio.</p>';
+        '<p class="one-winner-note">Ajustes incorporados: &lt;8 cores = bloqueio já existente; início 05+ = −8; final ≤22 = −5; 0–1 cor completa = −3. 01→25, 04→25, linha extrema e sequências continuam apenas no score, sem bloqueio novo. Bottom 5% permanece somente em monitoramento até backtest walk-forward específico.</p>';
     };
     if(noWinnerScoreCache){paint(noWinnerScoreCache);return;}
     el.innerHTML='<div class="summary-fallback"><b>Calculando Perfil Sem Ganhador</b><span>Carregando os concursos acumulados e o grupo de comparação…</span></div>';
