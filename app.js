@@ -1031,6 +1031,7 @@
   navSearch?.addEventListener('input',renderNavSearch);
   navSearch?.addEventListener('keydown',e=>{if(e.key==='Escape'){resetNavSearch();navSearch.blur();}});
   navClear?.addEventListener('click',()=>{resetNavSearch();navSearch?.focus();});
+  navGlobal?.addEventListener('click',e=>{const link=e.target.closest('a[href]');if(!link)return;try{const u=new URL(link.href,location.origin),page=u.searchParams.get('page');if(u.origin===location.origin&&u.pathname===location.pathname&&page&&pageInfo[page]){e.preventDefault();resetNavSearch();setPage(page);$('#sidebar')?.classList.remove('open');}}catch{}});
   $('#menu-button').onclick=()=>$('#sidebar').classList.toggle('open');
   $('#sidebar-close')?.addEventListener('click',()=>$('#sidebar')?.classList.remove('open'));
   $('#global-search-progress')?.addEventListener('click',()=>setPage('decision'));
