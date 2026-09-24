@@ -510,7 +510,7 @@
   function renderVertical3(){
     const wrap=$('#vertical3-visual-wrap'),note=$('#vertical3-range-note');if(!wrap)return;if(!state.history.length){wrap.innerHTML='<p class="empty-state">Aguardando histórico.</p>';return;}
     const firstContest=state.history[0].concurso,latest=state.history.at(-1).concurso,defaultStart=Math.max(firstContest,latest-9),startInput=$('#vertical3-start'),endInput=$('#vertical3-end');
-    const normalizeContest=(value,fallback)=>{const n=Number(value);return Math.max(firstContest,Math.min(latest,Number.isFinite(n)&&n>0?n:fallback));};
+    const normalizeContest=(value,fallback)=>{const raw=String(value??'').trim();if(!raw)return fallback;const n=Number(raw);if(!Number.isFinite(n))return fallback;return Math.max(firstContest,Math.min(latest,Math.trunc(n)));};
     let start=normalizeContest(startInput.value,defaultStart),end=normalizeContest(endInput.value,latest);if(start>end)[start,end]=[end,start];
     let rows=state.history.filter(d=>d.concurso>=start&&d.concurso<=end);if(rows.length>30){rows=rows.slice(-30);start=rows[0].concurso;}if(rows.length){start=rows[0].concurso;end=rows.at(-1).concurso;}startInput.value=start;endInput.value=end;
     const order=[1,11,21,2,12,22,3,13,23,4,14,24,5,15,25,6,16,7,17,8,18,9,19,10,20],sortedOrder=[...order].sort((a,b)=>a-b),orderOk=order.length===25&&new Set(order).size===25&&sortedOrder.every((n,i)=>n===i+1);
