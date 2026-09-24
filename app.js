@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  const LF_BUILD_VERSION=document.querySelector('meta[name="lf-build"]')?.content||'2026-09-24-audit-01';
   const M=window.LFMatrix51;
   if(!M) throw new Error('Matriz 51 não carregada.');
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -107,7 +108,7 @@
   const pageInfo={
     decision:['NOVO INDICADO','15 dezenas em 5×5 e leitura dos filtros'],analysis:['Análise','Volante 5×5 e resumo instantâneo'],generator:['Geradores','Geração estrita com filtros e bloqueios'],matrix:['Matriz 51','Bloquear, Avisar ou Ignorar cada posição'],statistics:['Estatísticas','Painel BI no período global'],backtest:['Backtest','Walk-forward e comparação aleatória'],lab:['Laboratório','Trocas controladas e dezenas fixas'],vertical:['Tabela Vertical','Validação sem informação futura'],vertical2:['Vertical 2','Agrupada por percentual e dezena crescente'],vertical3:['Vertical 3 · Cores','Ordenada pela sequência oficial das cores/finais'],cycles:['Fechamento dos Ciclos','Progresso atual e histórico de fechamento das 25 dezenas'],closures:['Fechamentos','Matriz de cobertura matemática e subconjuntos descobertos'],compare:['Comparador','Concurso anterior × NOVO INDICADO'],checker:['Conferidor','Conferência contra concursos carregados'],mygames:['Meus Jogos','Carteira local de jogos'],linecols:['Linhas × Colunas','Padrões estruturais'],charts:['Gráficos','Visualizações avançadas'],pairs:['Duplas / Trincas','Afinidades no período global'],positions:['Posições D1–D15','Posições ordenadas + análise individual das dezenas 16–25'],groups:['Grupos','Laboratório de grupos personalizados'],audit:['Auditorias','Qualidade da base e consistência'],history:['Histórico','Concursos carregados e auditáveis']
   };
-  function setPage(name){const searchRunning=state.decisionSearchMeta?.status==='running'&&!!state.decisionWorker;state.page=name;document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===name));document.querySelectorAll('.nav-group').forEach(g=>g.classList.remove('has-active'));const activeNav=$('.nav-item[data-page="'+name+'"]');if(activeNav){const g=activeNav.closest('.nav-group');if(g){g.classList.add('has-active','open');g.querySelector('.nav-group-toggle')?.setAttribute('aria-expanded','true');}}document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.pagePanel===name));const info=pageInfo[name]||[name,''];$('#page-title').textContent=info[0];$('#page-subtitle').textContent=info[1];$('#sidebar').classList.remove('open');renderPage(name);if(searchRunning&&name!=='decision')toast(`Busca do NOVO INDICADO continua em segundo plano · ${Number(state.decisionSearchMeta.pct||0).toLocaleString('pt-BR',{maximumFractionDigits:2})}%`);}
+  function setPage(name,{updateUrl=true}={}){const searchRunning=state.decisionSearchMeta?.status==='running'&&!!state.decisionWorker;state.page=name;if(updateUrl){const url=new URL(location.href);if(name==='decision')url.searchParams.delete('page');else url.searchParams.set('page',name);const next=url.pathname+url.search+url.hash;if(next!==location.pathname+location.search+location.hash)history.pushState({page:name},'',next);}document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===name));document.querySelectorAll('.nav-group').forEach(g=>g.classList.remove('has-active'));const activeNav=$('.nav-item[data-page="'+name+'"]');if(activeNav){const g=activeNav.closest('.nav-group');if(g){g.classList.add('has-active','open');g.querySelector('.nav-group-toggle')?.setAttribute('aria-expanded','true');}}document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.pagePanel===name));const info=pageInfo[name]||[name,''];$('#page-title').textContent=info[0];$('#page-subtitle').textContent=info[1];$('#sidebar').classList.remove('open');renderPage(name);if(searchRunning&&name!=='decision')toast(`Busca do NOVO INDICADO continua em segundo plano · ${Number(state.decisionSearchMeta.pct||0).toLocaleString('pt-BR',{maximumFractionDigits:2})}%`);}
   function rowsForPeriod(period=state.period){return state.history.slice(-Math.min(period,state.history.length));}
   function rebuildContext(){state.ctx=M.buildContext(state.history,{window:state.period});state.filterAuditCache.clear();}
   function frequency(period=state.period){const rows=rowsForPeriod(period),f=Object.fromEntries(ALL.map(n=>[n,0]));rows.forEach(d=>d.dezenas.forEach(n=>f[n]++));return f;}
@@ -983,7 +984,12 @@
   async function loadPersistedAudit(){if(!state.history.length)return;try{const data=safeJSON(auditLocalKey(),null);if(data?.result){state.fullFilterAudit=data.result;renderFullFilterAudit();$('#filter-audit-progress').textContent=`Auditoria local carregada · ${state.fullFilterAudit.targets.toLocaleString('pt-BR')} alvos.`;}}catch{}}
   async function persistAuditResult(result,series,sampleSize){try{storageSet(auditLocalKey(),JSON.stringify({result,contest:state.history.at(-1)?.concurso||null,period:state.period,series,sampleSize,createdAt:new Date().toISOString()}));}catch(e){console.warn('Falha ao persistir auditoria local',e);}}
   function renderSelfTest(){
-    const el=$('#self-test-results');if(!el)return;const r=state.selfTest;if(!r){el.innerHTML='<div class="notice">Autoteste aguardando execução.</div>';return;}el.innerHTML=`<div class="audit-grid">${r.checks.map(x=>`<article class="audit-card ${x.pass?'ok':'danger'}"><span>${x.name}</span><b>${x.pass?'PASS':'FAIL'}</b><small>${x.detail||''}</small></article>`).join('')}</div><p class="muted">Resultado: ${r.passed}/${r.total} · ${r.ok?'PASS':'REVISAR'} · ${r.checkedAt||''}</p>`;
+    const el=$('#self-test-results');if(!el)return;const r=state.selfTest;if(!r){el.innerHTML='<div class="notice">Autoteste aguardando execução.</div>';return;}const status=x=>x.status||(x.pass?'pass':'fail'),inconclusive=r.checks.filter(x=>status(x)==='inconclusive').length,failed=r.checks.filter(x=>status(x)==='fail').length,passed=r.checks.length-inconclusive-failed,overall=failed?'REVISAR':inconclusive?'PASS PARCIAL':'PASS';el.innerHTML=`<div class="audit-grid">${r.checks.map(x=>{const s=status(x);return`<article class="audit-card ${s==='pass'?'ok':s==='inconclusive'?'warn':'danger'}"><span>${x.name}</span><b>${s==='pass'?'PASS':s==='inconclusive'?'INCONCLUSIVO':'FAIL'}</b><small>${x.detail||''}</small></article>`;}).join('')}</div><p class="muted">Resultado: ${passed} PASS · ${inconclusive} inconclusivos · ${failed} falhas · ${overall} · ${r.checkedAt||''}</p>`;
+  }
+  function installVersionUpdateNotice(){
+    const banner=document.createElement('div');banner.className='version-update-notice';banner.hidden=true;banner.setAttribute('role','status');banner.innerHTML='<span>Há uma versão nova do painel disponível.</span><button type="button">Atualizar painel</button>';document.body.append(banner);banner.querySelector('button').addEventListener('click',()=>location.reload());
+    const check=async()=>{if(document.hidden)return;try{const response=await fetch(`/version.json?check=${Date.now()}`,{cache:'no-store',headers:{accept:'application/json'}});if(!response.ok)return;const remote=await response.json();if(remote.version&&remote.version!==LF_BUILD_VERSION)banner.hidden=false;}catch{}};
+    check();setInterval(check,120000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();});
   }
   function findF28SelfTestCase(ctx){
     const preferred=[1,2,3,4,5,6,7,8,9,11,12,14,15,17,25],tryGame=g=>{const r=M.inspect(g,ctx),f28=r.filters.find(x=>x.id===28);return f28&&!f28.passed?{game:g,report:r,detail:f28.detail}:null;};
@@ -1027,10 +1033,14 @@
     const t37={name:'F37 · similaridade 14/15 bloqueia',pass:Boolean(c37&&!M.policyAllows(c37.report,state.filterPolicies)),detail:c37?`${gameText(c37.game)} · ${c37.detail}`:'Nenhum caso 14/15 isolado encontrado'};
 
     const c36=findF36SelfTestCase(ctx);
-    const t36={name:'F36 · 3 falhas F30–F35 bloqueiam',pass:Boolean(c36&&!M.policyAllows(c36.report,state.filterPolicies)),detail:c36?`${c36.detail} · falhas ${c36.fails.map(x=>'F'+x.id).join(', ')}`:'Nenhum caso com 3 falhas encontrado nos casos de prova'};
+    const t36={name:'F36 · 3 falhas F30–F35 bloqueiam',pass:Boolean(c36&&!M.policyAllows(c36.report,state.filterPolicies)),status:c36?undefined:'inconclusive',detail:c36?`${c36.detail} · falhas ${c36.fails.map(x=>'F'+x.id).join(', ')}`:'Sem fixture nas 5.000 combinações iniciais e no jogo de referência; detecção não foi validada nesta amostra.'};
 
     const c28=findF28SelfTestCase(ctx);
-    const t28={name:'F28 · 3 alertas máximos bloqueiam',pass:Boolean(c28&&!M.policyAllows(c28.report,state.filterPolicies)),detail:c28?`${gameText(c28.game)} · ${c28.detail}`:'Nenhum caso com 3 alertas encontrado'};
+    const t28={name:'F28 · 3 alertas máximos bloqueiam',pass:Boolean(c28&&!M.policyAllows(c28.report,state.filterPolicies)),status:c28?undefined:'inconclusive',detail:c28?`${gameText(c28.game)} · ${c28.detail}`:'Sem fixture nas 10.000 combinações iniciais e no jogo de referência; detecção não foi validada nesta amostra.'};
+
+    const mandatoryProbe=id=>M.policyAllows({valid:true,filters:M.FILTERS.map(f=>({...f,passed:f.id!==id}))},state.filterPolicies)===false;
+    const t28Gate={name:'F28 · falha impede aprovação',pass:mandatoryProbe(28),detail:'Verifica a trava obrigatória com um relatório de teste controlado.'};
+    const t36Gate={name:'F36 · falha impede aprovação',pass:mandatoryProbe(36),detail:'Verifica a trava obrigatória com um relatório de teste controlado.'};
 
     const badColor=[1,2,3,4,5,11,12,13,14,15,21,22,23,24,25],colorRule=M.mandatoryColorRule(badColor),colorReport=M.inspect(badColor,ctx);
     const tColor={name:'Cores · jogo fora da regra é recusado',pass:Boolean(colorRule.blocked&&!colorReport.approved&&!M.policyAllows(colorReport,state.filterPolicies)),detail:`${gameText(badColor)} · ${colorRule.distinct} cores · ${colorRule.complete} cores completas`};
@@ -1038,7 +1048,7 @@
     const lc=findLineColumnSelfTestCase(ctx,latest),lcBlocked=lc&&lc.report.lineRepeat?.blocked&&lc.report.columnRepeat?.blocked&&lc.report.lineColumnRepeat?.blocked;
     const tLC={name:'Linha/Coluna · perfil idêntico ao anterior bloqueia',pass:Boolean(lcBlocked&&!M.policyAllows(lc.report,state.filterPolicies)),detail:lc?`${gameText(lc.game)} · linhas ${lc.report.lineRepeat.currentLines.join('-')} · colunas ${lc.report.columnRepeat.currentCols.join('-')}`:'Nenhum jogo alternativo com os dois perfis idênticos foi encontrado'};
 
-    return[t29,t37,t36,t28,tColor,tLC];
+    return[t29,t37,t36,t28,t28Gate,t36Gate,tColor,tLC];
   }
   async function runIntegratedSelfTest(silent=false){
     const btn=$('#run-self-test');if(btn)btn.disabled=true;
@@ -1053,9 +1063,9 @@
         {name:'Janela estatística inicial',pass:state.period===10,detail:`período atual ${state.period}`},
         ...functional
       ];
-      const checks=[...(backend.checks||[]),...local],passed=checks.filter(x=>x.pass).length;
-      state.selfTest={ok:passed===checks.length,passed,total:checks.length,checks,checkedAt:new Date().toISOString()};renderSelfTest();
-      if(!silent)toast(`Autoteste integrado: ${passed}/${checks.length} PASS`);
+      const checks=[...(backend.checks||[]),...local],inconclusive=checks.filter(x=>x.status==='inconclusive').length,failed=checks.filter(x=>x.status!=='inconclusive'&&!x.pass).length,passed=checks.filter(x=>x.status!=='inconclusive'&&x.pass).length;
+      state.selfTest={ok:failed===0&&inconclusive===0,passed,total:checks.length,inconclusive,failed,checks,checkedAt:new Date().toISOString()};renderSelfTest();
+      if(!silent)toast(`Autoteste: ${passed} PASS · ${inconclusive} inconclusivos · ${failed} falhas`);
     }catch(e){
       state.selfTest={ok:false,passed:0,total:1,checks:[{name:'API autoteste',pass:false,detail:String(e?.message||e)}],checkedAt:new Date().toISOString()};renderSelfTest();
     }finally{if(btn)btn.disabled=false;}
@@ -1132,8 +1142,9 @@
   $('#affinity-filter')?.addEventListener('input',()=>renderPairs());
   $('#affinity-clear')?.addEventListener('click',()=>{if($('#affinity-filter'))$('#affinity-filter').value='';renderPairs();});
   $('#cloud-key').textContent=`${state.cloudId.slice(0,8)}…${state.cloudId.slice(-4)}`;
-  window.__LF_APP_READY=true;try{window.dispatchEvent(new CustomEvent('lf:app-ready'));}catch{}
-  const requestedPage=new URLSearchParams(location.search).get('page');if(requestedPage&&pageInfo[requestedPage])setPage(requestedPage);
+  installVersionUpdateNotice();window.__LF_APP_READY=true;try{window.dispatchEvent(new CustomEvent('lf:app-ready'));}catch{}
+  const requestedPage=new URLSearchParams(location.search).get('page');if(requestedPage&&pageInfo[requestedPage])setPage(requestedPage,{updateUrl:false});
+  window.addEventListener('popstate',()=>{const route=new URLSearchParams(location.search).get('page'),next=route&&pageInfo[route]?route:'decision';setPage(next,{updateUrl:false});});
   renderDecisionSelectionMode();renderDecisionBoundary();renderMatrix();renderAnalysis();renderStats();renderHistory();loadData().then(()=>{loadPersistedAudit();loadBackendBenchmarkStatus();runIntegratedSelfTest(true);});syncCloud(false);
 
   $('#run-combined-integral')?.addEventListener('click',runCombinedIntegralBenchmark);$('#run-self-test')?.addEventListener('click',()=>runIntegratedSelfTest(false));

@@ -3,6 +3,15 @@
   "cleanUrls": true,
   "headers": [
     {
+      "source": "/version.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
       "source": "/(app|matrix-51|analysis-worker|main).js",
       "headers": [
         {
