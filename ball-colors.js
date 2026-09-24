@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const MAP = Object.freeze({
-    1:Object.freeze({code:'V',name:'Vermelha',hex:'#dc2626',text:'#ffffff',numbers:Object.freeze([1,11,21])}),
+    1:Object.freeze({code:'V',name:'Vermelha',hex:'#b91c1c',text:'#ffffff',numbers:Object.freeze([1,11,21])}),
     2:Object.freeze({code:'A',name:'Amarela',hex:'#facc15',text:'#111827',numbers:Object.freeze([2,12,22])}),
     3:Object.freeze({code:'V',name:'Verde',hex:'#16a34a',text:'#ffffff',numbers:Object.freeze([3,13,23])}),
     4:Object.freeze({code:'M',name:'Marrom',hex:'#7c4a2d',text:'#ffffff',numbers:Object.freeze([4,14,24])}),
