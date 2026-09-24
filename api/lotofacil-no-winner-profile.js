@@ -70,7 +70,7 @@ function profile(history,accumulated){
       meanFullAcc:mean(acc.map(x=>x.fullColors)),meanFullWin:mean(winners.map(x=>x.fullColors)),
       rose,byColor:colorSummary
     },
-    numbers:nums,yearCounts:acc.reduce((o,x)=>{const y=String(x.data||'').slice(-4);o[y]=(o[y]||0)+1;return o;}),
+    numbers:nums,yearCounts:acc.reduce((o,x)=>{const y=String(x.data||'').slice(-4);o[y]=(o[y]||0)+1;return o;},{}),
     latestIds:acc.slice(-12).map(x=>x.concurso)
   };
 }
