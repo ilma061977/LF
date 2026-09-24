@@ -18,9 +18,10 @@ module.exports=async(req,res)=>{try{
  const color=[1,11,21,2,12,22,3,13,23,4,14,24,5,15,25],cr=M.mandatoryColorRule(color);add('Cores <8 bloqueiam',cr.blocked&&cr.distinct<8,JSON.stringify(cr));
  add('Linha igual bloqueia',exact.lineRepeat?.blocked===true,JSON.stringify(exact.lineRepeat));
  add('Coluna igual bloqueia',exact.columnRepeat?.blocked===true,JSON.stringify(exact.columnRepeat));
- let c36=null;const probes=[[1,2,3,4,5,6,7,8,9,10,11,13,16,19,20],[1,2,3,4,5,6,7,8,9,17,18,19,23,24,25]];
+ let c36=null;const probes=[[1,2,3,4,5,6,7,8,9,10,11,13,16,19,20],[1,2,3,4,5,6,7,8,9,17,18,19,23,24,25]],ALL=Array.from({length:25},(_,i)=>i+1);
  for(const g of probes){const r=M.inspect(g,ctx),x=r.filters.find(f=>f.id===36),fails=r.filters.filter(f=>f.id>=30&&f.id<=35&&!f.passed);if(x&&!x.passed&&fails.length>=3){c36={g,x,fails};break;}}
- add('F36 3+ falhas',!!c36,c36?c36.x.detail+' · '+c36.fails.map(x=>'F'+x.id).join(','):'não localizado');
+ if(!c36){const total=M.nCk(25,15),samples=60000;for(let i=0;i<samples;i++){const rank=Math.floor(i*(total-1)/Math.max(1,samples-1)),g=M.unrank(ALL,15,rank),r=M.inspect(g,ctx),x=r.filters.find(f=>f.id===36),fails=r.filters.filter(f=>f.id>=30&&f.id<=35&&!f.passed);if(x&&!x.passed&&fails.length>=3){c36={g,x,fails,rank};break;}}}
+ add('F36 3+ falhas',!!c36,c36?c36.x.detail+' · '+c36.fails.map(x=>'F'+x.id).join(',')+' · '+c36.g.join(','):'não localizado em 60 mil ranks uniformes');
  add('Faixa 04→25 universo',M.nCk(20,13)===77520,'C(20,13)='+M.nCk(20,13));
  const failed=tests.filter(x=>!x.pass);res.setHeader('Cache-Control','no-store');res.status(200).json({ok:!failed.length,tests,failed:failed.map(x=>x.name),meta:{schema:M.SCHEMA_VERSION,threshold:M.THRESHOLD_VERSION,audit:M.AUDIT_VERSION}});
 }catch(e){res.status(500).json({ok:false,error:String(e&&e.stack||e)})}};
