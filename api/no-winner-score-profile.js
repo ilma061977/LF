@@ -75,7 +75,7 @@ module.exports=async function handler(req,res){
       const nums=Array.from({length:Math.min(12,pageCount-start+1)},(_,i)=>start+i);
       pages.push(...await Promise.all(nums.map(fetchPage)));
     }
-    const accumulated=pages.flat().sort((a,b)=>a.concurso-b.concurso);
+    const accumulated=[...new Map(pages.flat().map(x=>[x.concurso,x])).values()].sort((a,b)=>a.concurso-b.concurso);
     if(accumulated.length<400)throw new Error('Fonte retornou quantidade insuficiente de concursos acumulados.');
     const accSet=new Set(accumulated.map(x=>x.concurso)),all=buildFeatures(live.history,accSet);
     const noWinner=all.filter(x=>x.noWinner),winner=all.filter(x=>!x.noWinner);
