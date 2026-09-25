@@ -281,7 +281,17 @@
     status.textContent='Atualizando base oficial…';dot.className='status-dot';
     try{
       const qs=new URLSearchParams({all:'1'});if(force)qs.set('refresh',String(Date.now()));
-      const payload=await window.LFAppApi.get('/api/lotofacil',Object.fromEntries(qs.entries()));
+      let payload;
+      try{
+        payload=await window.LFAppApi.get('/api/lotofacil',Object.fromEntries(qs.entries()));
+      }catch(apiError){
+        const localResponse=await fetch('/data/lotofacil-base.json',{cache:'no-store'});
+        if(!localResponse.ok)throw apiError;
+        payload=await localResponse.json();
+        payload.source=payload.source||'Base local embarcada';
+        payload.warning=`API histórica indisponível (${apiError?.message||'erro'}); usando a base local embarcada.`;
+        payload.officialVerification={status:'unverified',message:'Confirmação direta da CAIXA indisponível neste ambiente.'};
+      }
       if(payload?.analysisBlocked||payload?.baseValidation?.valid===false||payload?.ok===false){const miss=(payload?.baseValidation?.missingContests||[]).slice(0,12).join(', ');throw new Error(`BASE_BLOCKED:${payload?.error||'Base incompleta — análise bloqueada'}${miss?` · faltando ${miss}`:''}`);}
       const rows=(payload.history||[]).map(d=>({concurso:Number(d.concurso),data:d.data||'',dezenas:M.normalize(d.dezenas)})).filter(d=>Number.isFinite(d.concurso)&&d.dezenas).sort((a,b)=>a.concurso-b.concurso);
       if(!rows.length)throw new Error('Histórico vazio');
