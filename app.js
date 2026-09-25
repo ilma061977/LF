@@ -694,15 +694,16 @@
     if(state.selection.has(n)){
       state.selection.delete(n);
       state.fixedNumbers.delete(n);
+      state.exclusions.add(n);
       savePrefs();
-      toast(`Dezena ${pad(n)} removida da seleção.`);
+      toast(`Dezena ${pad(n)} bloqueada/excluída da busca.`);
     }else if(state.exclusions.has(n)){
       state.exclusions.delete(n);
       savePrefs();
-      toast(`Dezena ${pad(n)} liberada. Clique novamente para escolhê-la.`);
+      toast(`Dezena ${pad(n)} liberada.`);
     }else{
       if(blockedNumbers().has(n))return toast('Essa dezena está bloqueada por indicador.');
-      if(state.selection.size>=15)return toast('O volante aceita no máximo 15 dezenas. Clique numa escolhida para removê-la primeiro.');
+      if(state.selection.size>=15)return toast('O volante aceita no máximo 15 dezenas. Clique numa escolhida para bloqueá-la/excluí-la primeiro.');
       state.selection.add(n);
     }
     storageRemove(decisionCacheKey());syncManualDecision();renderExclusions();
