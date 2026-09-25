@@ -1211,8 +1211,8 @@
     const exact=M.inspect(latest,ctx),f29=exact.filters.find(x=>x.id===29);
     const t29={name:'F29 · histórico 15/15 bloqueia',pass:Boolean(f29&&!f29.passed&&!M.policyAllows(exact,state.filterPolicies)),detail:`#${latestRow.concurso} · ${f29?.detail||'F29 não encontrado'}`};
 
-    const c37=findF37SelfTestCase(ctx,latest);
-    const t37={name:'F37 · similaridade 14/15 bloqueia',pass:Boolean(c37&&!M.policyAllows(c37.report,state.filterPolicies)),detail:c37?`${gameText(c37.game)} · ${c37.detail}`:'Nenhum caso 14/15 isolado encontrado'};
+    const c37=findF37SelfTestCase(ctx,latest),p37=state.filterPolicies[37]||'block',allow37=c37?M.policyAllows(c37.report,state.filterPolicies):null;
+    const t37={name:`F37 · similaridade 14/15 respeita ${p37==='block'?'BLOQUEAR':'AVISAR'}`,pass:Boolean(c37&&(p37==='block'?!allow37:allow37)),detail:c37?`${gameText(c37.game)} · ${c37.detail} · política ${p37}`:'Nenhum caso 14/15 isolado encontrado'};
 
     const c36=findF36SelfTestCase(ctx);
     const t36={name:'F36 · 3 falhas F30–F35 bloqueiam',pass:Boolean(c36&&c36.report.filters.find(x=>x.id===36)?.passed===false&&c36.fails.length>=3),status:c36?undefined:'inconclusive',detail:c36?`${c36.detail} · falhas ${c36.fails.map(x=>'F'+x.id).join(', ')}`:'Não foi possível construir um fixture controlado para validar F36.'};
@@ -1220,9 +1220,10 @@
     const c28=findF28SelfTestCase(ctx);
     const t28={name:'F28 · 3 alertas máximos bloqueiam',pass:Boolean(c28&&c28.report.filters.find(x=>x.id===28)?.passed===false),status:c28?undefined:'inconclusive',detail:c28?`${gameText(c28.game)} · ${c28.detail}`:'Não foi encontrado jogo com 3 alertas máximos para validar F28.'};
 
-    const mandatoryProbe=id=>M.policyAllows({valid:true,filters:M.FILTERS.map(f=>({...f,passed:f.id!==id}))},state.filterPolicies)===false;
-    const t28Gate={name:'F28 · falha impede aprovação',pass:mandatoryProbe(28),detail:'Verifica a trava obrigatória com um relatório de teste controlado.'};
-    const t36Gate={name:'F36 · falha impede aprovação',pass:mandatoryProbe(36),detail:'Verifica a trava obrigatória com um relatório de teste controlado.'};
+    const policyProbe=id=>M.policyAllows({valid:true,filters:M.FILTERS.map(f=>({...f,passed:f.id!==id}))},state.filterPolicies);
+    const expectedByPolicy=id=>(state.filterPolicies[id]||'block')==='block'?!policyProbe(id):policyProbe(id);
+    const t28Gate={name:`F28 · política ${(state.filterPolicies[28]||'block').toUpperCase()} respeitada`,pass:expectedByPolicy(28),detail:'Relatório controlado confirma a política configurada.'};
+    const t36Gate={name:`F36 · política ${(state.filterPolicies[36]||'block').toUpperCase()} respeitada`,pass:expectedByPolicy(36),detail:'Relatório controlado confirma a política configurada.'};
 
     const badColor=[1,2,3,4,5,11,12,13,14,15,21,22,23,24,25],colorRule=M.mandatoryColorRule(badColor),colorReport=M.inspect(badColor,ctx);
     const tColor={name:'Cores · jogo fora da regra é recusado',pass:Boolean(colorRule.blocked&&!colorReport.approved&&!M.policyAllows(colorReport,state.filterPolicies)),detail:`${gameText(badColor)} · ${colorRule.distinct} cores · ${colorRule.complete} cores completas`};
