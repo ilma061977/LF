@@ -79,7 +79,7 @@
     26:{what:'Flutuantes: dezenas que alternaram presença/ausência pelo menos duas vezes nos últimos quatro concursos.',action:'Mantenha 5 ou 6 flutuantes quando esse grupo estiver disponível.'},
     27:{what:'Dispersão entre a primeira e a quinta linha.',action:'Mantenha a diferença de ocupação das linhas opostas abaixo de 3.'},
     28:{what:'Conta quantas métricas canônicas ficaram exatamente em seu limite máximo.',action:'Evite acumular três ou mais limites máximos simultaneamente; o máximo permitido é 2.'},
-    29:{what:'Trava obrigatória: bloqueia a combinação exata das 15 dezenas quando esse mesmo conjunto já foi sorteado no histórico. Não bloqueia as dezenas individualmente.',action:'Troque pelo menos uma dezena da combinação exata. Este filtro não pode ser desativado.'},
+    29:{what:'Trava histórica: bloqueia a combinação exata das 15 dezenas quando esse mesmo conjunto já foi sorteado no histórico. Não bloqueia as dezenas individualmente.',action:'Troque pelo menos uma dezena da combinação exata. Em busca sem resultado, pode ser relaxado para AVISAR somente por escolha explícita do usuário.'},
     30:{what:'Repetidas com Termômetro: recalibra a quantidade de repetidas pela faixa histórica walk-forward, sem substituir o F15 fixo.',action:'Compare a regra fixa F15 com a faixa dinâmica; trate divergências como aviso até o backtest justificar bloqueio.'},
     31:{what:'Ausentes persistentes: mede o retorno de dezenas que não apareceram nos dois concursos anteriores.',action:'Ajuste o retorno desse grupo à faixa histórica calculada somente com concursos passados.'},
     32:{what:'Média de atraso das 15 dezenas comparada ao histórico walk-forward.',action:'Reduza excesso de atrasadas ou de dezenas recém-saídas conforme a faixa histórica.'},
@@ -87,7 +87,7 @@
     34:{what:'Linhas Opostas ampliadas: compara faixas externas (L1+L5) com faixas internas (L2+L4), diferente do F27.',action:'Ajuste a concentração externa/interna para a faixa histórica.'},
     35:{what:'Ciclo de dezenas: mede quantas dezenas ainda pendentes no ciclo corrente entram no candidato.',action:'Ajuste a quantidade de pendentes à faixa histórica walk-forward.'},
     36:{what:'Intersecção de anomalias: conta falhas simultâneas em F30–F35.',action:'Evite acumular mais de duas anomalias complementares no mesmo jogo.'},
-    37:{what:'Trava obrigatória de similaridade: bloqueia qualquer candidato que tenha 14 das 15 dezenas iguais a algum resultado histórico. Não duplica o F29, que trata apenas 15/15 exato.',action:'Troque ao menos uma dezena quando houver 14/15. Este filtro não pode ser desativado.'},
+    37:{what:'Trava de similaridade: bloqueia qualquer candidato que tenha 14 das 15 dezenas iguais a algum resultado histórico. Não duplica o F29, que trata apenas 15/15 exato.',action:'Troque ao menos uma dezena quando houver 14/15. Em busca sem resultado, pode ser relaxado para AVISAR somente por escolha explícita do usuário.'},
     38:{what:'Maior cadeia de mesma paridade nas posições ordenadas.',action:'Quebre cadeias acima de 5.'},
     39:{what:'Terminação Binária reformulada para não duplicar o F38: classifica finais em baixos (0–4) e altos (5–9) e mede a maior cadeia no jogo ordenado.',action:'Ajuste a sequência de finais baixos/altos para a faixa histórica walk-forward de 80%.'},
     40:{what:'Dispersão numérica pela soma dos quadrados.',action:'Ajuste a mistura de dezenas baixas e altas para a faixa histórica.'},
@@ -420,7 +420,7 @@
     const quick=$('#decision-quick-result'),quickTitle=$('#decision-quick-title'),quickNumbers=$('#decision-quick-numbers');
     if(quick&&quickTitle&&quickNumbers){
       const game=status==='done'&&Array.isArray(meta.game)&&meta.game.length===15?meta.game:Array.isArray(meta.manualGame)&&meta.manualGame.length===15?meta.manualGame:null;
-      quick.classList.toggle('ready',Boolean(game)&&!meta.manualGame?.length);quick.classList.toggle('running',status==='running');
+      quick.hidden=!game;quick.classList.toggle('ready',Boolean(game)&&!meta.manualGame?.length);quick.classList.toggle('running',false);
       quickTitle.textContent=meta.manualGame?.length===15?'ESCOLHA MANUAL · 15 DEZENAS · sem busca exaustiva':game?`${meta.restored?'RESULTADO SALVO':'NOVO INDICADO PRONTO'} · concurso base #${state.history.at(-1)?.concurso||'—'} · busca 100%`:status==='running'?`Buscando o NOVO INDICADO · ${pct.toFixed(2).replace('.',',')}%`:status==='warn'?'Não foi possível gerar o NOVO INDICADO':'Aguardando início da busca';
       quickNumbers.innerHTML=game?game.map(n=>`<span class="mini-ball ${cls(n)}">${pad(n)}</span>`).join(''):'';
       if(!game)quickNumbers.textContent=status==='running'?`${tested.toLocaleString('pt-BR')} de ${total.toLocaleString('pt-BR')} combinações avaliadas. As 15 dezenas aparecem aqui ao chegar a 100%.`:meta.resultText||'Clique em Iniciar busca exaustiva. O jogo aparecerá aqui ao chegar a 100%.';
@@ -443,7 +443,19 @@
     const ids=[28,29,36,37].filter(id=>state.filterPolicies[id]==='block');
     if(!ids.length){toast('Não há bloqueios obrigatórios ativos para relaxar.');return;}
     const counts=diagnostics?.filterAny||{};
-    const rows=ids.map(id=>{const f=M.FILTERS.find(x=>Number(x.id)===id),count=Number(counts[id]||0);return `<label style="display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid #e5e7eb;border-radius:10px;margin:7px 0;background:#fff"><input type="checkbox" data-relax-filter="${id}" style="margin-top:3px"><span><b>F${String(id).padStart(2,'0')} · ${f?.name||'Filtro obrigatório'}</b><small style="display:block;color:#6b7280;margin-top:3px">${count?count.toLocaleString('pt-BR')+' rejeições nesta busca':'ativo como BLOQUEAR'}</small></span></label>`;}).join('');
+    const explain={
+      28:'Limita o acúmulo de métricas exatamente no valor máximo permitido. Hoje o jogo é bloqueado quando concentra 3 ou mais limites máximos ao mesmo tempo.',
+      29:'Impede repetir exatamente uma combinação de 15 dezenas que já saiu em qualquer concurso histórico. Ao liberar, um jogo já premiado 15/15 poderá voltar a ser aceito.',
+      36:'Controla a intersecção de anomalias dos filtros F30 a F35. O bloqueio evita jogos que acumulam mais de duas falhas simultâneas nesse grupo.',
+      37:'Impede jogos com 14 das 15 dezenas iguais a algum concurso histórico. Ao liberar, combinações muito próximas de um resultado já sorteado poderão ser aceitas.'
+    };
+    const impact={
+      28:'Liberar F28 aumenta a quantidade de candidatos com vários limites no extremo.',
+      29:'Liberar F29 permite repetir um resultado histórico completo.',
+      36:'Liberar F36 permite maior concentração de anomalias F30–F35.',
+      37:'Liberar F37 permite candidatos com similaridade histórica de 14/15.'
+    };
+    const rows=ids.map(id=>{const f=M.FILTERS.find(x=>Number(x.id)===id),count=Number(counts[id]||0);return `<label style="display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #e5e7eb;border-radius:10px;margin:8px 0;background:#fff"><input type="checkbox" data-relax-filter="${id}" style="margin-top:4px"><span><b>F${String(id).padStart(2,'0')} · ${f?.name||'Filtro obrigatório'}</b><small style="display:block;color:#334155;margin-top:5px;line-height:1.45"><b>Para que serve:</b> ${explain[id]}</small><small style="display:block;color:#92400e;margin-top:5px;line-height:1.45"><b>Se liberar:</b> ${impact[id]}</small><small style="display:block;color:#64748b;margin-top:5px">${count?count.toLocaleString('pt-BR')+' rejeições nesta busca':'ativo como BLOQUEAR'}</small></span></label>`;}).join('');
     const wrap=document.createElement('div');wrap.id='mandatory-relax-dialog';wrap.innerHTML=`<div style="position:fixed;inset:0;background:rgba(15,23,42,.68);z-index:99998"></div><section role="dialog" aria-modal="true" aria-labelledby="mandatory-relax-title" style="position:fixed;z-index:99999;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,620px);max-height:84vh;overflow:auto;background:#f8fafc;border-radius:16px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,.35)"><span class="eyebrow">BUSCA SEM RESULTADO</span><h2 id="mandatory-relax-title" style="margin:4px 0 8px">Quais bloqueios obrigatórios deseja excluir da próxima pesquisa?</h2><p style="margin:0 0 12px;color:#475569;line-height:1.5">A busca chegou a 100% sem encontrar um jogo válido. Marque somente os filtros que deseja transformar temporariamente de <b>BLOQUEAR</b> para <b>AVISAR</b> e execute uma nova busca.</p>${rows}<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap"><button type="button" class="btn ghost" data-relax-cancel>Manter todos os bloqueios</button><button type="button" class="btn primary" data-relax-apply>Aplicar e pesquisar novamente</button></div></section>`;
     document.body.appendChild(wrap);
     const close=()=>wrap.remove();
