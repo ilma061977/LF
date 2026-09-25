@@ -354,7 +354,7 @@
   }
   function renderProColorDelayStats(){
     const el=$('#pro-color-delay-grid');if(!el)return;const stats=colorCountDelayStats(),currentColors=state.history.length?new Set((state.history.at(-1)?.dezenas||[]).map(n=>n%10)).size:null;
-    el.innerHTML=stats.map(x=>`<article class="pro-color-delay-card ${x.colors===currentColors?'is-current':''}"><span>🎨 ${x.colors} cores</span><b>Atraso atual ${x.current}</b><small>Média ${x.avg.toFixed(1).replace('.',',')} · Máximo ${x.max||'—'} · ${x.max?x.pct.toFixed(1).replace('.',','):'0,0'}% do máximo</small><small>${x.occurrences.toLocaleString('pt-BR')} ocorrência(s) · última no #${x.last||'—'}</small></article>`).join('')||'<span class="muted">Aguardando base histórica.</span>';
+    el.innerHTML=stats.map(x=>{const delta=x.current-x.avg,rounded=Math.ceil(Math.abs(delta)),status=delta>=0?'ATRASADO':(x.current>=x.avg*.8?'PRÓXIMO DA MÉDIA':'NORMAL'),timing=delta>=0?`Atrasado ${Math.max(0,Math.floor(delta))} sorteio(s) além da média`:`Faltam cerca de ${rounded} sorteio(s) para chegar à média`;return `<article class="pro-color-delay-card ${x.colors===currentColors?'is-current':''} ${delta>=0?'is-late':x.current>=x.avg*.8?'is-near':''}"><span>🎨 ${x.colors} cores · ${status}</span><b>Atraso atual ${x.current}</b><small>Média ${x.avg.toFixed(1).replace('.',',')} · Máximo ${x.max||'—'} · ${x.max?x.pct.toFixed(1).replace('.',','):'0,0'}% do máximo</small><small><strong>${timing}</strong></small><small>${x.occurrences.toLocaleString('pt-BR')} ocorrência(s) · última no #${x.last||'—'}</small></article>`;}).join('')||'<span class="muted">Aguardando base histórica.</span>';
   }
 
   function renderProProfilePanel(){
