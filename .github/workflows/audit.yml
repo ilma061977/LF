@@ -29,3 +29,12 @@ jobs:
         with:
           name: netlify-mcp-package
           path: netlify-mcp-*.tgz
+      - name: Preparar runtime Netlify MCP
+        run: |
+          mkdir -p netlify-mcp-runtime
+          npm install --prefix netlify-mcp-runtime @netlify/mcp@latest
+      - name: Empacotar runtime Netlify MCP
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-mcp-runtime
+          path: netlify-mcp-runtime
