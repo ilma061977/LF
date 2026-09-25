@@ -164,6 +164,8 @@
 .color-choice-selected.color-choice-5x5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:center;justify-items:center;min-height:0;padding:14px}.color-choice-selected.color-choice-5x5 .mini-ball{width:48px;height:48px;font-size:13px}.color-choice-selected.color-choice-5x5 .color-choice-empty{grid-column:1/-1;text-align:center;width:100%}@media(max-width:520px){.color-choice-selected.color-choice-5x5{gap:7px}.color-choice-selected.color-choice-5x5 .mini-ball{width:42px;height:42px;font-size:12px}}
 
 .pro-priority-extreme{border-top-color:#ef4444!important}.pro-priority-extreme .pro-priority-title b{color:#fecaca}.pro-extreme-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.nav-pro-shortcut{border:1px solid rgba(250,204,21,.18)!important;background:rgba(250,204,21,.055)!important}.nav-pro-shortcut>span{background:rgba(250,204,21,.12)!important}@media(max-width:900px){.pro-extreme-grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.pro-extreme-grid{grid-template-columns:1fr}}
+
+.pro-color-delay-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pro-color-delay-card{padding:11px;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:rgba(255,255,255,.05);color:#fff}.pro-color-delay-card span{display:block;font-size:10px;font-weight:950}.pro-color-delay-card b{display:block;font-size:14px;margin:5px 0 3px}.pro-color-delay-card small{display:block;font-size:8px;color:#cbd5e1;line-height:1.4}.pro-color-delay-card.is-current{outline:2px solid #f59e0b;background:rgba(245,158,11,.12)}@media(max-width:900px){.pro-color-delay-grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.pro-color-delay-grid{grid-template-columns:1fr}}
 </style>
 <style>
 /* Em Monte sua seleção, somente as dezenas copiadas/escolhidas ficam em destaque. */
@@ -524,6 +526,11 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
                       <label class="pro-emoji-card"><span>🔥</span><b>Quentes</b><small>dezenas do grupo quente</small><input type="checkbox" data-pro-enabled="hot"><div><input type="number" min="0" max="15" value="1" data-pro-min="hot"><i>até</i><input type="number" min="0" max="15" value="5" data-pro-max="hot"></div></label>
                       <label class="pro-emoji-card"><span>❄️</span><b>Frias</b><small>dezenas do grupo frio</small><input type="checkbox" data-pro-enabled="cold"><div><input type="number" min="0" max="15" value="1" data-pro-min="cold"><i>até</i><input type="number" min="0" max="15" value="5" data-pro-max="cold"></div></label>
                     </div>
+                  </div>
+
+                  <div class="pro-priority-group">
+                    <div class="pro-priority-title"><b>ATRASO POR QUANTIDADE DE CORES</b><small>Atualizado pela base histórica carregada.</small></div>
+                    <div id="pro-color-delay-grid" class="pro-color-delay-grid"></div>
                   </div>
 
                   <div class="indicator-target-foot"><span id="pro-profile-summary">Nenhuma regra PRO por emoji ativa.</span><button class="btn light" id="apply-pro-profile" type="button">Aplicar Perfil PRO</button></div>
