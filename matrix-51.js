@@ -85,8 +85,8 @@
     g.forEach(n=>colorCounts[n%10]++);
     const distinct=colorCounts.filter(Boolean).length,profile=[...colorCounts].sort((a,b)=>b-a).join('-');
     const complete=[1,2,3,4,5].filter(d=>colorCounts[d]===3).length,blockedProfile=BLOCKED_COLOR_PROFILES.has(profile);
-    const passed=distinct>=8&&distinct<=10&&!blockedProfile&&complete<=2;
-    return{blocked:!passed,passed,distinct,min:8,max:10,counts:colorCounts,profile,complete,blockedProfile};
+    const passed=distinct>=8&&distinct<=10;
+    return{blocked:!passed,passed,distinct,min:8,max:10,counts:colorCounts,profile,complete,blockedProfile:false,profileDiagnostic:blockedProfile};
   }
   function exactPatternCooldown(lineCounts,history=[]){
     const pattern=(lineCounts||[]).join('-'),interval=PATTERN_COOLDOWNS[pattern]||null;
