@@ -46,8 +46,8 @@ function quotaAllows(game,spec){
 function proProfileAllows(game,report,profile){
   const rules=Array.isArray(profile?.rules)?profile.rules:[],m=report?.metrics||{},groups=profile?.indicatorGroups||{};
   const hot=new Set(groups.hot||[]),cold=new Set(groups.cold||[]),latest=new Set(groups.latest||[]);
-  const h=game.filter(n=>hot.has(n)).length,c=game.filter(n=>cold.has(n)).length,rep=game.filter(n=>latest.has(n)).length;
-  if((h===5&&c===5)||(h===0&&c===0)||(h===5&&c===4)||(h===4&&c===5)||rep>=12)return false;
+  const h=game.filter(n=>hot.has(n)).length,c=game.filter(n=>cold.has(n)).length,rep=game.filter(n=>latest.has(n)).length,distinctColors=new Set(game.map(n=>n%10)).size;
+  if(distinctColors<8||(h===5&&c===5)||(h===0&&c===0)||(h===5&&c===4)||(h===4&&c===5)||rep>=12)return false;
   if(!rules.length)return true;
   for(const r of rules){
     let v=null;
