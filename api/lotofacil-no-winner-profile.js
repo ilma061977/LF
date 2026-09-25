@@ -82,7 +82,7 @@ module.exports=async function handler(req,res){
     if(accumulated.length<400)throw new Error('Fonte retornou quantidade insuficiente de concursos acumulados.');
     const data=profile(live.history,accumulated);
     res.setHeader('Cache-Control','public, max-age=0, s-maxage=21600, stale-while-revalidate=86400');
-    res.status(200).json({ok:true,checkedAt:new Date().toISOString(),source:SOURCE,sourceLabel:'Loteria da Caixa · tabela histórica de ganhadores',liveBase:{latest:live.latest?.concurso||live.history.at(-1)?.concurso,validation:live.baseValidation||null},...data});
+    res.status(200).json({ok:true,checkedAt:new Date().toISOString(),source:SOURCE,sourceLabel:'Loteria da Caixa · tabela histórica de ganhadores',liveBase:{latest:latestContest,validation:live.baseValidation||null},latestContestAccumulated:accumulated.some(x=>x.concurso===latestContest),...data});
   }catch(e){
     res.setHeader('Cache-Control','no-store');
     res.status(500).json({ok:false,error:String(e&&e.message||e),checkedAt:new Date().toISOString(),source:SOURCE});

@@ -1,0 +1,34 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const base=require('../data/lotofacil-base.json');
+const sandbox={window:{}};
+vm.runInNewContext(fs.readFileSync(require.resolve('../matrix-51.js'),'utf8'),sandbox);
+const M=sandbox.window.LFMatrix51;
+const history=base.history;
+assert.equal(history.length,base.baseValidation.loadedCount);
+assert.equal(base.latest.concurso,history.at(-1).concurso);
+for(let i=0;i<history.length;i++){
+  const row=history[i];
+  assert.equal(row.concurso,i+1);
+  assert.equal(row.dezenas.length,15);
+  assert.equal(new Set(row.dezenas).size,15);
+  assert.ok(row.dezenas.every(n=>Number.isInteger(n)&&n>=1&&n<=25));
+}
+const ctx=M.buildContext(history),last=history.at(-1).dezenas;
+const inspect=game=>M.inspect(game,ctx);
+const filter=(report,id)=>report.filters.find(f=>f.id===id);
+const exact=inspect(last);
+assert.equal(filter(exact,29).passed,false,'F29 deve bloquear concurso já sorteado');
+assert.equal(filter(exact,37).passed,false,'F37 deve bloquear 15/15 histórico');
+assert.equal(filter(exact,36).passed,false,'F36 deve bloquear 3+ anomalias simultâneas neste caso');
+assert.equal(exact.lineRepeat.blocked,true);
+assert.equal(exact.columnRepeat.blocked,true);
+const replacement=Array.from({length:25},(_,i)=>i+1).find(n=>!last.includes(n));
+const near=[...last.slice(0,14),replacement].sort((a,b)=>a-b);
+assert.equal(filter(inspect(near),37).passed,false,'F37 deve bloquear 14/15 histórico');
+const fewColors=[1,11,21,2,12,22,3,13,23,4,14,24,5,15,25];
+assert.equal(inspect(fewColors).colorRule.blocked,true,'menos de 8 cores deve bloquear');
+for(const id of [28,29,36,37])assert.ok(filter(exact,id),'filtro obrigatório F'+id+' ausente');
+assert.equal(M.AUDIT_BASE_THROUGH,history.at(-1).concurso);
+console.log(`Auditoria local: ${history.length} concursos contínuos; F29, F36, F37, cores e Linha/Coluna verificados.`);

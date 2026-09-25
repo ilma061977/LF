@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d10" />
-  <meta name="lf-build" content="2026-09-24-audit-03" />
+  <meta name="lf-build" content="2026-09-25-novo-indicado-5x5-audit" />
   <title>LF Inteligente V3.7.5 · Vercel Native</title>
   <meta name="description" content="LF Inteligente V3.7.5 — NOVO INDICADO 5x5, Matriz 51 canônica, fechamentos matemáticos, backtest determinístico e carteira em nuvem." />
   <style>:root{
@@ -269,6 +269,19 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
 .vertical-pattern-mode summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 </style>
   <style>.version-update-notice{position:fixed;z-index:200;top:82px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;max-width:calc(100vw - 24px);padding:11px 14px;border:1px solid #b91c1c;border-radius:12px;background:#fff;color:#111318;box-shadow:0 12px 32px rgba(0,0,0,.2);font-size:14px}.version-update-notice[hidden]{display:none}.version-update-notice button{border:0;border-radius:8px;background:#b91c1c;color:#fff;padding:9px 12px;font-weight:800;white-space:nowrap;cursor:pointer}@media(max-width:760px){.version-update-notice{top:68px;align-items:flex-start;gap:9px;font-size:13px}.version-update-notice button{padding:8px 10px}}</style>
+<style id="decision-board-fix">
+.decision-5x5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));max-width:430px;width:100%;gap:30px 8px;margin:18px auto 12px;padding:0 3px 18px;overflow:visible}
+.decision-5x5 .ball{width:100%;min-width:0;aspect-ratio:1;font-size:clamp(15px,2vw,20px);border-width:2px}
+.decision-5x5 .ball.selected{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 5px #16a34a,inset 0 -4px 7px rgba(0,0,0,.15)}
+.decision-5x5 .ball.dimmed{opacity:.68!important}.decision-5x5 .ball.dimmed>b{opacity:1!important}
+.decision-5x5 .markers{top:calc(100% + 3px);transform:translateX(-50%);grid-template-columns:repeat(3,14px);grid-auto-rows:15px;gap:0;padding:1px 2px;max-width:48px}
+.decision-5x5 .markers i{width:14px;height:15px;font-size:12px}
+.decision-board-summary{text-align:center;font-size:12px;font-weight:800;color:#e5e7eb;line-height:1.5;max-width:500px;margin:6px auto 15px}
+.decision-count-explainer,.decision-cache-row{font-size:11px;line-height:1.45;color:#cbd5e1;margin:10px 2px 2px}
+.decision-cache-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.decision-cache-row .btn{font-size:10px}.decision-source-summary{font-size:11px!important;line-height:1.35!important;margin:5px 0 0!important;color:#d1d5db!important}
+@media(max-width:560px){.decision-5x5{max-width:100%;gap:24px 4px;padding:0 2px 15px}.decision-5x5 .ball{font-size:14px}.decision-5x5 .markers{grid-template-columns:repeat(3,12px);grid-auto-rows:13px;max-width:41px}.decision-5x5 .markers i{width:12px;height:13px;font-size:10px}}
+</style>
 </head>
 <body>
   <a class="skip" href="#main">Ir para o conteúdo</a>
@@ -366,7 +379,7 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
 
       <main id="main" class="main">
         <section class="page active" data-page-panel="decision">
-          <div class="hero decision-hero"><div><span class="eyebrow">PAINEL PRINCIPAL</span><h1>NOVO INDICADO</h1><p>Configure o jogo, execute a busca integral e confira o resultado em três etapas.</p></div><div class="hero-kpis"><article><span>Concurso base</span><b id="kpi-contest">—</b></article><article><span>Bloqueadores</span><b id="kpi-core">—</b></article><article><span>Avisos</span><b id="kpi-warnings">—</b></article></div></div>
+          <div class="hero decision-hero"><div><span class="eyebrow">PAINEL PRINCIPAL</span><h1>NOVO INDICADO</h1><p>Configure o jogo, execute a busca integral e confira o resultado em três etapas.</p><p id="decision-source-summary" class="decision-source-summary">Aguardando origem dos dados do concurso.</p><p id="decision-prize-source" class="decision-source-summary">Status de ganhadores: aguardando consulta.</p></div><div class="hero-kpis"><article><span>Concurso base</span><b id="kpi-contest">—</b></article><article><span>Bloqueadores</span><b id="kpi-core">—</b></article><article><span>Avisos</span><b id="kpi-warnings">—</b></article></div></div>
 
           <div class="workflow-strip" aria-label="Fluxo do Novo Indicado">
             <div><b>1</b><span><strong>Configurar</strong><small>modo e composição</small></span></div>
@@ -394,6 +407,7 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
 
               <div class="decision-result-zone">
                 <div id="decision-board" class="board board-dark decision-5x5" aria-label="NOVO INDICADO em grade 5 por 5"></div>
+                <p id="decision-board-summary" class="decision-board-summary" aria-live="polite">Aguardando a busca para destacar as 15 dezenas.</p>
                 <div id="decision-result-origin" class="decision-result-origin"><span class="origin-label">Forma de escolha</span><b id="decision-result-origin-badge" class="origin-badge complete">MANUAL</b></div>
                 <div class="decision-vertical-summary"><b>Dezenas configuradas nas Verticais</b><span id="decision-vertical-constraints">Fixas: nenhuma · Excluídas: nenhuma</span></div>
                 <div class="validation-line" id="decision-validation">Aguardando base histórica.</div>
@@ -449,8 +463,10 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
                   <div class="search-kpi"><span>Total a avaliar</span><b id="decision-search-total">—</b><small>universo desta busca</small></div>
                   <div class="search-kpi search-kpi-progress"><span>Progresso</span><b id="decision-search-percent">0%</b><small>varredura concluída</small></div>
                   <div class="search-kpi decision-approved-kpi"><span id="decision-search-approved-label">Aprovados</span><b id="decision-search-approved">0</b><small id="decision-search-approved-note">Matriz 51</small></div>
-                  <div class="search-kpi search-kpi-final"><span>Elegíveis finais</span><b id="decision-search-eligible">0</b><small>após todas as regras</small></div>
+                  <div class="search-kpi search-kpi-final"><span>Elegíveis finais</span><b id="decision-search-eligible">0</b><small>após metas e Perfil PRO</small></div>
                 </div>
+                <p class="decision-count-explainer">Aprovados: passam pelos filtros de bloqueio. Elegíveis finais: também cumprem a composição escolhida e o Perfil PRO.</p>
+                <div class="decision-cache-row"><span id="decision-cache-status">Nenhuma busca concluída para esta configuração.</span><button class="btn tiny ghost" id="decision-rerun" type="button" hidden>Refazer busca completa</button></div>
                 <div class="decision-search-track"><i id="decision-search-bar"></i></div>
                 <details class="search-tech-details">
                   <summary><span>Ver detalhes técnicos</span><small>validadas, reprovadas, velocidade, tempo e regras</small></summary>
@@ -475,7 +491,7 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
               <div class="decision-summary-label">Indicadores principais</div>
               <div class="metric-grid" id="decision-metrics"></div>
 
-              <details class="summary-drawer" open>
+              <details class="summary-drawer">
                 <summary>Mais informações do jogo</summary>
                 <div class="decision-detail-grid" id="decision-detail-metrics"></div>
               </details>
@@ -483,11 +499,11 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
                 <summary>🎨 Cores do indicado</summary>
                 <div id="decision-color-current"></div>
               </details>
-              <details class="summary-drawer no-winner-score-drawer" open>
+              <details class="summary-drawer no-winner-score-drawer">
                 <summary>📉 Score Perfil Sem Ganhador</summary>
                 <div id="decision-no-winner-score" class="one-winner-profile no-winner-score-profile"><div class="summary-fallback"><b>Carregando perfil dos concursos sem ganhador</b><span>Indicador informativo; não bloqueia jogos.</span></div></div>
               </details>
-              <details class="summary-drawer one-winner-drawer" open>
+              <details class="summary-drawer one-winner-drawer">
                 <summary>👤 Indicador de Perfil de 1 Ganhador</summary>
                 <div id="decision-one-winner-profile" class="one-winner-profile"><div class="summary-fallback"><b>Carregando perfil histórico</b><span>Indicador informativo; não bloqueia jogos.</span></div></div>
               </details>
