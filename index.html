@@ -148,6 +148,10 @@
 .virgin-backtest-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.virgin-backtest-summary>div{border:1px solid var(--line);border-radius:10px;padding:9px}.virgin-backtest-summary span{display:block;font-size:9px;color:var(--muted)}.virgin-backtest-summary b{display:block;font-size:18px;margin-top:2px}
 @media(max-width:620px){.virgin-oe-grid{grid-template-columns:1fr 1fr}.virgin-history-row{grid-template-columns:52px 1fr 46px}.virgin-history-row span:nth-last-child(-n+2){display:none}.virgin-backtest-summary{grid-template-columns:1fr}}
 .vertical3-color-legend{margin:10px 0 12px}.vertical3-visual tr.color-group-start td{border-top:3px solid #cbd5e1}.vertical3-visual .color-name{font-weight:900;white-space:nowrap}.vertical3-visual .color-name i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-2px;margin-right:5px;border:1px solid rgba(15,23,42,.18)}.vertical3-visual td.number-cell{font-weight:950;text-align:center}.vertical3-order-note{font-size:9px;color:#64748b;margin:6px 0 0}
+
+/* NOVO INDICADO: manter um único painel de progresso */
+.workspace:has(.page[data-page-panel="decision"].active) #global-search-progress{display:none!important}
+#decision-quick-result[hidden]{display:none!important}
 </style>
 <style>
 /* Em Monte sua seleção, somente as dezenas copiadas/escolhidas ficam em destaque. */
@@ -396,7 +400,7 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
           <div class="decision-grid decision-grid-clean">
             <article class="panel dark-panel suggested-card focus-card">
               <div class="panel-head decision-main-head"><div><span class="eyebrow" id="decision-game-type">JOGO OFICIAL</span><h2>NOVO INDICADO · 15 DEZENAS</h2><p id="decision-game-description">O resultado só é liberado quando a busca atingir 100%.</p></div><button class="btn light decision-primary-action" id="decision-generate">Iniciar busca exaustiva</button></div>
-              <div id="decision-quick-result" class="decision-quick-result" role="status" aria-live="polite" tabindex="-1"><strong id="decision-quick-title">Aguardando início da busca</strong><div id="decision-quick-numbers" class="decision-quick-numbers">Clique em Iniciar busca exaustiva. O jogo aparecerá aqui ao chegar a 100%.</div></div>
+              <div id="decision-quick-result" class="decision-quick-result" role="status" aria-live="polite" tabindex="-1" hidden><strong id="decision-quick-title">Aguardando início da busca</strong><div id="decision-quick-numbers" class="decision-quick-numbers">Clique em Iniciar busca exaustiva. O jogo aparecerá aqui ao chegar a 100%.</div></div>
 
               <div class="decision-selection-mode"><label>Modo <select id="decision-selection-mode"><option value="manual">✋ Manual</option><option value="random">🎲 Aleatório</option><option value="virgin">🎯 Virgem</option></select></label><label id="virgin-profile-wrap" hidden>Perfil Virgem <select id="virgin-profile"><option value="light">Leve · 30% Virgindade</option><option value="strong" selected>Forte · 50% Virgindade</option><option value="max">Máximo · 70% Virgindade</option></select></label><span id="decision-selection-mode-note">✋ Manual: você define as metas dos indicadores; o LF aplica Matriz 51 + filtros + Perfil PRO.</span></div>
               <div class="decision-boundary-controls">
