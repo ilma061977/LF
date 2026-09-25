@@ -748,9 +748,18 @@
   function syncManualDecision(){
     if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{}state.decisionWorker=null;state.decisionWorkerSignature='';}
     state.manualDecision=true;state.decisionRankingCache=null;state.decisionIndex=0;
-    state.decision=state.selection.size===15?[...state.selection].sort((a,b)=>a-b):[];state.labBase=[];
+    const manual=state.selection.size===15?[...state.selection].sort((a,b)=>a-b):[];
+    const exactHistorical=manual.length===15&&historicalSimilarity(manual).max===15;
+    state.decision=exactHistorical?[]:manual;state.labBase=[];
     clearCurrentDecision();renderDecision();renderAnalysis();renderStatsDecision();renderVerticalVisual();renderVertical2();renderVertical3();
-    setDecisionSearchPanel({status:'warn',manualGame:state.decision,tested:0,total:decisionBoundaryUniverse([...blockedNumbers()]),resultText:state.decision.length===15?'Seleção manual: '+state.decision.map(pad).join(' ')+' · sem busca exaustiva. Inicie a busca para obter uma indicação aprovada.':`Seleção manual: ${state.selection.size}/15 dezenas. Complete as restantes ou use o preenchimento aleatório.`,mode:'Seleção manual · busca exaustiva ainda não executada'});
+    if(exactHistorical){
+      const same=state.history.find(d=>hits(manual,d.dezenas||[])===15);
+      const contest=same?.concurso?' #'+same.concurso:'';
+      setDecisionSearchPanel({status:'warn',manualGame:manual,tested:0,total:decisionBoundaryUniverse([...blockedNumbers()]),resultText:'F29 BLOQUEADO: estas 15 dezenas já foram sorteadas'+contest+'. As dezenas permanecem selecionadas, mas este jogo não pode ser liberado nem usado como NOVO INDICADO.',mode:'Seleção manual · F29 permanente'});
+      toast('F29: combinação 15/15 já sorteada'+contest+'. Jogo mantido na tela, porém bloqueado.');
+      return;
+    }
+    setDecisionSearchPanel({status:'warn',manualGame:manual,tested:0,total:decisionBoundaryUniverse([...blockedNumbers()]),resultText:manual.length===15?'Seleção manual: '+manual.map(pad).join(' ')+' · sem busca exaustiva. Inicie a busca para obter uma indicação aprovada.':'Seleção manual: '+state.selection.size+'/15 dezenas. Complete as restantes ou use o preenchimento aleatório.',mode:'Seleção manual · busca exaustiva ainda não executada'});
   }
   function completeManualSelection(){const pool=ALL.filter(n=>!state.selection.has(n)&&!blockedNumbers().has(n));for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}while(state.selection.size<15&&pool.length)state.selection.add(pool.pop());syncManualDecision();if(state.selection.size<15)toast('Bloqueios demais para completar 15 dezenas.');}
   function verticalSelectionCell(n){return `<td class="vertical-game-pick"><button type="button" data-vertical-game="${n}" aria-label="${state.selection.has(n)?'Remover':'Escolher'} dezena ${pad(n)} para o Jogo Indicado" aria-pressed="${state.selection.has(n)}" title="${state.selection.has(n)?'Remover':'Escolher'} ${pad(n)}">${state.selection.has(n)?'✓':'+'}</button></td>`;}
