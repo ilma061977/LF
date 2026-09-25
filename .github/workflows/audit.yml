@@ -13,3 +13,12 @@ jobs:
         with:
           node-version: '24'
       - run: npm test
+      - name: Empacotar site para deploy alternativo
+        uses: actions/upload-artifact@v4
+        with:
+          name: lf-inteligente-site
+          path: |
+            .
+            !.git
+            !node_modules
+          include-hidden-files: true
