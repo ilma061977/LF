@@ -29,8 +29,8 @@
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
   const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.5';
   const THRESHOLD_VERSION = 'LF-M51-2026.09.24-v3.7.5';
-  const AUDIT_VERSION = 'LF-M51-AUDIT-3787-F28-F29-F36-F37-v3.7.5';
-  const AUDIT_BASE_THROUGH = 3787;
+  const AUDIT_VERSION = 'LF-M51-AUDIT-3788-F28-F29-F36-F37-v3.7.5';
+  const AUDIT_BASE_THROUGH = 3788;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
   const PATTERN_COOLDOWNS = Object.freeze({
