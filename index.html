@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d10" />
-  <meta name="lf-build" content="2026-09-25-novo-indicado-5x5-audit" />
+  <meta name="lf-build" content="2026-09-25-novo-indicado-visivel" />
   <title>LF Inteligente V3.7.5 · Vercel Native</title>
   <meta name="description" content="LF Inteligente V3.7.5 — NOVO INDICADO 5x5, Matriz 51 canônica, fechamentos matemáticos, backtest determinístico e carteira em nuvem." />
   <style>:root{
@@ -270,6 +270,10 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
 </style>
   <style>.version-update-notice{position:fixed;z-index:200;top:82px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;max-width:calc(100vw - 24px);padding:11px 14px;border:1px solid #b91c1c;border-radius:12px;background:#fff;color:#111318;box-shadow:0 12px 32px rgba(0,0,0,.2);font-size:14px}.version-update-notice[hidden]{display:none}.version-update-notice button{border:0;border-radius:8px;background:#b91c1c;color:#fff;padding:9px 12px;font-weight:800;white-space:nowrap;cursor:pointer}@media(max-width:760px){.version-update-notice{top:68px;align-items:flex-start;gap:9px;font-size:13px}.version-update-notice button{padding:8px 10px}}</style>
 <style id="decision-board-fix">
+.decision-quick-result{border:2px solid rgba(255,255,255,.2);background:#202a35;border-radius:14px;padding:14px;margin:0 0 14px;color:#fff;scroll-margin-top:90px}
+.decision-quick-result strong{display:block;font-size:12px;letter-spacing:.02em;margin-bottom:8px}.decision-quick-numbers{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;line-height:1.5;color:#d8e0e9}
+.decision-quick-result.ready{border-color:#4ade80;background:#10281e;box-shadow:0 0 0 3px rgba(74,222,128,.12)}.decision-quick-numbers .mini-ball{width:31px;height:31px;font-size:11px;flex:0 0 auto;border:1px solid rgba(255,255,255,.55)}
+.decision-quick-result.running{border-color:#60a5fa;background:#13243b}
 .decision-5x5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));max-width:430px;width:100%;gap:30px 8px;margin:18px auto 12px;padding:0 3px 18px;overflow:visible}
 .decision-5x5 .ball{width:100%;min-width:0;aspect-ratio:1;font-size:clamp(15px,2vw,20px);border-width:2px}
 .decision-5x5 .ball.selected{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 5px #16a34a,inset 0 -4px 7px rgba(0,0,0,.15)}
@@ -392,6 +396,7 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
           <div class="decision-grid decision-grid-clean">
             <article class="panel dark-panel suggested-card focus-card">
               <div class="panel-head decision-main-head"><div><span class="eyebrow">JOGO OFICIAL</span><h2>NOVO INDICADO · 15 DEZENAS</h2><p>O resultado só é liberado quando a busca atingir 100%.</p></div><button class="btn light decision-primary-action" id="decision-generate">Iniciar busca exaustiva</button></div>
+              <div id="decision-quick-result" class="decision-quick-result" role="status" aria-live="polite" tabindex="-1"><strong id="decision-quick-title">Aguardando início da busca</strong><div id="decision-quick-numbers" class="decision-quick-numbers">Clique em Iniciar busca exaustiva. O jogo aparecerá aqui ao chegar a 100%.</div></div>
 
               <div class="decision-selection-mode"><label>Modo <select id="decision-selection-mode"><option value="manual">✋ Manual</option><option value="random">🎲 Aleatório</option><option value="virgin">🎯 Virgem</option></select></label><label id="virgin-profile-wrap" hidden>Perfil Virgem <select id="virgin-profile"><option value="light">Leve · 30% Virgindade</option><option value="strong" selected>Forte · 50% Virgindade</option><option value="max">Máximo · 70% Virgindade</option></select></label><span id="decision-selection-mode-note">✋ Manual: você define as metas dos indicadores; o LF aplica Matriz 51 + filtros + Perfil PRO.</span></div>
               <div class="decision-boundary-controls">
