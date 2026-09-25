@@ -162,6 +162,8 @@
 .color-choice-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.7fr);gap:14px}.color-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.color-choice-card{border:1px solid #e2e8f0;border-radius:14px;padding:12px;background:#fff}.color-choice-card header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}.color-choice-name{display:flex;align-items:center;gap:8px}.color-choice-name i{width:20px;height:20px;border-radius:50%;border:1px solid rgba(15,23,42,.2);box-shadow:inset 0 1px 2px rgba(255,255,255,.55)}.color-choice-name b{display:block;font-size:12px}.color-choice-name small{display:block;font-size:8px;color:#64748b;margin-top:2px}.color-choice-card header button{border:1px solid #cbd5e1;background:#f8fafc;border-radius:8px;padding:6px 8px;font-size:8px;font-weight:900;cursor:pointer}.color-choice-numbers{display:flex;gap:8px;flex-wrap:wrap}.color-choice-number{border:0;background:transparent;padding:0;cursor:pointer;border-radius:50%}.color-choice-number .mini-ball{width:42px;height:42px;font-size:12px;transition:.15s}.color-choice-number.active .mini-ball{outline:4px solid #16a34a;outline-offset:2px;transform:scale(1.06);box-shadow:0 0 0 3px #dcfce7}.color-choice-summary-card{position:sticky;top:76px;align-self:start}.color-choice-selected{min-height:120px;display:flex;gap:6px;flex-wrap:wrap;align-content:flex-start;padding:10px;border:1px solid #e5e7eb;border-radius:12px;background:#f8fafc}.color-choice-selected .mini-ball{width:34px;height:34px;font-size:10px}.color-choice-empty{font-size:10px;color:#64748b}.color-choice-actions{display:grid;gap:8px;margin-top:12px}.color-choice-rules{margin-top:12px;padding:10px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412}.color-choice-rules b,.color-choice-rules span{display:block}.color-choice-rules b{font-size:9px}.color-choice-rules span{font-size:8px;line-height:1.45;margin-top:4px}@media(max-width:900px){.color-choice-layout{grid-template-columns:1fr}.color-choice-summary-card{position:static}}@media(max-width:600px){.color-choice-grid{grid-template-columns:1fr}}
 
 .color-choice-selected.color-choice-5x5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:center;justify-items:center;min-height:0;padding:14px}.color-choice-selected.color-choice-5x5 .mini-ball{width:48px;height:48px;font-size:13px}.color-choice-selected.color-choice-5x5 .color-choice-empty{grid-column:1/-1;text-align:center;width:100%}@media(max-width:520px){.color-choice-selected.color-choice-5x5{gap:7px}.color-choice-selected.color-choice-5x5 .mini-ball{width:42px;height:42px;font-size:12px}}
+
+.pro-priority-extreme{border-top-color:#ef4444!important}.pro-priority-extreme .pro-priority-title b{color:#fecaca}.pro-extreme-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.nav-pro-shortcut{border:1px solid rgba(250,204,21,.18)!important;background:rgba(250,204,21,.055)!important}.nav-pro-shortcut>span{background:rgba(250,204,21,.12)!important}@media(max-width:900px){.pro-extreme-grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.pro-extreme-grid{grid-template-columns:1fr}}
 </style>
 <style>
 /* Em Monte sua seleção, somente as dezenas copiadas/escolhidas ficam em destaque. */
@@ -326,6 +328,7 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
         <div class="nav-primary-list">
           <button class="nav-item nav-primary active" data-page="decision"><span>◫</span><b>Novo indicado</b></button>
           <button class="nav-item" data-page="colorchoice"><span>🎯</span><b>Jogo por Cores</b></button>
+          <button class="nav-item nav-pro-shortcut" id="nav-pro-profile" type="button"><span>⚙️</span><b>Perfil PRO</b></button>
           <button class="nav-item" data-page="analysis"><span>◎</span><b>Analisar jogo</b></button>
           <button class="nav-item" data-page="statistics"><span>▥</span><b>Estatísticas</b></button>
           <button class="nav-item" data-page="matrix"><span>▦</span><b>Matriz 51</b><em>51</em></button>
@@ -482,12 +485,23 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
                 <summary><span><b>2. ⚙️ Perfil PRO</b><small>faixas extras + 🔥 ❄️ ♻️ ⏳ 🔄</small></span><i>⌄</i></summary>
                 <section class="pro-profile-body">
                   <div class="indicator-target-head"><div><span class="eyebrow">PERFIL PRO</span><h3>Regras por prioridade estatística</h3></div><span class="target-mode-pill" id="pro-profile-count">0 ativas</span></div>
-                  <p class="indicator-target-note">Ordem de leitura pelo impacto na filtragem: primeiro travas históricas/estruturais, depois repetição e atraso, e por fim temperatura. O F29 permanece absoluto.</p>
+                  <p class="indicator-target-note">Ordem por severidade: EXTREMA 1 reúne travas permanentes; depois vêm as travas históricas/estruturais configuráveis, repetição/atraso e temperatura.</p>
+
+                  <div class="pro-priority-group pro-priority-extreme">
+                    <div class="pro-priority-title"><b>PRIORIDADE EXTREMA 1 · TRAVAS 100%</b><small>Regras permanentes: não podem ser liberadas.</small></div>
+                    <div class="pro-extreme-grid">
+                      <div class="pro-filter-card pro-filter-locked"><span>F29 · EXTREMA</span><b>15/15 histórico</b><small>Impede repetir exatamente um resultado histórico.</small><strong>SEMPRE BLOQUEADO</strong></div>
+                      <div class="pro-filter-card pro-filter-locked"><span>🔥5 + ❄️5</span><b>Temperatura extrema</b><small>Bloqueia jogo com exatamente 5 quentes e 5 frias.</small><strong>SEMPRE BLOQUEADO</strong></div>
+                      <div class="pro-filter-card pro-filter-locked"><span>🔥0 + ❄️0</span><b>Sem quentes e sem frias</b><small>Bloqueia jogo sem nenhuma das 5 quentes e nenhuma das 5 frias.</small><strong>SEMPRE BLOQUEADO</strong></div>
+                      <div class="pro-filter-card pro-filter-locked"><span>🔥5 + ❄️4</span><b>Concentração quente</b><small>Bloqueia jogo com exatamente 5 quentes e 4 frias.</small><strong>SEMPRE BLOQUEADO</strong></div>
+                      <div class="pro-filter-card pro-filter-locked"><span>🔥4 + ❄️5</span><b>Concentração fria</b><small>Bloqueia jogo com exatamente 4 quentes e 5 frias.</small><strong>SEMPRE BLOQUEADO</strong></div>
+                      <div class="pro-filter-card pro-filter-locked"><span>♻️ 12+</span><b>Repetição extrema</b><small>Bloqueia jogo com 12 ou mais dezenas repetidas do concurso anterior.</small><strong>SEMPRE BLOQUEADO</strong></div>
+                    </div>
+                  </div>
 
                   <div class="pro-priority-group">
-                    <div class="pro-priority-title"><b>PRIORIDADE 1 · TRAVAS HISTÓRICAS E ESTRUTURAIS</b><small>Maior impacto direto na aceitação ou bloqueio do jogo.</small></div>
+                    <div class="pro-priority-title"><b>PRIORIDADE 1 · TRAVAS HISTÓRICAS E ESTRUTURAIS</b><small>Aplicadas depois das travas extremas.</small></div>
                     <div class="pro-filter-grid">
-                      <label class="pro-filter-card pro-filter-locked"><span>F29 · P1</span><b>15/15 histórico</b><small>Impede repetir exatamente um resultado histórico. É permanente e nunca pode ser liberado.</small><strong>SEMPRE BLOQUEADO</strong></label>
                       <label class="pro-filter-card"><span>F37 · P1</span><b>Similaridade 14/15</b><small>Bloqueia candidatos com 14 das 15 dezenas iguais a algum concurso histórico.</small><select data-pro-filter-policy="37"><option value="block">BLOQUEAR</option><option value="warn">AVISAR</option></select></label>
                       <label class="pro-filter-card"><span>F36 · P1</span><b>Anomalias F30–F35</b><small>Controla o acúmulo simultâneo de falhas nos filtros complementares F30 a F35.</small><select data-pro-filter-policy="36"><option value="block">BLOQUEAR</option><option value="warn">AVISAR</option></select></label>
                       <label class="pro-filter-card"><span>F28 · P1</span><b>Alertas máximos</b><small>Bloqueia quando o jogo acumula 3 ou mais métricas exatamente nos limites máximos.</small><select data-pro-filter-policy="28"><option value="block">BLOQUEAR</option><option value="warn">AVISAR</option></select></label>
