@@ -45,7 +45,7 @@ function quotaAllows(game,spec){
 
 function proProfileAllows(game,report,profile){
   const rules=Array.isArray(profile?.rules)?profile.rules:[];if(!rules.length)return true;
-  const m=report?.metrics||{};
+  const m=report?.metrics||{},groups=profile?.indicatorGroups||{};
   for(const r of rules){
     let v=null;
     if(r.metric==='sum')v=m.total;
@@ -57,6 +57,7 @@ function proProfileAllows(game,report,profile){
     else if(r.metric==='center')v=m.center;
     else if(r.metric==='repeat')v=m.repeated;
     else if(r.metric==='run')v=m.run;
+    else if(['hot','cold','latest','delayed','three'].includes(r.metric)){const s=new Set(groups[r.metric]||[]);v=game.filter(n=>s.has(n)).length;}
     else if(String(r.metric||'').startsWith('ending:')){const d=Number(String(r.metric).split(':')[1]);v=game.filter(n=>n%10===d).length;}
     if(v==null||!Number.isFinite(Number(v)))return false;
     const lo=r.min==null?-Infinity:Number(r.min),hi=r.max==null?Infinity:Number(r.max);
