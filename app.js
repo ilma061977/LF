@@ -346,6 +346,17 @@
   function getProProfileRules(){try{const a=JSON.parse(storageGet('lfv3_pro_profile_rules')||'[]');return Array.isArray(a)?a.map(r=>({metric:String(r.metric||''),min:Number(r.min),max:Number(r.max)})).filter(r=>r.metric&&Number.isFinite(r.min)&&Number.isFinite(r.max)).map(r=>({...r,min:Math.min(r.min,r.max),max:Math.max(r.min,r.max)})):[];}catch{return[];}}
   function proProfileRuleLabel(r){const names={sum:'Soma',odd:'Ímpares',prime:'Primos',fib:'Fibonacci',m3:'Múltiplos 3',border:'Moldura',center:'Miolo',repeat:'Repetidas',run:'Maior sequência',hot:'🔥 Quentes',cold:'❄️ Frias',latest:'♻️ Repetidas',delayed:'⏳ Atrasadas',three:'🔄 3+ seguidas'};const name=names[r.metric]||r.metric;return r.min===r.max?`${name}=${r.min}`:`${name} ${r.min}–${r.max}`;}
   function proProfileSummary(rules=getProProfileRules()){return rules.length?`PRO ${rules.length} regra(s): ${rules.map(proProfileRuleLabel).join(' · ')}`:'Perfil PRO sem regras';}
+  function colorCountDelayStats(){
+    const rows=state.history||[],latest=rows.at(-1)?.concurso||0,by=new Map();
+    for(const d of rows){const k=new Set((d.dezenas||[]).map(n=>n%10)).size;if(!by.has(k))by.set(k,[]);by.get(k).push(Number(d.concurso)||0);}
+    const out=[];for(const k of [...by.keys()].sort((a,b)=>a-b)){const xs=by.get(k).filter(Boolean),gaps=[];for(let i=1;i<xs.length;i++)gaps.push(xs[i]-xs[i-1]);const avg=gaps.length?gaps.reduce((a,b)=>a+b,0)/gaps.length:0,max=gaps.length?Math.max(...gaps):0,current=xs.length?latest-xs.at(-1):0,pct=max?current/max*100:0;out.push({colors:k,occurrences:xs.length,current,avg,max,pct,last:xs.at(-1)||0});}
+    return out;
+  }
+  function renderProColorDelayStats(){
+    const el=$('#pro-color-delay-grid');if(!el)return;const stats=colorCountDelayStats(),currentColors=state.history.length?new Set((state.history.at(-1)?.dezenas||[]).map(n=>n%10)).size:null;
+    el.innerHTML=stats.map(x=>`<article class="pro-color-delay-card ${x.colors===currentColors?'is-current':''}"><span>🎨 ${x.colors} cores</span><b>Atraso atual ${x.current}</b><small>Média ${x.avg.toFixed(1).replace('.',',')} · Máximo ${x.max||'—'} · ${x.max?x.pct.toFixed(1).replace('.',','):'0,0'}% do máximo</small><small>${x.occurrences.toLocaleString('pt-BR')} ocorrência(s) · última no #${x.last||'—'}</small></article>`).join('')||'<span class="muted">Aguardando base histórica.</span>';
+  }
+
   function renderProProfilePanel(){
     const rules=getProProfileRules(),by=new Map(rules.map(r=>[r.metric,r]));
     for(const key of ['hot','cold','latest','delayed','three']){
@@ -354,6 +365,7 @@
     }
     [28,36,37].forEach(id=>{const sel=document.querySelector(`[data-pro-filter-policy="${id}"]`);if(sel)sel.value=state.filterPolicies[id]==='warn'?'warn':'block';});
     state.filterPolicies[29]='block';
+    renderProColorDelayStats();
     const count=document.getElementById('pro-profile-count'),summary=document.getElementById('pro-profile-summary');
     if(count)count.textContent=`${rules.length} ativa${rules.length===1?'':'s'}`;
     if(summary)summary.textContent=(rules.length?proProfileSummary(rules):'Nenhuma regra PRO por emoji ativa.')+' · EXTREMA 1 ativa: F29 + 🔥/❄️ extremos + ♻️12+ sempre bloqueados.';
