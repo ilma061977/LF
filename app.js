@@ -352,6 +352,29 @@
     const out=[];for(const k of [...by.keys()].sort((a,b)=>a-b)){const xs=by.get(k).filter(Boolean),gaps=[];for(let i=1;i<xs.length;i++)gaps.push(xs[i]-xs[i-1]);const avg=gaps.length?gaps.reduce((a,b)=>a+b,0)/gaps.length:0,max=gaps.length?Math.max(...gaps):0,current=xs.length?latest-xs.at(-1):0,pct=max?current/max*100:0;out.push({colors:k,occurrences:xs.length,current,avg,max,pct,last:xs.at(-1)||0});}
     return out;
   }
+  function proMatrixPolicyMeta(f){
+    const id=Number(f.id),p=id===29?'block':(state.filterPolicies[id]||'ignore');
+    if(id>=45&&id<=49)return{key:'experimental',label:'EXPERIMENTAL'};
+    if(id>=50&&id<=51)return{key:'operational',label:'OPERACIONAL'};
+    if(p==='block')return{key:'block',label:'BLOQUEAR'};
+    if(p==='warn')return{key:'warn',label:'AVISAR'};
+    return{key:'ignore',label:'IGNORAR'};
+  }
+  function renderProMatrix51(){
+    const el=$('#pro-matrix51-groups');if(!el)return;
+    const groups=[
+      {title:'EXTREMA',subtitle:'F29 + travas absolutas do Perfil PRO',ids:[29]},
+      {title:'ESTRUTURAIS',subtitle:'F01–F15',ids:Array.from({length:15},(_,i)=>i+1)},
+      {title:'CONDICIONAIS',subtitle:'F16–F28',ids:Array.from({length:13},(_,i)=>i+16)},
+      {title:'COMPLEMENTARES',subtitle:'F30–F37',ids:Array.from({length:8},(_,i)=>i+30)},
+      {title:'AVANÇADOS',subtitle:'F38–F44',ids:Array.from({length:7},(_,i)=>i+38)},
+      {title:'EXPERIMENTAIS',subtitle:'F45–F49',ids:Array.from({length:5},(_,i)=>i+45)},
+      {title:'OPERACIONAIS',subtitle:'F50–F51',ids:[50,51]}
+    ];
+    const by=new Map(M.FILTERS.map(f=>[Number(f.id),f]));
+    el.innerHTML=groups.map(g=>{const items=g.ids.map(id=>{const f=by.get(id);if(!f)return'';const pm=proMatrixPolicyMeta(f);return `<div class="pro-matrix51-item ${id===29?'f29':''}"><strong>F${String(id).padStart(2,'0')}</strong><span>${f.name}</span><em class="policy-badge ${pm.key}">${pm.label}</em></div>`;}).join('');return `<section class="pro-matrix51-group"><header><b>${g.title}</b><small>${g.subtitle}</small></header><div class="pro-matrix51-list">${items}</div></section>`;}).join('');
+  }
+
   function renderProColorDelayStats(){
     const el=$('#pro-color-delay-grid');if(!el)return;const stats=colorCountDelayStats(),currentColors=state.history.length?new Set((state.history.at(-1)?.dezenas||[]).map(n=>n%10)).size:null;
     el.innerHTML=stats.map(x=>{const delta=x.current-x.avg,rounded=Math.ceil(Math.abs(delta)),status=delta>=0?'ATRASADO':(x.current>=x.avg*.8?'PRÓXIMO DA MÉDIA':'NORMAL'),timing=delta>=0?`Atrasado ${Math.max(0,Math.floor(delta))} sorteio(s) além da média`:`Faltam cerca de ${rounded} sorteio(s) para chegar à média`;return `<article class="pro-color-delay-card ${x.colors===currentColors?'is-current':''} ${delta>=0?'is-late':x.current>=x.avg*.8?'is-near':''}"><span>🎨 ${x.colors} cores · ${status}</span><b>Atraso atual ${x.current}</b><small>Média ${x.avg.toFixed(1).replace('.',',')} · Máximo ${x.max||'—'} · ${x.max?x.pct.toFixed(1).replace('.',','):'0,0'}% do máximo</small><small><strong>${timing}</strong></small><small>${x.occurrences.toLocaleString('pt-BR')} ocorrência(s) · última no #${x.last||'—'}</small></article>`;}).join('')||'<span class="muted">Aguardando base histórica.</span>';
@@ -365,7 +388,7 @@
     }
     [28,36,37].forEach(id=>{const sel=document.querySelector(`[data-pro-filter-policy="${id}"]`);if(sel)sel.value=state.filterPolicies[id]==='warn'?'warn':'block';});
     state.filterPolicies[29]='block';
-    renderProColorDelayStats();
+    renderProMatrix51();renderProColorDelayStats();
     const count=document.getElementById('pro-profile-count'),summary=document.getElementById('pro-profile-summary');
     if(count)count.textContent=`${rules.length} ativa${rules.length===1?'':'s'}`;
     if(summary)summary.textContent=(rules.length?proProfileSummary(rules):'Nenhuma regra PRO por emoji ativa.')+' · EXTREMA 1 ativa: F29 + 🔥/❄️ extremos + ♻️12+ sempre bloqueados.';
