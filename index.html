@@ -277,7 +277,7 @@ body.nav-searching .nav-search-results{max-height:none;flex:1}
 .decision-5x5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));max-width:430px;width:100%;gap:30px 8px;margin:18px auto 12px;padding:0 3px 18px;overflow:visible}
 .decision-5x5 .ball{width:100%;min-width:0;aspect-ratio:1;font-size:clamp(15px,2vw,20px);border-width:2px}
 .decision-5x5 .ball.selected{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 5px #16a34a,inset 0 -4px 7px rgba(0,0,0,.15)}
-.decision-5x5 .ball.dimmed{opacity:.68!important}.decision-5x5 .ball.dimmed>b{opacity:1!important}
+.decision-5x5 .ball.dimmed{opacity:1!important;filter:none!important;position:relative;isolation:isolate}.decision-5x5 .ball.dimmed::before{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.66);z-index:1;pointer-events:none}.decision-5x5 .ball.dimmed>b{opacity:1!important;position:relative;z-index:2;color:#fff}.decision-5x5 .ball.dimmed .markers{z-index:3}
 .decision-5x5 .markers{top:calc(100% + 3px);transform:translateX(-50%);grid-template-columns:repeat(3,14px);grid-auto-rows:15px;gap:0;padding:1px 2px;max-width:48px}
 .decision-5x5 .markers i{width:14px;height:15px;font-size:12px}
 .decision-board-summary{text-align:center;font-size:12px;font-weight:800;color:#e5e7eb;line-height:1.5;max-width:500px;margin:6px auto 15px}
