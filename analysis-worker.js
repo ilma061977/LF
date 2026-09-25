@@ -2,8 +2,8 @@ self.window=self;
 importScripts('./matrix-51.js');
 const M=self.LFMatrix51;
 const ALL=Array.from({length:25},(_,i)=>i+1);
-const MANDATORY_BLOCKS=new Set([28,29,36,37]);
-function resolvedPolicy(f,policies={}){return Number(f.id)===29?'block':(policies[f.id]||(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')));}
+const MANDATORY_BLOCKS=new Set([29]);
+function resolvedPolicy(f,policies={}){return Number(f.id)===29?'block':(policies[f.id]||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'))));}
 const keyOf=g=>g.map(n=>String(n).padStart(2,'0')).join('-');
 function blockedFailures(report,policies){const out=report.filters.filter(f=>resolvedPolicy(f,policies)==='block'&&!f.passed);if(report?.patternCooldown?.blocked)out.push({id:'PADRAO',name:'Carência de padrão exato'});if(report?.colorRule?.blocked)out.push({id:'CORES',name:'Regra obrigatória de cores do indicado'});if(report?.lineRepeat?.blocked)out.push({id:'LINHA',name:'Distribuição de linhas igual ao concurso anterior'});if(report?.columnRepeat?.blocked)out.push({id:'COLUNA',name:'Distribuição de colunas igual ao concurso anterior'});if(report?.lineColumnRepeat?.blocked)out.push({id:'L×C',name:'Linha × Coluna igual ao concurso anterior'});return out;}
 function warnings(report,policies){return report.filters.filter(f=>resolvedPolicy(f,policies)==='warn'&&!f.passed);}
