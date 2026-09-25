@@ -690,7 +690,7 @@
   let noWinnerProfileCache=null,noWinnerProfilePromise=null;
   function renderNoWinnerDistribution(elId,a,b,totalA,totalB,suffix=''){
     const el=$(elId);if(!el)return;const keys=[...new Set([...Object.keys(a||{}),...Object.keys(b||{})].map(Number))].sort((x,y)=>x-y);
-    el.innerHTML=keys.map(k=>{const pa=(Number(a?.[k]||0)/Math.max(1,totalA))*100,pb=(Number(b?.[k]||0)/Math.max(1,totalB))*100;return `<div class="dual-dist-row"><span class="dual-dist-label">${k}${suffix}</span><div class="dual-dist-track" title="Sem ganhador ${pa.toFixed(1)}% · Geral ${pb.toFixed(1)}%"><i style="width:${Math.min(100,pa)}%"></i><em style="width:${Math.min(100,pb)}%"></em></div><span class="dual-dist-values">484/atual ${pa.toFixed(1)}% · geral ${pb.toFixed(1)}%</span></div>`;}).join('')||'<p class="muted">Sem distribuição disponível.</p>';
+    el.innerHTML=keys.map(k=>{const pa=(Number(a?.[k]||0)/Math.max(1,totalA))*100,pb=(Number(b?.[k]||0)/Math.max(1,totalB))*100;return `<div class="dual-dist-row"><span class="dual-dist-label">${k}${suffix}</span><div class="dual-dist-track" title="Sem ganhador ${pa.toFixed(1)}% · Geral ${pb.toFixed(1)}%"><i style="width:${Math.min(100,pa)}%"></i><em style="width:${Math.min(100,pb)}%"></em></div><span class="dual-dist-values">acumulados ${pa.toFixed(1)}% · geral ${pb.toFixed(1)}%</span></div>`;}).join('')||'<p class="muted">Sem distribuição disponível.</p>';
   }
   function renderNoWinnerIndicated(data){
     const el=$('#no-winner-indicated');if(!el)return;const g=state.decision;if(!Array.isArray(g)||g.length!==15){el.innerHTML='<div class="bi-empty"><b>Aguardando Jogo Indicado</b><span>Conclua a busca para comparar o jogo com as faixas descritivas dos concursos sem ganhador.</span></div>';return;}
