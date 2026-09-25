@@ -79,7 +79,7 @@
     26:{what:'Flutuantes: dezenas que alternaram presença/ausência pelo menos duas vezes nos últimos quatro concursos.',action:'Mantenha 5 ou 6 flutuantes quando esse grupo estiver disponível.'},
     27:{what:'Dispersão entre a primeira e a quinta linha.',action:'Mantenha a diferença de ocupação das linhas opostas abaixo de 3.'},
     28:{what:'Conta quantas métricas canônicas ficaram exatamente em seu limite máximo.',action:'Evite acumular três ou mais limites máximos simultaneamente; o máximo permitido é 2.'},
-    29:{what:'Trava histórica: bloqueia a combinação exata das 15 dezenas quando esse mesmo conjunto já foi sorteado no histórico. Não bloqueia as dezenas individualmente.',action:'Troque pelo menos uma dezena da combinação exata. Em busca sem resultado, pode ser relaxado para AVISAR somente por escolha explícita do usuário.'},
+    29:{what:'Trava histórica absoluta: bloqueia a combinação exata das 15 dezenas quando esse mesmo conjunto já foi sorteado no histórico. Não bloqueia as dezenas individualmente.',action:'Troque pelo menos uma dezena da combinação exata. O F29 é permanente e não pode ser liberado, nem em seleção manual.'},
     30:{what:'Repetidas com Termômetro: recalibra a quantidade de repetidas pela faixa histórica walk-forward, sem substituir o F15 fixo.',action:'Compare a regra fixa F15 com a faixa dinâmica; trate divergências como aviso até o backtest justificar bloqueio.'},
     31:{what:'Ausentes persistentes: mede o retorno de dezenas que não apareceram nos dois concursos anteriores.',action:'Ajuste o retorno desse grupo à faixa histórica calculada somente com concursos passados.'},
     32:{what:'Média de atraso das 15 dezenas comparada ao histórico walk-forward.',action:'Reduza excesso de atrasadas ou de dezenas recém-saídas conforme a faixa histórica.'},
@@ -219,7 +219,7 @@
   function renderLastComparison(){const el=$('#decision-last-comparison');if(!el)return;const latest=state.history.at(-1);if(!latest||state.decision.length!==15){el.innerHTML='<p class="muted">Aguardando NOVO INDICADO e último concurso.</p>';return;}const cur=new Set(state.decision),prev=new Set(latest.dezenas),common=state.decision.filter(n=>prev.has(n)),entered=state.decision.filter(n=>!prev.has(n)),left=latest.dezenas.filter(n=>!cur.has(n));el.innerHTML=`<div class="decision-last-kpis"><span>Concurso base <b>#${latest.concurso}</b></span><span>Em comum <b>${common.length}/15</b></span><span>Entraram <b>${entered.length}</b></span><span>Saíram <b>${left.length}</b></span></div><div class="decision-last-groups"><div><strong>♻️ Em comum</strong>${gameNumbers(common)}</div><div><strong>＋ Entraram</strong>${gameNumbers(entered)}</div><div><strong>− Saíram do último</strong>${gameNumbers(left)}</div></div>`;}
   function normalizeSavedEntry(x){const game=M.normalize(x?.game);if(!game)return null;return{id:String(x.id||`${Date.now()}-${Math.random().toString(36).slice(2)}`),savedAt:x.savedAt||new Date().toISOString(),updatedAt:x.updatedAt||x.savedAt||new Date().toISOString(),game,note:String(x.note||''),classification:['principal','reserva','teste'].includes(x.classification)?x.classification:'principal'};}
   state.savedGames=state.savedGames.map(normalizeSavedEntry).filter(Boolean);
-  function savePrefs(){storageSet('lfv3_period',state.period);storageSet('lfv3_exclusions',JSON.stringify([...state.exclusions]));storageSet('lfv3_fixed_numbers',JSON.stringify([...state.fixedNumbers]));storageSet('lfv3_emoji_locks',JSON.stringify([...state.emojiLocks]));storageSet('lfv3_filter_policies',JSON.stringify(state.filterPolicies));storageSet('lfv3_matrix_schema',M.SCHEMA_VERSION);storageSet('lfv3_saved_games',JSON.stringify(state.savedGames));storageSet('lfv3_groups',JSON.stringify(state.groups));storageSet('lfv3_indicator_targets',JSON.stringify(state.indicatorTargets));storageSet('lfv3_indicator_picks',JSON.stringify(state.indicatorPicks));storageSet('lfv3_decision_selection_mode',state.decisionSelectionMode);storageSet('lfv3_indicator_mode',state.indicatorMode);storageSet('lfv3_indicator_compositions',JSON.stringify(state.indicatorCompositions));storageSet('lfv3_virgin_profile',state.virginProfile);storageSet('lfv3_decision_start_number',state.decisionStartNumber==null?'':String(state.decisionStartNumber));storageSet('lfv3_decision_end_number',state.decisionEndNumber==null?'':String(state.decisionEndNumber));}
+  function savePrefs(){state.filterPolicies[29]='block';storageSet('lfv3_period',state.period);storageSet('lfv3_exclusions',JSON.stringify([...state.exclusions]));storageSet('lfv3_fixed_numbers',JSON.stringify([...state.fixedNumbers]));storageSet('lfv3_emoji_locks',JSON.stringify([...state.emojiLocks]));storageSet('lfv3_filter_policies',JSON.stringify(state.filterPolicies));storageSet('lfv3_matrix_schema',M.SCHEMA_VERSION);storageSet('lfv3_saved_games',JSON.stringify(state.savedGames));storageSet('lfv3_groups',JSON.stringify(state.groups));storageSet('lfv3_indicator_targets',JSON.stringify(state.indicatorTargets));storageSet('lfv3_indicator_picks',JSON.stringify(state.indicatorPicks));storageSet('lfv3_decision_selection_mode',state.decisionSelectionMode);storageSet('lfv3_indicator_mode',state.indicatorMode);storageSet('lfv3_indicator_compositions',JSON.stringify(state.indicatorCompositions));storageSet('lfv3_virgin_profile',state.virginProfile);storageSet('lfv3_decision_start_number',state.decisionStartNumber==null?'':String(state.decisionStartNumber));storageSet('lfv3_decision_end_number',state.decisionEndNumber==null?'':String(state.decisionEndNumber));}
   function setCloudStatus(text,kind=''){state.cloudStatus=text;const el=$('#cloud-status');if(el){el.textContent=text;el.className=`cloud-status ${kind}`;}}
   function mergeCloudGames(remote=[]){const map=new Map();for(const raw of [...state.savedGames,...remote]){const x=normalizeSavedEntry(raw);if(!x)continue;const k=keyOf(x.game),prev=map.get(k);if(!prev||String(x.updatedAt)>String(prev.updatedAt))map.set(k,x);}state.savedGames=[...map.values()].sort((a,b)=>String(a.savedAt).localeCompare(String(b.savedAt))).slice(-500);savePrefs();renderMyGames();}
   async function syncCloud(push=true){
@@ -459,18 +459,18 @@
   function proProfileAllowsClient(g){return proProfilePass(g,getProProfileRules());}
   function askMandatoryBlocksToRelax(diagnostics=null){
     const existing=document.getElementById('mandatory-relax-dialog');if(existing)existing.remove();
-    const ids=[28,29,36,37].filter(id=>state.filterPolicies[id]==='block');
-    if(!ids.length){toast('Não há bloqueios obrigatórios ativos para relaxar.');return;}
+    const ids=[28,36,37].filter(id=>state.filterPolicies[id]==='block');
+    if(!ids.length){toast('Não há bloqueios obrigatórios liberáveis. O F29 permanece sempre bloqueado.');return;}
     const counts=diagnostics?.filterAny||{};
     const explain={
       28:'Limita o acúmulo de métricas exatamente no valor máximo permitido. Hoje o jogo é bloqueado quando concentra 3 ou mais limites máximos ao mesmo tempo.',
-      29:'Impede repetir exatamente uma combinação de 15 dezenas que já saiu em qualquer concurso histórico. Ao liberar, um jogo já premiado 15/15 poderá voltar a ser aceito.',
+      29:'Impede repetir exatamente uma combinação de 15 dezenas que já saiu em qualquer concurso histórico. Este filtro é permanente e não pode ser liberado.',
       36:'Controla a intersecção de anomalias dos filtros F30 a F35. O bloqueio evita jogos que acumulam mais de duas falhas simultâneas nesse grupo.',
       37:'Impede jogos com 14 das 15 dezenas iguais a algum concurso histórico. Ao liberar, combinações muito próximas de um resultado já sorteado poderão ser aceitas.'
     };
     const impact={
       28:'Liberar F28 aumenta a quantidade de candidatos com vários limites no extremo.',
-      29:'Liberar F29 permite repetir um resultado histórico completo.',
+      29:'F29 não pode ser liberado.',
       36:'Liberar F36 permite maior concentração de anomalias F30–F35.',
       37:'Liberar F37 permite candidatos com similaridade histórica de 14/15.'
     };
@@ -481,7 +481,7 @@
     wrap.querySelector('[data-relax-cancel]').onclick=close;
     wrap.firstElementChild.onclick=close;
     wrap.querySelector('[data-relax-apply]').onclick=()=>{
-      const chosen=[...wrap.querySelectorAll('[data-relax-filter]:checked')].map(x=>Number(x.dataset.relaxFilter));
+      const chosen=[...wrap.querySelectorAll('[data-relax-filter]:checked')].map(x=>Number(x.dataset.relaxFilter)).filter(id=>id!==29);
       if(!chosen.length){toast('Marque pelo menos um bloqueio obrigatório para excluir da próxima pesquisa.');return;}
       chosen.forEach(id=>state.filterPolicies[id]='warn');
       savePrefs();storageRemove(decisionCacheKey());state.generationSignature='';state.decisionRankingCache=null;close();
