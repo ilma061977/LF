@@ -436,6 +436,38 @@
     if(!diagnostics)return;
     try{storageSet('lfv3_last_search_diagnostics',JSON.stringify({baseContest:state.history.at(-1)?.concurso||null,period:state.period,filters:M.FILTERS.map(f=>({id:f.id,name:f.name,mode:f.mode})),...diagnostics,savedAt:new Date().toISOString()}));}catch{}
   }
+  function quotaAllowsClient(g){
+    const q=indicatorQuotaSpec();
+    if(!q)return true;
+    // Mirror worker quota constraints using the current indicator sets.
+    const sets=indicatorSets();
+    const counts={};
+    for(const item of (q.items||[])){
+      const set=sets[item.key]||new Set();
+      counts[item.key]=g.filter(n=>set.has(n)).length;
+      if(Number.isFinite(item.min)&&counts[item.key]<item.min)return false;
+      if(Number.isFinite(item.max)&&counts[item.key]>item.max)return false;
+    }
+    if(Number.isFinite(q.unionMin)||Number.isFinite(q.unionMax)){
+      const union=new Set();
+      for(const item of (q.items||[])){const set=sets[item.key]||new Set();for(const n of g)if(set.has(n))union.add(n);}
+      if(Number.isFinite(q.unionMin)&&union.size<q.unionMin)return false;
+      if(Number.isFinite(q.unionMax)&&union.size>q.unionMax)return false;
+    }
+    return true;
+  }
+  function proProfileAllowsClient(g){
+    const rules=getProProfileRules();
+    if(!Array.isArray(rules)||!rules.length)return true;
+    const report=M.inspect(g,state.ctx),metrics=report?.metrics||{};
+    return rules.every(rule=>{
+      const v=metrics[rule.metric];
+      if(!Number.isFinite(v))return true;
+      if(Number.isFinite(rule.min)&&v<rule.min)return false;
+      if(Number.isFinite(rule.max)&&v>rule.max)return false;
+      return true;
+    });
+  }
   function startDecisionExhaustive(sig,excluded,total,rankIndex=0){
     if(state.decisionWorker&&state.decisionWorkerSignature===sig)return;
     if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{} state.decisionWorker=null;}
@@ -443,8 +475,8 @@
     let worker=null;try{const joiner=String(window.__LF_WORKER_URL).includes('?')?'&':'?';worker=new Worker(`${window.__LF_WORKER_URL}${joiner}run=${Date.now()}`);}catch{}
     if(!worker){setDecisionSearchPanel({status:'warn',total,tested:0,approvedCount:0,resultText:'Busca exaustiva indisponível neste navegador. Nenhum NOVO INDICADO oficial foi definido.',mode:decisionSearchModeText()});return;}
     state.decisionWorker=worker;state.decisionWorkerSignature=sig;
-    state.decisionSearchMeta={status:'idle',tested:0,total,approvedCount:0,startedAt:null};
-    setDecisionSearchPanel({status:'running',total,tested:0,approvedCount:0,resultText:'Jogo oficial será definido somente em 100%.',mode:decisionSearchModeText()});
+    state.decisionSearchMeta={status:'idle',tested:0,total:0,approvedCount:0,startedAt:null};
+    setDecisionSearchPanel({status:'running',total:0,tested:0,approvedCount:0,eligibleCount:0,resultText:'Nova busca iniciada: contadores zerados. O universo será recalculado pelo Worker.',mode:decisionSearchModeText()});
     let lastTested=0,searchDone=false;worker.onmessage=e=>{const d=e.data||{};if(state.decisionWorker!==worker||searchDone)return;if(d.type==='progress'){
       const nextTested=Number(d.tested||0);if(nextTested<lastTested)return;lastTested=nextTested;
       setDecisionSearchPanel({status:'running',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,eligibleCount:d.eligibleCount??d.found??0,resultText:'Jogo oficial será definido somente em 100%.',mode:decisionSearchModeText()});
@@ -452,8 +484,21 @@
       searchDone=true;
       try{worker.terminate();}catch{} if(state.decisionWorker===worker){state.decisionWorker=null;state.decisionWorkerSignature='';}
       if(d.exhaustive!==true||d.complete!==true||d.audit?.verified!==true||Number(d.tested)!==Number(d.total)||Number(d.total)!==total){applyDecision(null);setDecisionSearchPanel({status:'warn',total,tested:d.tested||0,approvedCount:d.approvedCount||0,resultText:'Falha na auditoria da varredura: total ou checksum divergente. Nenhum jogo foi liberado.',mode:'Auditoria da busca reprovada'});return;}
+      const finalGamePassesAllBlocks=g=>{
+        if(!Array.isArray(g)||g.length!==15||new Set(g).size!==15)return false;
+        const report=M.inspect(g,state.ctx);
+        if(!M.policyAllows(report,state.filterPolicies))return false;
+        if(!quotaAllowsClient(g))return false;
+        if(!proProfileAllowsClient(g))return false;
+        return g.every(n=>!blockedNumbers().has(n));
+      };
       const mode=state.decisionSelectionMode==='virgin'?`Busca exaustiva concluída em 100% · Ranking Virgem ${state.virginProfile} · Top 1.000 elegíveis + Pareto · 51 filtros · ${proProfileSummary()} · F29/F37 obrigatórios`:`Busca exaustiva concluída em 100% · Top 1.000 elegíveis finais retidos · 51 filtros · ${proProfileSummary()} · F28 + F29 + F36 + F37 obrigatórios`;
-      if(Array.isArray(d.topGames)&&d.topGames.length){const useDiverse=state.decisionSelectionMode==='virgin'&&Array.isArray(d.virginDiverseGames)&&d.virginDiverseGames.length,cacheGames=useDiverse?d.virginDiverseGames:d.topGames,cacheMeta=useDiverse?(d.virginDiverseMeta||[]):(d.topMeta||[]),cacheScores=useDiverse?cacheMeta.map(x=>Number(x?.matrixScore||0)):(d.topScores||[]);state.decisionRankingCache={signature:sig,games:cacheGames,scores:cacheScores,topMeta:cacheMeta,rawTopCount:d.topGames.length,paretoGames:d.paretoGames||[],paretoMeta:d.paretoMeta||[],virginStats:d.virginStats||null,tested:Number(d.tested||0),total:Number(d.total||total),approvedCount:Number(d.approvedCount||0),eligibleCount:Number(d.eligibleCount||0),diagnostics:d.diagnostics||null,audit:d.audit,mode,completedAt:new Date().toISOString()};saveRealSearchDiagnostics(d.diagnostics);savePersistentDecisionCache(state.decisionRankingCache);state.decisionIndex=Math.min(rankIndex,cacheGames.length-1);const picked=cacheGames[state.decisionIndex];applyDecision(picked);setDecisionSearchPanel({status:'done',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,eligibleCount:d.eligibleCount||0,game:picked,mode:`${mode} · indicação #${state.decisionIndex+1}/${cacheGames.length}`});if(state.page==='decision')requestAnimationFrame(()=>$('#decision-quick-result')?.scrollIntoView({behavior:'smooth',block:'center'}));toast(state.decisionSelectionMode==='virgin'?`Busca 100% concluída: Top ${cacheGames.length} Virgens diversificados · ${Number(d.eligibleCount||0).toLocaleString('pt-BR')} elegíveis avaliados no ranking exclusivo.`:`Busca 100% concluída: ${Number(d.approvedCount||0).toLocaleString('pt-BR')} aprovados na Matriz 51 e ${Number(d.eligibleCount||0).toLocaleString('pt-BR')} elegíveis finais após metas + Perfil PRO.`);}
+      if(Array.isArray(d.topGames)&&d.topGames.length){
+        const useDiverse=state.decisionSelectionMode==='virgin'&&Array.isArray(d.virginDiverseGames)&&d.virginDiverseGames.length;
+        const rawGames=useDiverse?d.virginDiverseGames:d.topGames,rawMeta=useDiverse?(d.virginDiverseMeta||[]):(d.topMeta||[]),rawScores=useDiverse?rawMeta.map(x=>Number(x?.matrixScore||0)):(d.topScores||[]);
+        const validRows=rawGames.map((game,i)=>({game,meta:rawMeta[i]??null,score:rawScores[i]??null})).filter(x=>finalGamePassesAllBlocks(x.game));
+        const cacheGames=validRows.map(x=>x.game),cacheMeta=validRows.map(x=>x.meta),cacheScores=validRows.map(x=>x.score);
+        if(!cacheGames.length){state.decisionRankingCache=null;applyDecision(null);setDecisionSearchPanel({status:'warn',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,eligibleCount:0,resultText:'A varredura chegou a 100%, mas nenhum jogo de 15 dezenas passou por todos os filtros bloqueadores ativos. Nenhum NOVO INDICADO foi liberado.',mode:'Busca concluída sem combinação válida'});toast('Nenhuma combinação válida passou por todos os filtros ativos.');return;}state.decisionRankingCache={signature:sig,games:cacheGames,scores:cacheScores,topMeta:cacheMeta,rawTopCount:d.topGames.length,paretoGames:d.paretoGames||[],paretoMeta:d.paretoMeta||[],virginStats:d.virginStats||null,tested:Number(d.tested||0),total:Number(d.total||total),approvedCount:Number(d.approvedCount||0),eligibleCount:Number(d.eligibleCount||0),diagnostics:d.diagnostics||null,audit:d.audit,mode,completedAt:new Date().toISOString()};saveRealSearchDiagnostics(d.diagnostics);savePersistentDecisionCache(state.decisionRankingCache);state.decisionIndex=Math.min(rankIndex,cacheGames.length-1);const picked=cacheGames[state.decisionIndex];applyDecision(picked);setDecisionSearchPanel({status:'done',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,eligibleCount:d.eligibleCount||0,game:picked,mode:`${mode} · indicação #${state.decisionIndex+1}/${cacheGames.length}`});if(state.page==='decision')requestAnimationFrame(()=>$('#decision-quick-result')?.scrollIntoView({behavior:'smooth',block:'center'}));toast(state.decisionSelectionMode==='virgin'?`Busca 100% concluída: Top ${cacheGames.length} Virgens diversificados · ${Number(d.eligibleCount||0).toLocaleString('pt-BR')} elegíveis avaliados no ranking exclusivo.`:`Busca 100% concluída: ${Number(d.approvedCount||0).toLocaleString('pt-BR')} aprovados na Matriz 51 e ${Number(d.eligibleCount||0).toLocaleString('pt-BR')} elegíveis finais após metas + Perfil PRO.`);}
       else{state.decisionRankingCache={signature:sig,games:[],scores:[],topMeta:[],paretoGames:d.paretoGames||[],paretoMeta:d.paretoMeta||[],virginStats:d.virginStats||null,tested:Number(d.tested||0),total:Number(d.total||total),approvedCount:Number(d.approvedCount||0),eligibleCount:Number(d.eligibleCount||0),diagnostics:d.diagnostics||null,audit:d.audit,mode,completedAt:new Date().toISOString()};saveRealSearchDiagnostics(d.diagnostics);savePersistentDecisionCache(state.decisionRankingCache);applyDecision(null);setDecisionSearchPanel({status:'done',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,eligibleCount:d.eligibleCount||0,resultText:'Nenhum jogo elegível na composição após busca exaustiva completa.',mode});toast('Busca exaustiva concluída sem jogo elegível na composição atual.');}
     }};
     worker.onerror=()=>{try{worker.terminate();}catch{} if(state.decisionWorker===worker){state.decisionWorker=null;state.decisionWorkerSignature='';}applyDecision(null);setDecisionSearchPanel({status:'warn',total,tested:state.decisionSearchMeta.tested||0,approvedCount:state.decisionSearchMeta.approvedCount||0,resultText:'Erro na busca exaustiva. Nenhum NOVO INDICADO oficial foi definido.',mode:'Busca exaustiva obrigatória · erro de processamento'});};
