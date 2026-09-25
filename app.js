@@ -41,13 +41,13 @@
     filterPolicies:restoredPolicies,savedGames:safeJSON('lfv3_saved_games',[]),groups:safeJSON('lfv3_groups',[]),
     apiOk:false,officialVerified:false,dataBlocked:false,dataSource:'',dataWarning:'',decisionWorker:null,manualDecision:false,decisionStarted:false,decisionIndex:0,generationSignature:'',decisionRankingCache:null,decisionWorkerSignature:'',decisionSearchMeta:{status:'idle',tested:0,total:0,approvedCount:0},cloudId,cloudStatus:'local',cloudTimer:null,myGamesContest:null,fullFilterAudit:null,indicatorMode:storageGet('lfv3_decision_selection_mode')==='virgin'?'random':restoredIndicatorMode,indicatorTargets:{...DEFAULT_INDICATOR_TARGETS,...restoredIndicatorTargets},indicatorPicks:restoredIndicatorPicks&&typeof restoredIndicatorPicks==='object'?restoredIndicatorPicks:{},indicatorCompositions:Array.isArray(restoredIndicatorCompositions)?restoredIndicatorCompositions:[],decisionSelectionMode:storageGet('lfv3_decision_selection_mode')==='virgin'?'virgin':'standard',virginProfile:['light','strong','max'].includes(storageGet('lfv3_virgin_profile'))?storageGet('lfv3_virgin_profile'):'strong',decisionStartNumber:restoredDecisionStart,decisionEndNumber:restoredDecisionEnd
   };
-  const MANDATORY_BLOCK_IDS=new Set([28,29,36,37]);
+  const MANDATORY_BLOCK_IDS=new Set([29]);
   const isMandatoryBlock=id=>MANDATORY_BLOCK_IDS.has(Number(id));
-  const defaultPolicy=f=>isMandatoryBlock(f.id)?'block':f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore';
+  const defaultPolicy=f=>isMandatoryBlock(f.id)?'block':[28,36,37].includes(Number(f.id))?'block':f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore';
   M.FILTERS.forEach(f=>{if(!state.filterPolicies[f.id])state.filterPolicies[f.id]=defaultPolicy(f);});
   state.filterPolicies[23]='ignore'; // F23: informativo; não bloqueia, não avisa e não altera score/ranking
   state.filterPolicies[29]='block'; // F29: trava histórica de 15 pontos é obrigatória
-  [28,29,36,37].forEach(id=>state.filterPolicies[id]='block'); // travas obrigatórias F28/F29/F36/F37
+  state.filterPolicies[29]='block'; // somente F29 é trava absoluta; F28/F36/F37 respeitam a política escolhida
   storageSet('lfv3_filter_policies',JSON.stringify(state.filterPolicies));
   storageSet('lfv3_matrix_schema',M.SCHEMA_VERSION);
   const FILTER_GUIDANCE = {
