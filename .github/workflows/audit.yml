@@ -22,3 +22,10 @@ jobs:
             !.git
             !node_modules
           include-hidden-files: true
+      - name: Baixar pacote Netlify MCP
+        run: npm pack @netlify/mcp@latest
+      - name: Empacotar Netlify MCP
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-mcp-package
+          path: netlify-mcp-*.tgz
