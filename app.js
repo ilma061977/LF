@@ -372,10 +372,11 @@
   function proExtremeBlock(game,groups=indicatorQuotaSpec().groups||{}){
     if(!Array.isArray(game)||game.length!==15)return{blocked:true,reason:'Jogo incompleto'};
     const hot=new Set(groups.hot||[]),cold=new Set(groups.cold||[]),latest=new Set(groups.latest||[]);
-    const h=game.filter(n=>hot.has(n)).length,c=game.filter(n=>cold.has(n)).length,r=game.filter(n=>latest.has(n)).length;
-    if((h===5&&c===5)||(h===0&&c===0)||(h===5&&c===4)||(h===4&&c===5))return{blocked:true,reason:`Temperatura extrema 🔥${h} + ❄️${c}`,hot:h,cold:c,repeated:r};
-    if(r>=12)return{blocked:true,reason:`Repetição extrema ♻️ ${r}/15`,hot:h,cold:c,repeated:r};
-    return{blocked:false,reason:'OK',hot:h,cold:c,repeated:r};
+    const h=game.filter(n=>hot.has(n)).length,c=game.filter(n=>cold.has(n)).length,r=game.filter(n=>latest.has(n)).length,distinctColors=new Set(game.map(n=>n%10)).size;
+    if(distinctColors<8)return{blocked:true,reason:`Cores extremas 🎨 ${distinctColors}/10`,hot:h,cold:c,repeated:r,distinctColors};
+    if((h===5&&c===5)||(h===0&&c===0)||(h===5&&c===4)||(h===4&&c===5))return{blocked:true,reason:`Temperatura extrema 🔥${h} + ❄️${c}`,hot:h,cold:c,repeated:r,distinctColors};
+    if(r>=12)return{blocked:true,reason:`Repetição extrema ♻️ ${r}/15`,hot:h,cold:c,repeated:r,distinctColors};
+    return{blocked:false,reason:'OK',hot:h,cold:c,repeated:r,distinctColors};
   }
   function proProfilePass(game,rules=getProProfileRules()){if(!Array.isArray(game)||game.length!==15)return false;const rep=M.inspect(game,state.ctx),m=rep.metrics||{},groups=indicatorQuotaSpec().groups||{};if(proExtremeBlock(game,groups).blocked)return false;for(const r of rules){let v=null;if(r.metric==='sum')v=m.total;else if(r.metric==='odd')v=m.odds;else if(r.metric==='prime')v=m.primes;else if(r.metric==='fib')v=m.fib;else if(r.metric==='m3')v=m.m3;else if(r.metric==='border')v=m.border;else if(r.metric==='center')v=m.center;else if(r.metric==='repeat')v=m.repeated;else if(r.metric==='run')v=m.run;else if(['hot','cold','latest','delayed','three'].includes(r.metric)){const s=new Set(groups[r.metric]||[]);v=game.filter(n=>s.has(n)).length;}else if(String(r.metric).startsWith('ending:')){const d=Number(String(r.metric).split(':')[1]);v=game.filter(n=>n%10===d).length;}if(!Number.isFinite(Number(v))||v<r.min||v>r.max)return false;}return true;}
   function generationSignature(){const q=indicatorQuotaSpec(),proRules=getProProfileRules();return JSON.stringify({contest:state.history.at(-1)?.concurso||0,period:state.period,excluded:[...blockedNumbers()].sort((a,b)=>a-b),fixed:[...state.fixedNumbers].sort((a,b)=>a-b),policies:M.FILTERS.map(f=>state.filterPolicies[f.id]||''),indicatorTargets:q.targets,indicatorGroups:q.groups,proRules,decisionSelectionMode:state.decisionSelectionMode,indicatorMode:state.indicatorMode,virginProfile:state.virginProfile,decisionStartNumber:state.decisionStartNumber,decisionEndNumber:state.decisionEndNumber,schema:M.SCHEMA_VERSION,threshold:M.THRESHOLD_VERSION});}
