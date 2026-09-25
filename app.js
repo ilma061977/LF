@@ -436,38 +436,8 @@
     if(!diagnostics)return;
     try{storageSet('lfv3_last_search_diagnostics',JSON.stringify({baseContest:state.history.at(-1)?.concurso||null,period:state.period,filters:M.FILTERS.map(f=>({id:f.id,name:f.name,mode:f.mode})),...diagnostics,savedAt:new Date().toISOString()}));}catch{}
   }
-  function quotaAllowsClient(g){
-    const q=indicatorQuotaSpec();
-    if(!q)return true;
-    // Mirror worker quota constraints using the current indicator sets.
-    const sets=indicatorSets();
-    const counts={};
-    for(const item of (q.items||[])){
-      const set=sets[item.key]||new Set();
-      counts[item.key]=g.filter(n=>set.has(n)).length;
-      if(Number.isFinite(item.min)&&counts[item.key]<item.min)return false;
-      if(Number.isFinite(item.max)&&counts[item.key]>item.max)return false;
-    }
-    if(Number.isFinite(q.unionMin)||Number.isFinite(q.unionMax)){
-      const union=new Set();
-      for(const item of (q.items||[])){const set=sets[item.key]||new Set();for(const n of g)if(set.has(n))union.add(n);}
-      if(Number.isFinite(q.unionMin)&&union.size<q.unionMin)return false;
-      if(Number.isFinite(q.unionMax)&&union.size>q.unionMax)return false;
-    }
-    return true;
-  }
-  function proProfileAllowsClient(g){
-    const rules=getProProfileRules();
-    if(!Array.isArray(rules)||!rules.length)return true;
-    const report=M.inspect(g,state.ctx),metrics=report?.metrics||{};
-    return rules.every(rule=>{
-      const v=metrics[rule.metric];
-      if(!Number.isFinite(v))return true;
-      if(Number.isFinite(rule.min)&&v<rule.min)return false;
-      if(Number.isFinite(rule.max)&&v>rule.max)return false;
-      return true;
-    });
-  }
+  function quotaAllowsClient(g){return indicatorQuotaAllows(g,indicatorQuotaSpec());}
+  function proProfileAllowsClient(g){return proProfilePass(g,getProProfileRules());}
   function startDecisionExhaustive(sig,excluded,total,rankIndex=0){
     if(state.decisionWorker&&state.decisionWorkerSignature===sig)return;
     if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{} state.decisionWorker=null;}
