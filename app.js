@@ -150,12 +150,12 @@
   function renderColorAutoFive(){
     const el=$('#color-choice-auto-results');if(!el)return;
     const rows=Array.isArray(state.colorAutoGames)?state.colorAutoGames:[];
-    if(!rows.length){el.className='color-auto-five-results empty';el.textContent='Clique em “Gerar 5 jogos · 1 cor completa”.';return;}
+    if(!rows.length){el.className='color-auto-five-results empty';el.textContent='Clique em “GERAR 5 JOGOS AUTOMÁTICOS”.';return;}
     el.className='color-auto-five-results';
     el.innerHTML=rows.map((row,i)=>{
       if(!row?.game)return `<div class="color-auto-five-row fail"><div class="color-auto-five-color"><i style="background:${colorChoiceDot(row.color)}"></i><span>${COLOR_INFO[row.color]?.name||'Cor'}</span></div><div>Não foi possível gerar.</div><small>${row.note||'Verifique exclusões/bloqueios ativos.'}</small></div>`;
-      const p=colorProfile(row.game),review=row.status==='review';
-      return `<div class="color-auto-five-row ${review?'fail':''}"><div class="color-auto-five-color"><i style="background:${colorChoiceDot(row.color)}"></i><span>${COLOR_INFO[row.color]?.name||'Cor'} · 3/3</span></div><div class="color-auto-five-game">${row.game.map(n=>`<span class="mini-ball ${cls(n)}">${pad(n)}</span>`).join('')}</div><div class="color-auto-five-actions"><button class="btn ghost" type="button" data-color-auto-load="${i}">Carregar</button><button class="btn" type="button" data-color-auto-save="${i}">Salvar</button></div><small>${review?'Cor válida; revisar filtros ativos.':'1 cor completa · '+p.present.length+'/10 cores presentes · filtros ativos OK'}</small></div>`;
+      const p=colorProfile(row.game),review=row.status==='review',selected=new Set(row.game),completeSet=new Set(COLOR_INFO[row.color]?.nums||[]);
+      return `<div class="color-auto-five-row ${review?'fail':''}"><div class="color-auto-five-color"><i style="background:${colorChoiceDot(row.color)}"></i><span>${COLOR_INFO[row.color]?.name||'Cor'} · 3/3</span></div><div class="color-auto-five-board" aria-label="Jogo em formato 5 por 5">${ALL.map(n=>`<span class="color-auto-five-cell ${selected.has(n)?'selected '+cls(n):'not-selected'} ${selected.has(n)&&completeSet.has(n)?'complete-color':''}">${pad(n)}</span>`).join('')}</div><div class="color-auto-five-actions"><button class="btn ghost" type="button" data-color-auto-load="${i}">Carregar</button><button class="btn" type="button" data-color-auto-save="${i}">Salvar</button></div><small>${review?'Cor válida; revisar filtros ativos.':'Formato 5×5 · 15 dezenas destacadas · 1 cor completa · '+p.present.length+'/10 cores presentes · filtros ativos OK'}</small></div>`;
     }).join('');
     el.querySelectorAll('[data-color-auto-load]').forEach(b=>b.onclick=()=>{const row=rows[Number(b.dataset.colorAutoLoad)];if(!row?.game)return;state.selection=new Set(row.game);state.manualDecision=true;state.decision=[];clearCurrentDecision();renderColorChoice();toast(`Jogo ${COLOR_INFO[row.color]?.name||''} carregado na seleção.`);});
     el.querySelectorAll('[data-color-auto-save]').forEach(b=>b.onclick=()=>{const row=rows[Number(b.dataset.colorAutoSave)];if(row?.game)saveGames([row.game]);});
