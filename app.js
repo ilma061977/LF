@@ -138,6 +138,7 @@
     if(status){status.className='validation-line '+kind;status.textContent=msg;}
     grid.querySelectorAll('[data-color-number]').forEach(b=>b.onclick=()=>{const n=Number(b.dataset.colorNumber);if(state.selection.has(n))state.selection.delete(n);else{if(state.selection.size>=15)return toast('Limite de 15 dezenas atingido.');if(state.exclusions.has(n)||blockedNumbers().has(n))return toast('Esta dezena está bloqueada/excluída. Libere-a antes de selecionar.');state.selection.add(n);}renderColorChoice();});
     grid.querySelectorAll('[data-color-all]').forEach(b=>b.onclick=()=>{const f=Number(b.dataset.colorAll),nums=COLOR_INFO[f]?.nums||[],all=nums.every(n=>state.selection.has(n));if(all){nums.forEach(n=>state.selection.delete(n));}else{const add=nums.filter(n=>!state.selection.has(n)&&!state.exclusions.has(n)&&!blockedNumbers().has(n));if(state.selection.size+add.length>15)return toast('Selecionar esta cor ultrapassaria o limite de 15 dezenas.');add.forEach(n=>state.selection.add(n));}renderColorChoice();});
+    renderColorAutoFive();
   }
   function applyColorChoice(){
     if(state.selection.size!==15)return toast('Escolha exatamente 15 dezenas antes de enviar ao NOVO INDICADO.');
@@ -145,6 +146,47 @@
   }
   function fillColorChoice(){
     const pool=ALL.filter(n=>!state.selection.has(n)&&!state.exclusions.has(n)&&!blockedNumbers().has(n));for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}while(state.selection.size<15&&pool.length)state.selection.add(pool.pop());renderColorChoice();if(state.selection.size<15)toast('Bloqueios demais para completar 15 dezenas.');
+  }
+  function renderColorAutoFive(){
+    const el=$('#color-choice-auto-results');if(!el)return;
+    const rows=Array.isArray(state.colorAutoGames)?state.colorAutoGames:[];
+    if(!rows.length){el.className='color-auto-five-results empty';el.textContent='Clique em “Gerar 5 jogos · 1 cor completa”.';return;}
+    el.className='color-auto-five-results';
+    el.innerHTML=rows.map((row,i)=>{
+      if(!row?.game)return `<div class="color-auto-five-row fail"><div class="color-auto-five-color"><i style="background:${colorChoiceDot(row.color)}"></i><span>${COLOR_INFO[row.color]?.name||'Cor'}</span></div><div>Não foi possível gerar.</div><small>${row.note||'Verifique exclusões/bloqueios ativos.'}</small></div>`;
+      const p=colorProfile(row.game),review=row.status==='review';
+      return `<div class="color-auto-five-row ${review?'fail':''}"><div class="color-auto-five-color"><i style="background:${colorChoiceDot(row.color)}"></i><span>${COLOR_INFO[row.color]?.name||'Cor'} · 3/3</span></div><div class="color-auto-five-game">${row.game.map(n=>`<span class="mini-ball ${cls(n)}">${pad(n)}</span>`).join('')}</div><div class="color-auto-five-actions"><button class="btn ghost" type="button" data-color-auto-load="${i}">Carregar</button><button class="btn" type="button" data-color-auto-save="${i}">Salvar</button></div><small>${review?'Cor válida; revisar filtros ativos.':'1 cor completa · '+p.present.length+'/10 cores presentes · filtros ativos OK'}</small></div>`;
+    }).join('');
+    el.querySelectorAll('[data-color-auto-load]').forEach(b=>b.onclick=()=>{const row=rows[Number(b.dataset.colorAutoLoad)];if(!row?.game)return;state.selection=new Set(row.game);state.manualDecision=true;state.decision=[];clearCurrentDecision();renderColorChoice();toast(`Jogo ${COLOR_INFO[row.color]?.name||''} carregado na seleção.`);});
+    el.querySelectorAll('[data-color-auto-save]').forEach(b=>b.onclick=()=>{const row=rows[Number(b.dataset.colorAutoSave)];if(row?.game)saveGames([row.game]);});
+  }
+  function colorAutoCandidate(color,strict=true){
+    const forced=[...(COLOR_INFO[color]?.nums||[])],blocked=blockedNumbers();
+    if(forced.length!==3)return null;
+    if(forced.some(n=>blocked.has(n)))return null;
+    const base=ALL.filter(n=>!forced.includes(n)&&!blocked.has(n));
+    if(base.length<12)return null;
+    for(let attempt=0;attempt<6000;attempt++){
+      const pool=[...base];for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+      const game=[...forced,...pool.slice(0,12)].sort((a,b)=>a-b),profile=colorProfile(game);
+      if(profile.complete.length!==1||profile.complete[0]!==color||!profile.baseValid)continue;
+      if(historicalSimilarity(game).max===15)continue;
+      if(strict){const report=M.inspect(game,state.ctx);if(policyFailures(report).length)continue;}
+      return game;
+    }
+    return null;
+  }
+  function generateColorAutoFive(){
+    const colors=[1,2,3,4,5],rows=[];
+    for(const color of colors){
+      let game=colorAutoCandidate(color,true),status='ok',note='';
+      if(!game){game=colorAutoCandidate(color,false);status=game?'review':'fail';}
+      if(!game){const blocked=(COLOR_INFO[color]?.nums||[]).filter(n=>blockedNumbers().has(n));note=blocked.length?`A cor ${COLOR_INFO[color]?.name||''} tem dezena(s) bloqueada(s): ${blocked.map(pad).join(', ')}.`:'Nenhuma combinação válida encontrada com exatamente essa cor completa.';}
+      rows.push({color,game,status,note});
+    }
+    state.colorAutoGames=rows;renderColorAutoFive();
+    const ok=rows.filter(x=>x.game).length,strict=rows.filter(x=>x.status==='ok').length;
+    toast(ok===5?`5 jogos por cor gerados · ${strict}/5 passaram todos os filtros ativos.`:`${ok}/5 jogos por cor gerados. Verifique bloqueios nas cores sem jogo.`);
   }
   function clearColorChoice(){state.selection.clear();state.manualDecision=true;state.decision=[];clearCurrentDecision();renderColorChoice();renderDecision();renderAnalysis();}
 
@@ -1335,6 +1377,7 @@
 
   $('#color-choice-apply')?.addEventListener('click',applyColorChoice);
   $('#color-choice-fill')?.addEventListener('click',fillColorChoice);
+  $('#color-choice-auto-5')?.addEventListener('click',generateColorAutoFive);
   $('#color-choice-save')?.addEventListener('click',()=>{if(state.selection.size!==15)return toast('Escolha exatamente 15 dezenas antes de salvar.');saveGames([[...state.selection].sort((a,b)=>a-b)]);});
   $('#color-choice-clear')?.addEventListener('click',clearColorChoice);
 
