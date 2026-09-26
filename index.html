@@ -504,6 +504,65 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
   font-size:7px!important;
 }
 </style>
+<style id="top-menu-solotofacil-20260926">
+/* Menu superior no padrão solicitado; restante do app preservado */
+.sidebar-v2{display:none!important}
+.workspace{margin-left:0!important;padding-top:64px!important}
+.lf-top-menu{
+  position:fixed!important;inset:0 0 auto 0!important;height:64px!important;z-index:180!important;
+  background:#0b0d10!important;border-bottom:1px solid #20252c!important;color:#fff!important;
+  box-shadow:0 2px 14px rgba(0,0,0,.18)!important
+}
+.lf-top-menu-inner{
+  height:100%!important;max-width:1600px!important;margin:0 auto!important;padding:0 22px!important;
+  display:flex!important;align-items:center!important;gap:26px!important
+}
+.lf-top-brand{display:flex!important;align-items:center!important;gap:9px!important;flex:0 0 auto!important;color:#fff!important}
+.lf-top-brand-mark{display:grid!important;place-items:center!important;width:34px!important;height:34px!important;border-radius:9px!important;background:#fff!important;color:#0b0d10!important;font-weight:950!important}
+.lf-top-brand strong{font-size:13px!important;white-space:nowrap!important}
+.lf-top-categories{display:flex!important;align-items:stretch!important;height:100%!important;gap:2px!important;min-width:0!important;flex:1!important}
+.lf-top-group{position:relative!important;height:100%!important}
+.lf-top-group>summary{
+  list-style:none!important;height:100%!important;display:flex!important;align-items:center!important;gap:7px!important;
+  padding:0 13px!important;color:#f8fafc!important;font-size:13px!important;font-weight:800!important;
+  cursor:pointer!important;white-space:nowrap!important;border-radius:0!important
+}
+.lf-top-group>summary::-webkit-details-marker{display:none!important}
+.lf-top-group>summary:hover,.lf-top-group[open]>summary{background:#171b21!important}
+.lf-top-group>summary span{font-size:12px!important;color:#cbd5e1!important;transition:transform .16s ease!important}
+.lf-top-group[open]>summary span{transform:rotate(180deg)!important}
+.lf-top-dropdown{
+  position:absolute!important;top:64px!important;left:0!important;min-width:230px!important;max-height:70vh!important;overflow:auto!important;
+  padding:8px!important;background:#0f1318!important;border:1px solid #262c34!important;border-radius:0 0 12px 12px!important;
+  box-shadow:0 16px 35px rgba(0,0,0,.28)!important;display:grid!important;gap:3px!important;z-index:220!important
+}
+.lf-top-dropdown-right{left:auto!important;right:0!important}
+.lf-top-dropdown .nav-item{
+  width:100%!important;min-height:36px!important;display:grid!important;grid-template-columns:24px minmax(0,1fr) auto!important;
+  align-items:center!important;gap:8px!important;padding:7px 9px!important;border:0!important;border-radius:8px!important;
+  background:transparent!important;color:#c5ccd6!important;text-decoration:none!important;text-align:left!important;cursor:pointer!important
+}
+.lf-top-dropdown .nav-item:hover{background:#1b2129!important;color:#fff!important}
+.lf-top-dropdown .nav-item.active{background:#fff!important;color:#0b0d10!important}
+.lf-top-dropdown .nav-item>span{display:grid!important;place-items:center!important;width:24px!important;height:24px!important;font-size:12px!important}
+.lf-top-dropdown .nav-item b{font-size:10.5px!important;font-weight:700!important}
+.topbar{top:64px!important}
+.menu-button{display:none!important}
+@media(max-width:1220px){
+  .lf-top-menu-inner{padding:0 12px!important;gap:14px!important}
+  .lf-top-brand strong{display:none!important}
+  .lf-top-group>summary{padding:0 10px!important;font-size:12px!important}
+}
+@media(max-width:980px){
+  .lf-top-menu{height:auto!important;min-height:58px!important}
+  .lf-top-menu-inner{min-height:58px!important;align-items:center!important}
+  .lf-top-categories{overflow-x:auto!important;overflow-y:visible!important;scrollbar-width:none!important}
+  .lf-top-categories::-webkit-scrollbar{display:none!important}
+  .workspace{padding-top:58px!important}
+  .topbar{top:58px!important}
+  .lf-top-dropdown{top:58px!important}
+}
+</style>
 </head>
 <body>
 <div id="standalone-help" style="position:fixed;left:12px;bottom:12px;z-index:99998;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;padding:7px 10px;border-radius:10px;font:700 11px system-ui;box-shadow:0 3px 14px rgba(0,0,0,.12)">ARQUIVO ÚNICO OFFLINE · para páginas auxiliares, extraia o ZIP completo</div>
@@ -569,6 +628,116 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
         <small id="base-meta">Base local</small>
       </div>
     </aside>
+
+    <header class="lf-top-menu" id="lf-top-menu" aria-label="Menu principal">
+      <div class="lf-top-menu-inner">
+        <div class="lf-top-brand"><span class="lf-top-brand-mark">LF</span><strong>LF Inteligente</strong></div>
+        <nav class="lf-top-categories">
+          <details class="lf-top-group">
+            <summary>Home <span>⌄</span></summary>
+            <div class="lf-top-dropdown">
+              <button class="nav-item" data-page="decision"><span>◫</span><b>Novo indicado</b></button>
+              <button class="nav-item" data-page="colorchoice"><span>🎯</span><b>Jogo por Cores</b></button>
+              <button class="nav-item" id="top-nav-pro-profile" type="button"><span>⚙️</span><b>Perfil PRO</b></button>
+              <button class="nav-item" data-page="mygames"><span>★</span><b>Meus Jogos</b></button>
+              <button class="nav-item" data-page="savedgames"><span>💾</span><b>Jogos Salvos</b></button>
+            </div>
+          </details>
+
+          <details class="lf-top-group">
+            <summary>Análises <span>⌄</span></summary>
+            <div class="lf-top-dropdown">
+              <button class="nav-item" data-page="analysis"><span>◎</span><b>Analisar jogo</b></button>
+              <button class="nav-item" data-page="cycles"><span>◉</span><b>Ciclos</b></button>
+              <button class="nav-item" data-page="cyclesalt"><span>⟳</span><b>Ciclos Alternativos</b></button>
+              <button class="nav-item" data-page="pairs"><span>∞</span><b>Duplas / Trincas</b></button>
+              <button class="nav-item" data-page="compare"><span>⇄</span><b>Comparador</b></button>
+              <button class="nav-item" data-page="history"><span>⌕</span><b>Histórico</b></button>
+              <button class="nav-item" data-page="lab"><span>⌁</span><b>Laboratório</b></button>
+              <button class="nav-item" data-page="matrix"><span>▦</span><b>Matriz 51</b></button>
+            </div>
+          </details>
+
+          <details class="lf-top-group">
+            <summary>Tabelas <span>⌄</span></summary>
+            <div class="lf-top-dropdown">
+              <button class="nav-item" data-page="vertical"><span>↕</span><b>Vertical 1</b></button>
+              <button class="nav-item" data-page="vertical2"><span>⇅</span><b>Vertical 2</b></button>
+              <button class="nav-item" data-page="vertical3"><span>🎨</span><b>Vertical 3 · Cores</b></button>
+              <button class="nav-item" data-page="fixedtable"><span>AB</span><b>Tabela Fixa A/B/C/D</b></button>
+              <button class="nav-item" data-page="positions"><span>D</span><b>Posições D1–D15</b></button>
+              <button class="nav-item" data-page="linecols"><span>▦</span><b>Linhas × Colunas</b></button>
+              <button class="nav-item" data-page="groups"><span>◌</span><b>Grupos</b></button>
+              <a class="nav-item" href="./estatisticas-plus.html"><span>＋</span><b>Estatísticas+</b></a>
+              <a class="nav-item" href="./estatisticas-pro.html"><span>PRO</span><b>Estatísticas PRO</b></a>
+            </div>
+          </details>
+
+          <details class="lf-top-group">
+            <summary>Tendências <span>⌄</span></summary>
+            <div class="lf-top-dropdown">
+              <button class="nav-item" data-page="trends"><span>↗</span><b>Tendências históricas</b></button>
+              <button class="nav-item" data-page="patterns"><span>◇</span><b>Padrões especiais</b></button>
+              <button class="nav-item" data-page="charts"><span>▤</span><b>Gráficos / BI</b></button>
+            </div>
+          </details>
+
+          <details class="lf-top-group">
+            <summary>Estatísticas <span>⌄</span></summary>
+            <div class="lf-top-dropdown">
+              <button class="nav-item" data-page="statistics"><span>▥</span><b>Estatísticas</b></button>
+              <a class="nav-item" href="./historico-avancado.html"><span>⌕</span><b>Histórico Avançado</b></a>
+              <a class="nav-item" href="./inteligencia.html"><span>◆</span><b>Inteligência</b></a>
+            </div>
+          </details>
+
+          <details class="lf-top-group">
+            <summary>Combinações <span>⌄</span></summary>
+            <div class="lf-top-dropdown">
+              <button class="nav-item" data-page="generator"><span>✦</span><b>Geradores</b></button>
+              <button class="nav-item" data-page="closures"><span>⌗</span><b>Fechamentos / Erre 4–8</b></button>
+              <button class="nav-item" data-page="mirror"><span>◫</span><b>Aposta Espelho</b></button>
+              <button class="nav-item" data-page="colorchoice"><span>🎯</span><b>Gerador por Cores</b></button>
+              <a class="nav-item" href="./operacoes.html"><span>◈</span><b>Operações</b></a>
+            </div>
+          </details>
+
+          <details class="lf-top-group">
+            <summary>Simulações <span>⌄</span></summary>
+            <div class="lf-top-dropdown">
+              <button class="nav-item" data-page="backtest"><span>↺</span><b>Backtest</b></button>
+              <button class="nav-item" data-page="checker"><span>✓</span><b>Conferidor</b></button>
+              <button class="nav-item" data-page="economics"><span>R$</span><b>Custo × Cobertura</b></button>
+              <button class="nav-item" data-page="audit"><span>⚑</span><b>Auditorias</b></button>
+              <a class="nav-item" href="./evolucoes-21-29.html#finance"><span>◈</span><b>Simulador financeiro</b></a>
+            </div>
+          </details>
+
+          <details class="lf-top-group">
+            <summary>Mais Sorteadas <span>⌄</span></summary>
+            <div class="lf-top-dropdown">
+              <button class="nav-item" data-page="frequent" data-frequent-window="5"><span>5</span><b>Últimos 5</b></button>
+              <button class="nav-item" data-page="frequent" data-frequent-window="10"><span>10</span><b>Últimos 10</b></button>
+              <button class="nav-item" data-page="frequent" data-frequent-window="15"><span>15</span><b>Últimos 15</b></button>
+              <button class="nav-item" data-page="frequent" data-frequent-window="20"><span>20</span><b>Últimos 20</b></button>
+              <button class="nav-item" data-page="frequent" data-frequent-window="25"><span>25</span><b>Últimos 25</b></button>
+              <button class="nav-item" data-page="frequent" data-frequent-window="30"><span>30</span><b>Últimos 30</b></button>
+            </div>
+          </details>
+
+          <details class="lf-top-group">
+            <summary>Mais <span>⌄</span></summary>
+            <div class="lf-top-dropdown lf-top-dropdown-right">
+              <a class="nav-item" href="./evolucoes.html"><span>↗</span><b>Evoluções</b></a>
+              <a class="nav-item" href="./evolucoes-21-29.html"><span>21</span><b>Evoluções 21–29</b></a>
+              <a class="nav-item" href="./evolucoes-30-37.html"><span>30</span><b>Evoluções 30–37</b></a>
+              <a class="nav-item" href="./comparativo-solotofacil.html"><span>≋</span><b>Comparativo 96 ferramentas</b></a>
+              <a class="nav-item" href="./manual.html"><span>?</span><b>Manual de uso</b></a>
+            </div>
+          </details>
+        </nav>
+      </div>
+    </header>
 
     <div class="workspace">
       <header class="topbar">
@@ -3456,6 +3625,27 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
       alert('Esta página auxiliar faz parte da versão completa. Para acessá-la, extraia o ZIP e abra ABRIR-LF-OFFLINE.html. O painel principal continua funcionando neste arquivo único.');
     }
   },true);
+})();
+</script>
+<script id="top-menu-behavior-20260926">
+(function(){
+  const groups=[...document.querySelectorAll('.lf-top-group')];
+  document.addEventListener('click',function(e){
+    const summary=e.target.closest('.lf-top-group>summary');
+    if(summary){
+      const current=summary.parentElement;
+      groups.forEach(g=>{if(g!==current)g.removeAttribute('open');});
+      return;
+    }
+    if(!e.target.closest('.lf-top-group')) groups.forEach(g=>g.removeAttribute('open'));
+  });
+  document.querySelectorAll('.lf-top-dropdown .nav-item[data-page]').forEach(el=>{
+    el.addEventListener('click',()=>el.closest('.lf-top-group')?.removeAttribute('open'));
+  });
+  document.getElementById('top-nav-pro-profile')?.addEventListener('click',()=>{
+    document.getElementById('nav-pro-profile')?.click();
+    document.getElementById('top-nav-pro-profile')?.closest('.lf-top-group')?.removeAttribute('open');
+  });
 })();
 </script>
 </body>
