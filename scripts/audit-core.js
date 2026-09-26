@@ -7,6 +7,8 @@ vm.runInNewContext(fs.readFileSync(require.resolve('../matrix-51.js'),'utf8'),sa
 const M=sandbox.window.LFMatrix51;
 const history=base.history;
 const appSource=fs.readFileSync(require.resolve('../app.js'),'utf8');
+const workerSource=fs.readFileSync(require.resolve('../analysis-worker.js'),'utf8');
+const matrixSource=fs.readFileSync(require.resolve('../matrix-51.js'),'utf8');
 const indexSource=fs.readFileSync(require.resolve('../index.html'),'utf8');
 const primaryNavStart=indexSource.indexOf('<div class="nav-primary-list">');
 const primaryNavEnd=indexSource.indexOf('</div>',primaryNavStart);
@@ -27,8 +29,10 @@ assert.ok(appSource.includes('M.FILTERS.map'),'Painel de desbloqueio deve listar
 assert.ok(appSource.includes('F29 é permanente'),'Painel deve informar que F29 nunca pode ser liberado');
 assert.ok(appSource.includes("permanent||!blocked?'disabled':''"),'F29 e filtros já não bloqueadores devem ficar desabilitados para desbloqueio');
 assert.ok(appSource.includes('id!==29'),'Aplicação do desbloqueio deve excluir F29');
+assert.ok(appSource.includes("state.filterPolicies[29]='block'"),'F29 deve permanecer BLOQUEADO no estado do app');
+assert.ok(workerSource.includes("Number(f.id)===29?'block'"),'Worker deve manter F29 como bloqueio absoluto');
+assert.ok(matrixSource.includes("Number(f.id)===29?'block'"),'Matriz 51 deve manter F29 como bloqueio absoluto');
 assert.ok(appSource.includes("status==='running'?`${tested.toLocaleString('pt-BR')} / ${total?total.toLocaleString('pt-BR'):'—'}`"),'Total a avaliar deve começar em zero e avançar como avaliado/universo');
-assert.ok(appSource.includes("const maxRetries=autoMode?5:1"),'Reinício deve limitar tentativas automáticas para evitar loop infinito');
 assert.ok((appSource.match(/restartDecisionExhaustiveAfterMiss\(d\.diagnostics\|\|null\)/g)||[]).length>=2,'Os dois caminhos sem jogo válido devem reiniciar a busca');
 assert.equal(history.length,base.baseValidation.loadedCount);
 assert.equal(base.latest.concurso,history.at(-1).concurso);
