@@ -1500,7 +1500,7 @@
   $('#affinity-filter')?.addEventListener('input',()=>renderPairs());
   $('#affinity-clear')?.addEventListener('click',()=>{if($('#affinity-filter'))$('#affinity-filter').value='';renderPairs();});
   $('#cloud-key').textContent=`${state.cloudId.slice(0,8)}…${state.cloudId.slice(-4)}`;
-  installVersionUpdateNotice();window.__LF_APP_READY=true;try{window.dispatchEvent(new CustomEvent('lf:app-ready'));}catch{}
+  window.__LF_APP_READY=true;try{window.dispatchEvent(new CustomEvent('lf:app-ready'));}catch{}
   const requestedPage=new URLSearchParams(location.search).get('page');if(requestedPage&&pageInfo[requestedPage])setPage(requestedPage,{updateUrl:false});
   window.addEventListener('popstate',()=>{const route=new URLSearchParams(location.search).get('page'),next=route&&pageInfo[route]?route:'decision';setPage(next,{updateUrl:false});});
   renderDecisionSelectionMode();renderDecisionBoundary();renderMatrix();renderAnalysis();renderStats();renderHistory();loadData().then(()=>{loadPersistedAudit();loadBackendBenchmarkStatus();runIntegratedSelfTest(true);});syncCloud(false);
