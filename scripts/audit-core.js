@@ -43,6 +43,13 @@ for(let i=0;i<history.length;i++){
   assert.equal(new Set(row.dezenas).size,15);
   assert.ok(row.dezenas.every(n=>Number.isInteger(n)&&n>=1&&n<=25));
 }
+const colorFree0=M.mandatoryColorRule([1,11,2,12,3,13,4,14,5,15,6,7,8,9,10]);
+const colorFree1=M.mandatoryColorRule([1,11,21,2,12,3,13,4,14,5,15,6,7,8,9]);
+const colorFree3=M.mandatoryColorRule([1,11,21,2,12,22,3,13,23,4,5,6,7,8,9]);
+assert.equal(colorFree0.complete,0);
+assert.equal(colorFree1.complete,1);
+assert.equal(colorFree3.complete,3);
+assert.ok(colorFree0.passed&&colorFree1.passed&&colorFree3.passed,'Jogo Indicado deve aceitar 0, 1 ou 3 cores completas quando houver 8–10 cores distintas');
 const ctx=M.buildContext(history),last=history.at(-1).dezenas;
 const inspect=game=>M.inspect(game,ctx);
 const filter=(report,id)=>report.filters.find(f=>f.id===id);
