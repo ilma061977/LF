@@ -114,9 +114,10 @@ assert.ok(workerSource.includes("type:'color-rank-done'"),'Worker não devolve c
 
 // Busca exaustiva e F29 absoluto.
 assert.ok(appSource.includes('function restartDecisionExhaustiveAfterMiss'),'Busca exaustiva sem reinício automático');
-assert.ok(appSource.includes('const maxAttempts=5'),'Busca exaustiva deve limitar a 5 tentativas');
-assert.ok(appSource.includes('currentAttempt>=maxAttempts'),'Após quinta tentativa deve abrir diagnóstico');
+assert.ok(appSource.includes('const maxAttempts=3'),'Busca exaustiva deve limitar a 3 tentativas completas');
+assert.ok(appSource.includes('currentAttempt>=maxAttempts'),'Após a terceira tentativa deve abrir diagnóstico');
 assert.ok(appSource.includes('M.FILTERS.map'),'Diagnóstico deve listar os 51 filtros');
+assert.ok(appSource.includes('As 3 tentativas completas terminaram sem formar um jogo válido de 15 dezenas'),'Fluxo adaptativo deve informar 3 tentativas completas');
 assert.ok(appSource.includes('F29 é permanente'),'Painel deve informar F29 permanente');
 assert.ok(appSource.includes("state.filterPolicies[29]='block'"),'F29 deve permanecer BLOQUEAR no app');
 assert.ok(workerSource.includes("Number(f.id)===29?'block'"),'Worker deve manter F29 absoluto');
