@@ -88,6 +88,37 @@
     const passed=distinct>=8&&distinct<=10;
     return{blocked:!passed,passed,distinct,min:8,max:10,counts:colorCounts,profile,complete,blockedProfile:false,profileDiagnostic:blockedProfile};
   }
+  const FULL_COLOR_TRIPLES=Object.freeze([
+    {id:1,name:'Vermelha',nums:[1,11,21]},
+    {id:2,name:'Amarela',nums:[2,12,22]},
+    {id:3,name:'Verde',nums:[3,13,23]},
+    {id:4,name:'Marrom',nums:[4,14,24]},
+    {id:5,name:'Azul',nums:[5,15,25]}
+  ]);
+  function buildFullColorDelayModel(history=[]){
+    const rows=Array.isArray(history)?history:[];
+    return FULL_COLOR_TRIPLES.map(color=>{
+      const flags=rows.map(d=>{const s=new Set(d?.dezenas||[]);return color.nums.every(n=>s.has(n));});
+      const occurrences=flags.reduce((a,v)=>a+(v?1:0),0),baseRate=flags.length?occurrences/flags.length:0;
+      let currentDelay=0;for(let i=flags.length-1;i>=0&&!flags[i];i--)currentDelay++;
+      let delay=0,cases=0,returns=0;
+      for(let i=0;i<flags.length;i++){
+        if(delay===currentDelay){cases++;if(flags[i])returns++;}
+        delay=flags[i]?0:delay+1;
+      }
+      const exactRate=cases?returns/cases:0,uplift=exactRate-baseRate;
+      const bonus=currentDelay>=2&&cases>=50&&uplift>0?Math.min(.75,uplift*10):0;
+      return{...color,currentDelay,occurrences,baseRate:+baseRate.toFixed(6),cases,returns,exactRate:+exactRate.toFixed(6),uplift:+uplift.toFixed(6),bonus:+bonus.toFixed(3)};
+    });
+  }
+  function fullColorDelayBonus(game,modelOrHistory=[]){
+    const g=normalize(game);if(!g)return{bonus:0,matches:[]};
+    const model=Array.isArray(modelOrHistory)&&modelOrHistory.length&&Array.isArray(modelOrHistory[0]?.nums)?modelOrHistory:buildFullColorDelayModel(modelOrHistory);
+    const set=new Set(g),matches=model.filter(x=>Number(x.bonus)>0&&x.nums.every(n=>set.has(n))).map(x=>({...x}));
+    const bonus=Math.min(1,matches.reduce((s,x)=>s+Number(x.bonus||0),0));
+    return{bonus:+bonus.toFixed(3),matches};
+  }
+
   function exactPatternCooldown(lineCounts,history=[]){
     const pattern=(lineCounts||[]).join('-'),interval=PATTERN_COOLDOWNS[pattern]||null;
     const latestContest=Number(history.at(-1)?.concurso)||0,targetContest=latestContest+1;
@@ -350,5 +381,5 @@
   }
   function portfolioScore(games){const norm=games.map(normalize).filter(Boolean);if(norm.length<2)return{score:100,meanOverlap:0,maxOverlap:0};const overlaps=[];for(let i=0;i<norm.length;i++)for(let j=i+1;j<norm.length;j++)overlaps.push(intersections(norm[i],norm[j]));const mo=mean(overlaps),mx=Math.max(...overlaps);return{score:Math.max(0,Math.round(100-(mo-7)*12-(mx-10)*5)),meanOverlap:+mo.toFixed(2),maxOverlap:mx};}
 
-  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,buildContext,inspect,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,exactPatternCooldown,policyAllows,candidateScore,candidateScoreFromReport,deterministicBest,nCk,unrank};
+  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,FULL_COLOR_TRIPLES,buildContext,inspect,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,buildFullColorDelayModel,fullColorDelayBonus,exactPatternCooldown,policyAllows,candidateScore,candidateScoreFromReport,deterministicBest,nCk,unrank};
 })();
