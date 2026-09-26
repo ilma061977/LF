@@ -373,7 +373,7 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 â
     async post(path,body={}){ const r=await window.fetch(path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}); const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error||('HTTP '+r.status)); return d; }
   };
   const NativeWorker = window.Worker;
-  if(NativeWorker && window.__LF_OFFLINE_WORKER_SOURCE){
+  if(location.protocol==='file:' && NativeWorker && window.__LF_OFFLINE_WORKER_SOURCE){
     const workerBlobUrl = URL.createObjectURL(new Blob([window.__LF_OFFLINE_WORKER_SOURCE],{type:'text/javascript'}));
     window.__LF_WORKER_URL = workerBlobUrl;
     const OfflineWorker = function(url,opts){
@@ -387,8 +387,11 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 â
     OfflineWorker.prototype=NativeWorker.prototype;
     Object.setPrototypeOf(OfflineWorker,NativeWorker);
     window.Worker=OfflineWorker;
+  } else if(NativeWorker) {
+    window.__LF_WORKER_URL='/analysis-worker.js?v=color-rank-terminal-20260926';
   }
   window.addEventListener('DOMContentLoaded',()=>{
+    if(location.protocol!=='file:') return;
     const b=document.createElement('div');
     b.id='lf-offline-badge';
     b.textContent=`OFFLINE Â· base atÃ© #${base.history.at(-1)?.concurso||'â€”'}`;

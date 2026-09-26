@@ -1,5 +1,391 @@
 self.window=self;
-importScripts('./matrix-51.js?v=bonus-cor-atrasada-20260926');
+/* LF Inteligente V3.7.5 — Matriz 51 canônica restaurada, versionada e auditável.
+ * F01–F29 preservam a matriz canônica e foram diferenciados para evitar redundâncias exatas.
+ * F30–F44 ampliam a análise com métricas não duplicadas.
+ * F45–F49 são experimentais (score/hipótese; não eliminam por padrão).
+ * F50–F51 são operacionais.
+ * Estes filtros não alteram a probabilidade matemática do sorteio.
+ */
+(() => {
+  'use strict';
+
+  const ALL = Array.from({ length: 25 }, (_, i) => i + 1);
+  const MANDATORY_BLOCKS=new Set([29]);
+  const BLOCKED_COLOR_PROFILES=new Set(['3-3-3-3-1-1-1-0-0-0','3-3-3-2-2-2-0-0-0-0','3-2-2-2-2-2-2-0-0-0','3-3-3-1-1-1-1-1-1-0']);
+  const PRIMES = new Set([2,3,5,7,11,13,17,19,23]);
+  const FIB = new Set([1,2,3,5,8,13,21]);
+  const CENTER = new Set([7,8,9,12,13,14,17,18,19]);
+  const BORDER = new Set([1,2,3,4,5,6,10,11,15,16,20,21,22,23,24,25]);
+  const ELITE = new Set([11,13,20,24,25]);
+  const QUADRANTS = [
+    new Set([1,2,3,6,7,8]), new Set([4,5,9,10,14,15]),
+    new Set([11,12,16,17,21,22]), new Set([18,19,20,23,24,25])
+  ];
+  // Segmentos disjuntos da moldura: 5 + 4 + 4 + 3 = 16 dezenas.
+  const BORDER_SECTORS = [
+    new Set([1,2,3,4,5]), new Set([10,15,20,25]),
+    new Set([21,22,23,24]), new Set([6,11,16])
+  ];
+  const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
+  const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
+  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.5';
+  const THRESHOLD_VERSION = 'LF-M51-2026.09.24-v3.7.5';
+  const AUDIT_VERSION = 'LF-M51-AUDIT-3789-F28-F29-F36-F37-v3.7.5';
+  const AUDIT_BASE_THROUGH = 3789;
+  // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
+  // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
+  const PATTERN_COOLDOWNS = Object.freeze({
+    '4-1-3-3-4':292,
+    '4-4-4-3-0':58,
+    '5-4-4-1-1':181,
+    '5-4-3-2-1':264
+  });
+
+  const pad = n => String(n).padStart(2,'0');
+  const keyOf = g => g.map(pad).join('-');
+  const row = n => Math.floor((n-1)/5);
+  const col = n => (n-1)%5;
+  const sum = a => a.reduce((x,y)=>x+y,0);
+  const mean = a => a.length ? sum(a)/a.length : 0;
+  const variance = a => { const m=mean(a); return mean(a.map(x=>(x-m)**2)); };
+  const countSet = (g,s) => g.reduce((a,n)=>a+(s.has(n)?1:0),0);
+  const intersections = (a,b) => { const s=new Set(b||[]); return (a||[]).filter(n=>s.has(n)).length; };
+  const counts = (g,fn) => { const a=[0,0,0,0,0]; g.forEach(n=>a[fn(n)]++); return a; };
+  const signature = a => [...a].sort((x,y)=>y-x).join('');
+  const quantile = (arr,q) => { if(!arr.length)return null;const s=[...arr].sort((a,b)=>a-b);return s[Math.max(0,Math.min(s.length-1,Math.round((s.length-1)*q)))]; };
+  const range80 = (arr,fallback) => arr.length>=20 ? [quantile(arr,.10),quantile(arr,.90)] : fallback;
+  const inRange = (x,r) => r && x>=r[0] && x<=r[1];
+  const maxRun = g => { let m=1,c=1;for(let i=1;i<g.length;i++){c=g[i]===g[i-1]+1?c+1:1;m=Math.max(m,c);}return m; };
+  const maxGap = g => Math.max(...g.slice(1).map((n,i)=>n-g[i]),1);
+  const digitSum = n => Math.floor(n/10)+(n%10);
+  const longestSame = bits => { if(!bits.length)return 0;let m=1,c=1;for(let i=1;i<bits.length;i++){c=bits[i]===bits[i-1]?c+1:1;m=Math.max(m,c);}return m; };
+  const centroid = g => ({x:mean(g.map(n=>col(n))),y:mean(g.map(n=>row(n)))});
+  const dist = (a,b) => Math.hypot(a.x-b.x,a.y-b.y);
+  const hasExtremeTwins = a => a.some((v,i)=>i<4 && v===a[i+1] && (v===4 || v<=1));
+  const homogeneousGroups = (set,groups) => groups.filter(group=>{const picked=group.filter(n=>set.has(n));return picked.length>0&&picked.every(n=>n%2===picked[0]%2);}).length;
+  const neighbors = g => {const s=new Set(g);let edges=0;for(const n of g){if(col(n)<4&&s.has(n+1))edges++;if(row(n)<4&&s.has(n+5))edges++;}return edges;};
+  const progressionRun = g => {const s=new Set(g);let best=1;for(const n of g)for(let d=1;d<=6;d++){let c=1,x=n+d;while(s.has(x)){c++;x+=d;}best=Math.max(best,c);}return best;};
+  const blocks2x2 = g => {const s=new Set(g);let c=0;for(let r=0;r<4;r++)for(let k=0;k<4;k++){const b=[r*5+k+1,r*5+k+2,(r+1)*5+k+1,(r+1)*5+k+2];if(b.every(n=>s.has(n)))c++;}return c;};
+  const endingDeltaOf = (a,b) => {const ca=Array.from({length:10},(_,d)=>(a||[]).filter(n=>n%10===d).length),cb=Array.from({length:10},(_,d)=>(b||[]).filter(n=>n%10===d).length);return sum(ca.map((v,i)=>Math.abs(v-cb[i])));};
+
+  function normalize(game){
+    if(!Array.isArray(game))return null;
+    const g=[...new Set(game.map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=25))].sort((a,b)=>a-b);
+    return g.length===15?g:null;
+  }
+  function delays(history){const out={};ALL.forEach(n=>{let d=0;for(let i=history.length-1;i>=0&&!history[i].dezenas.includes(n);i--)d++;out[n]=d;});return out;}
+  function frequencyRank(history,window=10){const rows=history.slice(-window),f=Object.fromEntries(ALL.map(n=>[n,0]));rows.forEach(d=>d.dezenas.forEach(n=>f[n]++));return [...ALL].sort((a,b)=>f[b]-f[a]||a-b);}
+  function topPatterns(history,fn){const m=new Map();for(const d of history){const k=signature(counts(d.dezenas,fn));m.set(k,(m.get(k)||0)+1);}return new Set([...m].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,7).map(([k])=>k));}
+  function floatingSet(prior4){const set=new Set();if(prior4.length<4)return set;for(const n of ALL){const bits=prior4.map(d=>d.dezenas.includes(n)?1:0),appears=sum(bits);let switches=0;for(let i=1;i<bits.length;i++)if(bits[i]!==bits[i-1])switches++;if(appears>=1&&appears<=3&&switches>=2)set.add(n);}return set;}
+  function cycleMissingSet(history){if(!history.length)return new Set(ALL);let seen=new Set(),start=0,completedAt=-1;for(let i=history.length-1;i>=0;i--){for(const n of history[i].dezenas)seen.add(n);if(seen.size===25){completedAt=i;break;}}start=completedAt>=0?completedAt+1:0;seen=new Set();for(let i=start;i<history.length;i++)for(const n of history[i].dezenas)seen.add(n);return new Set(ALL.filter(n=>!seen.has(n)));}
+  function historicalSeries(history,fn,minPrior=1){const out=[];for(let i=minPrior;i<history.length;i++){const v=fn(history[i],history.slice(0,i));if(Number.isFinite(v))out.push(v);}return out;}
+  function maxHistoricalHits(game,history=[]){const g=normalize(game);if(!g)return{max:0,contests:[]};let max=0,contests=[];for(const d of history){const h=intersections(g,d.dezenas||[]);if(h>max){max=h;contests=[d.concurso];}else if(h===max)contests.push(d.concurso);}return{max,contests};}
+  function mandatoryColorRule(game){
+    const g=normalize(game),colorCounts=Array(10).fill(0);
+    if(!g)return{blocked:true,passed:false,distinct:0,min:8,max:10,counts:colorCounts,profile:'',complete:0,blockedProfile:false};
+    g.forEach(n=>colorCounts[n%10]++);
+    const distinct=colorCounts.filter(Boolean).length,profile=[...colorCounts].sort((a,b)=>b-a).join('-');
+    const complete=[1,2,3,4,5].filter(d=>colorCounts[d]===3).length,blockedProfile=BLOCKED_COLOR_PROFILES.has(profile);
+    const passed=distinct>=8&&distinct<=10;
+    return{blocked:!passed,passed,distinct,min:8,max:10,counts:colorCounts,profile,complete,blockedProfile:false,profileDiagnostic:blockedProfile};
+  }
+  const FULL_COLOR_TRIPLES=Object.freeze([
+    {id:1,name:'Vermelha',nums:[1,11,21]},
+    {id:2,name:'Amarela',nums:[2,12,22]},
+    {id:3,name:'Verde',nums:[3,13,23]},
+    {id:4,name:'Marrom',nums:[4,14,24]},
+    {id:5,name:'Azul',nums:[5,15,25]}
+  ]);
+  function buildFullColorDelayModel(history=[]){
+    const rows=Array.isArray(history)?history:[];
+    return FULL_COLOR_TRIPLES.map(color=>{
+      const flags=rows.map(d=>{const s=new Set(d?.dezenas||[]);return color.nums.every(n=>s.has(n));});
+      const occurrences=flags.reduce((a,v)=>a+(v?1:0),0),baseRate=flags.length?occurrences/flags.length:0;
+      let currentDelay=0;for(let i=flags.length-1;i>=0&&!flags[i];i--)currentDelay++;
+      let delay=0,cases=0,returns=0;
+      for(let i=0;i<flags.length;i++){
+        if(delay===currentDelay){cases++;if(flags[i])returns++;}
+        delay=flags[i]?0:delay+1;
+      }
+      const exactRate=cases?returns/cases:0,uplift=exactRate-baseRate;
+      const bonus=currentDelay>=2&&cases>=50&&uplift>0?Math.min(.75,uplift*10):0;
+      return{...color,currentDelay,occurrences,baseRate:+baseRate.toFixed(6),cases,returns,exactRate:+exactRate.toFixed(6),uplift:+uplift.toFixed(6),bonus:+bonus.toFixed(3)};
+    });
+  }
+  function fullColorDelayBonus(game,modelOrHistory=[]){
+    const g=normalize(game);if(!g)return{bonus:0,matches:[]};
+    const model=Array.isArray(modelOrHistory)&&modelOrHistory.length&&Array.isArray(modelOrHistory[0]?.nums)?modelOrHistory:buildFullColorDelayModel(modelOrHistory);
+    const set=new Set(g),matches=model.filter(x=>Number(x.bonus)>0&&x.nums.every(n=>set.has(n))).map(x=>({...x}));
+    const bonus=Math.min(1,matches.reduce((s,x)=>s+Number(x.bonus||0),0));
+    return{bonus:+bonus.toFixed(3),matches};
+  }
+
+  function exactPatternCooldown(lineCounts,history=[]){
+    const pattern=(lineCounts||[]).join('-'),interval=PATTERN_COOLDOWNS[pattern]||null;
+    const latestContest=Number(history.at(-1)?.concurso)||0,targetContest=latestContest+1;
+    if(!interval)return{pattern,configured:false,blocked:false,interval:null,lastContest:null,targetContest,nextEligibleContest:null,remaining:0};
+    let lastContest=null;
+    for(let i=history.length-1;i>=0;i--){
+      const d=history[i],g=normalize(d?.dezenas);
+      if(g&&counts(g,row).join('-')===pattern){lastContest=Number(d.concurso);break;}
+    }
+    const nextEligibleContest=lastContest==null?null:lastContest+interval;
+    const blocked=nextEligibleContest!=null&&targetContest<nextEligibleContest;
+    return{pattern,configured:true,blocked,interval,lastContest,targetContest,nextEligibleContest,remaining:blocked?nextEligibleContest-targetContest:0};
+  }
+
+  const FILTERS = [
+    ['Formato comum das linhas','Canônica F01–F29','core'],
+    ['Formato comum das colunas','Canônica F01–F29','core'],
+    ['Miolo entre 5 e 7','Canônica F01–F29','core'],
+    ['Moldura entre 9 e 11','Canônica F01–F29','core'],
+    ['Sem linha ou coluna vazia','Canônica F01–F29','core'],
+    ['Equilíbrio dos quadrantes','Canônica F01–F29','core'],
+    ['Sequência máxima entre 3 e 5','Canônica F01–F29','core'],
+    ['Menos de 5 números vazios entre dezenas','Canônica F01–F29','core'],
+    ['Sem linhas/colunas gêmeas extremas','Canônica F01–F29','core'],
+    ['Espelhamento horizontal: diferença até 4','Canônica F01–F29','core'],
+    ['Espelhamento vertical: diferença até 4','Canônica F01–F29','core'],
+    ['Primos entre 5 e 6','Canônica F01–F29','core'],
+    ['Ímpares entre 7 e 9','Canônica F01–F29','core'],
+    ['Soma entre 166 e 220','Canônica F01–F29','core'],
+    ['Repetidas entre 8 e 10','Canônica F01–F29','core'],
+    ['Paridade isolada nas colunas','Canônica F01–F29','advisory'],
+    ['Paridade isolada nas linhas','Canônica F01–F29','advisory'],
+    ['Elite: não incluir as 5','Canônica F01–F29','advisory'],
+    ['Elite: incluir pelo menos 1','Canônica F01–F29','advisory'],
+    ['Gatilho de finais baixos','Canônica F01–F29','advisory'],
+    ['Gatilho de inícios altos','Canônica F01–F29','advisory'],
+    ['Gatilho do bloco de pontas','Canônica F01–F29','advisory'],
+    ['Gatilho dos casais 01–02, 03–04, 05–06, 07–08 e 09–10','Canônica F01–F29','advisory'],
+    ['Ausentes recentes entre 5 e 6','Canônica F01–F29','advisory'],
+    ['Atrasadas parcialmente presentes (somente com 2 ou mais atrasadas)','Canônica F01–F29','advisory'],
+    ['Inércia flutuante entre 5 e 6','Canônica F01–F29','advisory'],
+    ['Dispersão das linhas opostas','Canônica F01–F29','advisory'],
+    ['Até 2 alertas nos limites máximos','Canônica F01–F29','advisory'],
+    ['Bloqueia combinação exata de 15 dezenas já sorteada','Canônica F01–F29','core'],
+    ['Repetidas com Termômetro','Complementar F30–F44','advisory'],
+    ['Ausentes Persistentes de 2 Concursos','Complementar F30–F44','advisory'],
+    ['Média de Atraso','Complementar F30–F44','advisory'],
+    ['Finais Repetidos','Complementar F30–F44','advisory'],
+    ['Linhas Opostas Ampliadas','Complementar F30–F44','advisory'],
+    ['Ciclo de Dezenas','Complementar F30–F44','advisory'],
+    ['Intersecção de Anomalias','Complementar F30–F44','advisory'],
+    ['Similaridade Histórica 14/15','Histórico','advisory'],
+    ['Paridade Posicional','Histórico','advisory'],
+    ['Terminação Binária','Histórico','advisory'],
+    ['Variância Radial','Avançado','advisory'],
+    ['Distribuição por Faixas · ex-Anti-Datas','Avançado','advisory'],
+    ['Assinatura Mecânica · ex-Aposta Invertida','Avançado','advisory'],
+    ['Cobertura de Rastro 2D','Avançado','advisory'],
+    ['Centro de Massa','Avançado','advisory'],
+    ['Matrix Shear 3D','Experimental','experimental'],
+    ['Rebote Elástico','Experimental','experimental'],
+    ['Densidade Fractal','Experimental','experimental'],
+    ['Ressonância Harmônica','Experimental','experimental'],
+    ['Mapa de Calor','Experimental','experimental'],
+    ['Matriz de Cobertura Matemática','Otimização','operational'],
+    ['Exportação e Carteira','Operacional','operational']
+  ].map((x,i)=>({id:i+1,name:x[0],category:x[1],mode:x[2]}));
+
+  const THRESHOLDS = Object.freeze({
+    1:{type:'walk-forward',rule:'Top 7 assinaturas de linhas usando somente concursos anteriores'},
+    2:{type:'walk-forward',rule:'Top 7 assinaturas de colunas usando somente concursos anteriores'},
+    3:{type:'fixed',rule:'Miolo 5–7'},4:{type:'fixed',rule:'Moldura 9–11'},5:{type:'fixed',rule:'Nenhuma linha/coluna vazia'},
+    6:{type:'fixed',rule:'3–4 por quadrante'},7:{type:'fixed',rule:'Sequência máxima 3–5'},8:{type:'fixed',rule:'Maior salto ≤5'},9:{type:'fixed',rule:'Sem gêmeas extremas adjacentes'},
+    10:{type:'fixed',rule:'|superior−inferior|≤4'},11:{type:'fixed',rule:'|esquerda−direita|≤4'},12:{type:'fixed',rule:'Primos 5–6'},13:{type:'fixed',rule:'Ímpares 7–9'},14:{type:'fixed',rule:'Soma 166–220'},15:{type:'fixed',rule:'Repetidas 8–10'},
+    16:{type:'fixed',rule:'<3 colunas com paridade homogênea'},17:{type:'fixed',rule:'<3 linhas com paridade homogênea'},18:{type:'fixed',rule:'Não usar as 5 da elite'},19:{type:'fixed',rule:'Usar ≥1 da elite'},
+    20:{type:'conditional',rule:'Se anterior terminou baixo, evitar 21–23 no final'},21:{type:'conditional',rule:'Se anterior iniciou 04/05, iniciar abaixo de 04'},22:{type:'conditional',rule:'Se bloco extremo veio completo, não repeti-lo completo'},
+    23:{type:'conditional',rule:'Casais 01–02, 03–04, 05–06, 07–08, 09–10: se o anterior teve exatamente 1 casal, exigir pelo menos 2'},24:{type:'fixed',rule:'Ausentes do anterior 5–6'},25:{type:'conditional',rule:'Com ≥2 atrasadas (≥3), usar parte do grupo'},26:{type:'fixed',rule:'Inércia flutuante: dezenas que alternaram presença/ausência ≥2 vezes nos últimos 4 concursos; usar 5–6 quando o grupo comporta a regra'},27:{type:'fixed',rule:'|L1−L5|≤2'},28:{type:'fixed',rule:'No máximo 2 métricas no limite máximo; 3+ bloqueiam. Com as 4 métricas atuais, 4 simultâneas são impossíveis.'},29:{type:'historical-lock',rule:'Não repetir combinação histórica 15/15'},
+    30:{type:'walk-forward-80',rule:'Repetidas dentro da faixa central histórica de 80%'},31:{type:'walk-forward-80',rule:'Retorno de ausentes persistentes (2 concursos) na faixa de 80%'},32:{type:'walk-forward-80',rule:'Média de atraso na faixa histórica de 80%'},33:{type:'walk-forward-80',rule:'Mudança do perfil de finais na faixa histórica de 80%'},34:{type:'walk-forward-80',rule:'Balanço L1+L5 vs L2+L4 na faixa histórica de 80%'},35:{type:'walk-forward-80',rule:'Pendentes do ciclo na faixa histórica de 80%'},36:{type:'derived',rule:'≤2 falhas simultâneas em F30–F35'},
+    37:{type:'historical-warning',rule:'Sem similaridade histórica 14/15'},38:{type:'fixed',rule:'Cadeia posicional de paridade ≤5'},39:{type:'walk-forward-80',rule:'Terminação binária reformulada: finais 0–4 vs 5–9; maior cadeia dentro da faixa histórica de 80%'},40:{type:'walk-forward-80',rule:'Variância radial na faixa histórica de 80%'},41:{type:'walk-forward-80',rule:'Faixas 01–09/10–19/20–25 dentro das faixas históricas'},42:{type:'fixed',rule:'Sem assinatura mecânica extrema'},43:{type:'walk-forward-80',rule:'Conectividade ortogonal na faixa histórica de 80%'},44:{type:'fixed',rule:'Distância do centro de massa ≤0,85'},
+    45:{type:'experimental',rule:'Score Matrix Shear 3D; não eliminatório'},46:{type:'experimental',rule:'Score Rebote Elástico; não eliminatório'},47:{type:'experimental',rule:'Score Densidade Fractal; não eliminatório'},48:{type:'experimental',rule:'Score Ressonância Harmônica; não eliminatório'},49:{type:'experimental',rule:'Score Mapa de Calor; não eliminatório'},50:{type:'operational',rule:'Cobertura avaliada no módulo Fechamentos'},51:{type:'operational',rule:'Exportação/carteira; não estatístico'}
+  });
+
+  function buildContext(historyRaw=[],options={}){
+    // Auditorias walk-forward chamam buildContext milhares de vezes. Quando o chamador
+    // já normalizou/ordenou o histórico e mantém caches incrementais, reutilizamos esses
+    // dados sem alterar a regra estatística. Isso elimina o custo quadrático de reprocessar
+    // todo o passado a cada concurso.
+    const history=options.normalized===true?(historyRaw||[]):(historyRaw||[]).map(d=>({concurso:Number(d.concurso),data:d.data||'',dezenas:normalize(d.dezenas)})).filter(d=>d.dezenas).sort((a,b)=>a.concurso-b.concurso);
+    const requested=Math.max(10,Math.min(200,Number(options.window)||10));
+    const analysisHistory=history.slice(-Math.min(requested,history.length||requested));
+    const latest=history.at(-1)||null, previous=history.at(-2)||null, prev=new Set(latest?.dezenas||[]), hash=options.historyHash instanceof Set?options.historyHash:new Set(history.map(d=>keyOf(d.dezenas)));
+    const history14=options.history14 instanceof Map?options.history14:new Map();if(!(options.history14 instanceof Map)){for(const d of history){for(let i=0;i<15;i++){const k=keyOf(d.dezenas.filter((_,j)=>j!==i));if(!history14.has(k))history14.set(k,d.concurso);}}}
+    const temperatureHistory=history.slice(-Math.min(10,history.length||10)),temperatureFrequency=Object.fromEntries(ALL.map(n=>[n,0]));temperatureHistory.forEach(d=>d.dezenas.forEach(n=>temperatureFrequency[n]++));const rank=[...ALL].sort((a,b)=>temperatureFrequency[b]-temperatureFrequency[a]||a-b),hot=new Set(rank.slice(0,5)),cold=new Set([...ALL].sort((a,b)=>temperatureFrequency[a]-temperatureFrequency[b]||a-b).slice(0,5)),delay=options.delay&&typeof options.delay==='object'?options.delay:delays(history);
+    const linePatterns=topPatterns(analysisHistory,row),columnPatterns=topPatterns(analysisHistory,col);
+    const repeatedRange=range80(historicalSeries(analysisHistory,(d,prior)=>intersections(d.dezenas,prior.at(-1)?.dezenas||[]),1),[8,10]);
+    const sumRange=range80(analysisHistory.map(d=>sum(d.dezenas)),[166,220]);
+    const primeRange=range80(analysisHistory.map(d=>countSet(d.dezenas,PRIMES)),[5,6]);
+    const oddRange=range80(analysisHistory.map(d=>d.dezenas.filter(n=>n%2).length),[7,9]);
+    const digitRange=range80(analysisHistory.map(d=>sum(d.dezenas.map(digitSum))),[50,75]);
+    const fibRange=range80(analysisHistory.map(d=>countSet(d.dezenas,FIB)),[2,6]);
+    const m3Range=range80(analysisHistory.map(d=>d.dezenas.filter(n=>n%3===0).length),[3,7]);
+    const m5Range=range80(analysisHistory.map(d=>d.dezenas.filter(n=>n%5===0).length),[1,5]);
+    const radialRange=range80(analysisHistory.map(d=>sum(d.dezenas.map(n=>n*n))),[1900,4300]);
+    const terminalBandRange=range80(analysisHistory.map(d=>longestSame(d.dezenas.map(n=>(n%10)<=4?0:1))),[2,6]);
+    const neighborRange=range80(analysisHistory.map(d=>neighbors(d.dezenas)),[8,18]);
+    const decadeRanges=DECADES.map(set=>range80(analysisHistory.map(d=>countSet(d.dezenas,set)),[2,8]));
+    const persistentAbsentSeries=historicalSeries(analysisHistory,(d,prior)=>{if(prior.length<2)return NaN;const a=new Set(prior.at(-1).dezenas),b=new Set(prior.at(-2).dezenas),grp=new Set(ALL.filter(n=>!a.has(n)&&!b.has(n)));return countSet(d.dezenas,grp);},2);
+    const persistentAbsentRange=range80(persistentAbsentSeries,[1,4]);
+    const floatingSeries=historicalSeries(analysisHistory,(d,prior)=>{if(prior.length<4)return NaN;return countSet(d.dezenas,floatingSet(prior.slice(-4)));},4);
+    const floatingRange=range80(floatingSeries,[2,6]);
+    const avgDelaySeries=historicalSeries(analysisHistory,(d,prior)=>{if(!prior.length)return NaN;const dm=delays(prior);return mean(d.dezenas.map(n=>dm[n]||0));},5);
+    const avgDelayRange=range80(avgDelaySeries,[0.15,2.5]);
+    const endingDeltaSeries=historicalSeries(analysisHistory,(d,prior)=>prior.length?endingDeltaOf(d.dezenas,prior.at(-1).dezenas):NaN,1);
+    const endingDeltaRange=range80(endingDeltaSeries,[4,10]);
+    const opposedRange=range80(analysisHistory.map(d=>{const lc=counts(d.dezenas,row);return Math.abs((lc[0]+lc[4])-(lc[1]+lc[3]));}),[0,4]);
+    const cycleSeries=historicalSeries(analysisHistory,(d,prior)=>prior.length?countSet(d.dezenas,cycleMissingSet(prior)):NaN,3);
+    const cycleRange=range80(cycleSeries,[0,5]);
+    const previousSet=new Set(previous?.dezenas||[]);
+    const persistentAbsent=new Set(ALL.filter(n=>!prev.has(n)&&!previousSet.has(n)));
+    const floating=floatingSet(history.slice(-4));
+    const cycleMissing=cycleMissingSet(history);
+    const delayed=new Set(ALL.filter(n=>(delay[n]||0)>=3));
+    const previousCouples=CANONICAL_COUPLES.filter(([a,b])=>prev.has(a)&&prev.has(b)).length;
+    const flags={
+      lowFinals:latest?[21,22,23].includes(Math.max(...latest.dezenas)):false,
+      highStarts:latest?[4,5].includes(Math.min(...latest.dezenas)):false,
+      edgeBlock:latest?[1,2,3,23,24,25].every(n=>prev.has(n)):false,
+      couplesTrigger:previousCouples===1,
+      previousCouples
+    };
+    return {history,analysisHistory,window:requested,latest,previous,prev,hash,history14,rank,hot,cold,delay,delayed,persistentAbsent,floating,cycleMissing,flags,linePatterns,columnPatterns,repeatedRange,sumRange,primeRange,oddRange,digitRange,fibRange,m3Range,m5Range,radialRange,terminalBandRange,neighborRange,decadeRanges,persistentAbsentRange,floatingRange,avgDelayRange,endingDeltaRange,opposedRange,cycleRange,calibrated:analysisHistory.length>=20};
+  }
+
+  function lineRepeatRule(game,latest=null){
+    const g=normalize(game),prev=normalize(latest?.dezenas||latest);
+    if(!g||!prev)return{blocked:false,passed:true,currentLines:[],previousLines:[]};
+    const currentLines=counts(g,row),previousLines=counts(prev,row),blocked=currentLines.every((v,i)=>v===previousLines[i]);
+    return{blocked,passed:!blocked,currentLines,previousLines};
+  }
+
+  function columnRepeatRule(game,latest=null){
+    const g=normalize(game),prev=normalize(latest?.dezenas||latest);
+    if(!g||!prev)return{blocked:false,passed:true,currentCols:[],previousCols:[]};
+    const currentCols=counts(g,col),previousCols=counts(prev,col),blocked=currentCols.every((v,i)=>v===previousCols[i]);
+    return{blocked,passed:!blocked,currentCols,previousCols};
+  }
+
+  function lineColumnRepeatRule(game,latest=null){
+    const g=normalize(game),prev=normalize(latest?.dezenas||latest);
+    if(!g||!prev)return{blocked:false,passed:true,sameLines:false,sameCols:false,currentLines:[],currentCols:[],previousLines:[],previousCols:[]};
+    const currentLines=counts(g,row),currentCols=counts(g,col),previousLines=counts(prev,row),previousCols=counts(prev,col);
+    const sameLines=currentLines.every((v,i)=>v===previousLines[i]),sameCols=currentCols.every((v,i)=>v===previousCols[i]),blocked=sameLines&&sameCols;
+    return{blocked,passed:!blocked,sameLines,sameCols,currentLines,currentCols,previousLines,previousCols};
+  }
+
+  function inspect(game,ctx=buildContext()){
+    const g=normalize(game);if(!g)return{valid:false,approved:false,filters:[],failed:[],warnings:[],metrics:{}};
+    const set=new Set(g),lines=counts(g,row),cols=counts(g,col),qs=QUADRANTS.map(q=>countSet(g,q)),borderSectors=BORDER_SECTORS.map(q=>countSet(g,q));
+    const center=countSet(g,CENTER),border=countSet(g,BORDER),run=maxRun(g),gap=maxGap(g),primes=countSet(g,PRIMES),odds=g.filter(n=>n%2).length,total=sum(g),repeated=ctx.latest?intersections(g,ctx.latest.dezenas):null;
+    const top=lines[0]+lines[1],bottom=lines[3]+lines[4],left=cols[0]+cols[1],right=cols[3]+cols[4],elite=countSet(g,ELITE),couples=CANONICAL_COUPLES.filter(([a,b])=>set.has(a)&&set.has(b)).length;
+    const absentRecent=ctx.latest?g.filter(n=>!ctx.prev.has(n)).length:0,persistentAbsent=countSet(g,ctx.persistentAbsent||new Set()),delayedCount=countSet(g,ctx.delayed||new Set()),floatingCount=countSet(g,ctx.floating||new Set()),cycleCount=countSet(g,ctx.cycleMissing||new Set());
+    let boundaryAlerts=0;[[total,220],[odds,9],[primes,6],[repeated,10]].forEach(([v,max])=>{if(v!=null&&v===max)boundaryAlerts++;});
+    const hotCount=countSet(g,ctx.hot),coldCount=countSet(g,ctx.cold),avgDelay=mean(g.map(n=>ctx.delay[n]||0));
+    const endings=Array.from({length:10},(_,d)=>g.filter(n=>n%10===d).length),prevEndings=ctx.latest?Array.from({length:10},(_,d)=>ctx.latest.dezenas.filter(n=>n%10===d).length):Array(10).fill(0),endingDelta=sum(endings.map((v,i)=>Math.abs(v-prevEndings[i])));
+    const opposedBands=Math.abs((lines[0]+lines[4])-(lines[1]+lines[3]));
+    const ds=sum(g.map(digitSum)),fib=countSet(g,FIB),m3=g.filter(n=>n%3===0).length,m5=g.filter(n=>n%5===0).length;
+    const exactHistorical=ctx.hash.has(keyOf(g));let histContest=null,has14=false;if(!exactHistorical&&ctx.history14){for(let i=0;i<15;i++){const k=keyOf(g.filter((_,j)=>j!==i));if(ctx.history14.has(k)){has14=true;histContest=ctx.history14.get(k);break;}}}const historicalCeiling=exactHistorical?15:has14?14:13;
+    const posParityLongest=longestSame(g.map(n=>n%2)),terminalBinaryLongest=longestSame(g.map(n=>(n%10)<=4?0:1)),radial=sum(g.map(n=>n*n));
+    const decades=DECADES.map(s=>countSet(g,s)),prog=progressionRun(g),blockCount=blocks2x2(g),fullBands=lines.filter(v=>v===5).length+cols.filter(v=>v===5).length,badPattern=run>=8||prog>=9||fullBands>=2||blockCount>=7;
+    const adjacency=neighbors(g),cm=centroid(g),latestCm=ctx.latest?centroid(ctx.latest.dezenas):{x:2,y:2},heatFreq=Object.fromEntries(ALL.map(n=>[n,0]));ctx.analysisHistory.slice(-10).forEach(d=>d.dezenas.forEach(n=>heatFreq[n]++));
+    const heatScore=sum(g.map(n=>heatFreq[n]))/Math.max(1,ctx.analysisHistory.slice(-10).length),fractalSpread=variance([lines.filter(Boolean).length,cols.filter(Boolean).length,...qs]),shearScore=variance(g.map(n=>Math.sin((col(n)/5)*Math.PI*2)+(row(n)-2)*.35)),resonance=ctx.history.length>=5?mean([1,2,3].map(lag=>intersections(g,ctx.history.at(-lag)?.dezenas||[]))):0;
+
+    const checks=[];const add=(id,pass,detail,score=null)=>checks.push({...FILTERS[id-1],passed:!!pass,detail,score});
+    add(1,ctx.linePatterns.size?ctx.linePatterns.has(signature(lines)):lines.every(v=>v>=1&&v<=4),`Linhas ${lines.join('-')} · assinatura ${signature(lines)}`);
+    add(2,ctx.columnPatterns.size?ctx.columnPatterns.has(signature(cols)):cols.every(v=>v>=1&&v<=4),`Colunas ${cols.join('-')} · assinatura ${signature(cols)}`);
+    add(3,center>=5&&center<=7,`${center} no miolo · regra fixa 5–7`);
+    add(4,border>=9&&border<=11,`${border} na moldura · regra fixa 9–11`);
+    add(5,lines.every(Boolean)&&cols.every(Boolean),`Linhas ${lines.join('-')} · colunas ${cols.join('-')} · nenhuma pode zerar`);
+    add(6,qs.every(v=>v>=3&&v<=4),`Quadrantes ${qs.join('-')} · regra fixa 3–4`);
+    add(7,run>=3&&run<=5,`Maior sequência ${run} · regra fixa 3–5`);
+    add(8,gap<=5,`Maior salto ${gap} · menos de 5 vazios entre dezenas`);
+    add(9,!hasExtremeTwins(lines)&&!hasExtremeTwins(cols),`Linhas ${lines.join('-')} · colunas ${cols.join('-')}`);
+    add(10,Math.abs(top-bottom)<5,`Superior ${top} × inferior ${bottom} · diferença ${Math.abs(top-bottom)}`);
+    add(11,Math.abs(left-right)<5,`Esquerda ${left} × direita ${right} · diferença ${Math.abs(left-right)}`);
+    add(12,primes>=5&&primes<=6,`${primes} primos · regra fixa 5–6`);
+    add(13,odds>=7&&odds<=9,`${odds} ímpares · regra fixa 7–9`);
+    add(14,total>=166&&total<=220,`Soma ${total} · regra fixa 166–220`);
+    add(15,repeated==null||repeated>=8&&repeated<=10,repeated==null?'Aguardando concurso anterior':`${repeated} repetidas · regra fixa 8–10`);
+    const colGroups=Array.from({length:5},(_,c)=>ALL.filter(n=>col(n)===c)),rowGroups=Array.from({length:5},(_,r)=>ALL.filter(n=>row(n)===r));
+    add(16,homogeneousGroups(set,colGroups)<3,'Menos de 3 colunas com paridade homogênea');
+    add(17,homogeneousGroups(set,rowGroups)<3,'Menos de 3 linhas com paridade homogênea');
+    add(18,elite!==5,`${elite}/5 dezenas da elite fixa`);
+    add(19,elite>0,`${elite}/5 dezenas da elite fixa`);
+    add(20,!(ctx.flags.lowFinals&&[21,22,23].includes(g[14])),ctx.flags.lowFinals?`Anterior terminou baixo · atual termina ${pad(g[14])}`:'Gatilho inativo');
+    add(21,!(ctx.flags.highStarts&&g[0]>=4),ctx.flags.highStarts?`Anterior iniciou alto · atual inicia ${pad(g[0])}`:'Gatilho inativo');
+    add(22,!(ctx.flags.edgeBlock&&[1,2,3,23,24,25].every(n=>set.has(n))),ctx.flags.edgeBlock?'Bloco extremo esteve completo no anterior':'Gatilho inativo');
+    add(23,!ctx.flags.couplesTrigger||couples>=2,ctx.flags.couplesTrigger?`Anterior teve ${ctx.flags.previousCouples} casal(is) canônicos · atual ${couples}; exige pelo menos 2`:`Gatilho inativo · anterior ${ctx.flags.previousCouples} casal(is)`);
+    add(24,ctx.latest==null||absentRecent>=5&&absentRecent<=6,ctx.latest==null?'Aguardando histórico':`${absentRecent} ausentes do concurso anterior · regra fixa 5–6`);
+    add(25,ctx.delayed.size<2||(delayedCount>0&&delayedCount<ctx.delayed.size),`${delayedCount}/${ctx.delayed.size} atrasadas ≥3 · aplica somente com 2+ disponíveis`);
+    add(26,ctx.floating.size<5||(floatingCount>=5&&floatingCount<=6),`${floatingCount}/${ctx.floating.size} flutuantes · regra canônica corrigida 5–6`);
+    add(27,Math.abs(lines[0]-lines[4])<3,`Linha 1 ${lines[0]} × linha 5 ${lines[4]} · diferença ${Math.abs(lines[0]-lines[4])}`);
+    add(28,boundaryAlerts<=2,`${boundaryAlerts} métricas exatamente no limite máximo canônico · máximo 2; 3+ bloqueiam`);
+    add(29,!exactHistorical,exactHistorical?'Combinação exata de 15 dezenas já sorteada — bloqueada':'Combinação exata de 15 dezenas ainda não sorteada');
+
+    // F30–F44: complementares, sempre definidos para não repetir mecanicamente F01–F29.
+    add(30,repeated==null||inRange(repeated,ctx.repeatedRange),repeated==null?'Aguardando concurso anterior':`${repeated} repetidas · termômetro histórico ${ctx.repeatedRange.join('–')}`);
+    add(31,ctx.persistentAbsent.size===0||inRange(persistentAbsent,ctx.persistentAbsentRange),`${persistentAbsent} ausentes persistentes de 2 concursos · faixa ${ctx.persistentAbsentRange.join('–')}`);
+    add(32,inRange(avgDelay,ctx.avgDelayRange),`Atraso médio ${avgDelay.toFixed(2)} · faixa ${ctx.avgDelayRange.map(v=>Number(v).toFixed(2)).join('–')}`);
+    add(33,ctx.latest==null||inRange(endingDelta,ctx.endingDeltaRange),ctx.latest==null?'Aguardando histórico':`Distância do perfil de finais ${endingDelta} · faixa ${ctx.endingDeltaRange.join('–')}`);
+    add(34,inRange(opposedBands,ctx.opposedRange),`Faixas opostas agregadas: ${opposedBands} · faixa ${ctx.opposedRange.join('–')}`);
+    add(35,ctx.cycleMissing.size===0||inRange(cycleCount,ctx.cycleRange),`${cycleCount}/${ctx.cycleMissing.size} dezenas pendentes no ciclo · faixa ${ctx.cycleRange.join('–')}`);
+    const anomalyFails=checks.filter(f=>f.id>=30&&f.id<=35&&!f.passed).length;
+    add(36,anomalyFails<=2,`${anomalyFails} anomalia(s) simultânea(s) entre F30–F35 · máximo 2`);
+    add(37,!has14&&!exactHistorical,exactHistorical?'Similaridade 15/15':has14?`Similaridade 14/15 · concurso ${histContest}`:'Nenhuma coincidência de 14/15 encontrada');
+    add(38,posParityLongest<=5,`Maior cadeia posicional de paridade ${posParityLongest}`);
+    add(39,inRange(terminalBinaryLongest,ctx.terminalBandRange),`Maior cadeia de finais baixos (0–4) / altos (5–9): ${terminalBinaryLongest} · faixa ${ctx.terminalBandRange.join('–')}`);
+    add(40,inRange(radial,ctx.radialRange),`Soma dos quadrados ${radial} · faixa ${ctx.radialRange.join('–')}`);
+    add(41,decades.every((v,i)=>inRange(v,ctx.decadeRanges[i])),`Faixas 01–09 / 10–19 / 20–25 = ${decades.join('-')} · histórico ${ctx.decadeRanges.map(r=>r.join('–')).join(' / ')}`);
+    add(42,!badPattern,badPattern?`Assinatura mecânica forte · run ${run}, prog ${prog}, faixas completas ${fullBands}, 2×2 ${blockCount}`:`Sem assinatura mecânica extrema`);
+    add(43,inRange(adjacency,ctx.neighborRange),`${adjacency} conexões ortogonais no rastro 2D · faixa ${ctx.neighborRange.join('–')}`);
+    add(44,dist(cm,{x:2,y:2})<=.85,`Centro (${cm.x.toFixed(2)}, ${cm.y.toFixed(2)}) · distância ${dist(cm,{x:2,y:2}).toFixed(2)}`);
+    add(45,true,`Score shear ${shearScore.toFixed(3)} · experimental`,shearScore);
+    add(46,true,`Deslocamento do centro vs anterior ${dist(cm,latestCm).toFixed(3)} · experimental`,dist(cm,latestCm));
+    add(47,true,`Dispersão fractal ${fractalSpread.toFixed(3)} · experimental`,fractalSpread);
+    add(48,true,`Ressonância ${resonance.toFixed(2)} · experimental`,resonance);
+    add(49,true,`Heat score ${heatScore.toFixed(2)} · experimental`,heatScore);
+    add(50,true,'Cobertura calculada no módulo Fechamentos; esta posição não elimina isoladamente.');
+    add(51,true,'Exportação/carteira operacional; esta posição não elimina isoladamente.');
+
+    const hardFailed=checks.filter(f=>(f.mode==='core'||MANDATORY_BLOCKS.has(f.id))&&!f.passed),warnings=checks.filter(f=>f.mode==='advisory'&&!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]),colorRule=mandatoryColorRule(g),lineRepeat=lineRepeatRule(g,ctx.latest),columnRepeat=columnRepeatRule(g,ctx.latest),lineColumnRepeat=lineColumnRepeatRule(g,ctx.latest);
+    return {valid:true,approved:hardFailed.length===0&&!patternCooldown.blocked&&!colorRule.blocked&&!lineRepeat.blocked&&!columnRepeat.blocked&&!lineColumnRepeat.blocked,filters:checks,failed:hardFailed.map(f=>f.id),warnings:warnings.map(f=>f.id),patternCooldown,colorRule,lineRepeat,columnRepeat,lineColumnRepeat,metrics:{lines,cols,qs,borderSectors,center,border,run,gap,primes,odds,total,repeated,elite,couples,absentRecent,persistentAbsent,delayedCount,floatingCount,cycleCount,opposedBands,hotCount,coldCount,avgDelay,endingDelta,ds,fib,m3,m5,maxHistorical:historicalCeiling,radial,adjacency,colors:colorRule.distinct,colorCounts:colorRule.counts,centroid:cm},calibrated:ctx.calibrated};
+  }
+  function histoSafe(x){return Number.isFinite(x)?x:0;}
+
+  function policyAllows(report,policies={}){
+    if(report?.valid===false||report?.patternCooldown?.blocked||report?.colorRule?.blocked||report?.lineRepeat?.blocked||report?.columnRepeat?.blocked||report?.lineColumnRepeat?.blocked)return false;
+    return report.filters.every(f=>{
+      const explicit=policies[f.id];const policy=Number(f.id)===29?'block':(explicit||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'))));
+      return policy!=='block'||f.passed;
+    });
+  }
+  function randomAllowedGame(excluded=[]){const blocked=new Set((excluded||[]).map(Number)),a=ALL.filter(n=>!blocked.has(n));if(a.length<15)return null;for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a.slice(0,15).sort((x,y)=>x-y);}
+  function generate(ctx,quantity=1,maxAttempts=300000,options={}){const target=Math.max(1,Math.min(20,Number(quantity)||1)),out=[],seen=new Set(),excluded=options.excluded||[],policies=options.policies||{};let tested=0;while(out.length<target&&tested<maxAttempts){const g=randomAllowedGame(excluded);if(!g)break;const k=keyOf(g);tested++;if(seen.has(k))continue;seen.add(k);const r=inspect(g,ctx);if(policyAllows(r,policies))out.push(g);}return{games:out,tested,complete:out.length===target};}
+
+  function rangeCentral(value,range){if(!Number.isFinite(value)||!range)return 0;const mid=(range[0]+range[1])/2,half=Math.max(.5,(range[1]-range[0])/2);return Math.max(-1,1-Math.abs(value-mid)/half);}
+  function candidateScoreFromReport(r,ctx,policies={}){if(!r?.valid||r.patternCooldown?.blocked||r.colorRule?.blocked||r.lineRepeat?.blocked||r.columnRepeat?.blocked||r.lineColumnRepeat?.blocked)return-Infinity;const blocked=r.filters.filter(f=>(((Number(f.id)===29?'block':(policies[f.id]||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))))==='block')&&!f.passed)).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>((policies[f.id]||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'))))==='warn'&&!f.passed)).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
+  function candidateScore(game,ctx,policies={}){return candidateScoreFromReport(inspect(game,ctx),ctx,policies);}
+  function nCk(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);}
+  function unrank(pool,k,rank){const out=[];let start=0,r=Math.max(0,Math.floor(rank));for(let need=k;need>0;need--){for(let i=start;i<=pool.length-need;i++){const c=nCk(pool.length-i-1,need-1);if(r<c){out.push(pool[i]);start=i+1;break;}r-=c;}}return out;}
+  function deterministicBest(ctx,policies={},options={}){
+    const blocked=new Set((options.excluded||[]).map(Number)),pool=ALL.filter(n=>!blocked.has(n));if(pool.length<15)return{game:null,score:-Infinity,tested:0,total:0,approvedCount:0,rankIndex:0};
+    const total=nCk(pool.length,15),sample=Math.max(100,Math.min(total,Number(options.sampleSize)||12000)),rankIndex=Math.max(0,Math.floor(Number(options.rankIndex)||0)),approved=[];let tested=0;
+    for(let i=0;i<sample;i++){
+      const rank=sample===1?0:Math.floor(i*(total-1)/(sample-1)),g=unrank(pool,15,rank),s=candidateScore(g,ctx,policies);tested++;
+      if(Number.isFinite(s))approved.push({game:g,score:s});
+    }
+    approved.sort((a,b)=>b.score-a.score||keyOf(a.game).localeCompare(keyOf(b.game)));
+    const picked=approved[rankIndex]||null;
+    return{game:picked?.game||null,score:picked?.score??-Infinity,tested,total,sample,approvedCount:approved.length,rankIndex};
+  }
+  function portfolioScore(games){const norm=games.map(normalize).filter(Boolean);if(norm.length<2)return{score:100,meanOverlap:0,maxOverlap:0};const overlaps=[];for(let i=0;i<norm.length;i++)for(let j=i+1;j<norm.length;j++)overlaps.push(intersections(norm[i],norm[j]));const mo=mean(overlaps),mx=Math.max(...overlaps);return{score:Math.max(0,Math.round(100-(mo-7)*12-(mx-10)*5)),meanOverlap:+mo.toFixed(2),maxOverlap:mx};}
+
+  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,FULL_COLOR_TRIPLES,buildContext,inspect,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,buildFullColorDelayModel,fullColorDelayBonus,exactPatternCooldown,policyAllows,candidateScore,candidateScoreFromReport,deterministicBest,nCk,unrank};
+})();
+
+self.window=self;
 const M=self.LFMatrix51;
 const ALL=Array.from({length:25},(_,i)=>i+1);
 const MANDATORY_BLOCKS=new Set([29]);
@@ -113,20 +499,121 @@ function virginPortfolioCoverage(entries=[]){
   return{games:games.length,numbers:nums.size,pairs:pairs.size,triples:triples.size,pairPct:+(pairs.size/300*100).toFixed(1),triplePct:+(triples.size/2300*100).toFixed(1)};
 }
 function insertExhaustiveTop(top,entry,limit){let lo=0,hi=top.length;while(lo<hi){const mid=(lo+hi)>>1;if(exhaustiveCompare(entry,top[mid])<0)hi=mid;else lo=mid+1;}top.splice(lo,0,entry);if(top.length>limit)top.pop();}
-function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progressInfo=null,quotaSpec=null,proProfile=null,rankingConfig=null,boundary=null,fixedNumbers=[]){
+// A mesma avaliação do NOVO INDICADO, aplicada às escolhas independentes por cores.
+// Uma única varredura atende as cinco trincas; a seleção manual limita o universo.
+function colorRelaxSet(raw,color){return new Set((raw?.[color]||raw?.[String(color)]||[]).map(String));}
+function colorPoliciesFor(base,relax){const out={...(base||{})};for(const key of relax||[]){const m=/^F(\d{1,2})$/.exec(String(key));if(m){const id=Number(m[1]);if(id!==29)out[id]='warn';}}out[29]='block';return out;}
+function colorBlockerEntry(raw){
+  const id=raw?.id,key=Number.isFinite(Number(id))?`F${String(Number(id)).padStart(2,'0')}`:String(id||'ESTRUTURAL');
+  const names={PADRAO:'Carência de padrão exato',CORES:'Regra estrutural de cores',LINHA:'Linha igual ao concurso anterior',COLUNA:'Coluna igual ao concurso anterior','L×C':'Linha × Coluna igual ao anterior',INDICADORES:'Metas dos indicadores',PERFIL_PRO:'Perfil PRO',ESTRUTURAL:'Regra estrutural do motor'};
+  return{key,name:raw?.name||names[key]||key,removable:key!=='F29'&&(/^F\d{2}$/.test(key)||key==='INDICADORES'||key==='PERFIL_PRO')};
+}
+// A mesma avaliação do NOVO INDICADO, aplicada às escolhas independentes por cores.
+// A busca dos 5 jogos preserva as cores já aprovadas no app e pode recalcular apenas as faltantes.
+// Para cada cor sem resultado, o Worker identifica bloqueios e quais, isoladamente, destravam ao menos um candidato.
+function runColorRank(d){
+  const ctx=M.buildContext(d.history||[],{window:d.period||10}),policies=d.policies||{},quota=d.indicatorQuotas||null,profile=d.proProfile||null;
+  const fixed=[...new Set((d.selected||[]).map(Number))].filter(n=>Number.isInteger(n)&&n>=1&&n<=25).sort((a,b)=>a-b);
+  const five=d.mode==='five'||d.mode==='five-terminal',terminalByColor=!!d.terminalByColor||d.mode==='five-terminal',pool=ALL.filter(n=>!fixed.includes(n)),choose=15-fixed.length;
+  const targetColors=five?new Set(((d.targetColors||[]).length?d.targetColors:[1,2,3,4,5]).map(Number).filter(c=>c>=1&&c<=5)):null;
+  if(choose<0||choose>pool.length){postMessage({type:'color-rank-done',mode:d.mode,rows:[],game:null,tested:0,total:0});return;}
+  const best=Object.fromEntries([1,2,3,4,5].map(c=>[c,null]));let single=null,tested=0,eligible=0;
+  const diagnostics=Object.fromEntries([1,2,3,4,5].map(c=>[c,{candidates:0,counts:{},names:{},removable:{},unlock:{}}]));
+  const virginMode=d.rankingMode==='virgin',virginCtx=virginMode?buildVirginRankContext(ctx.history,d.previousVirginGames||[]):null;
+  const colorModel=M.buildFullColorDelayModel(ctx.history);
+
+  const evaluateGame=(game,targetHint=0)=>{
+    tested++;
+    const colors=M.mandatoryColorRule(game);
+    if(colors?.passed){
+      let target=0,completeCount=0;
+      if(five){for(let c=1;c<=5;c++)if(game.includes(c)&&game.includes(c+10)&&game.includes(c+20)){target=c;completeCount++;}}
+      if(completeCount!==1)target=0;
+      if(!five||target){
+        if(five&&!targetColors.has(target))return;
+        if(five&&targetHint&&target!==targetHint)return;
+        if(five&&terminalByColor&&Math.max(...game)!==20+target)return;
+        const report=M.inspect(game,ctx),relax=five?colorRelaxSet(d.relaxByColor||{},target):new Set(),colorPolicies=five?colorPoliciesFor(policies,relax):policies;
+        const score=M.candidateScoreFromReport(report,ctx,colorPolicies),quotaOk=relax.has('INDICADORES')||quotaAllows(game,quota),proOk=relax.has('PERFIL_PRO')||proProfileAllows(game,report,profile);
+        if(five){
+          const dg=diagnostics[target];dg.candidates++;
+          let blockers=blockedFailures(report,colorPolicies).map(colorBlockerEntry);
+          if(!quotaOk)blockers.push(colorBlockerEntry({id:'INDICADORES'}));
+          if(!proOk)blockers.push(colorBlockerEntry({id:'PERFIL_PRO'}));
+          if(!Number.isFinite(score)&&!blockers.length)blockers.push(colorBlockerEntry({id:'ESTRUTURAL'}));
+          for(const b of blockers){dg.counts[b.key]=(dg.counts[b.key]||0)+1;dg.names[b.key]=b.name;dg.removable[b.key]=b.removable;}
+          if(blockers.length===1&&blockers[0].removable){
+            const b=blockers[0];let unlocked=false;
+            if(/^F\d{2}$/.test(b.key)){
+              const tmp=new Set(relax);tmp.add(b.key);const tmpPolicies=colorPoliciesFor(policies,tmp);unlocked=Number.isFinite(M.candidateScoreFromReport(report,ctx,tmpPolicies))&&quotaOk&&proOk;
+            }else if(b.key==='INDICADORES')unlocked=Number.isFinite(score)&&proOk;
+            else if(b.key==='PERFIL_PRO')unlocked=Number.isFinite(score)&&quotaOk;
+            if(unlocked)dg.unlock[b.key]=(dg.unlock[b.key]||0)+1;
+          }
+        }
+        if(Number.isFinite(score)&&quotaOk&&proOk){
+          eligible++;const bonus=M.fullColorDelayBonus(game,colorModel).bonus;
+          const rankScore=(virginMode?virginRankMetrics(game,score,virginCtx,d.virginProfile||'strong').rankScore:score)+bonus;
+          const previous=five?best[target]:single;
+          if(!previous||rankScore>previous.rankScore||(rankScore===previous.rankScore&&keyOf(game)<keyOf(previous.game))){
+            const entry={game,score,bonus,rankScore,rankingMode:virginMode?'virgin':'standard',relaxed:[...relax]};if(five)best[target]=entry;else single=entry;
+          }
+        }
+      }
+    }
+  };
+
+  // Otimização exata para “5 jogos · terminar na cor”.
+  // Em vez de percorrer C(25,15)=3.268.760 jogos e descartar os que terminam fora da cor,
+  // cada cor enumera somente combinações <= ao seu terminal e com a trinca da cor já forçada.
+  let total=0,plans=[];
+  if(five&&terminalByColor){
+    for(const color of [...targetColors].sort((a,b)=>a-b)){
+      const terminal=20+color,required=[color,color+10,terminal],forced=[...new Set([...fixed,...required])].sort((a,b)=>a-b);
+      if(forced.some(n=>n>terminal)||forced.length>15){plans.push({color,forced,pool:[],choose:-1,total:0});continue;}
+      const localPool=ALL.filter(n=>n<=terminal&&!forced.includes(n)),localChoose=15-forced.length,localTotal=localChoose>=0&&localChoose<=localPool.length?M.nCk(localPool.length,localChoose):0;
+      plans.push({color,forced,pool:localPool,choose:localChoose,total:localTotal});total+=localTotal;
+    }
+  }else total=M.nCk(pool.length,choose);
+  const progressEvery=Math.max(1000,Math.floor(Math.max(1,total)/100));
+  postMessage({type:'color-rank-progress',tested:0,total,eligible,optimized:five&&terminalByColor});
+  const maybeProgress=()=>{if(tested%progressEvery===0||tested===total)postMessage({type:'color-rank-progress',tested,total,eligible,optimized:five&&terminalByColor});};
+
+  if(five&&terminalByColor){
+    for(const plan of plans){
+      if(!plan.total)continue;
+      eachComb(plan.pool,plan.choose,remaining=>{const game=[...plan.forced,...remaining].sort((a,b)=>a-b);evaluateGame(game,plan.color);maybeProgress();});
+    }
+  }else{
+    eachComb(pool,choose,remaining=>{const game=[...fixed,...remaining].sort((a,b)=>a-b);evaluateGame(game,0);maybeProgress();});
+  }
+  if(total===0||tested!==total)postMessage({type:'color-rank-progress',tested,total,eligible,optimized:five&&terminalByColor});
+  const diagFor=color=>{const d0=diagnostics[color],mk=(key,count)=>({key,name:d0.names[key]||key,count,removable:!!d0.removable[key]});const unlockers=Object.entries(d0.unlock).map(([k,v])=>mk(k,v)).sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key));const topBlockers=Object.entries(d0.counts).map(([k,v])=>mk(k,v)).sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key)).slice(0,8);return{candidates:d0.candidates,unlockers,topBlockers};};
+  const rows=(five?[...targetColors]:[1,2,3,4,5]).sort((a,b)=>a-b).map(color=>({color,...best[color],diagnostics:diagFor(color)}));
+  postMessage({type:'color-rank-done',mode:d.mode,rows,game:single,tested,total,eligible,targetColors:[...(targetColors||[])],optimized:five&&terminalByColor});
+}
+function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progressInfo=null,quotaSpec=null,proProfile=null,rankingConfig=null,boundary=null,fixedNumbers=[],relaxations=[]){
   const block=new Set((excluded||[]).map(Number)),start=Number(boundary?.start)||null,end=Number(boundary?.end)||null;
   const invalidBoundary=(start!=null&&(start<1||start>11))||(end!=null&&(end<15||end>25))||(start!=null&&end!=null&&end-start+1<15);
   const fixed=[...new Set((fixedNumbers||[]).map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=25))],forced=[...new Set([...fixed,...[start,end].filter(Number.isFinite)])];
   if(invalidBoundary||fixed.length>15||fixed.some(n=>block.has(n))||forced.some(n=>(start!=null&&n<start)||(end!=null&&n>end))||forced.some(n=>block.has(n)))return{game:null,score:-Infinity,tested:0,total:0,approvedCount:0,eligibleCount:0,rankIndex,topGames:[],topScores:[],diagnostics:{boundaryRejected:true,start,end,fixed,reason:invalidBoundary?'Faixa início/fim impossível':fixed.length>15?'Mais de 15 dezenas fixas':fixed.some(n=>block.has(n))?'Dezena fixa também bloqueada':forced.some(n=>(start!=null&&n<start)||(end!=null&&n>end))?'Dezena fixa fora da faixa':'Dezena inicial/final bloqueada'}};
   const pool=ALL.filter(n=>!block.has(n)&&(start==null||n>=start)&&(end==null||n<=end)&&!forced.includes(n)),choose=15-forced.length;
   if(choose<0||pool.length<choose)return{game:null,score:-Infinity,tested:0,total:0,approvedCount:0,eligibleCount:0,rankIndex,topGames:[],topScores:[],diagnostics:{boundaryRejected:true,start,end,reason:'Faixa/exclusões não permitem formar 15 dezenas'}};
-  const total=M.nCk(pool.length,choose),limit=Math.max(rankIndex+1,Math.min(1000,Number(topLimit)||200)),top=[],virginMode=rankingConfig?.mode==='virgin',virginProfile=rankingConfig?.profile||'strong',virginCtx=virginMode?buildVirginRankContext(ctx.history||[],rankingConfig?.previousVirginGames||[]):null,colorDelayModel=M.buildFullColorDelayModel?M.buildFullColorDelayModel(ctx.history||[]):[],pareto=[];let tested=0,approvedCount=0,eligibleCount=0,lastProgress=0,maskSum=0,maskXor=0,firstMask=null,lastMask=null,virginScoreSum=0,virginScoreCount=0,virginN13Sum=0,virginN12Sum=0,virginNeighborSum=0,virginLastSum=0,approvedHitDist=Object.fromEntries(Array.from({length:16},(_,i)=>[i,0])),virginHistogram=Array(101).fill(0);
-  const diag={colorPreRejected:0,patternRejected:0,colorRuleRejected:0,lineRepeatRejected:0,columnRepeatRejected:0,lineColumnRejected:0,quotaRejected:0,boundary:{start,end,forced:[...forced],universe:total},filterFirst:{},filterAny:{}};
+  const total=M.nCk(pool.length,choose),limit=Math.max(rankIndex+1,Math.min(1000,Number(topLimit)||200)),top=[],virginMode=rankingConfig?.mode==='virgin',virginProfile=rankingConfig?.profile||'strong',virginCtx=virginMode?buildVirginRankContext(ctx.history||[],rankingConfig?.previousVirginGames||[]):null,colorDelayModel=M.buildFullColorDelayModel?M.buildFullColorDelayModel(ctx.history||[]):[],pareto=[],relax=new Set((relaxations||[]).map(String));let tested=0,approvedCount=0,eligibleCount=0,lastProgress=0,maskSum=0,maskXor=0,firstMask=null,lastMask=null,virginScoreSum=0,virginScoreCount=0,virginN13Sum=0,virginN12Sum=0,virginNeighborSum=0,virginLastSum=0,approvedHitDist=Object.fromEntries(Array.from({length:16},(_,i)=>[i,0])),virginHistogram=Array(101).fill(0);
+  const diag={colorPreRejected:0,patternRejected:0,colorRuleRejected:0,lineRepeatRejected:0,columnRepeatRejected:0,lineColumnRejected:0,quotaRejected:0,proProfileRejected:0,boundary:{start,end,forced:[...forced],universe:total},filterFirst:{},filterAny:{},blockerCounts:{},blockerNames:{},blockerRemovable:{},unlock:{},unlockPairs:{}};
   const progressEvery=Math.max(100,Math.min(500,Math.floor(total/1000)));if(!progressInfo)postMessage({type:'progress',tested:0,total,maxAttempts:total,found:0,approvedCount:0,eligibleCount:0,mode:'Busca exaustiva iniciada · preparando varredura integral'});
   eachComb(pool,choose,gref=>{const g=[...forced,...gref].sort((a,b)=>a-b);tested++;let mask=0;for(const n of g)mask|=1<<(n-1);maskSum+=mask;maskXor^=mask;if(firstMask===null)firstMask=mask;lastMask=mask;
     if(!indicatedColorValid(g)){diag.colorPreRejected++;}
     else{
       const report=M.inspect(g,ctx),virginHardFail=virginMode&&report?.filters?.some(f=>Number(f.id)===29&&!f.passed),score=virginHardFail?-Infinity:(M.candidateScoreFromReport?M.candidateScoreFromReport(report,ctx,policies):M.candidateScore(g,ctx,policies));
+      const quotaOk=relax.has('INDICADORES')||quotaAllows(g,quotaSpec),proOk=relax.has('PERFIL_PRO')||proProfileAllows(g,report,proProfile);
+      let blockers=blockedFailures(report,policies).map(colorBlockerEntry);
+      if(!quotaOk)blockers.push(colorBlockerEntry({id:'INDICADORES'}));
+      if(!proOk)blockers.push(colorBlockerEntry({id:'PERFIL_PRO'}));
+      if(!Number.isFinite(score)&&!blockers.length)blockers.push(colorBlockerEntry({id:'ESTRUTURAL'}));
+      for(const b of blockers){diag.blockerCounts[b.key]=(diag.blockerCounts[b.key]||0)+1;diag.blockerNames[b.key]=b.name;diag.blockerRemovable[b.key]=b.removable;}
+      if(blockers.length===1&&blockers[0].removable){const b=blockers[0];let unlocked=false;if(/^F\d{2}$/.test(b.key)){const tmpPolicies=colorPoliciesFor(policies,new Set([b.key]));unlocked=Number.isFinite(M.candidateScoreFromReport(report,ctx,tmpPolicies))&&quotaOk&&proOk;}else if(b.key==='INDICADORES')unlocked=Number.isFinite(score)&&proOk;else if(b.key==='PERFIL_PRO')unlocked=Number.isFinite(score)&&quotaOk;if(unlocked)diag.unlock[b.key]=(diag.unlock[b.key]||0)+1;}
+      if(blockers.length===2&&blockers.every(b=>b.removable&&b.key!=='F29')){const keys=blockers.map(b=>String(b.key)).sort();const pairKey=keys.join('+');diag.unlockPairs[pairKey]=(diag.unlockPairs[pairKey]||0)+1;}
       if(!Number.isFinite(score)){
         if(report?.patternCooldown?.blocked)diag.patternRejected++;
         if(report?.colorRule?.blocked)diag.colorRuleRejected++;if(report?.lineRepeat?.blocked)diag.lineRepeatRejected++;if(report?.columnRepeat?.blocked)diag.columnRepeatRejected++;if(report?.lineColumnRepeat?.blocked)diag.lineColumnRejected++;
@@ -135,24 +622,24 @@ function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progre
         if(blocked.length)diag.filterFirst[blocked[0].id]=(diag.filterFirst[blocked[0].id]||0)+1;
       }else{
         approvedCount++;if(progressInfo?.targetDraw)approvedHitDist[hits(g,progressInfo.targetDraw)]++;
-        if(quotaAllows(g,quotaSpec)&&proProfileAllows(g,report,proProfile)){eligibleCount++;const colorDelay=M.fullColorDelayBonus?M.fullColorDelayBonus(g,colorDelayModel):{bonus:0,matches:[]};if(virginMode){const virginMeta=virginRankMetrics(g,score,virginCtx,virginProfile),rankScore=Number(virginMeta.rankScore)+Number(colorDelay.bonus||0),meta={...virginMeta,colorDelayBonus:Number(colorDelay.bonus||0),colorDelayMatches:colorDelay.matches||[]},entry={game:g,score,rankScore,virginMeta:meta};virginScoreSum+=virginMeta.virginScore;virginN13Sum+=virginMeta.n13;virginN12Sum+=virginMeta.n12;virginNeighborSum+=virginMeta.top10Avg;virginLastSum+=virginMeta.lastOverlap;virginScoreCount++;virginHistogram[Math.max(0,Math.min(100,Math.round(virginMeta.virginScore)))]++;insertExhaustiveTop(top,entry,limit);paretoUpdate(pareto,entry);}else insertExhaustiveTop(top,{game:g,score,rankScore:Number(score)+Number(colorDelay.bonus||0),colorDelayMeta:{colorDelayBonus:Number(colorDelay.bonus||0),colorDelayMatches:colorDelay.matches||[]}},limit);}else diag.quotaRejected++;
+        if(quotaOk&&proOk){eligibleCount++;const colorDelay=M.fullColorDelayBonus?M.fullColorDelayBonus(g,colorDelayModel):{bonus:0,matches:[]};if(virginMode){const virginMeta=virginRankMetrics(g,score,virginCtx,virginProfile),rankScore=Number(virginMeta.rankScore)+Number(colorDelay.bonus||0),meta={...virginMeta,colorDelayBonus:Number(colorDelay.bonus||0),colorDelayMatches:colorDelay.matches||[]},entry={game:g,score,rankScore,virginMeta:meta};virginScoreSum+=virginMeta.virginScore;virginN13Sum+=virginMeta.n13;virginN12Sum+=virginMeta.n12;virginNeighborSum+=virginMeta.top10Avg;virginLastSum+=virginMeta.lastOverlap;virginScoreCount++;virginHistogram[Math.max(0,Math.min(100,Math.round(virginMeta.virginScore)))]++;insertExhaustiveTop(top,entry,limit);paretoUpdate(pareto,entry);}else insertExhaustiveTop(top,{game:g,score,rankScore:Number(score)+Number(colorDelay.bonus||0),colorDelayMeta:{colorDelayBonus:Number(colorDelay.bonus||0),colorDelayMatches:colorDelay.matches||[]}},limit);}else{if(!quotaOk)diag.quotaRejected++;if(!proOk)diag.proProfileRejected++;}
       }
     }
     if(tested-lastProgress>=progressEvery||tested===total){lastProgress=tested;const provisional=top[Math.min(rankIndex,Math.max(0,top.length-1))]||top[0]||null;if(progressInfo?.type==='backtest'){const grandTested=(progressInfo.current-1)*total+tested,grandTotal=progressInfo.targets*total;postMessage({type:'backtest-integral-progress',contest:progressInfo.contest,current:progressInfo.current,total:progressInfo.targets,comboTested:tested,comboTotal:total,grandTested,grandTotal,approvedCount,eligibleCount});}else if(progressInfo?.type==='combined-integral')postMessage({type:'combined-integral-combo-progress',contest:progressInfo.contest,current:progressInfo.current,total:progressInfo.targets,comboTested:tested,comboTotal:total,approvedCount,eligibleCount});else postMessage({type:'progress',tested,total,maxAttempts:total,found:eligibleCount,approvedCount,eligibleCount,provisionalGame:provisional?.game||null,provisionalScore:provisional?.score??null,mode:'Busca exaustiva integral · 51 filtros · F29 absoluto · F28/F36/F37 conforme Perfil PRO'});}});
   const picked=top[rankIndex]||null,paretoTop=pareto.sort(exhaustiveCompare).slice(0,10);let percentile=null;if(virginMode&&picked?.virginMeta&&virginScoreCount){let le=0;for(let i=0;i<=Math.round(picked.virginMeta.virginScore);i++)le+=virginHistogram[i];percentile=Math.round(le/virginScoreCount*100);}
   const metaPercentile=m=>{if(!m||!virginScoreCount)return null;let le=0;for(let i=0;i<=Math.round(m.virginScore);i++)le+=virginHistogram[i];return Math.round(le/virginScoreCount*100);};if(virginMode){for(const e of top)if(e.virginMeta)e.virginMeta.percentile=metaPercentile(e.virginMeta);for(const e of pareto)if(e.virginMeta)e.virginMeta.percentile=metaPercentile(e.virginMeta);}const diverseTop=virginMode?diverseVirginTop(top,10):[],virginStats=virginMode?{profile:virginProfile,meanScore:virginScoreCount?+(virginScoreSum/virginScoreCount).toFixed(2):null,percentile,eligibleScored:virginScoreCount,paretoCount:pareto.length,diverseTopCount:diverseTop.length,portfolio:diverseTop.length>1?M.portfolioScore(diverseTop.map(x=>x.game)):null,coverage:virginPortfolioCoverage(diverseTop),expected:{n13:virginScoreCount?+(virginN13Sum/virginScoreCount).toFixed(2):null,n12:virginScoreCount?+(virginN12Sum/virginScoreCount).toFixed(2):null,top10Avg:virginScoreCount?+(virginNeighborSum/virginScoreCount).toFixed(2):null,lastOverlap:virginScoreCount?+(virginLastSum/virginScoreCount).toFixed(2):null}}:null;
   const fullUniverse=block.size===0&&forced.length===0&&start==null&&end==null,expectedSum=fullUniverse?M.nCk(24,14)*((1<<25)-1):null,audit={version:1,verified:tested===total&&(!fullUniverse||(total===3268760&&maskSum===expectedSum&&maskXor===0)),fullUniverse,tested,total,maskSum,expectedSum,maskXor,firstMask,lastMask};
-  const diagnostics={...diag,audit,tested,total,approvedCount,eligibleCount,colorDelayModel,generatedAt:new Date().toISOString(),virginStats};
+  const diagMk=(key,count)=>({key,name:diag.blockerNames[key]||key,count,removable:!!diag.blockerRemovable[key]});const unlockers=Object.entries(diag.unlock).map(([k,v])=>diagMk(k,v)).filter(x=>x.key!=='F29'&&x.removable&&x.count>0).sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key));const pairUnlockers=Object.entries(diag.unlockPairs||{}).map(([pairKey,count])=>{const keys=pairKey.split('+').filter(Boolean);return{pairKey,keys,count:Number(count||0),names:keys.map(k=>diag.blockerNames[k]||k)};}).filter(x=>x.keys.length===2&&!x.keys.includes('F29')&&x.count>0).sort((a,b)=>b.count-a.count||a.pairKey.localeCompare(b.pairKey)).slice(0,12);const topBlockers=Object.entries(diag.blockerCounts).map(([k,v])=>diagMk(k,v)).sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key)).slice(0,12);const diagnostics={...diag,unlockers,pairUnlockers,topBlockers,audit,tested,total,approvedCount,eligibleCount,colorDelayModel,generatedAt:new Date().toISOString(),virginStats};
   return{audit,game:picked?.game||null,score:picked?.score??-Infinity,rankScore:picked?.rankScore??picked?.score??-Infinity,tested,total,approvedCount,eligibleCount,rankIndex,topGames:top.map(x=>x.game),topScores:top.map(x=>x.score),topMeta:top.map(x=>x.virginMeta||x.colorDelayMeta||null),virginDiverseGames:diverseTop.map(x=>x.game),virginDiverseMeta:diverseTop.map(x=>x.virginMeta),paretoGames:paretoTop.map(x=>x.game),paretoMeta:paretoTop.map(x=>x.virginMeta),virginStats,approvedHitDist,diagnostics};
 }
 
-self.onmessage=e=>{const d=e.data||{};if(d.task==='generate')return runGenerate(d);if(d.task==='lab')return runLab(d);if(d.task==='backtest')return runBacktest(d);if(d.task==='filter-audit')return runFilterAudit(d);if(d.task==='combined-integral')return runCombinedIntegral(d);if(d.task==='closure')return runClosure(d);};
+self.onmessage=e=>{const d=e.data||{};if(d.task==='color-rank')return runColorRank(d);if(d.task==='generate')return runGenerate(d);if(d.task==='lab')return runLab(d);if(d.task==='backtest')return runBacktest(d);if(d.task==='filter-audit')return runFilterAudit(d);if(d.task==='combined-integral')return runCombinedIntegral(d);if(d.task==='closure')return runClosure(d);};
 
 function runGenerate(d){
   const ctx=M.buildContext(d.history||[],{window:d.period||10}),target=1,maxAttempts=Math.max(1000,Number(d.maxAttempts)||250000),quotaSpec=d.indicatorQuotas||(d.indicatorTargets?buildIndicatorQuotaSpec(d.history||[],d.indicatorTargets):null);
   if(d.colorBalanced&&!colorFeasible(d.excluded||[])){postMessage({type:'done',games:[],tested:0,complete:false,maxAttempts,reason:'As exclusões impedem formar um jogo com 8–10 cores sem cair nas estruturas bloqueadas.'});return;}
   if(d.deterministic&&!d.colorBalanced){
-    if(d.exhaustive){const rankingConfig=d.rankingMode==='virgin'?{mode:'virgin',profile:d.virginProfile||'strong',previousVirginGames:d.previousVirginGames||[]}:null,best=exhaustiveBest(ctx,d.policies||{},d.excluded||[],Math.max(0,Number(d.rankIndex)||0),Math.max(50,Number(d.topLimit)||200),null,quotaSpec,d.proProfile||null,rankingConfig,d.boundary||null,d.fixedNumbers||[]);postMessage({type:'done',games:best.game?[best.game]:[],tested:best.tested,total:best.total,complete:best.audit?.verified===true,audit:best.audit,maxAttempts:best.total,deterministic:true,exhaustive:true,mode:d.rankingMode==='virgin'?'Busca exaustiva integral · Ranking Virgem exclusivo · F29 absoluto · F37 conforme política':'Busca exaustiva integral · 51 filtros · F29 absoluto · F28/F36/F37 conforme Perfil PRO',score:best.score,rankScore:best.rankScore,approvedCount:best.approvedCount,eligibleCount:best.eligibleCount,rankIndex:best.rankIndex,topGames:best.topGames,topScores:best.topScores,topMeta:best.topMeta,virginDiverseGames:best.virginDiverseGames,virginDiverseMeta:best.virginDiverseMeta,paretoGames:best.paretoGames,paretoMeta:best.paretoMeta,virginStats:best.virginStats,diagnostics:best.diagnostics});return;}
+    if(d.exhaustive){const rankingConfig=d.rankingMode==='virgin'?{mode:'virgin',profile:d.virginProfile||'strong',previousVirginGames:d.previousVirginGames||[]}:null,best=exhaustiveBest(ctx,d.policies||{},d.excluded||[],Math.max(0,Number(d.rankIndex)||0),Math.max(50,Number(d.topLimit)||200),null,quotaSpec,d.proProfile||null,rankingConfig,d.boundary||null,d.fixedNumbers||[],d.decisionRelaxations||[]);postMessage({type:'done',games:best.game?[best.game]:[],tested:best.tested,total:best.total,complete:best.audit?.verified===true,audit:best.audit,maxAttempts:best.total,deterministic:true,exhaustive:true,mode:d.rankingMode==='virgin'?'Busca exaustiva integral · Ranking Virgem exclusivo · F29 absoluto · F37 conforme política':'Busca exaustiva integral · 51 filtros · F29 absoluto · F28/F36/F37 conforme Perfil PRO',score:best.score,rankScore:best.rankScore,approvedCount:best.approvedCount,eligibleCount:best.eligibleCount,rankIndex:best.rankIndex,topGames:best.topGames,topScores:best.topScores,topMeta:best.topMeta,virginDiverseGames:best.virginDiverseGames,virginDiverseMeta:best.virginDiverseMeta,paretoGames:best.paretoGames,paretoMeta:best.paretoMeta,virginStats:best.virginStats,diagnostics:best.diagnostics});return;}
     const ex=new Set((d.excluded||[]).map(Number)),games=sampledGames(Math.max(1000,Math.min(50000,Number(d.sampleSize)||12000))).filter(g=>{if(!g.every(n=>!ex.has(n))||!indicatedColorValid(g)||!quotaAllows(g,quotaSpec))return false;const rr=M.inspect(g,ctx);return proProfileAllows(g,rr,d.proProfile||null)}),best=deterministicBestFromPool(ctx,d.policies||{},games);
     postMessage({type:'done',games:best.game?[best.game]:[],tested:best.tested,total:best.total,complete:!!best.game,maxAttempts:best.tested,deterministic:true,exhaustive:false,score:best.score,approvedCount:best.approvedCount,rankIndex:best.rankIndex});return;
   }
@@ -268,7 +755,7 @@ function subsetKey(a){return a.join('-');}
 function coverageKeys(game,k){const keys=[];eachComb(game,k,p=>keys.push(subsetKey(p)));return keys;}
 function runClosure(d){
   const history=d.history||[],ctx=M.buildContext(history,{window:d.period||10}),pool=[...new Set((d.pool||[]).map(Number))].filter(n=>n>=1&&n<=25).sort((a,b)=>a-b),count=Math.max(1,Math.min(100,Number(d.count)||10)),targetK=Math.max(11,Math.min(14,Number(d.targetK)||13)),policies=d.policies||{};
-  if(pool.length<15||pool.length>20){postMessage({type:'closure-done',error:'O grupo-base deve ter de 15 a 20 dezenas.'});return;}
+  if(pool.length<15||pool.length>21){postMessage({type:'closure-done',error:'O grupo-base deve ter de 15 a 21 dezenas.'});return;}
   const all=comb(pool,15),eligible=[];for(let i=0;i<all.length;i++){const g=all[i];if(!indicatedColorValid(g)){if(i%1000===0)postMessage({type:'closure-progress',phase:'Matriz',current:i,total:all.length});continue;}const r=M.inspect(g,ctx),historicalExact=r.filters[28]&&!r.filters[28].passed;if(!historicalExact){const blocks=blockedFailures(r,policies).length,warns=warnings(r,policies).length;eligible.push({game:g,score:100-blocks*10-warns,blocks,warns});}if(i%1000===0)postMessage({type:'closure-progress',phase:'Matriz',current:i,total:all.length});}
   if(!eligible.length){postMessage({type:'closure-done',error:'Todas as combinações do grupo-base coincidem com resultados históricos bloqueados.'});return;}
   eligible.sort((a,b)=>keyOf(a.game).localeCompare(keyOf(b.game)));
