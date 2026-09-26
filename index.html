@@ -398,6 +398,112 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
 })();
 
 </script>
+<style id="sidebar-menu-layout-20260926">
+/* Ajuste solicitado: somente menu lateral esquerdo */
+.sidebar-v2{
+  background:#0b0d10!important;
+  border-right:1px solid #20252c!important;
+}
+.side-nav-v2{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:4px!important;
+  padding:2px 0 10px!important;
+}
+.side-nav-v2 .nav-group{
+  border:0!important;
+  background:transparent!important;
+  border-radius:10px!important;
+  overflow:hidden!important;
+  margin:0!important;
+}
+.side-nav-v2 .nav-group-toggle{
+  width:100%!important;
+  min-height:46px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 22px!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding:11px 12px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  color:#f8fafc!important;
+  cursor:pointer!important;
+  text-align:left!important;
+  transition:background .16s ease,color .16s ease!important;
+}
+.side-nav-v2 .nav-group-toggle:hover,
+.side-nav-v2 .nav-group.open>.nav-group-toggle{
+  background:#171b21!important;
+  color:#fff!important;
+}
+.side-nav-v2 .nav-group-toggle span{
+  font-size:14px!important;
+  line-height:1!important;
+  font-weight:800!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+}
+.side-nav-v2 .nav-group-toggle b{
+  display:none!important;
+}
+.side-nav-v2 .nav-group-toggle i{
+  grid-column:2!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  color:#d1d5db!important;
+  font-size:16px!important;
+  font-style:normal!important;
+  transition:transform .16s ease!important;
+}
+.side-nav-v2 .nav-group.open>.nav-group-toggle i{
+  transform:rotate(180deg)!important;
+}
+.side-nav-v2 .nav-group-items{
+  display:none!important;
+  margin:2px 7px 7px 13px!important;
+  padding:4px 0 4px 9px!important;
+  border-left:1px solid #2a3038!important;
+  background:transparent!important;
+}
+.side-nav-v2 .nav-group.open>.nav-group-items{
+  display:grid!important;
+  gap:2px!important;
+}
+.side-nav-v2 .nav-item{
+  min-height:34px!important;
+  grid-template-columns:22px minmax(0,1fr) auto!important;
+  gap:7px!important;
+  padding:6px 8px!important;
+  border-radius:8px!important;
+  background:transparent!important;
+  color:#aeb6c2!important;
+}
+.side-nav-v2 .nav-item:hover{
+  background:#151a20!important;
+  color:#fff!important;
+}
+.side-nav-v2 .nav-item.active{
+  background:#fff!important;
+  color:#0b0d10!important;
+}
+.side-nav-v2 .nav-item>span{
+  width:22px!important;
+  height:22px!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:12px!important;
+  opacity:.9!important;
+}
+.side-nav-v2 .nav-item b{
+  font-size:10.5px!important;
+  font-weight:700!important;
+}
+.side-nav-v2 .nav-item em{
+  font-size:7px!important;
+}
+</style>
 </head>
 <body>
 <div id="standalone-help" style="position:fixed;left:12px;bottom:12px;z-index:99998;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;padding:7px 10px;border-radius:10px;font:700 11px system-ui;box-shadow:0 3px 14px rgba(0,0,0,.12)">ARQUIVO ÚNICO OFFLINE · para páginas auxiliares, extraia o ZIP completo</div>
@@ -422,35 +528,38 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
       </div>
 
       <nav class="side-nav side-nav-v2" id="side-nav" aria-label="Navegação principal">
-        <div class="nav-primary-list">
-          <button class="nav-item nav-primary active" data-page="decision"><span>◫</span><b>Novo indicado</b></button>
-          <button class="nav-item" data-page="colorchoice"><span>🎯</span><b>Jogo por Cores</b></button>
-          <button class="nav-item nav-pro-shortcut" id="nav-pro-profile" type="button"><span>⚙️</span><b>Perfil PRO</b></button>
-          <button class="nav-item" data-page="mygames"><span>★</span><b>Meus Jogos</b></button>
-          <button class="nav-item" data-page="savedgames"><span>💾</span><b>Jogos Salvos</b></button>
-        </div>
-        <section class="nav-group open" data-nav-group="analises"><button class="nav-group-toggle" type="button" aria-expanded="true"><span>ANÁLISES</span><b>8</b><i>⌄</i></button><div class="nav-group-items">
+        <section class="nav-group open nav-home-group" data-nav-group="home">
+          <button class="nav-group-toggle" type="button" aria-expanded="true"><span>Home</span><b>5</b><i>⌄</i></button>
+          <div class="nav-group-items">
+            <button class="nav-item nav-primary active" data-page="decision"><span>◫</span><b>Novo indicado</b></button>
+            <button class="nav-item" data-page="colorchoice"><span>🎯</span><b>Jogo por Cores</b></button>
+            <button class="nav-item nav-pro-shortcut" id="nav-pro-profile" type="button"><span>⚙️</span><b>Perfil PRO</b></button>
+            <button class="nav-item" data-page="mygames"><span>★</span><b>Meus Jogos</b></button>
+            <button class="nav-item" data-page="savedgames"><span>💾</span><b>Jogos Salvos</b></button>
+          </div>
+        </section>
+        <section class="nav-group open" data-nav-group="analises"><button class="nav-group-toggle" type="button" aria-expanded="true"><span>Análises</span><b>8</b><i>⌄</i></button><div class="nav-group-items">
           <button class="nav-item" data-page="analysis"><span>◎</span><b>Analisar jogo</b></button><button class="nav-item" data-page="cycles"><span>◉</span><b>Ciclos</b></button><button class="nav-item" data-page="cyclesalt"><span>⟳</span><b>Ciclos Alternativos</b></button><button class="nav-item" data-page="pairs"><span>∞</span><b>Duplas / Trincas</b></button><button class="nav-item" data-page="compare"><span>⇄</span><b>Comparador</b></button><button class="nav-item" data-page="history"><span>⌕</span><b>Histórico</b></button><button class="nav-item" data-page="lab"><span>⌁</span><b>Laboratório</b></button><button class="nav-item" data-page="matrix"><span>▦</span><b>Matriz 51</b><em>51</em></button>
         </div></section>
-        <section class="nav-group" data-nav-group="tabelas"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>TABELAS</span><b>9</b><i>⌄</i></button><div class="nav-group-items">
+        <section class="nav-group" data-nav-group="tabelas"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>Tabelas</span><b>9</b><i>⌄</i></button><div class="nav-group-items">
           <button class="nav-item" data-page="vertical"><span>↕</span><b>Vertical 1</b></button><button class="nav-item" data-page="vertical2"><span>⇅</span><b>Vertical 2</b></button><button class="nav-item" data-page="vertical3"><span>🎨</span><b>Vertical 3 · Cores</b></button><button class="nav-item" data-page="fixedtable"><span>AB</span><b>Tabela Fixa A/B/C/D</b></button><button class="nav-item" data-page="positions"><span>D</span><b>Posições D1–D15</b></button><button class="nav-item" data-page="linecols"><span>▦</span><b>Linhas × Colunas</b></button><button class="nav-item" data-page="groups"><span>◌</span><b>Grupos</b></button><a class="nav-item" href="./estatisticas-plus.html"><span>＋</span><b>Estatísticas+</b></a><a class="nav-item" href="./estatisticas-pro.html"><span>PRO</span><b>Estatísticas PRO</b></a>
         </div></section>
-        <section class="nav-group" data-nav-group="tendencias"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>TENDÊNCIAS</span><b>3</b><i>⌄</i></button><div class="nav-group-items">
+        <section class="nav-group" data-nav-group="tendencias"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>Tendências</span><b>3</b><i>⌄</i></button><div class="nav-group-items">
           <button class="nav-item" data-page="trends"><span>↗</span><b>Tendências históricas</b></button><button class="nav-item" data-page="patterns"><span>◇</span><b>Padrões especiais</b></button><button class="nav-item" data-page="charts"><span>▤</span><b>Gráficos / BI</b></button>
         </div></section>
-        <section class="nav-group" data-nav-group="estatisticas"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>ESTATÍSTICAS</span><b>3</b><i>⌄</i></button><div class="nav-group-items">
+        <section class="nav-group" data-nav-group="estatisticas"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>Estatísticas</span><b>3</b><i>⌄</i></button><div class="nav-group-items">
           <button class="nav-item" data-page="statistics"><span>▥</span><b>Estatísticas</b></button><a class="nav-item" href="./historico-avancado.html"><span>⌕</span><b>Histórico Avançado</b></a><a class="nav-item" href="./inteligencia.html"><span>◆</span><b>Inteligência</b></a>
         </div></section>
-        <section class="nav-group" data-nav-group="combinacoes"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>COMBINAÇÕES</span><b>5</b><i>⌄</i></button><div class="nav-group-items">
+        <section class="nav-group" data-nav-group="combinacoes"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>Combinações</span><b>5</b><i>⌄</i></button><div class="nav-group-items">
           <button class="nav-item" data-page="generator"><span>✦</span><b>Geradores</b></button><button class="nav-item" data-page="closures"><span>⌗</span><b>Fechamentos / Erre 4–8</b></button><button class="nav-item" data-page="mirror"><span>◫</span><b>Aposta Espelho</b></button><button class="nav-item" data-page="colorchoice"><span>🎯</span><b>Gerador por Cores</b></button><a class="nav-item" href="./operacoes.html"><span>◈</span><b>Operações</b></a>
         </div></section>
-        <section class="nav-group" data-nav-group="simulacoes"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>SIMULAÇÕES</span><b>5</b><i>⌄</i></button><div class="nav-group-items">
+        <section class="nav-group" data-nav-group="simulacoes"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>Simulações</span><b>5</b><i>⌄</i></button><div class="nav-group-items">
           <button class="nav-item" data-page="backtest"><span>↺</span><b>Backtest</b></button><button class="nav-item" data-page="checker"><span>✓</span><b>Conferidor</b></button><button class="nav-item" data-page="economics"><span>R$</span><b>Custo × Cobertura</b></button><button class="nav-item" data-page="audit"><span>⚑</span><b>Auditorias</b></button><a class="nav-item" href="./evolucoes-21-29.html#finance"><span>◈</span><b>Simulador financeiro</b></a>
         </div></section>
-        <section class="nav-group" data-nav-group="frequent"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>MAIS SORTEADAS</span><b>6</b><i>⌄</i></button><div class="nav-group-items">
+        <section class="nav-group" data-nav-group="frequent"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>Mais Sorteadas</span><b>6</b><i>⌄</i></button><div class="nav-group-items">
           <button class="nav-item" data-page="frequent" data-frequent-window="5"><span>5</span><b>Últimos 5</b></button><button class="nav-item" data-page="frequent" data-frequent-window="10"><span>10</span><b>Últimos 10</b></button><button class="nav-item" data-page="frequent" data-frequent-window="15"><span>15</span><b>Últimos 15</b></button><button class="nav-item" data-page="frequent" data-frequent-window="20"><span>20</span><b>Últimos 20</b></button><button class="nav-item" data-page="frequent" data-frequent-window="25"><span>25</span><b>Últimos 25</b></button><button class="nav-item" data-page="frequent" data-frequent-window="30"><span>30</span><b>Últimos 30</b></button>
         </div></section>
-        <section class="nav-group" data-nav-group="mais"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>MAIS</span><b>5</b><i>⌄</i></button><div class="nav-group-items">
+        <section class="nav-group" data-nav-group="mais"><button class="nav-group-toggle" type="button" aria-expanded="false"><span>Mais</span><b>5</b><i>⌄</i></button><div class="nav-group-items">
           <a class="nav-item" href="./evolucoes.html"><span>↗</span><b>Evoluções</b></a><a class="nav-item" href="./evolucoes-21-29.html"><span>21</span><b>Evoluções 21–29</b></a><a class="nav-item" href="./evolucoes-30-37.html"><span>30</span><b>Evoluções 30–37</b></a><a class="nav-item" href="./comparativo-solotofacil.html"><span>≋</span><b>Comparativo 96 ferramentas</b></a><a class="nav-item" href="./manual.html"><span>?</span><b>Manual de uso</b></a>
         </div></section>
       </nav>
