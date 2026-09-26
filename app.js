@@ -179,7 +179,7 @@
   function renderColorAutoFive(){
     const el=$('#color-choice-auto-results');if(!el)return;
     const rows=Array.isArray(state.colorAutoGames)?state.colorAutoGames:[];
-    if(!rows.length){el.className='color-auto-five-results empty';el.textContent='Clique em “GERAR / COMPLETAR 5”. Os jogos aprovados serão preservados nas tentativas seguintes.';return;}
+    if(!rows.length){el.className='color-auto-five-results empty';el.textContent='Use “GERAR 5” para criar uma nova carteira ou “COMPLETAR 5” para preservar os jogos prontos e calcular somente os faltantes.';return;}
     el.className='color-auto-five-results';
     el.innerHTML=rows.map((row,i)=>{
       const color=Number(row?.color)||i+1,relaxed=[...colorRelaxSet(color)];
@@ -203,7 +203,7 @@
   function renderColorAutoTerminalFive(){
     const el=$('#color-choice-auto-terminal-results');if(!el)return;
     const rows=Array.isArray(state.colorAutoTerminalGames)?state.colorAutoTerminalGames:[];
-    if(!rows.length){el.className='color-auto-five-results empty';el.textContent='Clique em “GERAR / COMPLETAR 5 · FINAL DA COR”. Os jogos já aprovados serão preservados e somente as cores faltantes serão recalculadas. Cada jogo terá uma trinca completa e terminará em 21, 22, 23, 24 ou 25 conforme a cor.';return;}
+    if(!rows.length){el.className='color-auto-five-results empty';el.textContent='Use “GERAR 5 · FINAL DA COR” para refazer a carteira ou “COMPLETAR 5 · FINAL DA COR” para preservar os jogos prontos e calcular somente os faltantes. Cada jogo terá uma trinca completa e terminará em 21, 22, 23, 24 ou 25 conforme a cor.';return;}
     el.className='color-auto-five-results';
     el.innerHTML=rows.map((row,i)=>{
       const color=Number(row?.color)||i+1,terminal=20+color,relaxed=[...terminalColorRelaxSet(color)];

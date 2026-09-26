@@ -1,0 +1,21 @@
+name: Auditoria LF V3.7.5
+
+on:
+  push:
+    branches:
+      - preview-solotofacil-v375-20260926
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Auditoria completa
+        run: npm test

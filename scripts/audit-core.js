@@ -1,6 +1,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
+const path=require('node:path');
 const pkg=require('../package.json');
 const base=require('../data/lotofacil-base.json');
 const version=require('../version.json');
@@ -17,6 +18,21 @@ const indexSource=fs.readFileSync(require.resolve('../index.html'),'utf8');
 assert.equal(pkg.version,'3.7.5','package.json deve estar em V3.7.5');
 const meta=(indexSource.match(/<meta name="lf-build" content="([^"]+)"/)||[])[1];
 assert.equal(meta,version.version,'meta lf-build e version.json devem coincidir');
+
+// Auditoria de arquivos HTML auxiliares e links locais.
+const rootDir=path.resolve(__dirname,'..');
+const htmlFiles=fs.readdirSync(rootDir).filter(f=>f.endsWith('.html'));
+for(const file of htmlFiles){
+  const src=fs.readFileSync(path.join(rootDir,file),'utf8');
+  if(file!=='index.html'){
+    assert.equal(src.includes('ARQUIVO ÚNICO OFFLINE'),false,'Mensagem offline indevida em '+file);
+    assert.equal(src.includes('id="standalone-help"'),false,'Aviso standalone indevido em '+file);
+  }
+  for(const m of src.matchAll(/href=["'](?:\.\/|\/)([^"'#?]+\.html)(?:[?#][^"']*)?["']/g)){
+    assert.ok(fs.existsSync(path.join(rootDir,m[1])),'Link HTML quebrado em '+file+': '+m[1]);
+  }
+}
+assert.equal(indexSource.includes('comparativo-solotofacil.html'),false,'Comparativo SoloToFácil deve permanecer fora do app');
 
 // Menu superior atual.
 for(const label of ['Home','Análises','Tabelas','Tendências','Estatísticas','Combinações','Simulações','Mais Sorteadas','Mais']){
@@ -41,6 +57,27 @@ assert.ok(s>=0&&e>bodyStart,'app.js inline não encontrado no index');
 const inlineApp=indexSource.slice(bodyStart,e);
 assert.equal(inlineApp.trimEnd(),appSource.trimEnd(),'index.html e app.js devem executar a mesma lógica');
 
+// Sincronização Worker inline x Worker externo.
+const workerMarker='window.__LF_OFFLINE_WORKER_SOURCE=';
+const workerStart=indexSource.indexOf(workerMarker);
+assert.ok(workerStart>=0,'Worker offline incorporado não encontrado');
+let wp=workerStart+workerMarker.length,wq=wp+1,escaped=false;
+for(;wq<indexSource.length;wq++){
+  const ch=indexSource[wq];
+  if(escaped){escaped=false;continue;}
+  if(ch==='\\'){escaped=true;continue;}
+  if(ch==='"')break;
+}
+const inlineWorker=JSON.parse(indexSource.slice(wp,wq+1));
+assert.equal(inlineWorker.trimEnd(),workerSource.trimEnd(),'Worker inline e analysis-worker.js devem executar a mesma lógica');
+
+// Todas as tasks enviadas pelo app precisam existir no Worker.
+const appTasks=[...new Set([...appSource.matchAll(/task:'([^']+)'/g)].map(m=>m[1]))];
+for(const task of appTasks){
+  const handled=workerSource.includes("d.task==='"+task+"'")||workerSource.includes("d.task === '"+task+"'")||workerSource.includes("case '"+task+"'")||workerSource.includes("task==='"+task+"'");
+  assert.ok(handled,'Task enviada pelo app sem handler no Worker: '+task);
+}
+
 // Estrutura HTML crítica sem IDs duplicados.
 const ids=[...indexSource.matchAll(/\sid="([^"]+)"/g)].map(m=>m[1]);
 const seen=new Set();
@@ -54,6 +91,9 @@ assert.ok(indexSource.includes('<h2>Análise do resultado</h2>'),'Novo painel An
 assert.ok(appSource.includes('function renderDecisionAnalysisList'),'Renderer da análise detalhada ausente');
 assert.ok(appSource.includes('renderDecisionAnalysisList(rep,m)'),'Renderer detalhado não está sendo chamado');
 assert.ok(appSource.includes("label:'Números mágicos'"),'Análise adicional Números mágicos ausente');
+for(const label of ['Números ímpares','Números pares','Repetidas do anterior','Números na moldura','Números no miolo','Números primos','Múltiplos de 3','Números de Fibonacci','Soma das dezenas','Naipes · finais distintos','Maior sequência','Atrasadas','Números mágicos']){
+  assert.ok(appSource.includes("label:'"+label+"'"),'Métrica ausente no Jogo Indicado: '+label);
+}
 
 // Jogo por Cores: padrão e final da cor.
 assert.ok(indexSource.includes('GERAR 5 · FINAL DA COR'),'Botão GERAR Final da Cor ausente');
@@ -64,6 +104,10 @@ assert.ok(appSource.includes("function completeColorAutoFive(){runColorRank('fiv
 assert.ok(appSource.includes("function completeColorAutoTerminalFive(){runColorRank('five-terminal');}"),'Handler COMPLETAR Final da Cor ausente');
 assert.ok(appSource.includes("function generateColorAutoFive(){if(colorRankWorker)"),'Handler GERAR padrão deve reiniciar a carteira');
 assert.ok(appSource.includes("function generateColorAutoTerminalFive(){if(colorRankWorker)"),'Handler GERAR Final da Cor deve reiniciar a carteira');
+assert.ok(appSource.includes("state.colorAutoGames=[];state.colorAutoRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoFive();runColorRank('five');"),'GERAR padrão deve zerar a carteira antes da busca');
+assert.ok(appSource.includes("state.colorAutoTerminalGames=[];state.colorAutoTerminalRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoTerminalFive();runColorRank('five-terminal');"),'GERAR Final da Cor deve zerar a carteira antes da busca');
+assert.equal(appSource.includes('GERAR / COMPLETAR 5'),false,'Textos antigos GERAR / COMPLETAR não devem permanecer no app');
+assert.equal(indexSource.includes('GERAR / COMPLETAR 5'),false,'Textos antigos GERAR / COMPLETAR não devem permanecer no HTML');
 assert.ok(workerSource.includes("d.mode==='five-terminal'"),'Worker não reconhece five-terminal');
 assert.ok(workerSource.includes('terminalByColor'),'Worker não aplica terminal por cor');
 assert.ok(workerSource.includes("type:'color-rank-done'"),'Worker não devolve color-rank-done');
