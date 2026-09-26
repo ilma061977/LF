@@ -331,9 +331,20 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
   'use strict';
   const base = window.__LF_OFFLINE_BASE;
   const ver = window.__LF_OFFLINE_VERSION || {version:'3.7.5',build:'offline'};
+  const isOffline = location.protocol === 'file:';
+  window.__LF_OFFLINE_MODE = isOffline;
+  window.__LF_STANDALONE_MODE = isOffline;
+  document.documentElement.dataset.lfOffline = isOffline ? 'true' : 'false';
+  if(!isOffline){
+    const onlineFetch = window.fetch.bind(window);
+    window.LFAppApi = {
+      async get(path,query={}){ const q=new URLSearchParams(); Object.entries(query||{}).forEach(([k,v])=>v!=null&&q.set(k,String(v))); const r=await onlineFetch(path+(q.toString()?('?'+q):''),{cache:'no-store'}); const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error||('HTTP '+r.status)); return d; },
+      async post(path,body={}){ const r=await onlineFetch(path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),cache:'no-store'}); const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error||('HTTP '+r.status)); return d; }
+    };
+    if(window.Worker) window.__LF_WORKER_URL='/analysis-worker.js?v=color-rank-terminal-20260926';
+    return;
+  }
   if(!base || !Array.isArray(base.history)) throw new Error('Base offline não carregada.');
-  window.__LF_OFFLINE_MODE = true;
-  document.documentElement.dataset.lfOffline = 'true';
   const makeJson = (obj,status=200) => new Response(JSON.stringify(obj), {status, headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});
   const localChecks = () => {
     const h=base.history||[], last=h.at(-1), nums=(last?.dezenas||[]).map(Number);
@@ -392,6 +403,7 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
   }
   window.addEventListener('DOMContentLoaded',()=>{
     if(location.protocol!=='file:') return;
+    const help=document.getElementById('standalone-help'); if(help) help.hidden=false;
     const b=document.createElement('div');
     b.id='lf-offline-badge';
     b.textContent=`OFFLINE · base até #${base.history.at(-1)?.concurso||'—'}`;
@@ -619,7 +631,7 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
 </style>
 </head>
 <body>
-<div id="standalone-help" style="position:fixed;left:12px;bottom:12px;z-index:99998;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;padding:7px 10px;border-radius:10px;font:700 11px system-ui;box-shadow:0 3px 14px rgba(0,0,0,.12)">ARQUIVO ÚNICO OFFLINE · para páginas auxiliares, extraia o ZIP completo</div>
+<div id="standalone-help" hidden style="position:fixed;left:12px;bottom:12px;z-index:99998;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;padding:7px 10px;border-radius:10px;font:700 11px system-ui;box-shadow:0 3px 14px rgba(0,0,0,.12)">ARQUIVO ÚNICO OFFLINE · para páginas auxiliares, extraia o ZIP completo</div>
   <a class="skip" href="#main">Ir para o conteúdo</a>
   <div class="app-shell">
     <aside class="sidebar sidebar-v2" id="sidebar">
@@ -1990,7 +2002,7 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
 })(typeof window === 'undefined' ? globalThis : window);
 
 </script>
-  <script>window.__LF_STANDALONE_MODE=true;window.__LF_WORKER_URL=window.__LF_WORKER_URL||"offline-inline-worker";</script>
+  <script>window.__LF_STANDALONE_MODE=(location.protocol==='file:');window.__LF_WORKER_URL=window.__LF_STANDALONE_MODE?(window.__LF_WORKER_URL||"offline-inline-worker"):"/analysis-worker.js?v=color-rank-terminal-20260926";</script>
   <script>
 /* INLINE: solo-modules.js */
 (()=>{'use strict';
@@ -3732,6 +3744,7 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
 <!-- colorchoice-save-only-deploy-pr -->
 <script>
 (function(){
+  if(location.protocol!=='file:') return;
   document.addEventListener('click',function(e){
     const a=e.target.closest && e.target.closest('a[href$=".html"],a[href*=".html#"]');
     if(!a) return;
