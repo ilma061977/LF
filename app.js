@@ -721,6 +721,8 @@
       const blocked=attention.filter(f=>policy(f)==='block'), warns=attention.filter(f=>policy(f)==='warn'), ignored=filters.filter(f=>policy(f)==='ignore');
       const sim=historicalSimilarity(state.decision), latest=state.history.at(-1)?.dezenas||[], repeatedLast=hits(state.decision,latest), score=M.candidateScore(state.decision,state.ctx,state.filterPolicies);
       const scoreText=Number.isFinite(score)?Number(score).toFixed(2):'—';
+      const rankMeta=state.decisionRankingCache?.topMeta?.[state.decisionIndex]||null,colorDelayBonus=Number(rankMeta?.colorDelayBonus||0),colorDelayMatches=Array.isArray(rankMeta?.colorDelayMatches)?rankMeta.colorDelayMatches:[];
+      const colorDelayText=colorDelayBonus>0?('+'+colorDelayBonus.toFixed(2).replace('.',',')+' · '+colorDelayMatches.map(x=>`${x.name} ${(x.nums||[]).map(pad).join('-')} · atraso ${x.currentDelay} · retorno ${(Number(x.exactRate||0)*100).toFixed(2).replace('.',',')}%`).join(' | ')):null;
       if(detail){
         const info=[
           ['Jogo indicado',state.decision.map(pad).join(' ')],
@@ -748,6 +750,7 @@
           ['Perfil PRO',getProProfileRules().length?`${getProProfileRules().length} regra(s) aplicadas`:'sem regras'],
           ['Filtros em atenção',attention.length]
         ];
+        if(colorDelayText)info.splice(3,0,['Bônus atraso de cor',colorDelayText]);
         detail.innerHTML=info.map(([a,b],i)=>`<div class="detail-metric ${i===0?'detail-game':''}"><span>${a}</span><b>${b}</b></div>`).join('');
       }
       if(overview){
