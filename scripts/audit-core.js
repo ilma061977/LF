@@ -6,6 +6,10 @@ const sandbox={window:{}};
 vm.runInNewContext(fs.readFileSync(require.resolve('../matrix-51.js'),'utf8'),sandbox);
 const M=sandbox.window.LFMatrix51;
 const history=base.history;
+const appSource=fs.readFileSync(require.resolve('../app.js'),'utf8');
+assert.ok(appSource.includes('function restartDecisionExhaustiveAfterMiss'),'Busca exaustiva deve possuir reinício automático quando não formar 15 dezenas');
+assert.ok(appSource.includes("const maxRetries=autoMode?5:1"),'Reinício deve limitar tentativas automáticas para evitar loop infinito');
+assert.ok((appSource.match(/restartDecisionExhaustiveAfterMiss\(d\.diagnostics\|\|null\)/g)||[]).length>=2,'Os dois caminhos sem jogo válido devem reiniciar a busca');
 assert.equal(history.length,base.baseValidation.loadedCount);
 assert.equal(base.latest.concurso,history.at(-1).concurso);
 for(let i=0;i<history.length;i++){
