@@ -1,5 +1,5 @@
 self.window=self;
-importScripts('./matrix-51.js');
+importScripts('./matrix-51.js?v=c3789-restart-20260926');
 const M=self.LFMatrix51;
 const ALL=Array.from({length:25},(_,i)=>i+1);
 const MANDATORY_BLOCKS=new Set([29]);
