@@ -563,6 +563,43 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
   .lf-top-dropdown{top:58px!important}
 }
 </style>
+<style id="color-choice-layout-v3-20260926">
+/* Organização visual somente da aba Jogo por Cores */
+.color-choice-actions-v2{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:10px!important;
+  margin-top:14px!important;
+}
+.color-action-group{
+  display:grid!important;
+  grid-template-columns:minmax(260px,1fr) auto!important;
+  align-items:center!important;
+  gap:14px!important;
+  padding:12px 13px!important;
+  border:1px solid #e3e6ea!important;
+  border-radius:12px!important;
+  background:#fafbfc!important;
+}
+.color-action-terminal{
+  border-color:#cbd5e1!important;
+  background:#f8fafc!important;
+}
+.color-action-copy{display:grid!important;gap:3px!important}
+.color-action-copy b{font-size:11px!important;color:#111827!important}
+.color-action-copy span{font-size:9px!important;line-height:1.4!important;color:#64748b!important;max-width:720px!important}
+.color-action-buttons{display:flex!important;gap:7px!important;flex-wrap:wrap!important;justify-content:flex-end!important}
+.color-action-buttons .btn{white-space:nowrap!important}
+.color-auto-five-panel .panel-head p{max-width:1000px!important;line-height:1.45!important}
+@media(max-width:900px){
+  .color-action-group{grid-template-columns:1fr!important}
+  .color-action-buttons{justify-content:flex-start!important}
+}
+@media(max-width:560px){
+  .color-action-buttons{display:grid!important;grid-template-columns:1fr!important}
+  .color-action-buttons .btn{width:100%!important}
+}
+</style>
 </head>
 <body>
 <div id="standalone-help" style="position:fixed;left:12px;bottom:12px;z-index:99998;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;padding:7px 10px;border-radius:10px;font:700 11px system-ui;box-shadow:0 3px 14px rgba(0,0,0,.12)">ARQUIVO ÚNICO OFFLINE · para páginas auxiliares, extraia o ZIP completo</div>
@@ -1087,11 +1124,29 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
               <div class="panel-head"><div><span class="eyebrow dark">JOGO ATUAL</span><h2>15 dezenas por cores</h2></div></div>
               <div id="color-choice-selected" class="color-choice-selected color-choice-5x5"></div>
               <div id="color-choice-status" class="validation-line">Escolha 15 dezenas.</div>
-              <div class="color-choice-actions">
-                <button class="btn" id="color-choice-fill" type="button">Completar com melhor score até 15</button>
-                <button class="btn" id="color-choice-auto-5" type="button">GERAR / COMPLETAR 5</button><button class="btn" id="color-choice-auto-terminal-5" type="button">GERAR 5 · TERMINAR NA COR</button><button class="btn ghost" id="color-choice-auto-reset" type="button">REINICIAR OS 5</button><button class="btn ghost" id="color-choice-auto-terminal-reset" type="button">REINICIAR 5 · FINAL DA COR</button>
-                <button class="btn" id="color-choice-save" type="button">Salvar jogo</button>
-                <button class="btn primary" id="color-choice-apply" type="button">Enviar ao NOVO INDICADO</button>
+              <div class="color-choice-actions color-choice-actions-v2">
+                <div class="color-action-group color-action-manual">
+                  <div class="color-action-copy"><b>1 · Jogo manual</b><span>Monte as 15 dezenas ou complete a seleção pelo melhor score.</span></div>
+                  <div class="color-action-buttons">
+                    <button class="btn" id="color-choice-fill" type="button">Completar até 15</button>
+                    <button class="btn" id="color-choice-save" type="button">Salvar jogo</button>
+                    <button class="btn primary" id="color-choice-apply" type="button">Enviar ao NOVO INDICADO</button>
+                  </div>
+                </div>
+                <div class="color-action-group">
+                  <div class="color-action-copy"><b>2 · 5 jogos · uma cor completa</b><span>Gera as cinco cores. Ao clicar novamente, preserva os jogos prontos e completa apenas os que faltam.</span></div>
+                  <div class="color-action-buttons">
+                    <button class="btn primary" id="color-choice-auto-5" type="button">GERAR / COMPLETAR 5</button>
+                    <button class="btn ghost" id="color-choice-auto-reset" type="button">REINICIAR OS 5</button>
+                  </div>
+                </div>
+                <div class="color-action-group color-action-terminal">
+                  <div class="color-action-copy"><b>3 · 5 jogos · final da cor</b><span>Mesma lógica: preserva os jogos prontos e completa só os faltantes. Cada jogo termina em 21, 22, 23, 24 ou 25 conforme a cor.</span></div>
+                  <div class="color-action-buttons">
+                    <button class="btn primary" id="color-choice-auto-terminal-5" type="button">GERAR / COMPLETAR 5 · FINAL DA COR</button>
+                    <button class="btn ghost" id="color-choice-auto-terminal-reset" type="button">REINICIAR 5 · FINAL DA COR</button>
+                  </div>
+                </div>
               </div>
               <div id="color-choice-rank-progress" class="validation-line" role="status" aria-live="polite">A escolha por cores usa os filtros, indicadores, Perfil PRO e o ranking da Matriz 51.</div>
               <div class="color-choice-rules">
@@ -1101,12 +1156,12 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
             </article>
           </div>
           <article class="panel color-auto-five-panel">
-            <div class="panel-head"><div><span class="eyebrow dark">5 JOGOS AUTOMÁTICOS</span><h2>Uma cor completa por jogo</h2><p class="muted">Vermelha, Amarela, Verde, Marrom e Azul. A busca exige uma só cor completa. Se alguma cor não gerar jogo, o painel indica os bloqueios que podem ser retirados individualmente. Ao tentar novamente, os jogos já aprovados são preservados e somente as cores faltantes são recalculadas. F29 nunca pode ser retirado.</p></div></div>
+            <div class="panel-head"><div><span class="eyebrow dark">5 JOGOS AUTOMÁTICOS · PADRÃO</span><h2>Uma cor completa por jogo</h2><p class="muted">Vermelha, Amarela, Verde, Marrom e Azul. GERAR / COMPLETAR 5 mantém os jogos já aprovados e procura somente os que faltam. Se uma cor não gerar, os bloqueios individuais aparecem abaixo. F29 nunca pode ser retirado.</p></div></div>
             <div id="color-choice-auto-results" class="color-auto-five-results empty">Clique em “GERAR / COMPLETAR 5”. Os jogos aprovados serão preservados nas tentativas seguintes.</div>
           </article>
           <article class="panel color-auto-five-panel">
-            <div class="panel-head"><div><span class="eyebrow dark">NOVA OPÇÃO · 5 JOGOS AUTOMÁTICOS</span><h2>Uma cor completa + terminar na própria cor</h2><p class="muted">Vermelha: 01-11-21 e o jogo termina em 21. Amarela: 02-12-22 e termina em 22. Verde: 03-13-23 e termina em 23. Marrom: 04-14-24 e termina em 24. Azul: 05-15-25 e termina em 25. A maior dezena do jogo deve ser exatamente o final da sua cor. F29 permanece obrigatório.</p></div></div>
-            <div id="color-choice-auto-terminal-results" class="color-auto-five-results empty">Clique em “GERAR 5 · TERMINAR NA COR”.</div>
+            <div class="panel-head"><div><span class="eyebrow dark">5 JOGOS AUTOMÁTICOS · FINAL DA COR</span><h2>Uma cor completa + final correspondente</h2><p class="muted">Vermelha termina em 21 · Amarela em 22 · Verde em 23 · Marrom em 24 · Azul em 25. Ao usar GERAR / COMPLETAR 5, os jogos já prontos são mantidos e apenas as cores faltantes são recalculadas. F29 permanece obrigatório.</p></div></div>
+            <div id="color-choice-auto-terminal-results" class="color-auto-five-results empty">Clique em “GERAR / COMPLETAR 5 · FINAL DA COR”.</div>
           </article>
         </section>
 
@@ -2165,7 +2220,7 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
   function renderColorAutoTerminalFive(){
     const el=$('#color-choice-auto-terminal-results');if(!el)return;
     const rows=Array.isArray(state.colorAutoTerminalGames)?state.colorAutoTerminalGames:[];
-    if(!rows.length){el.className='color-auto-five-results empty';el.textContent='Clique em “GERAR 5 · TERMINAR NA COR”. Cada jogo terá uma trinca completa e a maior dezena será 21, 22, 23, 24 ou 25 conforme a cor.';return;}
+    if(!rows.length){el.className='color-auto-five-results empty';el.textContent='Clique em “GERAR / COMPLETAR 5 · FINAL DA COR”. Os jogos já aprovados serão preservados e somente as cores faltantes serão recalculadas. Cada jogo terá uma trinca completa e terminará em 21, 22, 23, 24 ou 25 conforme a cor.';return;}
     el.className='color-auto-five-results';
     el.innerHTML=rows.map((row,i)=>{
       const color=Number(row?.color)||i+1,terminal=20+color,relaxed=[...terminalColorRelaxSet(color)];
