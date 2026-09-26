@@ -21,6 +21,13 @@ assert.equal((indexSource.match(/data-page="vertical"/g)||[]).length,1,'Vertical
 assert.equal((indexSource.match(/data-page="vertical2"/g)||[]).length,1,'Vertical 2 não deve ficar duplicada no menu lateral');
 assert.equal((indexSource.match(/data-page="vertical3"/g)||[]).length,1,'Vertical 3 não deve ficar duplicada no menu lateral');
 assert.ok(appSource.includes('function restartDecisionExhaustiveAfterMiss'),'Busca exaustiva deve possuir reinício automático quando não formar 15 dezenas');
+assert.ok(appSource.includes('const maxAttempts=5'),'Busca exaustiva deve limitar a 5 tentativas no total');
+assert.ok(appSource.includes('currentAttempt>=maxAttempts'),'Após a quinta tentativa deve abrir o desbloqueio');
+assert.ok(appSource.includes('M.FILTERS.map'),'Painel de desbloqueio deve listar os 51 filtros');
+assert.ok(appSource.includes('F29 é permanente'),'Painel deve informar que F29 nunca pode ser liberado');
+assert.ok(appSource.includes("permanent||!blocked?'disabled':''"),'F29 e filtros já não bloqueadores devem ficar desabilitados para desbloqueio');
+assert.ok(appSource.includes('id!==29'),'Aplicação do desbloqueio deve excluir F29');
+assert.ok(appSource.includes("status==='running'?`${tested.toLocaleString('pt-BR')} / ${total?total.toLocaleString('pt-BR'):'—'}`"),'Total a avaliar deve começar em zero e avançar como avaliado/universo');
 assert.ok(appSource.includes("const maxRetries=autoMode?5:1"),'Reinício deve limitar tentativas automáticas para evitar loop infinito');
 assert.ok((appSource.match(/restartDecisionExhaustiveAfterMiss\(d\.diagnostics\|\|null\)/g)||[]).length>=2,'Os dois caminhos sem jogo válido devem reiniciar a busca');
 assert.equal(history.length,base.baseValidation.loadedCount);
