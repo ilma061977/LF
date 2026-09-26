@@ -65,5 +65,16 @@ assert.equal(filter(inspect(near),37).passed,false,'F37 deve bloquear 14/15 hist
 const fewColors=[1,11,21,2,12,22,3,13,23,4,14,24,5,15,25];
 assert.equal(inspect(fewColors).colorRule.blocked,true,'menos de 8 cores deve bloquear');
 for(const id of [28,29,36,37])assert.ok(filter(exact,id),'filtro obrigatório F'+id+' ausente');
+const colorDelayModel=M.buildFullColorDelayModel(history);
+const blueDelay=colorDelayModel.find(x=>x.name==='Azul');
+assert.equal(blueDelay.currentDelay,6,'Azul 05-15-25 deve estar com atraso 6 no concurso 3789');
+assert.ok(blueDelay.bonus>0,'Azul 05-15-25 deve receber bônus leve no ranking atual');
+const blueGame=[1,2,3,4,5,6,7,8,9,10,12,13,15,23,25];
+const noBlueGame=[1,2,3,4,6,7,8,9,10,11,12,13,14,16,17];
+const blueBonus=M.fullColorDelayBonus(blueGame,colorDelayModel);
+const noBlueBonus=M.fullColorDelayBonus(noBlueGame,colorDelayModel);
+assert.ok(blueBonus.bonus>0,'Jogo com 05-15-25 deve receber bônus atual');
+assert.equal(noBlueBonus.bonus,0,'Jogo sem trinca favorável não deve receber bônus');
+assert.ok(M.mandatoryColorRule(blueGame).passed,'Bônus não pode substituir nem violar a regra independente de 8-10 cores');
 assert.equal(M.AUDIT_BASE_THROUGH,history.at(-1).concurso);
 console.log(`Auditoria local: ${history.length} concursos contínuos; F29, F36, F37, cores e Linha/Coluna verificados.`);
