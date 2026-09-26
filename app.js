@@ -622,6 +622,51 @@
       generateDecision(false);
     };
   }
+  function restartDecisionExhaustiveAfterMiss(diagnostics=null){
+    const autoMode=state.indicatorMode==='random'||state.decisionSelectionMode==='virgin';
+    const maxRetries=autoMode?5:1;
+    const attempt=Number(state.decisionAutoRetryCount||0)+1;
+    if(attempt>maxRetries){
+      state.decisionAutoRetryCount=0;
+      state.decisionRankingCache=null;
+      applyDecision(null);
+      setDecisionSearchPanel({status:'warn',tested:0,approvedCount:0,eligibleCount:0,resultText:autoMode?'A busca reiniciou automaticamente do início, mas nenhuma das novas composições conseguiu formar 15 dezenas válidas. Revise os bloqueios obrigatórios.':'A busca foi refeita automaticamente desde 0%, mas a composição manual continua sem jogo válido de 15 dezenas. Revise metas, faixa ou bloqueios.',mode:'Busca automática encerrada sem combinação válida'});
+      toast(autoMode?'As tentativas automáticas foram concluídas sem jogo válido.':'A segunda varredura completa também terminou sem jogo válido.');
+      askMandatoryBlocksToRelax(diagnostics||null);
+      return false;
+    }
+    state.decisionAutoRetryCount=attempt;
+    state.decisionRankingCache=null;
+    state.decisionIndex=0;
+    try{storageRemove(decisionCacheKey());}catch{}
+    applyDecision(null);
+    if(autoMode){
+      const before=indicatorCompositionKey();
+      randomizeIndicatorComposition();
+      const after=indicatorCompositionKey();
+      if(before===after&&attempt>1){
+        state.decisionAutoRetryCount=0;
+        setDecisionSearchPanel({status:'warn',tested:0,approvedCount:0,eligibleCount:0,resultText:'Não foi possível montar uma nova composição viável para reiniciar a busca.',mode:'Composição automática esgotada'});
+        askMandatoryBlocksToRelax(diagnostics||null);
+        return false;
+      }
+    }else{
+      state.generationSignature='';
+    }
+    const excluded=[...blockedNumbers()],available=25-excluded.length,total=decisionBoundaryUniverse(excluded);
+    if(available<15||total<=0){
+      state.decisionAutoRetryCount=0;
+      setDecisionSearchPanel({status:'warn',total:Math.max(0,total),tested:0,approvedCount:0,eligibleCount:0,resultText:'Não há universo suficiente para formar 15 dezenas com a faixa/exclusões atuais.',mode:'Reinício automático interrompido'});
+      return false;
+    }
+    const nextSig=generationSignature();
+    state.generationSignature=nextSig;
+    state.decisionIndex=0;
+    setDecisionSearchPanel({status:'running',total,tested:0,approvedCount:0,eligibleCount:0,resultText:`Nenhum jogo de 15 dezenas foi encontrado. Reiniciando a busca do início · tentativa automática ${attempt}/${maxRetries}.`,mode:decisionSearchModeText()+' · reinício automático'});
+    toast(`Busca sem 15 dezenas válidas: reiniciando do 0% · tentativa ${attempt}/${maxRetries}.`);
+    setTimeout(()=>startDecisionExhaustive(nextSig,excluded,total,0),80);
+    return true;
+  }
   function startDecisionExhaustive(sig,excluded,total,rankIndex=0){
     if(state.decisionWorker&&state.decisionWorkerSignature===sig)return;
     if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{} state.decisionWorker=null;}
@@ -653,13 +698,14 @@
         const rawGames=useDiverse?d.virginDiverseGames:d.topGames,rawMeta=useDiverse?(d.virginDiverseMeta||[]):(d.topMeta||[]),rawScores=useDiverse?rawMeta.map(x=>Number(x?.matrixScore||0)):(d.topScores||[]);
         const validRows=rawGames.map((game,i)=>({game,meta:rawMeta[i]??null,score:rawScores[i]??null})).filter(x=>finalGamePassesAllBlocks(x.game));
         const cacheGames=validRows.map(x=>x.game),cacheMeta=validRows.map(x=>x.meta),cacheScores=validRows.map(x=>x.score);
-        if(!cacheGames.length){state.decisionRankingCache=null;applyDecision(null);setDecisionSearchPanel({status:'warn',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,eligibleCount:0,resultText:'A varredura chegou a 100%, mas nenhum jogo de 15 dezenas passou por todos os filtros bloqueadores ativos. Escolha quais bloqueios obrigatórios deseja relaxar para uma nova pesquisa.',mode:'Busca concluída sem combinação válida'});toast('Nenhuma combinação válida passou por todos os filtros ativos.');askMandatoryBlocksToRelax(d.diagnostics||null);return;}state.decisionRankingCache={signature:sig,games:cacheGames,scores:cacheScores,topMeta:cacheMeta,rawTopCount:d.topGames.length,paretoGames:d.paretoGames||[],paretoMeta:d.paretoMeta||[],virginStats:d.virginStats||null,tested:Number(d.tested||0),total:Number(d.total||total),approvedCount:Number(d.approvedCount||0),eligibleCount:Number(d.eligibleCount||0),diagnostics:d.diagnostics||null,audit:d.audit,mode,completedAt:new Date().toISOString()};saveRealSearchDiagnostics(d.diagnostics);savePersistentDecisionCache(state.decisionRankingCache);state.decisionIndex=Math.min(rankIndex,cacheGames.length-1);const picked=cacheGames[state.decisionIndex];applyDecision(picked);setDecisionSearchPanel({status:'done',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,eligibleCount:d.eligibleCount||0,game:picked,mode:`${mode} · indicação #${state.decisionIndex+1}/${cacheGames.length}`});if(state.page==='decision')requestAnimationFrame(()=>$('#decision-quick-result')?.scrollIntoView({behavior:'smooth',block:'center'}));toast(state.decisionSelectionMode==='virgin'?`Busca 100% concluída: Top ${cacheGames.length} Virgens diversificados · ${Number(d.eligibleCount||0).toLocaleString('pt-BR')} elegíveis avaliados no ranking exclusivo.`:`Busca 100% concluída: ${Number(d.approvedCount||0).toLocaleString('pt-BR')} aprovados na Matriz 51 e ${Number(d.eligibleCount||0).toLocaleString('pt-BR')} elegíveis finais após metas + Perfil PRO.`);}
-      else{state.decisionRankingCache={signature:sig,games:[],scores:[],topMeta:[],paretoGames:d.paretoGames||[],paretoMeta:d.paretoMeta||[],virginStats:d.virginStats||null,tested:Number(d.tested||0),total:Number(d.total||total),approvedCount:Number(d.approvedCount||0),eligibleCount:Number(d.eligibleCount||0),diagnostics:d.diagnostics||null,audit:d.audit,mode,completedAt:new Date().toISOString()};saveRealSearchDiagnostics(d.diagnostics);savePersistentDecisionCache(state.decisionRankingCache);applyDecision(null);setDecisionSearchPanel({status:'done',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,eligibleCount:d.eligibleCount||0,resultText:'Nenhum jogo elegível na composição após busca exaustiva completa. Escolha quais bloqueios obrigatórios deseja relaxar para uma nova pesquisa.',mode});toast('Busca exaustiva concluída sem jogo elegível na composição atual.');askMandatoryBlocksToRelax(d.diagnostics||null);}
+        if(!cacheGames.length){state.decisionRankingCache=null;applyDecision(null);saveRealSearchDiagnostics(d.diagnostics);if(restartDecisionExhaustiveAfterMiss(d.diagnostics||null))return;return;}state.decisionRankingCache={signature:sig,games:cacheGames,scores:cacheScores,topMeta:cacheMeta,rawTopCount:d.topGames.length,paretoGames:d.paretoGames||[],paretoMeta:d.paretoMeta||[],virginStats:d.virginStats||null,tested:Number(d.tested||0),total:Number(d.total||total),approvedCount:Number(d.approvedCount||0),eligibleCount:Number(d.eligibleCount||0),diagnostics:d.diagnostics||null,audit:d.audit,mode,completedAt:new Date().toISOString()};saveRealSearchDiagnostics(d.diagnostics);savePersistentDecisionCache(state.decisionRankingCache);state.decisionAutoRetryCount=0;state.decisionIndex=Math.min(rankIndex,cacheGames.length-1);const picked=cacheGames[state.decisionIndex];applyDecision(picked);setDecisionSearchPanel({status:'done',total:d.total||total,tested:d.tested||0,approvedCount:d.approvedCount||0,eligibleCount:d.eligibleCount||0,game:picked,mode:`${mode} · indicação #${state.decisionIndex+1}/${cacheGames.length}`});if(state.page==='decision')requestAnimationFrame(()=>$('#decision-quick-result')?.scrollIntoView({behavior:'smooth',block:'center'}));toast(state.decisionSelectionMode==='virgin'?`Busca 100% concluída: Top ${cacheGames.length} Virgens diversificados · ${Number(d.eligibleCount||0).toLocaleString('pt-BR')} elegíveis avaliados no ranking exclusivo.`:`Busca 100% concluída: ${Number(d.approvedCount||0).toLocaleString('pt-BR')} aprovados na Matriz 51 e ${Number(d.eligibleCount||0).toLocaleString('pt-BR')} elegíveis finais após metas + Perfil PRO.`);}
+      else{saveRealSearchDiagnostics(d.diagnostics);state.decisionRankingCache=null;applyDecision(null);if(restartDecisionExhaustiveAfterMiss(d.diagnostics||null))return;return;}
     }};
     worker.onerror=()=>{try{worker.terminate();}catch{} if(state.decisionWorker===worker){state.decisionWorker=null;state.decisionWorkerSignature='';}applyDecision(null);setDecisionSearchPanel({status:'warn',total,tested:state.decisionSearchMeta.tested||0,approvedCount:state.decisionSearchMeta.approvedCount||0,resultText:'Erro na busca exaustiva. Nenhum NOVO INDICADO oficial foi definido.',mode:'Busca exaustiva obrigatória · erro de processamento'});};
     const proRules=getProProfileRules();worker.postMessage({task:'generate',history:state.history,period:state.period,quantity:1,excluded,fixedNumbers:[...state.fixedNumbers],policies:state.filterPolicies,indicatorQuotas:indicatorQuotaSpec(),proProfile:{rules:proRules,indicatorGroups:indicatorQuotaSpec().groups},colorBalanced:false,deterministic:true,exhaustive:true,rankIndex,topLimit:1000,rankingMode:state.decisionSelectionMode==='virgin'?'virgin':'standard',virginProfile:state.virginProfile,previousVirginGames:state.decisionSelectionMode==='virgin'?previousVirginGames(100):[],boundary:{start:state.decisionStartNumber,end:state.decisionEndNumber}});
   }
   function generateDecision(advance=false){
+    state.decisionAutoRetryCount=0;
     state.decisionStarted=true;
     if(state.dataBlocked||!state.history.length){applyDecision(null);setDecisionSearchPanel({status:'warn',resultText:'Base incompleta ou indisponível — análise bloqueada.'});return;}
     const sig=generationSignature();
@@ -1414,7 +1460,7 @@
   $('#decision-end-number')?.addEventListener('change',onDecisionBoundaryChange);
   $('#clear-decision-boundary')?.addEventListener('click',()=>{if(state.decisionSearchMeta?.status==='running'&&state.decisionWorker)return toast('Aguarde a busca atual terminar para limpar a faixa.');state.decisionStartNumber=null;state.decisionEndNumber=null;savePrefs();invalidateDecisionBoundary();toast('Restrição de início/fim removida.');});
     $('#apply-pro-profile')?.addEventListener('click',applyProProfilePanel);renderProProfilePanel();
-  $('#decision-generate').onclick=()=>generateDecision(state.decision.length===15);$('#decision-rerun').onclick=()=>{if(state.decisionWorker)return;state.decisionRankingCache=null;state.decisionIndex=0;storageRemove(decisionCacheKey());startDecisionExhaustive(generationSignature(),[...blockedNumbers()],decisionBoundaryUniverse([...blockedNumbers()]),0);};$('#decision-selection-mode').onchange=e=>{const v=e.target.value;if(v==='virgin'){state.decisionSelectionMode='virgin';state.indicatorMode='random';savePrefs();invalidateDecisionSelectionMode();randomizeIndicatorComposition();renderDecisionSelectionMode();renderIndicatorTargetPanel();toast('Modo Virgem ativado. Clique em Iniciar busca exaustiva.');return;}state.decisionSelectionMode='standard';if(v==='random'){state.indicatorMode='random';randomizeIndicatorComposition();renderDecisionSelectionMode();return;}state.indicatorMode='manual';savePrefs();renderDecisionSelectionMode();invalidateDecisionSelectionMode();renderIndicatorTargetPanel();};$('#virgin-profile')?.addEventListener('change',e=>{state.virginProfile=['light','strong','max'].includes(e.target.value)?e.target.value:'strong';savePrefs();invalidateDecisionSelectionMode();renderDecisionSelectionMode();toast('Perfil Virgem alterado. Execute nova busca para recalcular o ranking.');});$('#apply-indicator-targets').onclick=()=>{invalidateDecisionForIndicatorTargets();generateDecision(false);};$('#randomize-indicator-targets').onclick=()=>randomizeIndicatorComposition();$('#vertical-search').onclick=()=>renderVerticalVisual();$('#vertical-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical-start').value=Math.max(1,latest-9);$('#vertical-end').value=latest;renderVerticalVisual();};$('#vertical2-search').onclick=()=>renderVertical2();$('#vertical2-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical2-start').value=Math.max(1,latest-9);$('#vertical2-end').value=latest;renderVertical2();};$('#vertical3-search').onclick=()=>renderVertical3();$('#vertical3-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical3-start').value=Math.max(1,latest-9);$('#vertical3-end').value=latest;renderVertical3();};
+  $('#decision-generate').onclick=()=>generateDecision(state.decision.length===15);$('#decision-rerun').onclick=()=>{if(state.decisionWorker)return;state.decisionAutoRetryCount=0;state.decisionRankingCache=null;state.decisionIndex=0;storageRemove(decisionCacheKey());startDecisionExhaustive(generationSignature(),[...blockedNumbers()],decisionBoundaryUniverse([...blockedNumbers()]),0);};$('#decision-selection-mode').onchange=e=>{const v=e.target.value;if(v==='virgin'){state.decisionSelectionMode='virgin';state.indicatorMode='random';savePrefs();invalidateDecisionSelectionMode();randomizeIndicatorComposition();renderDecisionSelectionMode();renderIndicatorTargetPanel();toast('Modo Virgem ativado. Clique em Iniciar busca exaustiva.');return;}state.decisionSelectionMode='standard';if(v==='random'){state.indicatorMode='random';randomizeIndicatorComposition();renderDecisionSelectionMode();return;}state.indicatorMode='manual';savePrefs();renderDecisionSelectionMode();invalidateDecisionSelectionMode();renderIndicatorTargetPanel();};$('#virgin-profile')?.addEventListener('change',e=>{state.virginProfile=['light','strong','max'].includes(e.target.value)?e.target.value:'strong';savePrefs();invalidateDecisionSelectionMode();renderDecisionSelectionMode();toast('Perfil Virgem alterado. Execute nova busca para recalcular o ranking.');});$('#apply-indicator-targets').onclick=()=>{invalidateDecisionForIndicatorTargets();generateDecision(false);};$('#randomize-indicator-targets').onclick=()=>randomizeIndicatorComposition();$('#vertical-search').onclick=()=>renderVerticalVisual();$('#vertical-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical-start').value=Math.max(1,latest-9);$('#vertical-end').value=latest;renderVerticalVisual();};$('#vertical2-search').onclick=()=>renderVertical2();$('#vertical2-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical2-start').value=Math.max(1,latest-9);$('#vertical2-end').value=latest;renderVertical2();};$('#vertical3-search').onclick=()=>renderVertical3();$('#vertical3-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical3-start').value=Math.max(1,latest-9);$('#vertical3-end').value=latest;renderVertical3();};
   $('#use-suggestion').onclick=()=>{if(state.decision.length!==15)return toast('Aguarde a busca exaustiva chegar a 100% para usar o NOVO INDICADO oficial.');state.selection=new Set(state.decision);renderAnalysis();};
   $('#clear-selection').onclick=()=>{state.selection.clear();syncManualDecision();};
   $('#complete-selection').onclick=completeManualSelection;
