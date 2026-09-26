@@ -26,11 +26,10 @@ assert.ok(indexSource.includes('id="lf-top-menu"'),'Menu superior principal ause
 assert.ok(indexSource.includes('.sidebar-v2{display:none!important}'),'Barra lateral antiga deve ficar oculta na versão superior');
 
 // Modo offline só em file://.
-assert.equal((indexSource.match(/ARQUIVO ÚNICO OFFLINE/g)||[]).length,1,'Aviso offline deve existir uma única vez');
-assert.ok(indexSource.includes('<div id="standalone-help" hidden'),'Aviso offline deve iniciar oculto');
+assert.equal((indexSource.match(/<div id="standalone-help"/g)||[]).length,0,'Aviso offline não pode existir estaticamente no HTML da Vercel');
 assert.ok(indexSource.includes("const isOffline = location.protocol === 'file:'"),'Modo offline deve depender de file://');
-assert.ok(indexSource.includes("if(location.protocol!=='file:') return;"),'Avisos auxiliares offline devem ser bloqueados na Vercel');
-assert.ok(indexSource.includes('#standalone-help[hidden]{display:none!important}'),'Aviso offline oculto deve ter guarda CSS');
+assert.ok(indexSource.includes("if(!isOffline){"),'Bootstrap deve separar explicitamente modo web e file://');
+assert.ok(indexSource.includes("help.textContent='ARQUIVO ÚNICO OFFLINE"),'Aviso offline deve ser criado somente pelo bootstrap local');
 assert.equal((indexSource.match(/installVersionUpdateNotice\(\);/g)||[]).length,0,'Banner de atualização não deve ser instalado');
 
 // Sincronização app inline x app externo.
@@ -46,7 +45,7 @@ assert.equal(inlineApp.trimEnd(),appSource.trimEnd(),'index.html e app.js devem 
 const ids=[...indexSource.matchAll(/\sid="([^"]+)"/g)].map(m=>m[1]);
 const seen=new Set();
 for(const id of ids){assert.ok(!seen.has(id),'ID HTML duplicado: '+id);seen.add(id);}
-for(const id of ['decision-board','decision-metrics','decision-generate','color-choice-auto-5','color-choice-auto-terminal-5','color-choice-auto-reset','color-choice-auto-terminal-reset','run-self-test','run-filter-audit','refresh-data']){
+for(const id of ['decision-board','decision-metrics','decision-generate','color-choice-auto-generate-5','color-choice-auto-5','color-choice-auto-terminal-generate-5','color-choice-auto-terminal-5','color-choice-auto-reset','color-choice-auto-terminal-reset','run-self-test','run-filter-audit','refresh-data']){
   assert.ok(seen.has(id),'Controle crítico ausente: '+id);
 }
 
@@ -57,8 +56,14 @@ assert.ok(appSource.includes('renderDecisionAnalysisList(rep,m)'),'Renderer deta
 assert.ok(appSource.includes("label:'Números mágicos'"),'Análise adicional Números mágicos ausente');
 
 // Jogo por Cores: padrão e final da cor.
-assert.ok(indexSource.includes('GERAR / COMPLETAR 5 · FINAL DA COR'),'Botão Final da Cor ausente');
-assert.ok(appSource.includes("function generateColorAutoTerminalFive(){runColorRank('five-terminal');}"),'Handler Final da Cor ausente');
+assert.ok(indexSource.includes('GERAR 5 · FINAL DA COR'),'Botão GERAR Final da Cor ausente');
+assert.ok(indexSource.includes('COMPLETAR 5 · FINAL DA COR'),'Botão COMPLETAR Final da Cor ausente');
+assert.ok(indexSource.includes('>GERAR 5</button>'),'Botão GERAR padrão ausente');
+assert.ok(indexSource.includes('>COMPLETAR 5</button>'),'Botão COMPLETAR padrão ausente');
+assert.ok(appSource.includes("function completeColorAutoFive(){runColorRank('five');}"),'Handler COMPLETAR padrão ausente');
+assert.ok(appSource.includes("function completeColorAutoTerminalFive(){runColorRank('five-terminal');}"),'Handler COMPLETAR Final da Cor ausente');
+assert.ok(appSource.includes("function generateColorAutoFive(){if(colorRankWorker)"),'Handler GERAR padrão deve reiniciar a carteira');
+assert.ok(appSource.includes("function generateColorAutoTerminalFive(){if(colorRankWorker)"),'Handler GERAR Final da Cor deve reiniciar a carteira');
 assert.ok(workerSource.includes("d.mode==='five-terminal'"),'Worker não reconhece five-terminal');
 assert.ok(workerSource.includes('terminalByColor'),'Worker não aplica terminal por cor');
 assert.ok(workerSource.includes("type:'color-rank-done'"),'Worker não devolve color-rank-done');

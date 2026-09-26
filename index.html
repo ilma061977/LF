@@ -403,7 +403,11 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
   }
   window.addEventListener('DOMContentLoaded',()=>{
     if(location.protocol!=='file:') return;
-    const help=document.getElementById('standalone-help'); if(help) help.hidden=false;
+    const help=document.createElement('div');
+    help.id='standalone-help';
+    help.textContent='ARQUIVO ÚNICO OFFLINE · para páginas auxiliares, extraia o ZIP completo';
+    Object.assign(help.style,{position:'fixed',left:'12px',bottom:'12px',zIndex:'99998',background:'#fff7ed',border:'1px solid #fdba74',color:'#7c2d12',padding:'7px 10px',borderRadius:'10px',font:'700 11px system-ui',boxShadow:'0 3px 14px rgba(0,0,0,.12)'});
+    document.body.appendChild(help);
     const b=document.createElement('div');
     b.id='lf-offline-badge';
     b.textContent=`OFFLINE · base até #${base.history.at(-1)?.concurso||'—'}`;
@@ -629,10 +633,8 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
 .decision-analysis-numbers{margin-top:4px;font-size:9px;line-height:1.45;color:#6b7280;overflow-wrap:anywhere}
 @media(max-width:560px){.decision-analysis-label{font-size:10px}.decision-analysis-value{font-size:16px}.decision-analysis-pattern,.decision-analysis-numbers{font-size:8.5px}}
 </style>
-<style id="offline-visibility-guard-20260926">#standalone-help[hidden]{display:none!important}</style>
 </head>
 <body>
-<div id="standalone-help" hidden style="position:fixed;left:12px;bottom:12px;z-index:99998;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;padding:7px 10px;border-radius:10px;font:700 11px system-ui;box-shadow:0 3px 14px rgba(0,0,0,.12)">ARQUIVO ÚNICO OFFLINE · para páginas auxiliares, extraia o ZIP completo</div>
   <a class="skip" href="#main">Ir para o conteúdo</a>
   <div class="app-shell">
     <aside class="sidebar sidebar-v2" id="sidebar">
@@ -1164,16 +1166,18 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
                   </div>
                 </div>
                 <div class="color-action-group">
-                  <div class="color-action-copy"><b>2 · 5 jogos · uma cor completa</b><span>Gera as cinco cores. Ao clicar novamente, preserva os jogos prontos e completa apenas os que faltam.</span></div>
+                  <div class="color-action-copy"><b>2 · 5 jogos · uma cor completa</b><span>GERAR 5 refaz os cinco jogos do zero. COMPLETAR 5 preserva os jogos prontos e calcula somente os que faltam.</span></div>
                   <div class="color-action-buttons">
-                    <button class="btn primary" id="color-choice-auto-5" type="button">GERAR / COMPLETAR 5</button>
+                    <button class="btn primary" id="color-choice-auto-generate-5" type="button">GERAR 5</button>
+                    <button class="btn" id="color-choice-auto-5" type="button">COMPLETAR 5</button>
                     <button class="btn ghost" id="color-choice-auto-reset" type="button">REINICIAR OS 5</button>
                   </div>
                 </div>
                 <div class="color-action-group color-action-terminal">
-                  <div class="color-action-copy"><b>3 · 5 jogos · final da cor</b><span>Mesma lógica: preserva os jogos prontos e completa só os faltantes. Cada jogo termina em 21, 22, 23, 24 ou 25 conforme a cor.</span></div>
+                  <div class="color-action-copy"><b>3 · 5 jogos · final da cor</b><span>GERAR 5 refaz a carteira final da cor. COMPLETAR 5 preserva os jogos prontos e calcula somente os faltantes. Cada jogo termina em 21, 22, 23, 24 ou 25 conforme a cor.</span></div>
                   <div class="color-action-buttons">
-                    <button class="btn primary" id="color-choice-auto-terminal-5" type="button">GERAR / COMPLETAR 5 · FINAL DA COR</button>
+                    <button class="btn primary" id="color-choice-auto-terminal-generate-5" type="button">GERAR 5 · FINAL DA COR</button>
+                    <button class="btn" id="color-choice-auto-terminal-5" type="button">COMPLETAR 5 · FINAL DA COR</button>
                     <button class="btn ghost" id="color-choice-auto-terminal-reset" type="button">REINICIAR 5 · FINAL DA COR</button>
                   </div>
                 </div>
@@ -1187,11 +1191,11 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
           </div>
           <article class="panel color-auto-five-panel">
             <div class="panel-head"><div><span class="eyebrow dark">5 JOGOS AUTOMÁTICOS · PADRÃO</span><h2>Uma cor completa por jogo</h2><p class="muted">Vermelha, Amarela, Verde, Marrom e Azul. GERAR / COMPLETAR 5 mantém os jogos já aprovados e procura somente os que faltam. Se uma cor não gerar, os bloqueios individuais aparecem abaixo. F29 nunca pode ser retirado.</p></div></div>
-            <div id="color-choice-auto-results" class="color-auto-five-results empty">Clique em “GERAR / COMPLETAR 5”. Os jogos aprovados serão preservados nas tentativas seguintes.</div>
+            <div id="color-choice-auto-results" class="color-auto-five-results empty">Use “GERAR 5” para criar uma nova carteira ou “COMPLETAR 5” para preservar os aprovados e preencher somente os faltantes.</div>
           </article>
           <article class="panel color-auto-five-panel">
             <div class="panel-head"><div><span class="eyebrow dark">5 JOGOS AUTOMÁTICOS · FINAL DA COR</span><h2>Uma cor completa + final correspondente</h2><p class="muted">Vermelha termina em 21 · Amarela em 22 · Verde em 23 · Marrom em 24 · Azul em 25. Ao usar GERAR / COMPLETAR 5, os jogos já prontos são mantidos e apenas as cores faltantes são recalculadas. F29 permanece obrigatório.</p></div></div>
-            <div id="color-choice-auto-terminal-results" class="color-auto-five-results empty">Clique em “GERAR / COMPLETAR 5 · FINAL DA COR”.</div>
+            <div id="color-choice-auto-terminal-results" class="color-auto-five-results empty">Use “GERAR 5 · FINAL DA COR” para refazer ou “COMPLETAR 5 · FINAL DA COR” para preservar os prontos e preencher os faltantes.</div>
           </article>
         </section>
 
@@ -2275,10 +2279,10 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
     if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}
     let worker;try{const joiner=String(window.__LF_WORKER_URL).includes('?')?'&':'?';worker=new Worker(`${window.__LF_WORKER_URL}${joiner}color=${Date.now()}`);}catch{return toast('O cálculo por cores não está disponível neste navegador.');}
     const terminalMode=mode==='five-terminal',fiveMode=mode==='five'||terminalMode;const existing=terminalMode?(Array.isArray(state.colorAutoTerminalGames)?state.colorAutoTerminalGames:[]):(Array.isArray(state.colorAutoGames)?state.colorAutoGames:[]),existingByColor=Object.fromEntries(existing.map(r=>[Number(r?.color),r]));let targetColors=fiveMode?(Array.isArray(opts.targetColors)&&opts.targetColors.length?opts.targetColors.map(Number).filter(c=>c>=1&&c<=5):[1,2,3,4,5].filter(c=>!existingByColor[c]?.game)):[];if(fiveMode&&!targetColors.length){worker.terminate();toast(terminalMode?'Os 5 jogos com final da própria cor já estão preenchidos. Use “REINICIAR 5 · FINAL DA COR” para refazer.':'Os 5 jogos já estão preenchidos. Use “REINICIAR OS 5” para refazer toda a carteira.');return;}
-    colorRankWorker=worker;const selected=[...state.colorChoiceSelection].sort((a,b)=>a-b),startKey=selected.join(','),progress=$('#color-choice-rank-progress'),fiveButton=$('#color-choice-auto-5'),terminalButton=$('#color-choice-auto-terminal-5'),fillButton=$('#color-choice-fill');
-    if(fiveButton)fiveButton.disabled=true;if(terminalButton)terminalButton.disabled=true;if(fillButton)fillButton.disabled=true;
+    colorRankWorker=worker;const selected=[...state.colorChoiceSelection].sort((a,b)=>a-b),startKey=selected.join(','),progress=$('#color-choice-rank-progress'),fiveButton=$('#color-choice-auto-5'),fiveGenerateButton=$('#color-choice-auto-generate-5'),terminalButton=$('#color-choice-auto-terminal-5'),terminalGenerateButton=$('#color-choice-auto-terminal-generate-5'),fillButton=$('#color-choice-fill');
+    [fiveButton,fiveGenerateButton,terminalButton,terminalGenerateButton,fillButton].forEach(b=>{if(b)b.disabled=true;});
     if(progress)progress.textContent='Analisando as combinações com Matriz 51, indicadores e Perfil PRO…';
-    const finish=()=>{if(colorRankWorker!==worker)return false;worker.terminate();colorRankWorker=null;if(fiveButton)fiveButton.disabled=false;if(terminalButton)terminalButton.disabled=false;if(fillButton)fillButton.disabled=false;return true;};
+    const finish=()=>{if(colorRankWorker!==worker)return false;worker.terminate();colorRankWorker=null;[fiveButton,fiveGenerateButton,terminalButton,terminalGenerateButton,fillButton].forEach(b=>{if(b)b.disabled=false;});return true;};
     worker.onmessage=e=>{if(colorRankWorker!==worker)return;const d=e.data||{};
       if(d.type==='color-rank-progress'){if(progress)progress.textContent=`Analisadas ${Number(d.tested||0).toLocaleString('pt-BR')} / ${Number(d.total||0).toLocaleString('pt-BR')} combinações · ${Number(d.eligible||0).toLocaleString('pt-BR')} elegíveis`;return;}
       if(d.type!=='color-rank-done'||!finish())return;
@@ -2295,10 +2299,12 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
     worker.onerror=()=>{if(finish()){if(progress)progress.textContent='Falha no cálculo. Tente novamente.';toast('Falha no cálculo por cores.');}};
     const quota=indicatorQuotaSpec();worker.postMessage({task:'color-rank',mode,selected:mode==='fill'?selected:[],targetColors,terminalByColor:terminalMode,relaxByColor:terminalMode?(state.colorAutoTerminalRelax||{}):(state.colorAutoRelax||{}),history:state.history,period:state.period,policies:state.filterPolicies,indicatorQuotas:quota,proProfile:{rules:getProProfileRules(),indicatorGroups:quota.groups},rankingMode:state.decisionSelectionMode==='virgin'?'virgin':'standard',virginProfile:state.virginProfile,previousVirginGames:state.decisionSelectionMode==='virgin'?previousVirginGames(100):[]});
   }
-  function generateColorAutoFive(){runColorRank('five');}
-  function generateColorAutoTerminalFive(){runColorRank('five-terminal');}
+  function generateColorAutoFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoGames=[];state.colorAutoRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoFive();runColorRank('five');}
+  function completeColorAutoFive(){runColorRank('five');}
+  function generateColorAutoTerminalFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoTerminalGames=[];state.colorAutoTerminalRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoTerminalFive();runColorRank('five-terminal');}
+  function completeColorAutoTerminalFive(){runColorRank('five-terminal');}
   function resetColorAutoTerminalFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoTerminalGames=[];state.colorAutoTerminalRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoTerminalFive();const p=$('#color-choice-rank-progress');if(p)p.textContent='Carteira “final da própria cor” reiniciada.';toast('Os 5 jogos com final da própria cor foram reiniciados.');}
-  function resetColorAutoFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoGames=[];state.colorAutoRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoFive();const p=$('#color-choice-rank-progress');if(p)p.textContent='Carteira automática reiniciada. Clique em GERAR / COMPLETAR 5.';toast('Os 5 jogos automáticos foram reiniciados.');}
+  function resetColorAutoFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoGames=[];state.colorAutoRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoFive();const p=$('#color-choice-rank-progress');if(p)p.textContent='Carteira automática reiniciada. Use GERAR 5 para refazer ou COMPLETAR 5 para preencher faltantes.';toast('Os 5 jogos automáticos foram reiniciados.');}
   function clearColorChoice(){state.colorChoiceSelection.clear();renderColorChoice();}
 
   function indicatorSets(){
@@ -3657,8 +3663,10 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
 
   $('#color-choice-apply')?.addEventListener('click',applyColorChoice);
   $('#color-choice-fill')?.addEventListener('click',fillColorChoice);
-  $('#color-choice-auto-5')?.addEventListener('click',generateColorAutoFive);
-  $('#color-choice-auto-terminal-5')?.addEventListener('click',generateColorAutoTerminalFive);
+  $('#color-choice-auto-generate-5')?.addEventListener('click',generateColorAutoFive);
+  $('#color-choice-auto-5')?.addEventListener('click',completeColorAutoFive);
+  $('#color-choice-auto-terminal-generate-5')?.addEventListener('click',generateColorAutoTerminalFive);
+  $('#color-choice-auto-terminal-5')?.addEventListener('click',completeColorAutoTerminalFive);
   $('#color-choice-auto-terminal-reset')?.addEventListener('click',resetColorAutoTerminalFive);
   $('#color-choice-auto-reset')?.addEventListener('click',resetColorAutoFive);
   $('#color-choice-save')?.addEventListener('click',()=>{if(state.colorChoiceSelection.size!==15)return toast('Escolha exatamente 15 dezenas antes de salvar.');saveGames([[...state.colorChoiceSelection].sort((a,b)=>a-b)]);});
@@ -3734,7 +3742,6 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
   $('#cancel-combined-integral')?.addEventListener('click',cancelCombinedIntegralBenchmark);
   renderCombinedIntegralBenchmark();
 })();
-
 </script>
 <!-- deploy-stamp: line-column-block-v3.6.5 -->
 <!-- colorchoice-save-only-deploy-pr -->

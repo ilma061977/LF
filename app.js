@@ -228,10 +228,10 @@
     if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}
     let worker;try{const joiner=String(window.__LF_WORKER_URL).includes('?')?'&':'?';worker=new Worker(`${window.__LF_WORKER_URL}${joiner}color=${Date.now()}`);}catch{return toast('O cálculo por cores não está disponível neste navegador.');}
     const terminalMode=mode==='five-terminal',fiveMode=mode==='five'||terminalMode;const existing=terminalMode?(Array.isArray(state.colorAutoTerminalGames)?state.colorAutoTerminalGames:[]):(Array.isArray(state.colorAutoGames)?state.colorAutoGames:[]),existingByColor=Object.fromEntries(existing.map(r=>[Number(r?.color),r]));let targetColors=fiveMode?(Array.isArray(opts.targetColors)&&opts.targetColors.length?opts.targetColors.map(Number).filter(c=>c>=1&&c<=5):[1,2,3,4,5].filter(c=>!existingByColor[c]?.game)):[];if(fiveMode&&!targetColors.length){worker.terminate();toast(terminalMode?'Os 5 jogos com final da própria cor já estão preenchidos. Use “REINICIAR 5 · FINAL DA COR” para refazer.':'Os 5 jogos já estão preenchidos. Use “REINICIAR OS 5” para refazer toda a carteira.');return;}
-    colorRankWorker=worker;const selected=[...state.colorChoiceSelection].sort((a,b)=>a-b),startKey=selected.join(','),progress=$('#color-choice-rank-progress'),fiveButton=$('#color-choice-auto-5'),terminalButton=$('#color-choice-auto-terminal-5'),fillButton=$('#color-choice-fill');
-    if(fiveButton)fiveButton.disabled=true;if(terminalButton)terminalButton.disabled=true;if(fillButton)fillButton.disabled=true;
+    colorRankWorker=worker;const selected=[...state.colorChoiceSelection].sort((a,b)=>a-b),startKey=selected.join(','),progress=$('#color-choice-rank-progress'),fiveButton=$('#color-choice-auto-5'),fiveGenerateButton=$('#color-choice-auto-generate-5'),terminalButton=$('#color-choice-auto-terminal-5'),terminalGenerateButton=$('#color-choice-auto-terminal-generate-5'),fillButton=$('#color-choice-fill');
+    [fiveButton,fiveGenerateButton,terminalButton,terminalGenerateButton,fillButton].forEach(b=>{if(b)b.disabled=true;});
     if(progress)progress.textContent='Analisando as combinações com Matriz 51, indicadores e Perfil PRO…';
-    const finish=()=>{if(colorRankWorker!==worker)return false;worker.terminate();colorRankWorker=null;if(fiveButton)fiveButton.disabled=false;if(terminalButton)terminalButton.disabled=false;if(fillButton)fillButton.disabled=false;return true;};
+    const finish=()=>{if(colorRankWorker!==worker)return false;worker.terminate();colorRankWorker=null;[fiveButton,fiveGenerateButton,terminalButton,terminalGenerateButton,fillButton].forEach(b=>{if(b)b.disabled=false;});return true;};
     worker.onmessage=e=>{if(colorRankWorker!==worker)return;const d=e.data||{};
       if(d.type==='color-rank-progress'){if(progress)progress.textContent=`Analisadas ${Number(d.tested||0).toLocaleString('pt-BR')} / ${Number(d.total||0).toLocaleString('pt-BR')} combinações · ${Number(d.eligible||0).toLocaleString('pt-BR')} elegíveis`;return;}
       if(d.type!=='color-rank-done'||!finish())return;
@@ -248,10 +248,12 @@
     worker.onerror=()=>{if(finish()){if(progress)progress.textContent='Falha no cálculo. Tente novamente.';toast('Falha no cálculo por cores.');}};
     const quota=indicatorQuotaSpec();worker.postMessage({task:'color-rank',mode,selected:mode==='fill'?selected:[],targetColors,terminalByColor:terminalMode,relaxByColor:terminalMode?(state.colorAutoTerminalRelax||{}):(state.colorAutoRelax||{}),history:state.history,period:state.period,policies:state.filterPolicies,indicatorQuotas:quota,proProfile:{rules:getProProfileRules(),indicatorGroups:quota.groups},rankingMode:state.decisionSelectionMode==='virgin'?'virgin':'standard',virginProfile:state.virginProfile,previousVirginGames:state.decisionSelectionMode==='virgin'?previousVirginGames(100):[]});
   }
-  function generateColorAutoFive(){runColorRank('five');}
-  function generateColorAutoTerminalFive(){runColorRank('five-terminal');}
+  function generateColorAutoFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoGames=[];state.colorAutoRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoFive();runColorRank('five');}
+  function completeColorAutoFive(){runColorRank('five');}
+  function generateColorAutoTerminalFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoTerminalGames=[];state.colorAutoTerminalRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoTerminalFive();runColorRank('five-terminal');}
+  function completeColorAutoTerminalFive(){runColorRank('five-terminal');}
   function resetColorAutoTerminalFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoTerminalGames=[];state.colorAutoTerminalRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoTerminalFive();const p=$('#color-choice-rank-progress');if(p)p.textContent='Carteira “final da própria cor” reiniciada.';toast('Os 5 jogos com final da própria cor foram reiniciados.');}
-  function resetColorAutoFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoGames=[];state.colorAutoRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoFive();const p=$('#color-choice-rank-progress');if(p)p.textContent='Carteira automática reiniciada. Clique em GERAR / COMPLETAR 5.';toast('Os 5 jogos automáticos foram reiniciados.');}
+  function resetColorAutoFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoGames=[];state.colorAutoRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoFive();const p=$('#color-choice-rank-progress');if(p)p.textContent='Carteira automática reiniciada. Use GERAR 5 para refazer ou COMPLETAR 5 para preencher faltantes.';toast('Os 5 jogos automáticos foram reiniciados.');}
   function clearColorChoice(){state.colorChoiceSelection.clear();renderColorChoice();}
 
   function indicatorSets(){
@@ -1610,8 +1612,10 @@
 
   $('#color-choice-apply')?.addEventListener('click',applyColorChoice);
   $('#color-choice-fill')?.addEventListener('click',fillColorChoice);
-  $('#color-choice-auto-5')?.addEventListener('click',generateColorAutoFive);
-  $('#color-choice-auto-terminal-5')?.addEventListener('click',generateColorAutoTerminalFive);
+  $('#color-choice-auto-generate-5')?.addEventListener('click',generateColorAutoFive);
+  $('#color-choice-auto-5')?.addEventListener('click',completeColorAutoFive);
+  $('#color-choice-auto-terminal-generate-5')?.addEventListener('click',generateColorAutoTerminalFive);
+  $('#color-choice-auto-terminal-5')?.addEventListener('click',completeColorAutoTerminalFive);
   $('#color-choice-auto-terminal-reset')?.addEventListener('click',resetColorAutoTerminalFive);
   $('#color-choice-auto-reset')?.addEventListener('click',resetColorAutoFive);
   $('#color-choice-save')?.addEventListener('click',()=>{if(state.colorChoiceSelection.size!==15)return toast('Escolha exatamente 15 dezenas antes de salvar.');saveGames([[...state.colorChoiceSelection].sort((a,b)=>a-b)]);});
