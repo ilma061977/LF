@@ -633,15 +633,7 @@
     try{storageRemove(decisionCacheKey());}catch{}
     applyDecision(null);
     if(autoMode){
-      const before=indicatorCompositionKey();
       randomizeIndicatorComposition();
-      const after=indicatorCompositionKey();
-      if(before===after&&nextAttempt>2){
-        state.decisionAutoRetryCount=0;
-        setDecisionSearchPanel({status:'warn',total:0,tested:0,approvedCount:0,eligibleCount:0,resultText:'Não foi possível montar outra composição viável. Escolha individualmente quais filtros deseja desbloquear; F29 permanece bloqueado.',mode:'Composições automáticas esgotadas'});
-        askMandatoryBlocksToRelax(diagnostics||null);
-        return false;
-      }
     }else{
       state.generationSignature='';
     }
