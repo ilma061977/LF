@@ -567,7 +567,7 @@
     state.decisionSearchMeta={status,tested,total,approvedCount:approved,eligibleCount:eligible,pct,startedAt,elapsedSec,speed,eta,restored:Boolean(meta.restored)};
     const liveTested=$('#decision-live-tested'),liveTotal=$('#decision-live-total'),liveElapsed=$('#decision-live-elapsed'),liveEta=$('#decision-live-eta');if(liveTested)liveTested.textContent=tested.toLocaleString('pt-BR');if(liveTotal)liveTotal.textContent=total.toLocaleString('pt-BR');if(liveElapsed)liveElapsed.textContent=startedAt&&!meta.restored?formatDuration(elapsedSec):'00:00';if(liveEta)liveEta.textContent=status==='running'?(tested>=5000&&elapsedSec>=2&&eta!=null?formatDuration(eta):'calculando…'):status==='done'?(meta.restored?'resultado salvo':'concluído'):status==='warn'?'busca não iniciada':'aguardando início';
     const totalEl=$('#decision-search-total'),testedEl=$('#decision-search-tested'),pctEl=$('#decision-search-percent'),approvedEl=$('#decision-search-approved'),eligibleEl=$('#decision-search-eligible'),rejectedEl=$('#decision-search-rejected'),checksumEl=$('#decision-search-checksum'),approvedNote=$('#decision-search-approved-note'),approvedLabel=$('#decision-search-approved-label'),elapsedEl=$('#decision-search-elapsed'),speedEl=$('#decision-search-speed'),etaEl=$('#decision-search-eta'),baseEl=$('#decision-search-base'),rulesEl=$('#decision-search-rules'),bar=$('#decision-search-bar'),mode=$('#decision-search-mode'),result=$('#decision-search-result'),pill=$('#decision-search-status'),btn=$('#decision-generate');
-    if(totalEl)totalEl.textContent=total.toLocaleString('pt-BR');if(testedEl)testedEl.textContent=tested.toLocaleString('pt-BR');if(eligibleEl)eligibleEl.textContent=eligible.toLocaleString('pt-BR');if(rejectedEl)rejectedEl.textContent=Math.max(0,tested-approved).toLocaleString('pt-BR');if(checksumEl)checksumEl.textContent=status==='done'?`${approved.toLocaleString('pt-BR')} + ${Math.max(0,tested-approved).toLocaleString('pt-BR')} = ${tested.toLocaleString('pt-BR')}`:'aprovados + reprovados = validados';if(pctEl)pctEl.textContent=`${pct.toLocaleString('pt-BR',{minimumFractionDigits:pct>0&&pct<100?2:0,maximumFractionDigits:2})}%`;if(approvedEl){const revision=status==='running'?Number(approvedEl.dataset.revision||0)+1:0;approvedEl.dataset.revision=String(revision);approvedEl.textContent=approved.toLocaleString('pt-BR');approvedEl.classList.remove('counter-pulse');void approvedEl.offsetWidth;if(status==='running')approvedEl.classList.add('counter-pulse');if(approvedNote)approvedNote.textContent=status==='done'?'Matriz 51 exata após 100% · antes do Perfil PRO':status==='running'?`Matriz 51 parcial · atualização ${revision} · ${tested.toLocaleString('pt-BR')} validadas`:'durante a busca';}if(approvedLabel)approvedLabel.textContent=status==='done'?'TOTAL DE APROVADOS EXATO':'TOTAL DE APROVADOS PARCIAL';if(elapsedEl)elapsedEl.textContent=startedAt?formatDuration(elapsedSec):'00:00';if(speedEl)speedEl.textContent=speed?`${Math.round(speed).toLocaleString('pt-BR')}/s`:'0/s';if(etaEl)etaEl.textContent=eta==null?'—':formatDuration(eta);if(baseEl)baseEl.textContent=state.history.at(-1)?.concurso||'—';if(rulesEl){const pro=getProProfileRules();rulesEl.textContent=`${M.SCHEMA_VERSION} · ${M.THRESHOLD_VERSION} · ${decisionSelectionModeLabel()} · ${decisionBoundarySummary()} · ${proProfileSummary(pro)}`;}if(bar)bar.style.width=`${pct}%`;if(mode)mode.textContent=meta.mode||decisionSearchModeText();
+    if(totalEl)totalEl.textContent=status==='running'?\`${tested.toLocaleString('pt-BR')} / ${total?total.toLocaleString('pt-BR'):'—'}\`:total.toLocaleString('pt-BR');if(testedEl)testedEl.textContent=tested.toLocaleString('pt-BR');if(eligibleEl)eligibleEl.textContent=eligible.toLocaleString('pt-BR');if(rejectedEl)rejectedEl.textContent=Math.max(0,tested-approved).toLocaleString('pt-BR');if(checksumEl)checksumEl.textContent=status==='done'?`${approved.toLocaleString('pt-BR')} + ${Math.max(0,tested-approved).toLocaleString('pt-BR')} = ${tested.toLocaleString('pt-BR')}`:'aprovados + reprovados = validados';if(pctEl)pctEl.textContent=`${pct.toLocaleString('pt-BR',{minimumFractionDigits:pct>0&&pct<100?2:0,maximumFractionDigits:2})}%`;if(approvedEl){const revision=status==='running'?Number(approvedEl.dataset.revision||0)+1:0;approvedEl.dataset.revision=String(revision);approvedEl.textContent=approved.toLocaleString('pt-BR');approvedEl.classList.remove('counter-pulse');void approvedEl.offsetWidth;if(status==='running')approvedEl.classList.add('counter-pulse');if(approvedNote)approvedNote.textContent=status==='done'?'Matriz 51 exata após 100% · antes do Perfil PRO':status==='running'?`Matriz 51 parcial · atualização ${revision} · ${tested.toLocaleString('pt-BR')} validadas`:'durante a busca';}if(approvedLabel)approvedLabel.textContent=status==='done'?'TOTAL DE APROVADOS EXATO':'TOTAL DE APROVADOS PARCIAL';if(elapsedEl)elapsedEl.textContent=startedAt?formatDuration(elapsedSec):'00:00';if(speedEl)speedEl.textContent=speed?`${Math.round(speed).toLocaleString('pt-BR')}/s`:'0/s';if(etaEl)etaEl.textContent=eta==null?'—':formatDuration(eta);if(baseEl)baseEl.textContent=state.history.at(-1)?.concurso||'—';if(rulesEl){const pro=getProProfileRules();rulesEl.textContent=`${M.SCHEMA_VERSION} · ${M.THRESHOLD_VERSION} · ${decisionSelectionModeLabel()} · ${decisionBoundarySummary()} · ${proProfileSummary(pro)}`;}if(bar)bar.style.width=`${pct}%`;if(mode)mode.textContent=meta.mode||decisionSearchModeText();
     if(result){const g=status==='done'?(meta.game||null):null;result.textContent=g?.length===15?`${g.map(pad).join(' ')} · varredura 100% · Top 1.000 retidos`:meta.resultText||(status==='running'?'Jogo oficial oculto até a busca exaustiva atingir 100%.':'Aguardando processamento.');}
     const quick=$('#decision-quick-result'),quickTitle=$('#decision-quick-title'),quickNumbers=$('#decision-quick-numbers');
     if(quick&&quickTitle&&quickNumbers){
@@ -592,50 +592,42 @@
   function proProfileAllowsClient(g){return proProfilePass(g,getProProfileRules());}
   function askMandatoryBlocksToRelax(diagnostics=null){
     const existing=document.getElementById('mandatory-relax-dialog');if(existing)existing.remove();
-    const ids=[28,36,37].filter(id=>state.filterPolicies[id]==='block');
-    if(!ids.length){toast('Não há bloqueios obrigatórios liberáveis. O F29 permanece sempre bloqueado.');return;}
     const counts=diagnostics?.filterAny||{};
-    const explain={
-      28:'Limita o acúmulo de métricas exatamente no valor máximo permitido. Hoje o jogo é bloqueado quando concentra 3 ou mais limites máximos ao mesmo tempo.',
-      29:'Impede repetir exatamente uma combinação de 15 dezenas que já saiu em qualquer concurso histórico. Este filtro é permanente e não pode ser liberado.',
-      36:'Controla a intersecção de anomalias dos filtros F30 a F35. O bloqueio evita jogos que acumulam mais de duas falhas simultâneas nesse grupo.',
-      37:'Impede jogos com 14 das 15 dezenas iguais a algum concurso histórico. Ao liberar, combinações muito próximas de um resultado já sorteado poderão ser aceitas.'
-    };
-    const impact={
-      28:'Liberar F28 aumenta a quantidade de candidatos com vários limites no extremo.',
-      29:'F29 não pode ser liberado.',
-      36:'Liberar F36 permite maior concentração de anomalias F30–F35.',
-      37:'Liberar F37 permite candidatos com similaridade histórica de 14/15.'
-    };
-    const rows=ids.map(id=>{const f=M.FILTERS.find(x=>Number(x.id)===id),count=Number(counts[id]||0);return `<label style="display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #e5e7eb;border-radius:10px;margin:8px 0;background:#fff"><input type="checkbox" data-relax-filter="${id}" style="margin-top:4px"><span><b>F${String(id).padStart(2,'0')} · ${f?.name||'Filtro obrigatório'}</b><small style="display:block;color:#334155;margin-top:5px;line-height:1.45"><b>Para que serve:</b> ${explain[id]}</small><small style="display:block;color:#92400e;margin-top:5px;line-height:1.45"><b>Se liberar:</b> ${impact[id]}</small><small style="display:block;color:#64748b;margin-top:5px">${count?count.toLocaleString('pt-BR')+' rejeições nesta busca':'ativo como BLOQUEAR'}</small></span></label>`;}).join('');
-    const wrap=document.createElement('div');wrap.id='mandatory-relax-dialog';wrap.innerHTML=`<div style="position:fixed;inset:0;background:rgba(15,23,42,.68);z-index:99998"></div><section role="dialog" aria-modal="true" aria-labelledby="mandatory-relax-title" style="position:fixed;z-index:99999;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,620px);max-height:84vh;overflow:auto;background:#f8fafc;border-radius:16px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,.35)"><span class="eyebrow">BUSCA SEM RESULTADO</span><h2 id="mandatory-relax-title" style="margin:4px 0 8px">Quais bloqueios obrigatórios deseja excluir da próxima pesquisa?</h2><p style="margin:0 0 12px;color:#475569;line-height:1.5">A busca chegou a 100% sem encontrar um jogo válido. Marque somente os filtros que deseja transformar temporariamente de <b>BLOQUEAR</b> para <b>AVISAR</b> e execute uma nova busca.</p>${rows}<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap"><button type="button" class="btn ghost" data-relax-cancel>Manter todos os bloqueios</button><button type="button" class="btn primary" data-relax-apply>Aplicar e pesquisar novamente</button></div></section>`;
+    const rows=M.FILTERS.map(f=>{
+      const id=Number(f.id),permanent=id===29,current=permanent?'block':(state.filterPolicies[id]||defaultPolicy(f)),blocked=current==='block',count=Number(counts[id]||0),guide=FILTER_GUIDANCE[id];
+      const status=permanent?'BLOQUEIO PERMANENTE':blocked?'BLOQUEANDO AGORA':current==='warn'?'AVISAR · JÁ NÃO BLOQUEIA':'IGNORAR · JÁ NÃO BLOQUEIA';
+      const note=permanent?'F29 impede repetir exatamente um resultado histórico de 15/15 e nunca pode ser liberado.':blocked?'Pode ser selecionado individualmente para mudar de BLOQUEAR para AVISAR na próxima busca.':'Este filtro já não está eliminando jogos na política atual.';
+      return `<label style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid ${permanent?'#ef4444':blocked?'#f59e0b':'#e5e7eb'};border-radius:10px;margin:7px 0;background:${permanent?'#fff1f2':'#fff'};opacity:${!blocked&&!permanent?'.72':'1'}"><input type="checkbox" data-relax-filter="${id}" ${permanent||!blocked?'disabled':''} style="margin-top:4px"><span style="min-width:0"><b>F${String(id).padStart(2,'0')} · ${f.name}</b><strong style="display:block;color:${permanent?'#b91c1c':blocked?'#92400e':'#64748b'};font-size:11px;margin-top:3px">${status}</strong><small style="display:block;color:#334155;margin-top:4px;line-height:1.4">${guide?.what||f.group||'Filtro da Matriz 51.'}</small><small style="display:block;color:#64748b;margin-top:4px;line-height:1.4">${note}</small><small style="display:block;color:#64748b;margin-top:4px">${count?count.toLocaleString('pt-BR')+' rejeições registradas na última busca':'sem rejeições registradas na última busca'}</small></span></label>`;
+    }).join('');
+    const wrap=document.createElement('div');wrap.id='mandatory-relax-dialog';wrap.innerHTML=`<div style="position:fixed;inset:0;background:rgba(15,23,42,.68);z-index:99998"></div><section role="dialog" aria-modal="true" aria-labelledby="mandatory-relax-title" style="position:fixed;z-index:99999;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,760px);max-height:88vh;overflow:auto;background:#f8fafc;border-radius:16px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,.35)"><span class="eyebrow">5 TENTATIVAS CONCLUÍDAS SEM 15 DEZENAS</span><h2 id="mandatory-relax-title" style="margin:4px 0 8px">Escolha individualmente quais filtros deseja desbloquear</h2><p style="margin:0 0 8px;color:#475569;line-height:1.5">Os 51 filtros estão listados abaixo. Marque somente os que estão em <b>BLOQUEANDO AGORA</b> e que você deseja transformar em <b>AVISAR</b> para a próxima busca.</p><p style="margin:0 0 14px;padding:10px 12px;border-radius:9px;background:#fff1f2;color:#991b1b"><b>F29 é permanente:</b> nunca pode ser liberado e continuará impedindo qualquer repetição exata de 15/15 histórico.</p>${rows}<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap"><button type="button" class="btn ghost" data-relax-cancel>Manter todos os bloqueios</button><button type="button" class="btn primary" data-relax-apply>Aplicar selecionados e pesquisar novamente</button></div></section>`;
     document.body.appendChild(wrap);
     const close=()=>wrap.remove();
     wrap.querySelector('[data-relax-cancel]').onclick=close;
     wrap.firstElementChild.onclick=close;
     wrap.querySelector('[data-relax-apply]').onclick=()=>{
-      const chosen=[...wrap.querySelectorAll('[data-relax-filter]:checked')].map(x=>Number(x.dataset.relaxFilter)).filter(id=>id!==29);
-      if(!chosen.length){toast('Marque pelo menos um bloqueio obrigatório para excluir da próxima pesquisa.');return;}
+      const chosen=[...wrap.querySelectorAll('[data-relax-filter]:checked')].map(x=>Number(x.dataset.relaxFilter)).filter(id=>Number.isInteger(id)&&id>=1&&id<=51&&id!==29);
+      if(!chosen.length){toast('Selecione pelo menos um filtro bloqueador. O F29 não pode ser liberado.');return;}
       chosen.forEach(id=>state.filterPolicies[id]='warn');
-      savePrefs();storageRemove(decisionCacheKey());state.generationSignature='';state.decisionRankingCache=null;close();
-      toast(`Relaxados para a próxima busca: ${chosen.map(id=>'F'+String(id).padStart(2,'0')).join(', ')}.`);
+      state.filterPolicies[29]='block';
+      savePrefs();storageRemove(decisionCacheKey());state.generationSignature='';state.decisionRankingCache=null;state.decisionAutoRetryCount=0;close();
+      toast(`Filtros liberados para AVISAR: ${chosen.map(id=>'F'+String(id).padStart(2,'0')).join(', ')}. F29 permanece BLOQUEADO.`);
       generateDecision(false);
     };
   }
   function restartDecisionExhaustiveAfterMiss(diagnostics=null){
     const autoMode=state.indicatorMode==='random'||state.decisionSelectionMode==='virgin';
-    const maxRetries=autoMode?5:1;
-    const attempt=Number(state.decisionAutoRetryCount||0)+1;
-    if(attempt>maxRetries){
+    const maxAttempts=5,currentAttempt=Math.max(1,Number(state.decisionAutoRetryCount||1));
+    if(currentAttempt>=maxAttempts){
       state.decisionAutoRetryCount=0;
       state.decisionRankingCache=null;
       applyDecision(null);
-      setDecisionSearchPanel({status:'warn',tested:0,approvedCount:0,eligibleCount:0,resultText:autoMode?'A busca reiniciou automaticamente do início, mas nenhuma das novas composições conseguiu formar 15 dezenas válidas. Revise os bloqueios obrigatórios.':'A busca foi refeita automaticamente desde 0%, mas a composição manual continua sem jogo válido de 15 dezenas. Revise metas, faixa ou bloqueios.',mode:'Busca automática encerrada sem combinação válida'});
-      toast(autoMode?'As tentativas automáticas foram concluídas sem jogo válido.':'A segunda varredura completa também terminou sem jogo válido.');
+      setDecisionSearchPanel({status:'warn',total:0,tested:0,approvedCount:0,eligibleCount:0,resultText:'As 5 tentativas completas terminaram sem formar um jogo válido de 15 dezenas. Escolha individualmente quais filtros da Matriz 51 deseja desbloquear. O F29 permanece bloqueado permanentemente.',mode:'5/5 tentativas concluídas · aguardando desbloqueio individual'});
+      toast('5 tentativas concluídas sem 15 dezenas. Escolha os filtros a liberar; F29 permanece bloqueado.');
       askMandatoryBlocksToRelax(diagnostics||null);
       return false;
     }
-    state.decisionAutoRetryCount=attempt;
+    const nextAttempt=currentAttempt+1;
+    state.decisionAutoRetryCount=nextAttempt;
     state.decisionRankingCache=null;
     state.decisionIndex=0;
     try{storageRemove(decisionCacheKey());}catch{}
@@ -644,9 +636,9 @@
       const before=indicatorCompositionKey();
       randomizeIndicatorComposition();
       const after=indicatorCompositionKey();
-      if(before===after&&attempt>1){
+      if(before===after&&nextAttempt>2){
         state.decisionAutoRetryCount=0;
-        setDecisionSearchPanel({status:'warn',tested:0,approvedCount:0,eligibleCount:0,resultText:'Não foi possível montar uma nova composição viável para reiniciar a busca.',mode:'Composição automática esgotada'});
+        setDecisionSearchPanel({status:'warn',total:0,tested:0,approvedCount:0,eligibleCount:0,resultText:'Não foi possível montar outra composição viável. Escolha individualmente quais filtros deseja desbloquear; F29 permanece bloqueado.',mode:'Composições automáticas esgotadas'});
         askMandatoryBlocksToRelax(diagnostics||null);
         return false;
       }
@@ -656,14 +648,14 @@
     const excluded=[...blockedNumbers()],available=25-excluded.length,total=decisionBoundaryUniverse(excluded);
     if(available<15||total<=0){
       state.decisionAutoRetryCount=0;
-      setDecisionSearchPanel({status:'warn',total:Math.max(0,total),tested:0,approvedCount:0,eligibleCount:0,resultText:'Não há universo suficiente para formar 15 dezenas com a faixa/exclusões atuais.',mode:'Reinício automático interrompido'});
+      setDecisionSearchPanel({status:'warn',total:0,tested:0,approvedCount:0,eligibleCount:0,resultText:'Não há universo suficiente para formar 15 dezenas com a faixa/exclusões atuais.',mode:'Reinício automático interrompido'});
       return false;
     }
     const nextSig=generationSignature();
     state.generationSignature=nextSig;
     state.decisionIndex=0;
-    setDecisionSearchPanel({status:'running',total,tested:0,approvedCount:0,eligibleCount:0,resultText:`Nenhum jogo de 15 dezenas foi encontrado. Reiniciando a busca do início · tentativa automática ${attempt}/${maxRetries}.`,mode:decisionSearchModeText()+' · reinício automático'});
-    toast(`Busca sem 15 dezenas válidas: reiniciando do 0% · tentativa ${attempt}/${maxRetries}.`);
+    setDecisionSearchPanel({status:'running',total:0,tested:0,approvedCount:0,eligibleCount:0,resultText:`Reiniciando totalmente do zero · tentativa ${nextAttempt}/${maxAttempts}.`,mode:decisionSearchModeText()+` · tentativa ${nextAttempt}/${maxAttempts}`});
+    toast(`Reiniciando do 0 · tentativa ${nextAttempt}/${maxAttempts}.`);
     setTimeout(()=>startDecisionExhaustive(nextSig,excluded,total,0),80);
     return true;
   }
@@ -686,13 +678,13 @@
       const finalGamePassesAllBlocks=g=>{
         if(!Array.isArray(g)||g.length!==15||new Set(g).size!==15)return false;
         const report=M.inspect(g,state.ctx);
-        if(state.decisionSelectionMode==='virgin'&&report?.filters?.some(f=>[29,37].includes(Number(f.id))&&!f.passed))return false;
+        if(state.decisionSelectionMode==='virgin'&&report?.filters?.some(f=>Number(f.id)===29&&!f.passed))return false;
         if(!M.policyAllows(report,state.filterPolicies))return false;
         if(!quotaAllowsClient(g))return false;
         if(!proProfileAllowsClient(g))return false;
         return g.every(n=>!blockedNumbers().has(n));
       };
-      const mode=state.decisionSelectionMode==='virgin'?`Busca exaustiva concluída em 100% · Ranking Virgem ${state.virginProfile} · Top 1.000 elegíveis + Pareto · 51 filtros · ${proProfileSummary()} · F29/F37 obrigatórios`:`Busca exaustiva concluída em 100% · Top 1.000 elegíveis finais retidos · 51 filtros · ${proProfileSummary()} · F29 absoluto · F28/F36/F37 conforme Perfil PRO`;
+      const mode=state.decisionSelectionMode==='virgin'?`Busca exaustiva concluída em 100% · Ranking Virgem ${state.virginProfile} · Top 1.000 elegíveis + Pareto · 51 filtros · ${proProfileSummary()} · F29 obrigatório · F37 conforme política`:`Busca exaustiva concluída em 100% · Top 1.000 elegíveis finais retidos · 51 filtros · ${proProfileSummary()} · F29 absoluto · F28/F36/F37 conforme Perfil PRO`;
       if(Array.isArray(d.topGames)&&d.topGames.length){
         const useDiverse=state.decisionSelectionMode==='virgin'&&Array.isArray(d.virginDiverseGames)&&d.virginDiverseGames.length;
         const rawGames=useDiverse?d.virginDiverseGames:d.topGames,rawMeta=useDiverse?(d.virginDiverseMeta||[]):(d.topMeta||[]),rawScores=useDiverse?rawMeta.map(x=>Number(x?.matrixScore||0)):(d.topScores||[]);
@@ -705,7 +697,7 @@
     const proRules=getProProfileRules();worker.postMessage({task:'generate',history:state.history,period:state.period,quantity:1,excluded,fixedNumbers:[...state.fixedNumbers],policies:state.filterPolicies,indicatorQuotas:indicatorQuotaSpec(),proProfile:{rules:proRules,indicatorGroups:indicatorQuotaSpec().groups},colorBalanced:false,deterministic:true,exhaustive:true,rankIndex,topLimit:1000,rankingMode:state.decisionSelectionMode==='virgin'?'virgin':'standard',virginProfile:state.virginProfile,previousVirginGames:state.decisionSelectionMode==='virgin'?previousVirginGames(100):[],boundary:{start:state.decisionStartNumber,end:state.decisionEndNumber}});
   }
   function generateDecision(advance=false){
-    state.decisionAutoRetryCount=0;
+    state.decisionAutoRetryCount=1;
     state.decisionStarted=true;
     if(state.dataBlocked||!state.history.length){applyDecision(null);setDecisionSearchPanel({status:'warn',resultText:'Base incompleta ou indisponível — análise bloqueada.'});return;}
     const sig=generationSignature();
@@ -1460,7 +1452,7 @@
   $('#decision-end-number')?.addEventListener('change',onDecisionBoundaryChange);
   $('#clear-decision-boundary')?.addEventListener('click',()=>{if(state.decisionSearchMeta?.status==='running'&&state.decisionWorker)return toast('Aguarde a busca atual terminar para limpar a faixa.');state.decisionStartNumber=null;state.decisionEndNumber=null;savePrefs();invalidateDecisionBoundary();toast('Restrição de início/fim removida.');});
     $('#apply-pro-profile')?.addEventListener('click',applyProProfilePanel);renderProProfilePanel();
-  $('#decision-generate').onclick=()=>generateDecision(state.decision.length===15);$('#decision-rerun').onclick=()=>{if(state.decisionWorker)return;state.decisionAutoRetryCount=0;state.decisionRankingCache=null;state.decisionIndex=0;storageRemove(decisionCacheKey());startDecisionExhaustive(generationSignature(),[...blockedNumbers()],decisionBoundaryUniverse([...blockedNumbers()]),0);};$('#decision-selection-mode').onchange=e=>{const v=e.target.value;if(v==='virgin'){state.decisionSelectionMode='virgin';state.indicatorMode='random';savePrefs();invalidateDecisionSelectionMode();randomizeIndicatorComposition();renderDecisionSelectionMode();renderIndicatorTargetPanel();toast('Modo Virgem ativado. Clique em Iniciar busca exaustiva.');return;}state.decisionSelectionMode='standard';if(v==='random'){state.indicatorMode='random';randomizeIndicatorComposition();renderDecisionSelectionMode();return;}state.indicatorMode='manual';savePrefs();renderDecisionSelectionMode();invalidateDecisionSelectionMode();renderIndicatorTargetPanel();};$('#virgin-profile')?.addEventListener('change',e=>{state.virginProfile=['light','strong','max'].includes(e.target.value)?e.target.value:'strong';savePrefs();invalidateDecisionSelectionMode();renderDecisionSelectionMode();toast('Perfil Virgem alterado. Execute nova busca para recalcular o ranking.');});$('#apply-indicator-targets').onclick=()=>{invalidateDecisionForIndicatorTargets();generateDecision(false);};$('#randomize-indicator-targets').onclick=()=>randomizeIndicatorComposition();$('#vertical-search').onclick=()=>renderVerticalVisual();$('#vertical-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical-start').value=Math.max(1,latest-9);$('#vertical-end').value=latest;renderVerticalVisual();};$('#vertical2-search').onclick=()=>renderVertical2();$('#vertical2-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical2-start').value=Math.max(1,latest-9);$('#vertical2-end').value=latest;renderVertical2();};$('#vertical3-search').onclick=()=>renderVertical3();$('#vertical3-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical3-start').value=Math.max(1,latest-9);$('#vertical3-end').value=latest;renderVertical3();};
+  $('#decision-generate').onclick=()=>generateDecision(state.decision.length===15);$('#decision-rerun').onclick=()=>{if(state.decisionWorker)return;state.decisionAutoRetryCount=1;state.decisionRankingCache=null;state.decisionIndex=0;storageRemove(decisionCacheKey());startDecisionExhaustive(generationSignature(),[...blockedNumbers()],decisionBoundaryUniverse([...blockedNumbers()]),0);};$('#decision-selection-mode').onchange=e=>{const v=e.target.value;if(v==='virgin'){state.decisionSelectionMode='virgin';state.indicatorMode='random';savePrefs();invalidateDecisionSelectionMode();randomizeIndicatorComposition();renderDecisionSelectionMode();renderIndicatorTargetPanel();toast('Modo Virgem ativado. Clique em Iniciar busca exaustiva.');return;}state.decisionSelectionMode='standard';if(v==='random'){state.indicatorMode='random';randomizeIndicatorComposition();renderDecisionSelectionMode();return;}state.indicatorMode='manual';savePrefs();renderDecisionSelectionMode();invalidateDecisionSelectionMode();renderIndicatorTargetPanel();};$('#virgin-profile')?.addEventListener('change',e=>{state.virginProfile=['light','strong','max'].includes(e.target.value)?e.target.value:'strong';savePrefs();invalidateDecisionSelectionMode();renderDecisionSelectionMode();toast('Perfil Virgem alterado. Execute nova busca para recalcular o ranking.');});$('#apply-indicator-targets').onclick=()=>{invalidateDecisionForIndicatorTargets();generateDecision(false);};$('#randomize-indicator-targets').onclick=()=>randomizeIndicatorComposition();$('#vertical-search').onclick=()=>renderVerticalVisual();$('#vertical-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical-start').value=Math.max(1,latest-9);$('#vertical-end').value=latest;renderVerticalVisual();};$('#vertical2-search').onclick=()=>renderVertical2();$('#vertical2-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical2-start').value=Math.max(1,latest-9);$('#vertical2-end').value=latest;renderVertical2();};$('#vertical3-search').onclick=()=>renderVertical3();$('#vertical3-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical3-start').value=Math.max(1,latest-9);$('#vertical3-end').value=latest;renderVertical3();};
   $('#use-suggestion').onclick=()=>{if(state.decision.length!==15)return toast('Aguarde a busca exaustiva chegar a 100% para usar o NOVO INDICADO oficial.');state.selection=new Set(state.decision);renderAnalysis();};
   $('#clear-selection').onclick=()=>{state.selection.clear();syncManualDecision();};
   $('#complete-selection').onclick=completeManualSelection;
