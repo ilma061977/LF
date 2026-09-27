@@ -516,6 +516,11 @@ function runColorRank(d){
   const fixed=[...new Set((d.selected||[]).map(Number))].filter(n=>Number.isInteger(n)&&n>=1&&n<=25).sort((a,b)=>a-b);
   const singleRandom=d.mode==='single-random',five=d.mode==='five'||d.mode==='five-terminal'||singleRandom,terminalByColor=!!d.terminalByColor||d.mode==='five-terminal',pool=ALL.filter(n=>!fixed.includes(n)),choose=15-fixed.length;
   const targetColors=five?new Set(((d.targetColors||[]).length?d.targetColors:[1,2,3,4,5]).map(Number).filter(c=>c>=1&&c<=5)):null;
+  const lastComplete=singleRandom?[...(d.history||[])].sort((a,b)=>Number(b.concurso)-Number(a.concurso)).find(draw=>[1,2,3,4,5].some(c=>[c,c+10,c+20].every(n=>(draw.dezenas||[]).includes(n)))):null;
+  const lastCompleteColors=lastComplete?[1,2,3,4,5].filter(c=>[c,c+10,c+20].every(n=>lastComplete.dezenas.includes(n))):[];
+  const pattern=game=>{const counts=Array(10).fill(0);for(const n of game||[])counts[n%10]++;return counts.sort((a,b)=>b-a).join('-');};
+  const blockedPattern=lastComplete?pattern(lastComplete.dezenas):null;
+  if(singleRandom)for(const color of lastCompleteColors)targetColors.delete(color);
   if(choose<0||choose>pool.length){postMessage({type:'color-rank-done',mode:d.mode,rows:[],game:null,tested:0,total:0});return;}
   const best=Object.fromEntries([1,2,3,4,5].map(c=>[c,null])),approvedPerColor={1:0,2:0,3:0,4:0,5:0};let single=null,tested=0,eligible=0;
   const diagnostics=Object.fromEntries([1,2,3,4,5].map(c=>[c,{candidates:0,counts:{},names:{},removable:{},unlock:{}}]));
@@ -524,6 +529,7 @@ function runColorRank(d){
 
   const evaluateGame=(game,targetHint=0)=>{
     tested++;
+    if(singleRandom&&blockedPattern&&pattern(game)===blockedPattern)return;
     const colors=M.mandatoryColorRule(game);
     if(colors?.passed){
       let target=0,completeCount=0;
@@ -598,7 +604,7 @@ function runColorRank(d){
   if(total===0||tested!==total)postMessage({type:'color-rank-progress',tested,total,eligible,optimized:five,searchMode});
   const diagFor=color=>{const d0=diagnostics[color],mk=(key,count)=>({key,name:d0.names[key]||key,count,removable:!!d0.removable[key]});const unlockers=Object.entries(d0.unlock).map(([k,v])=>mk(k,v)).sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key));const topBlockers=Object.entries(d0.counts).map(([k,v])=>mk(k,v)).sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key)).slice(0,8);return{candidates:d0.candidates,unlockers,topBlockers};};
   const rows=(five?[...targetColors]:[1,2,3,4,5]).sort((a,b)=>a-b).map(color=>({color,...best[color],diagnostics:diagFor(color)}));
-  postMessage({type:'color-rank-done',mode:d.mode,rows,game:single,tested,total,eligible,targetColors:[...(targetColors||[])],optimized:five,searchMode});
+  postMessage({type:'color-rank-done',mode:d.mode,rows,game:single,tested,total,eligible,targetColors:[...(targetColors||[])],lastComplete:lastComplete?{concurso:lastComplete.concurso,data:lastComplete.data,colors:lastCompleteColors,pattern:blockedPattern}:null,optimized:five,searchMode});
 }
 function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progressInfo=null,quotaSpec=null,proProfile=null,rankingConfig=null,boundary=null,fixedNumbers=[],relaxations=[]){
   const block=new Set((excluded||[]).map(Number)),start=Number(boundary?.start)||null,end=Number(boundary?.end)||null;
