@@ -2324,7 +2324,7 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
       }
     };
     worker.onerror=()=>{if(finish()){if(progress)progress.textContent='Falha no cálculo. Tente novamente.';toast('Falha no cálculo por cores.');}};
-    const quota=indicatorQuotaSpec();worker.postMessage({task:'color-rank',mode,selected:mode==='fill'?selected:[],targetColors,terminalByColor:terminalMode,relaxByColor:terminalMode?(state.colorAutoTerminalRelax||{}):(state.colorAutoRelax||{}),history:state.history,period:state.period,policies:state.filterPolicies,indicatorQuotas:quota,proProfile:{rules:getProProfileRules(),indicatorGroups:quota.groups},rankingMode:state.decisionSelectionMode==='virgin'?'virgin':'standard',virginProfile:state.virginProfile,previousVirginGames:state.decisionSelectionMode==='virgin'?previousVirginGames(100):[]});
+    const quota=indicatorQuotaSpec();worker.postMessage({task:'color-rank',mode,selected:mode==='fill'?selected:[],targetColors,terminalByColor:terminalMode,relaxByColor:randomMode?{}:terminalMode?(state.colorAutoTerminalRelax||{}):(state.colorAutoRelax||{}),history:state.history,period:state.period,policies:state.filterPolicies,indicatorQuotas:quota,proProfile:{rules:getProProfileRules(),indicatorGroups:quota.groups},rankingMode:state.decisionSelectionMode==='virgin'?'virgin':'standard',virginProfile:state.virginProfile,previousVirginGames:state.decisionSelectionMode==='virgin'?previousVirginGames(100):[]});
   }
   function generateColorAutoFive(){if(colorRankWorker){colorRankWorker.terminate();colorRankWorker=null;}state.colorAutoGames=[];state.colorAutoRelax={1:[],2:[],3:[],4:[],5:[]};renderColorAutoFive();runColorRank('five');}
   function generateColorRandomGame(){runColorRank('single-random');}
