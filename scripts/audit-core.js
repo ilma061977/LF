@@ -69,7 +69,8 @@ for(;wq<indexSource.length;wq++){
   if(ch==='"')break;
 }
 const inlineWorker=JSON.parse(indexSource.slice(wp,wq+1));
-assert.equal(inlineWorker.trimEnd(),workerSource.trimEnd(),'Worker inline e analysis-worker.js devem executar a mesma lógica');
+assert.ok(inlineWorker.includes("type:'color-rank-done'"),'Worker offline incorporado deve manter o fluxo por cores');
+assert.ok(workerSource.includes("searchMode=five?'targeted-random':'exhaustive'"),'Worker web deve usar busca aleatória direcionada nos 5 jogos por cores');
 
 // Todas as tasks enviadas pelo app precisam existir no Worker.
 const appTasks=[...new Set([...appSource.matchAll(/task:'([^']+)'/g)].map(m=>m[1]))];
@@ -110,7 +111,7 @@ assert.equal(appSource.includes('GERAR / COMPLETAR 5'),false,'Textos antigos GER
 assert.equal(indexSource.includes('GERAR / COMPLETAR 5'),false,'Textos antigos GERAR / COMPLETAR não devem permanecer no HTML');
 assert.ok(workerSource.includes("d.mode==='five-terminal'"),'Worker não reconhece five-terminal');
 assert.ok(workerSource.includes('terminalByColor'),'Worker não aplica terminal por cor');
-assert.ok(workerSource.includes("type:'color-rank-done'"),'Worker não devolve color-rank-done');
+assert.ok(workerSource.includes("type:'color-rank-done'"),'Worker não devolve color-rank-done');\nassert.ok(workerSource.includes("attemptsPerColor"),'Worker web deve limitar a busca por cor em vez de varrer todo o universo');
 
 // Busca exaustiva e F29 absoluto.
 assert.ok(appSource.includes('function restartDecisionExhaustiveAfterMiss'),'Busca exaustiva sem reinício automático');
