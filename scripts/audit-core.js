@@ -111,7 +111,8 @@ assert.equal(appSource.includes('GERAR / COMPLETAR 5'),false,'Textos antigos GER
 assert.equal(indexSource.includes('GERAR / COMPLETAR 5'),false,'Textos antigos GERAR / COMPLETAR não devem permanecer no HTML');
 assert.ok(workerSource.includes("d.mode==='five-terminal'"),'Worker não reconhece five-terminal');
 assert.ok(workerSource.includes('terminalByColor'),'Worker não aplica terminal por cor');
-assert.ok(workerSource.includes("type:'color-rank-done'"),'Worker não devolve color-rank-done');\nassert.ok(workerSource.includes("attemptsPerColor"),'Worker web deve limitar a busca por cor em vez de varrer todo o universo');
+assert.ok(workerSource.includes("type:'color-rank-done'"),'Worker não devolve color-rank-done');
+assert.ok(workerSource.includes("attemptsPerColor"),'Worker web deve limitar a busca por cor em vez de varrer todo o universo');
 
 // Busca exaustiva e F29 absoluto.
 assert.ok(appSource.includes('function restartDecisionExhaustiveAfterMiss'),'Busca exaustiva sem reinício automático');
