@@ -563,34 +563,41 @@ function runColorRank(d){
     }
   };
 
-  // Otimização exata para “5 jogos · terminar na cor”.
-  // Em vez de percorrer C(25,15)=3.268.760 jogos e descartar os que terminam fora da cor,
-  // cada cor enumera somente combinações <= ao seu terminal e com a trinca da cor já forçada.
-  let total=0,plans=[];
-  if(five&&terminalByColor){
+  // Os 5 jogos por cores são uma geração aleatória dirigida: a trinca da cor já nasce forçada
+  // e o Worker amostra somente candidatos compatíveis. Mantém Matriz 51, indicadores, Perfil PRO
+  // e F29/F28/F36/F37 conforme as políticas atuais, sem varrer 3.268.760 jogos a cada clique.
+  let total=0,plans=[],searchMode=five?'targeted-random':'exhaustive';
+  if(five){
+    const attemptsPerColor=Math.max(5000,Math.min(60000,Number(d.colorAttemptsPerColor)||20000));
     for(const color of [...targetColors].sort((a,b)=>a-b)){
-      const terminal=20+color,required=[color,color+10,terminal],forced=[...new Set([...fixed,...required])].sort((a,b)=>a-b);
-      if(forced.some(n=>n>terminal)||forced.length>15){plans.push({color,forced,pool:[],choose:-1,total:0});continue;}
-      const localPool=ALL.filter(n=>n<=terminal&&!forced.includes(n)),localChoose=15-forced.length,localTotal=localChoose>=0&&localChoose<=localPool.length?M.nCk(localPool.length,localChoose):0;
+      const terminal=terminalByColor?20+color:25,required=[color,color+10,color+20],forced=[...new Set([...fixed,...required])].sort((a,b)=>a-b);
+      const invalid=forced.some(n=>n>terminal)||forced.length>15;
+      const localPool=invalid?[]:ALL.filter(n=>n<=terminal&&!forced.includes(n)),localChoose=15-forced.length,viable=!invalid&&localChoose>=0&&localChoose<=localPool.length;
+      const localTotal=viable?attemptsPerColor:0;
       plans.push({color,forced,pool:localPool,choose:localChoose,total:localTotal});total+=localTotal;
     }
   }else total=M.nCk(pool.length,choose);
-  const progressEvery=Math.max(1000,Math.floor(Math.max(1,total)/100));
-  postMessage({type:'color-rank-progress',tested:0,total,eligible,optimized:five&&terminalByColor});
-  const maybeProgress=()=>{if(tested%progressEvery===0||tested===total)postMessage({type:'color-rank-progress',tested,total,eligible,optimized:five&&terminalByColor});};
+  const progressEvery=Math.max(500,Math.floor(Math.max(1,total)/100));
+  postMessage({type:'color-rank-progress',tested:0,total,eligible,optimized:five,searchMode});
+  const maybeProgress=()=>{if(tested%progressEvery===0||tested===total)postMessage({type:'color-rank-progress',tested,total,eligible,optimized:five,searchMode});};
 
-  if(five&&terminalByColor){
+  if(five){
     for(const plan of plans){
       if(!plan.total)continue;
-      eachComb(plan.pool,plan.choose,remaining=>{const game=[...plan.forced,...remaining].sort((a,b)=>a-b);evaluateGame(game,plan.color);maybeProgress();});
+      for(let attempt=0;attempt<plan.total;attempt++){
+        const shuffled=[...plan.pool];
+        for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
+        const game=[...plan.forced,...shuffled.slice(0,plan.choose)].sort((a,b)=>a-b);
+        evaluateGame(game,plan.color);maybeProgress();
+      }
     }
   }else{
     eachComb(pool,choose,remaining=>{const game=[...fixed,...remaining].sort((a,b)=>a-b);evaluateGame(game,0);maybeProgress();});
   }
-  if(total===0||tested!==total)postMessage({type:'color-rank-progress',tested,total,eligible,optimized:five&&terminalByColor});
+  if(total===0||tested!==total)postMessage({type:'color-rank-progress',tested,total,eligible,optimized:five,searchMode});
   const diagFor=color=>{const d0=diagnostics[color],mk=(key,count)=>({key,name:d0.names[key]||key,count,removable:!!d0.removable[key]});const unlockers=Object.entries(d0.unlock).map(([k,v])=>mk(k,v)).sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key));const topBlockers=Object.entries(d0.counts).map(([k,v])=>mk(k,v)).sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key)).slice(0,8);return{candidates:d0.candidates,unlockers,topBlockers};};
   const rows=(five?[...targetColors]:[1,2,3,4,5]).sort((a,b)=>a-b).map(color=>({color,...best[color],diagnostics:diagFor(color)}));
-  postMessage({type:'color-rank-done',mode:d.mode,rows,game:single,tested,total,eligible,targetColors:[...(targetColors||[])],optimized:five&&terminalByColor});
+  postMessage({type:'color-rank-done',mode:d.mode,rows,game:single,tested,total,eligible,targetColors:[...(targetColors||[])],optimized:five,searchMode});
 }
 function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progressInfo=null,quotaSpec=null,proProfile=null,rankingConfig=null,boundary=null,fixedNumbers=[],relaxations=[]){
   const block=new Set((excluded||[]).map(Number)),start=Number(boundary?.start)||null,end=Number(boundary?.end)||null;
