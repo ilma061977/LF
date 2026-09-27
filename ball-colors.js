@@ -25,11 +25,13 @@
     const x=get(n), num=String(Number(n)).padStart(2,'0');
     return '<span class="'+extraClass+' '+className(n)+'" title="'+title(n)+'" data-ball-number="'+num+'" data-ball-color="'+x.name+'" '+extra+'>'+num+'</span>';
   }
+  function chip(n){return render(n,'lf-number-chip');}
 
   const css = Object.entries(MAP).map(([k,v]) => {
     const border = k==='0' ? '#94a3b8' : (k==='7' ? '#374151' : 'rgba(15,23,42,.20)');
-    return '.c'+k+'{background:'+v.hex+'!important;color:'+v.text+'!important;border-color:'+border+'!important}';
+    return '.c'+k+'{--lf-ball:'+v.hex+';--lf-ball-text:'+v.text+';background:'+v.hex+'!important;color:'+v.text+'!important;border-color:'+border+'!important}';
   }).join('')+
+  '.lf-number-chip{display:inline-grid;place-items:center;vertical-align:middle;flex:0 0 auto;min-width:22px;height:22px;padding:0 3px;border:1px solid;border-radius:999px;font-size:10px;font-weight:900;line-height:1;white-space:nowrap;text-shadow:none;box-sizing:border-box}' +
   '.lf-color-legend{display:flex;gap:6px;flex-wrap:wrap}.lf-color-legend .lf-color-item{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:#64748b}.lf-color-legend .lf-color-dot{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:8px;font-weight:900;border:1px solid rgba(15,23,42,.18)}';
 
   const style=document.createElement('style');
@@ -38,7 +40,7 @@
   document.head.appendChild(style);
 
   window.LFOfficialBalls = Object.freeze({
-    MAP, info, get, finalKey, className, title, render,
+    MAP, info, get, finalKey, className, title, render, chip,
     legendHTML(){
       return '<div class="lf-color-legend">'+[1,2,3,4,5,6,7,8,9,0].map(k=>{
         const v=MAP[k], first=v.numbers.map(n=>String(n).padStart(2,'0')).join(' ');
