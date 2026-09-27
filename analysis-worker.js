@@ -529,7 +529,6 @@ function runColorRank(d){
 
   const evaluateGame=(game,targetHint=0)=>{
     tested++;
-    if(singleRandom&&blockedPattern&&pattern(game)===blockedPattern)return;
     const colors=M.mandatoryColorRule(game);
     if(colors?.passed){
       let target=0,completeCount=0;
