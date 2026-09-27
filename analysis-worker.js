@@ -514,10 +514,10 @@ function colorBlockerEntry(raw){
 function runColorRank(d){
   const ctx=M.buildContext(d.history||[],{window:d.period||10}),policies=d.policies||{},quota=d.indicatorQuotas||null,profile=d.proProfile||null;
   const fixed=[...new Set((d.selected||[]).map(Number))].filter(n=>Number.isInteger(n)&&n>=1&&n<=25).sort((a,b)=>a-b);
-  const five=d.mode==='five'||d.mode==='five-terminal',terminalByColor=!!d.terminalByColor||d.mode==='five-terminal',pool=ALL.filter(n=>!fixed.includes(n)),choose=15-fixed.length;
+  const singleRandom=d.mode==='single-random',five=d.mode==='five'||d.mode==='five-terminal'||singleRandom,terminalByColor=!!d.terminalByColor||d.mode==='five-terminal',pool=ALL.filter(n=>!fixed.includes(n)),choose=15-fixed.length;
   const targetColors=five?new Set(((d.targetColors||[]).length?d.targetColors:[1,2,3,4,5]).map(Number).filter(c=>c>=1&&c<=5)):null;
   if(choose<0||choose>pool.length){postMessage({type:'color-rank-done',mode:d.mode,rows:[],game:null,tested:0,total:0});return;}
-  const best=Object.fromEntries([1,2,3,4,5].map(c=>[c,null]));let single=null,tested=0,eligible=0;
+  const best=Object.fromEntries([1,2,3,4,5].map(c=>[c,null])),approvedPerColor={1:0,2:0,3:0,4:0,5:0};let single=null,tested=0,eligible=0;
   const diagnostics=Object.fromEntries([1,2,3,4,5].map(c=>[c,{candidates:0,counts:{},names:{},removable:{},unlock:{}}]));
   const virginMode=d.rankingMode==='virgin',virginCtx=virginMode?buildVirginRankContext(ctx.history,d.previousVirginGames||[]):null;
   const colorModel=M.buildFullColorDelayModel(ctx.history);
@@ -555,7 +555,8 @@ function runColorRank(d){
           eligible++;const bonus=M.fullColorDelayBonus(game,colorModel).bonus;
           const rankScore=(virginMode?virginRankMetrics(game,score,virginCtx,d.virginProfile||'strong').rankScore:score)+bonus;
           const previous=five?best[target]:single;
-          if(!previous||rankScore>previous.rankScore||(rankScore===previous.rankScore&&keyOf(game)<keyOf(previous.game))){
+          if(singleRandom)approvedPerColor[target]++;
+          if(singleRandom?Math.random()<1/approvedPerColor[target]:!previous||rankScore>previous.rankScore||(rankScore===previous.rankScore&&keyOf(game)<keyOf(previous.game))){
             const entry={game,score,bonus,rankScore,rankingMode:virginMode?'virgin':'standard',relaxed:[...relax]};if(five)best[target]=entry;else single=entry;
           }
         }
