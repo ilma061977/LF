@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d10" />
-  <meta name="lf-build" content="2026-09-29-verticais-remarcar-c3791-v375" />
+  <meta name="lf-build" content="2026-09-29-verticais-ciclo4-c3791-v375" />
   <title>LF Inteligente V3.7.5</title>
   <meta name="description" content="LF Inteligente V3.7.5 — NOVO INDICADO 5x5, Matriz 51 canônica, fechamentos matemáticos, backtest determinístico e carteira em nuvem." />
   <style>:root{
@@ -671,6 +671,7 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
 .affinity-selector button.active{outline:3px solid #16a34a;outline-offset:2px;box-shadow:0 2px 8px rgba(22,163,74,.25)}
 .pair-matrix th .lf-number-chip,.pair-matrix td:first-child .lf-number-chip{min-width:22px;height:22px}
 </style>
+<style id="vertical-four-click-state">.vertical-visual tr.game-selected:not(.number-fixed):not(.number-excluded) .vertical-number-cell,.vertical-visual tr.game-selected:not(.number-fixed):not(.number-excluded) .vertical-game-pick button{background:#15803d!important;color:#fff!important;box-shadow:inset 0 0 0 2px #22c55e}.vertical-visual tr.game-selected:not(.number-fixed):not(.number-excluded) .vertical-number-cell .mini-ball{background:#15803d!important;color:#fff!important}</style>
 </head>
 <body>
   <a class="skip" href="#main">Ir para o conteúdo</a>
@@ -2591,7 +2592,7 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
     $$('.vertical-number-summary').forEach(el=>el.textContent=summary);
     $$('.vertical-number-tools').forEach(el=>{el.innerHTML=`<div class="vertical-tools-head"><div><b>Dezenas compartilhadas</b><small>Clique para selecionar dezenas e use os botões Fixar, Excluir, Desafixar, Liberar ou Remarcar. A seleção é mantida até clicar em Limpar seleção. Vale no Novo Indicado, Verticais e Análise. Jogo por Cores independente.</small></div><span>${state.verticalNumberSelection.size} selecionada(s)</span></div><div class="vertical-number-board">${ALL.map(n=>{const marks=items.filter(x=>x.set.has(n)).map(x=>x.emoji).join('');const status=state.fixedNumbers.has(n)?'fixed':state.exclusions.has(n)?'excluded':'';return `<button type="button" class="vertical-number-pick ${cls(n)} ${state.verticalNumberSelection.has(n)?'selected':''} ${status}" data-vertical-pick="${n}" aria-pressed="${state.verticalNumberSelection.has(n)}" title="${pad(n)} · ${status==='fixed'?'Fixa':status==='excluded'?'Excluída':'Livre'} · ${marks||'sem indicador'}"><b>${pad(n)}</b><small>${marks||'—'}</small><i>${status==='fixed'?'🔒':status==='excluded'?'⛔':''}</i></button>`;}).join('')}</div><div class="vertical-tools-actions"><button type="button" class="btn tiny primary" data-vertical-action="fix">Fixar selecionadas</button><button type="button" class="btn tiny" data-vertical-action="exclude">Excluir selecionadas</button><button type="button" class="btn tiny ghost" data-vertical-action="unfix">Desafixar selecionadas</button><button type="button" class="btn tiny ghost" data-vertical-action="release">Liberar selecionadas</button><button type="button" class="btn tiny" data-vertical-action="remark">Remarcar selecionadas</button><button type="button" class="btn tiny ghost" data-vertical-action="clear-selection">Limpar seleção</button></div><div class="vertical-indicator-legend">${items.map(x=>`<span>${x.emoji} ${x.label}</span>`).join('')}</div>`;});
     const target=$('#decision-vertical-constraints');if(target)target.textContent=summary;
-    $$('.shared-number-constraints').forEach(el=>el.innerHTML=`<span>1 clique: escolher · 2: fixar 🔒 · 3: excluir ⛔</span>${[...state.fixedNumbers].sort((a,b)=>a-b).map(n=>`<button type="button" class="constraint-fixed" data-number-release="${n}" data-release-mode="unfix" title="Desafixar ${pad(n)}">🔒 ${pad(n)} · liberar</button>`).join('')}${[...state.exclusions].sort((a,b)=>a-b).map(n=>`<button type="button" class="constraint-excluded" data-number-release="${n}" data-release-mode="release" title="Liberar ${pad(n)}">⛔ ${pad(n)} · liberar</button>`).join('')}`);
+    $$('.shared-number-constraints').forEach(el=>el.innerHTML=`<span>1 clique: marcar verde · 2: fixar 🔒 · 3: excluir ⛔ · 4: liberar e reiniciar</span>${[...state.fixedNumbers].sort((a,b)=>a-b).map(n=>`<button type="button" class="constraint-fixed" data-number-release="${n}" data-release-mode="unfix" title="Desafixar ${pad(n)}">🔒 ${pad(n)} · liberar</button>`).join('')}${[...state.exclusions].sort((a,b)=>a-b).map(n=>`<button type="button" class="constraint-excluded" data-number-release="${n}" data-release-mode="release" title="Liberar ${pad(n)}">⛔ ${pad(n)} · liberar</button>`).join('')}`);
   }
   function invalidateDecisionForVerticalConstraints(){
     storageRemove(decisionCacheKey());syncManualDecision();renderExclusions();
@@ -3356,9 +3357,20 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
     setDecisionSearchPanel({status:'warn',manualGame:manual,tested:0,total:decisionBoundaryUniverse([...blockedNumbers()]),resultText:manual.length===15?'Seleção manual: '+manual.map(pad).join(' ')+' · sem busca exaustiva. Inicie a busca para obter uma indicação aprovada.':'Seleção manual: '+state.selection.size+'/15 dezenas. Complete as restantes ou use o preenchimento aleatório.',mode:'Seleção manual · busca exaustiva ainda não executada'});
   }
   function completeManualSelection(){const pool=ALL.filter(n=>!state.selection.has(n)&&!blockedNumbers().has(n));for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}while(state.selection.size<15&&pool.length)state.selection.add(pool.pop());syncManualDecision();if(state.selection.size<15)toast('Bloqueios demais para completar 15 dezenas.');}
-  function verticalNumberCell(n,extraClass=''){const fixed=state.fixedNumbers.has(n),excluded=state.exclusions.has(n),mark=excluded?'⛔':fixed?'🔒':'';return `<td class="vertical-number-cell ${extraClass} ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}" data-vertical-number="${n}" title="${pad(n)} · ${excluded?'EXCLUÍDA':fixed?'FIXA':'livre'} · 1x escolher · 2x fixar · 3x excluir"><span class="vertical-number-value">${chip(n)}</span>${mark?`<span class="vertical-state-mark">${mark}</span>`:''}</td>`;}
-  function verticalSelectionCell(n){const excluded=state.exclusions.has(n),fixed=state.fixedNumbers.has(n),selected=state.selection.has(n),status=excluded?'⛔':fixed?'🔒':selected?'✓':'+';return `<td class="vertical-game-pick ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}"><button type="button" data-vertical-game="${n}" aria-label="Dezena ${pad(n)} · ${excluded?'excluída':fixed?'fixa':selected?'escolhida':'livre'}. 1x escolhe, 2x fixa, 3x exclui" aria-pressed="${selected}" title="${pad(n)} · 1x escolher · 2x fixar · 3x excluir">${status}</button></td>`;}
-  function bindVerticalGamePicks(wrap){wrap.querySelectorAll('[data-vertical-game],[data-vertical-number]').forEach(button=>button.onclick=()=>{const n=Number(button.dataset.verticalGame||button.dataset.verticalNumber);state.verticalNumberSelection.add(n);renderVerticalNumberTools();queueNumberGesture(n,()=>toggleSelection(n));});}
+  function verticalNumberCell(n,extraClass=''){const fixed=state.fixedNumbers.has(n),excluded=state.exclusions.has(n),mark=excluded?'⛔':fixed?'🔒':'';return `<td class="vertical-number-cell ${extraClass} ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}" data-vertical-number="${n}" title="${pad(n)} · ${excluded?'EXCLUÍDA':fixed?'FIXA':'livre'} · 1x marcar verde · 2x fixar 🔒 · 3x excluir ⛔ · 4x liberar"><span class="vertical-number-value">${chip(n)}</span>${mark?`<span class="vertical-state-mark">${mark}</span>`:''}</td>`;}
+  function verticalSelectionCell(n){const excluded=state.exclusions.has(n),fixed=state.fixedNumbers.has(n),selected=state.selection.has(n),status=excluded?'⛔':fixed?'🔒':selected?'✓':'+';return `<td class="vertical-game-pick ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}"><button type="button" data-vertical-game="${n}" aria-label="Dezena ${pad(n)} · ${excluded?'excluída':fixed?'fixa':selected?'escolhida':'livre'}. 1x marca verde, 2x fixa, 3x exclui, 4x libera" aria-pressed="${selected}" title="${pad(n)} · 1x marcar verde · 2x fixar 🔒 · 3x excluir ⛔ · 4x liberar">${status}</button></td>`;}
+  function cycleVerticalNumber(n){
+    if(state.decisionWorker)return toast('Aguarde a busca terminar para alterar as dezenas.');
+    state.verticalNumberSelection.add(n);
+    if(state.exclusions.has(n)){
+      state.exclusions.delete(n);state.fixedNumbers.delete(n);state.selection.delete(n);
+      savePrefs();storageRemove(decisionCacheKey());syncManualDecision();renderExclusions();
+    }else if(state.fixedNumbers.has(n))applyNumberConstraint(n,'exclude');
+    else if(state.selection.has(n))applyNumberConstraint(n,'fix');
+    else toggleSelection(n);
+    renderVerticalNumberTools();
+  }
+  function bindVerticalGamePicks(wrap){wrap.querySelectorAll('[data-vertical-game],[data-vertical-number]').forEach(button=>button.onclick=()=>cycleVerticalNumber(Number(button.dataset.verticalGame||button.dataset.verticalNumber)));}
   function toggleSelection(n){
     if(state.decisionWorker)return toast('Aguarde a busca terminar para alterar as dezenas.');
     if(state.fixedNumbers.has(n))return toast(`Dezena ${pad(n)} fixa. Use liberar para desafixá-la.`);
