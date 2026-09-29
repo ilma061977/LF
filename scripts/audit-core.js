@@ -167,9 +167,11 @@ assert.equal(M.AUDIT_BASE_THROUGH,history.at(-1).concurso,'AUDIT_BASE_THROUGH de
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
 
 // G01/G02: ocorrências cronológicas; o alvo nunca consulta resultados futuros.
-const newFailures=[[],[]];
-for(let i=3;i<history.length;i++){
+const newFailures=[[],[],[],[],[],[],[]];
+for(let i=1;i<history.length;i++){
   const result=M.newGeometricBlocks(history[i].dezenas,{latest:history[i-1]});
   result.rules.forEach((rule,k)=>{if(rule.blocked)newFailures[k].push(history[i].concurso);});
 }
-assert.deepEqual(newFailures,[[636],[773]],'G01/G02 devem falhar apenas uma vez na descoberta e nenhuma nos 1000 reservados');
+assert.deepEqual(newFailures,[[636],[773],[7],[],[657],[1751],[]],'G01/G02 e C03–C07: ocorrências históricas exatas, zero nos 1000 recentes');
+const noPrevious=M.newGeometricBlocks(history[6].dezenas,{});
+assert(noPrevious.rules.filter(r=>['G02','C04','C07'].includes(r.id)).every(r=>!r.blocked),'Bloqueios dinâmicos exigem anterior completo');

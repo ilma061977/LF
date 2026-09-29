@@ -292,11 +292,37 @@ self.window=self;
         if(r<4&&common.has(n+5))sharedEdges++;
       }
     }
+    // C03–C07: regras externas à Matriz 51; referências temporais usam somente o anterior.
+    let largestEmpty=0,enclosedEmpty=0,rotationPairs=0,horizontalRuns3=0,verticalRuns3=0,newKnightEdges=0,gapChange=0;
+    const remaining=new Set(Array.from({length:25},(_,i)=>i+1).filter(n=>!chosen.has(n)));
+    while(remaining.size){
+      const first=remaining.values().next().value,queue=[first];remaining.delete(first);let size=0,touchesBorder=false;
+      for(let j=0;j<queue.length;j++){
+        const n=queue[j],r=Math.floor((n-1)/5),c=(n-1)%5;size++;touchesBorder=touchesBorder||r===0||r===4||c===0||c===4;
+        const neighbors=[];if(r>0)neighbors.push(n-5);if(r<4)neighbors.push(n+5);if(c>0)neighbors.push(n-1);if(c<4)neighbors.push(n+1);
+        for(const next of neighbors)if(remaining.delete(next))queue.push(next);
+      }
+      largestEmpty=Math.max(largestEmpty,size);if(!touchesBorder)enclosedEmpty+=size;
+    }
+    for(let n=1;n<=12;n++)if(chosen.has(n)&&chosen.has(26-n))rotationPairs++;
+    for(const n of g){
+      const r=Math.floor((n-1)/5),c=(n-1)%5;
+      if(c<=2&&chosen.has(n+1)&&chosen.has(n+2))horizontalRuns3++;
+      if(r<=2&&chosen.has(n+5)&&chosen.has(n+10))verticalRuns3++;
+      for(const other of g)if(other>n){const dr=Math.abs(Math.floor((other-1)/5)-r),dc=Math.abs((other-1)%5-c);if(((dr===1&&dc===2)||(dr===2&&dc===1))&&!(prior.has(n)&&prior.has(other)))newKnightEdges++;}
+    }
+    const previous=[...prior].sort((a,b)=>a-b);
+    if(previous.length===15)for(let i=0;i<14;i++)gapChange+=Math.abs((g[i+1]-g[i])-(previous[i+1]-previous[i]));
     const rules=[
       {id:'G01',name:'Vizinhanças e diagonais curtas',blocked:adjacent<=10&&diagonalRuns3<=1,detail:`${adjacent} arestas ortogonais; ${diagonalRuns3} diagonais de três (bloqueia ≤10 e ≤1)`},
-      {id:'G02',name:'Vizinhanças compartilhadas com o anterior',blocked:prior.size===15&&horizontal<=4&&sharedEdges>=8,detail:`${horizontal} arestas horizontais; ${sharedEdges} arestas compartilhadas com o anterior (bloqueia ≤4 e ≥8)`}
+      {id:'G02',name:'Vizinhanças compartilhadas com o anterior',blocked:prior.size===15&&horizontal<=4&&sharedEdges>=8,detail:`${horizontal} arestas horizontais; ${sharedEdges} arestas compartilhadas com o anterior (bloqueia ≤4 e ≥8)`},
+      {id:'C03',name:'Vazios fragmentados sem trinca vertical',blocked:largestEmpty<=2&&verticalRuns3===0,detail:`maior grupo vazio: ${largestEmpty}; trincas verticais: ${verticalRuns3}`},
+      {id:'C04',name:'Rotação e mudança dos intervalos',blocked:prior.size===15&&rotationPairs<=2&&gapChange>=17,detail:`pares opostos: ${rotationPairs}; mudança dos intervalos: ${gapChange} (≤2 e ≥17)`},
+      {id:'C05',name:'Vazios fechados e poucos pares opostos',blocked:enclosedEmpty>=4&&rotationPairs<=2,detail:`casas vazias fechadas: ${enclosedEmpty}; pares opostos: ${rotationPairs} (≥4 e ≤2)`},
+      {id:'C06',name:'Ausência de trincas nos dois eixos',blocked:horizontalRuns3===0&&verticalRuns3===0,detail:`trincas horizontais: ${horizontalRuns3}; verticais: ${verticalRuns3}`},
+      {id:'C07',name:'Vazios fragmentados e novas ligações em L',blocked:prior.size===15&&largestEmpty<=2&&newKnightEdges>=17,detail:`maior grupo vazio: ${largestEmpty}; novas ligações em L: ${newKnightEdges} (≤2 e ≥17)`}
     ];
-    return{blocked:rules.some(x=>x.blocked),rules,metrics:{adjacent,diagonalRuns3,horizontal,sharedEdges}};
+    return{blocked:rules.some(x=>x.blocked),rules,metrics:{adjacent,diagonalRuns3,horizontal,sharedEdges,largestEmpty,enclosedEmpty,rotationPairs,horizontalRuns3,verticalRuns3,newKnightEdges,gapChange}};
   }
 
   function inspect(game,ctx=buildContext()){
