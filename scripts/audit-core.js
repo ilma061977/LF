@@ -165,3 +165,11 @@ for(const id of [28,29,36,37])assert.ok(filter(exact,id),'Filtro obrigatório au
 
 assert.equal(M.AUDIT_BASE_THROUGH,history.at(-1).concurso,'AUDIT_BASE_THROUGH deve acompanhar a base');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
+
+// G01/G02: ocorrências cronológicas; o alvo nunca consulta resultados futuros.
+const newFailures=[[],[]];
+for(let i=3;i<history.length;i++){
+  const result=M.newGeometricBlocks(history[i].dezenas,{latest:history[i-1]});
+  result.rules.forEach((rule,k)=>{if(rule.blocked)newFailures[k].push(history[i].concurso);});
+}
+assert.deepEqual(newFailures,[[636],[773]],'G01/G02 devem falhar apenas uma vez na descoberta e nenhuma nos 1000 reservados');
