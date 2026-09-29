@@ -175,3 +175,5 @@ for(let i=1;i<history.length;i++){
 assert.deepEqual(newFailures,[[636],[773],[7],[],[657],[1751],[]],'G01/G02 e C03–C07: ocorrências históricas exatas, zero nos 1000 recentes');
 const noPrevious=M.newGeometricBlocks(history[6].dezenas,{});
 assert(noPrevious.rules.filter(r=>['G02','C04','C07'].includes(r.id)).every(r=>!r.blocked),'Bloqueios dinâmicos exigem anterior completo');
+
+assert(appSource.includes('.quick-actions button[data-page]'),'Atalhos devem compartilhar a navegação das abas');
