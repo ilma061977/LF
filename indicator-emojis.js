@@ -5,6 +5,7 @@
     hot:Object.freeze({emoji:'🔥',label:'Quente'}),
     cold:Object.freeze({emoji:'❄️',label:'Fria'}),
     latest:Object.freeze({emoji:'♻️',label:'Repetida'}),
+    absent:Object.freeze({emoji:'❌',label:'Não saiu no sorteio de referência'}),
     delayed:Object.freeze({emoji:'⏳',label:'Atrasada'}),
     three:Object.freeze({emoji:'🔄',label:'3+ seguidos'})
   });
@@ -17,9 +18,9 @@
     if(last3.length===3)for(const n of ALL)if(last3.every(d=>d.dezenas.includes(n)))three.add(n);
     const delays={};for(const n of ALL){let d=0;for(let i=prior.length-1;i>=0&&!prior[i].dezenas.includes(n);i--)d++;delays[n]=d}
     const absent=has?ALL.filter(n=>!latest.has(n)):[],delayRank=[...absent].sort((a,b)=>delays[b]-delays[a]||a-b),delayed=new Set(delayRank.slice(0,5));
-    return{end,hot,cold,latest,three,delayed,f,delays,delayRank};
+    return{end,hot,cold,latest,absent:new Set(absent),three,delayed,f,delays,delayRank};
   }
-  function markers(n,ctx){const out=[];if(ctx.hot.has(n))out.push(EMOJIS.hot);if(ctx.cold.has(n))out.push(EMOJIS.cold);if(ctx.latest.has(n))out.push(EMOJIS.latest);if(ctx.delayed.has(n))out.push(EMOJIS.delayed);if(ctx.three.has(n))out.push(EMOJIS.three);return out}
+  function markers(n,ctx){const out=[];if(ctx.hot.has(n))out.push(EMOJIS.hot);if(ctx.cold.has(n))out.push(EMOJIS.cold);if(ctx.latest.has(n))out.push(EMOJIS.latest);if(ctx.absent?.has(n))out.push(EMOJIS.absent);if(ctx.delayed.has(n))out.push(EMOJIS.delayed);if(ctx.three.has(n))out.push(EMOJIS.three);return out}
   function emojiString(n,ctx){return markers(Number(n),ctx).map(x=>x.emoji).join('')}
   function title(n,ctx){return markers(Number(n),ctx).map(x=>x.emoji+' '+x.label).join(' · ')}
   function strip(n,ctx,cls='lf-emoji-strip'){const ms=markers(Number(n),ctx);return ms.length?'<span class="'+cls+'" title="'+title(n,ctx)+'">'+ms.map(x=>'<i>'+x.emoji+'</i>').join('')+'</span>':''}
