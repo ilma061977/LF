@@ -3,22 +3,22 @@
   "analysisBlocked": false,
   "analysisSuspended": false,
   "latest": {
-    "concurso": 3791,
-    "data": "28/09/2026",
+    "concurso": 3792,
+    "data": "29/09/2026",
     "dezenas": [
-      1,
       2,
       4,
       6,
+      7,
       8,
-      9,
+      10,
       11,
       12,
-      13,
       14,
       15,
       16,
-      19,
+      20,
+      23,
       24,
       25
     ]
@@ -79634,40 +79634,61 @@
         24,
         25
       ]
+    },
+    {
+      "concurso": 3792,
+      "data": "29/09/2026",
+      "dezenas": [
+        2,
+        4,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        14,
+        15,
+        16,
+        20,
+        23,
+        24,
+        25
+      ]
     }
   ],
-  "source": "Base incorporada até #3791 · resultados #3790 e #3791 conferidos em fontes secundárias independentes; atualização ao vivo quando disponível",
+  "source": "Base incorporada até #3792 · resultado corroborado em fontes secundárias; confirmação direta à CAIXA pendente.",
   "warning": "",
   "baseValidation": {
     "valid": true,
     "firstContest": 1,
-    "lastContest": 3791,
-    "expectedCount": 3791,
-    "loadedCount": 3791,
+    "lastContest": 3792,
+    "expectedCount": 3792,
+    "loadedCount": 3792,
     "missingCount": 0,
     "missingContests": [],
     "noGaps": true
   },
   "officialVerification": {
     "status": "pending",
-    "message": "#3790 e #3791 corroborados por fontes secundárias; confirmação direta na API CAIXA pendente."
+    "message": "#3792 conferido em UOL, InfoMoney e Brasil 61; confirmação direta na API CAIXA pendente."
   },
   "secondaryVerification": {
     "status": "confirmed",
-    "latestContest": 3791,
-    "source": "Lotomania.org; UOL; Lotofai; Lotodicas; consultados em 29/09/2026"
+    "latestContest": 3792,
+    "source": "UOL, InfoMoney e Brasil 61; consultados em 29/09/2026"
   },
   "freshnessAlert": {
     "possibleNewContest": false,
-    "lastKnownContest": 3791,
-    "expectedContest": 3792,
-    "expectedDrawDate": "2026-09-29",
-    "message": "Próximo concurso esperado: #3792 em 29/09/2026."
+    "lastKnownContest": 3792,
+    "expectedContest": 3793,
+    "expectedDrawDate": "2026-09-30",
+    "message": "Próximo concurso esperado: #3793 em 30/09/2026."
   },
-  "updatedAt": "2026-09-29T14:55:00.000Z",
+  "updatedAt": "2026-09-30T02:50:00.000Z",
   "embeddedLatestProvenance": {
-    "concurso": 3791,
-    "source": "Resultados secundários independentes; CAIXA pendente",
+    "concurso": 3792,
+    "source": "UOL, InfoMoney e Brasil 61; conferência CAIXA pendente",
     "officialStatus": "pending"
   }
 }

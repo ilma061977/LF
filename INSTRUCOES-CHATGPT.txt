@@ -1,0 +1,11 @@
+LF INTELIGENTE V3.7.5 — PACOTE COMPLETO PARA CHATGPT
+
+Este ZIP contém a versão integral do aplicativo, com index.html, páginas auxiliares, scripts, dados históricos incorporados, funções api/, configuração Vercel e testes. Para pedir alterações no ChatGPT, envie este ZIP completo e descreva o ajuste desejado.
+
+Para ver a interface localmente, extraia o ZIP e abra index.html. As páginas auxiliares precisam permanecer na mesma pasta do restante do pacote. As funções em api/ exigem hospedagem compatível com Vercel; no modo local o aplicativo usa a base embarcada quando disponível.
+
+Versão do código: V3.7.5, base incorporada até o concurso #3792 (29/09/2026). Os concursos #3790, #3791 e #3792 foram conferidos em fontes secundárias independentes; a confirmação direta da CAIXA está pendente. A confirmação direta na API da CAIXA está pendente. A auditoria de novas regras está no arquivo AUDITORIA-NOVAS-REGRAS-20260929.md.
+
+Não trate resultados de contingência como confirmação oficial da CAIXA.
+
+Bloqueios geométricos G01 e G02 ativados após auditoria cronológica, fora da numeração canônica da Matriz 51. Consulte AUDITORIA-NOVAS-REGRAS-20260929.md.
