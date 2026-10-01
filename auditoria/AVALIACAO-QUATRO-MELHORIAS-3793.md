@@ -23,10 +23,12 @@ Foram auditadas cinco regras geométricas que não fazem parte dos bloqueios atu
 
 - **Descoberta:** concursos 4–1676.
 - **Ajuste:** concursos 1677–2793.
-- **Janela histórica final:** concursos 2794–3793.
-- **Validação independente prospectiva:** começa no concurso 3794, com as cinco condições congeladas.
+- **Janela posterior de pesquisa:** concursos 2794–3793.
+- **Acompanhamento recalibrável:** limites podem ser revistos em análises futuras. Se concursos já observados forem usados para reajustar uma regra, eles não contam como validação independente dessa versão recalibrada.
 
-A janela final **não é um holdout independente**. A busca anterior consultou os concursos 2793–3792, que compartilham 999 resultados com a janela 2794–3793. Portanto, os zeros históricos nessa coluna não confirmam generalização; a aplicação sinaliza essa limitação e não ativou nenhuma regra.
+A janela 2794–3793 **não é independente**. A busca anterior consultou os concursos 2793–3792, que compartilham 999 resultados com ela. Portanto, os zeros observados nessa coluna não confirmam generalização; a aplicação sinaliza essa limitação e não ativou nenhuma regra.
+
+Veja também [Robustez dos limites e correção de múltiplos testes](ROBUSTEZ-LIMITES-MULTIPLOS-TESTES-3793.md), que compara 39 cortes vizinhos e mostra por que as ocorrências raras não bastam para justificar o bloqueio.
 
 ## Faixas de acerto dos jogos adicionais
 

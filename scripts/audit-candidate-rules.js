@@ -26,8 +26,7 @@ for (const line of fs.readFileSync(path.join(root, 'auditoria/novel-circular-top
 const split = {
   discovery: { from: 4, to: 1676 },
   tuning: { from: 1677, to: 2793 },
-  historicalHoldout: { from: 2794, to: 3793 },
-  prospectiveHoldoutBegins: 3794,
+  laterResearchWindow: { from: 2794, to: 3793 },
   priorSearchWindow: { from: 2793, to: 3792 },
 };
 const ctx = M.buildContext(history, { window: 10 });
@@ -93,7 +92,7 @@ const report = {
   currentWindow: 10,
   currentPolicy: 'LFMatrix51.policyAllows com as políticas padrão e bloqueios externos atuais',
   chronologicalProtocol: split,
-  holdoutStatus: 'HISTÓRICO NÃO INDEPENDENTE: 999 concursos do intervalo #2794–#3793 já constavam na janela #2793–#3792 usada pela pesquisa anterior. Novas regras devem ser congeladas antes da validação prospectiva a partir do #3794.',
+  holdoutStatus: 'JANELA HISTÓRICA NÃO INDEPENDENTE: 999 concursos do intervalo #2794–#3793 já constavam na janela #2793–#3792 usada pela pesquisa anterior. O protocolo é recalibrável; dados usados para ajustar limites não podem ser chamados de validação independente.',
   rules,
   rawCountSum: rawSum,
   incrementalCountSum: incrementalSum,

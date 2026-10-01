@@ -1,0 +1,566 @@
+{
+  "app": "LF Inteligente V3.7.5",
+  "baseThrough": 3793,
+  "universe": 3268760,
+  "observedDraws": 3790,
+  "generatedAt": "2026-10-01T21:28:52.389Z",
+  "variantsTestedHere": 39,
+  "originalExploratoryHypotheses": 960,
+  "multipleTestingFamilySize": 999,
+  "correction": "Bonferroni conservador; família nominal = 960 hipóteses exploratórias anteriores + 39 variantes de limiar desta análise. Não inclui todas as explorações prévias e não corrige seleção adaptativa anterior.",
+  "probabilityModel": "Binomial exata sob sorteios independentes e uniformes de combinações de 15 entre 25; teste unilateral de cauda inferior para número de concursos observados.",
+  "caveat": "Análise exploratória recalibrável: limites podem ser ajustados em rodadas futuras, incluindo após observar concursos novos. Quando dados já vistos forem usados para reajuste, eles deixam de ser validação independente. P-valores ajustados não demonstram poder preditivo nem justificam bloquear regras.",
+  "chronologicalRanges": {
+    "discovery": "4–1676",
+    "tuning": "1677–2793",
+    "laterResearchWindow": "2794–3793 (sobrepõe em 999 concursos a uma busca anterior; não é holdout independente)"
+  },
+  "variants": [
+    {
+      "id": "N01_MAXDIAG_65",
+      "incremental": 0,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 0,
+      "expectedUniform": 0,
+      "pLower": 1,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": null
+    },
+    {
+      "id": "N01_MAXDIAG_70",
+      "incremental": 0,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 28,
+      "expectedUniform": 0.032,
+      "pLower": 0.96805628,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N01_MAXDIAG_73",
+      "incremental": 0,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 28,
+      "expectedUniform": 0.032,
+      "pLower": 0.96805628,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N01_MAXDIAG_75",
+      "incremental": 159,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 3232,
+      "expectedUniform": 3.747,
+      "pLower": 0.023535813,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 159
+    },
+    {
+      "id": "N01_MAXDIAG_77",
+      "incremental": 159,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 3232,
+      "expectedUniform": 3.747,
+      "pLower": 0.023535813,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N01_MAXDIAG_80",
+      "incremental": 366,
+      "occurrences": {
+        "descoberta": 3,
+        "ajuste": 0,
+        "janela_pesquisada": 3
+      },
+      "rawMatches": 10404,
+      "expectedUniform": 12.063,
+      "pLower": 0.044003067,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 207
+    },
+    {
+      "id": "N01_MAXDIAG_85",
+      "incremental": 366,
+      "occurrences": {
+        "descoberta": 3,
+        "ajuste": 0,
+        "janela_pesquisada": 3
+      },
+      "rawMatches": 10404,
+      "expectedUniform": 12.063,
+      "pLower": 0.044003067,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N02_MAIN_5",
+      "incremental": 11,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 320,
+      "expectedUniform": 0.371,
+      "pLower": 0.6900124,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": null
+    },
+    {
+      "id": "N02_MAIN_6",
+      "incremental": 11,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 320,
+      "expectedUniform": 0.371,
+      "pLower": 0.6900124,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N02_MAIN_7",
+      "incremental": 126,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 1,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 3456,
+      "expectedUniform": 4.007,
+      "pLower": 0.090943737,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 115
+    },
+    {
+      "id": "N02_MAIN_8",
+      "incremental": 126,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 1,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 3456,
+      "expectedUniform": 4.007,
+      "pLower": 0.090943737,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N02_MAIN_9",
+      "incremental": 358,
+      "occurrences": {
+        "descoberta": 6,
+        "ajuste": 7,
+        "janela_pesquisada": 4
+      },
+      "rawMatches": 16448,
+      "expectedUniform": 19.071,
+      "pLower": 0.371823,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 232
+    },
+    {
+      "id": "N02_ANTI_17",
+      "incremental": 341,
+      "occurrences": {
+        "descoberta": 6,
+        "ajuste": 6,
+        "janela_pesquisada": 3
+      },
+      "rawMatches": 12928,
+      "expectedUniform": 14.99,
+      "pLower": 0.5691661,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": null
+    },
+    {
+      "id": "N02_ANTI_19",
+      "incremental": 206,
+      "occurrences": {
+        "descoberta": 1,
+        "ajuste": 3,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 6016,
+      "expectedUniform": 6.975,
+      "pLower": 0.1750026,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": -135
+    },
+    {
+      "id": "N02_ANTI_21",
+      "incremental": 126,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 1,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 3456,
+      "expectedUniform": 4.007,
+      "pLower": 0.090943737,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": -80
+    },
+    {
+      "id": "N02_ANTI_23",
+      "incremental": 43,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 896,
+      "expectedUniform": 1.039,
+      "pLower": 0.3538014,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": -83
+    },
+    {
+      "id": "N02_ANTI_25",
+      "incremental": 6,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 128,
+      "expectedUniform": 0.148,
+      "pLower": 0.86207421,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": -37
+    },
+    {
+      "id": "N03_SPREAD_43",
+      "incremental": 83,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 1848,
+      "expectedUniform": 2.143,
+      "pLower": 0.1172684,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": null
+    },
+    {
+      "id": "N03_SPREAD_45",
+      "incremental": 83,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 1848,
+      "expectedUniform": 2.143,
+      "pLower": 0.1172684,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N03_SPREAD_47",
+      "incremental": 148,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 3492,
+      "expectedUniform": 4.049,
+      "pLower": 0.017404921,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 65
+    },
+    {
+      "id": "N03_SPREAD_48",
+      "incremental": 148,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 3492,
+      "expectedUniform": 4.049,
+      "pLower": 0.017404921,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N03_SPREAD_49",
+      "incremental": 148,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 3492,
+      "expectedUniform": 4.049,
+      "pLower": 0.017404921,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N03_SPREAD_50",
+      "incremental": 153,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 4466,
+      "expectedUniform": 5.178,
+      "pLower": 0.0056184819,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 5
+    },
+    {
+      "id": "N03_SPREAD_51",
+      "incremental": 153,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 4466,
+      "expectedUniform": 5.178,
+      "pLower": 0.0056184819,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N03_SPREAD_52",
+      "incremental": 153,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 4466,
+      "expectedUniform": 5.178,
+      "pLower": 0.0056184819,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N03_SPREAD_53",
+      "incremental": 153,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 4466,
+      "expectedUniform": 5.178,
+      "pLower": 0.0056184819,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N03_SPREAD_55",
+      "incremental": 186,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 1
+      },
+      "rawMatches": 5310,
+      "expectedUniform": 6.157,
+      "pLower": 0.015111619,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 33
+    },
+    {
+      "id": "N05_MAIN_5",
+      "incremental": 2,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 64,
+      "expectedUniform": 0.074,
+      "pLower": 0.92848019,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": null
+    },
+    {
+      "id": "N05_MAIN_6",
+      "incremental": 2,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 64,
+      "expectedUniform": 0.074,
+      "pLower": 0.92848019,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N05_MAIN_7",
+      "incremental": 79,
+      "occurrences": {
+        "descoberta": 1,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 2432,
+      "expectedUniform": 2.82,
+      "pLower": 0.22761291,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 77
+    },
+    {
+      "id": "N05_MAIN_8",
+      "incremental": 79,
+      "occurrences": {
+        "descoberta": 1,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 2432,
+      "expectedUniform": 2.82,
+      "pLower": 0.22761291,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N05_MAIN_9",
+      "incremental": 402,
+      "occurrences": {
+        "descoberta": 2,
+        "ajuste": 3,
+        "janela_pesquisada": 2
+      },
+      "rawMatches": 13888,
+      "expectedUniform": 16.103,
+      "pLower": 0.0092931749,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 323
+    },
+    {
+      "id": "N05_ANTI_5",
+      "incremental": 0,
+      "occurrences": {
+        "descoberta": 0,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 0,
+      "expectedUniform": 0,
+      "pLower": 1,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": null
+    },
+    {
+      "id": "N05_ANTI_7",
+      "incremental": 15,
+      "occurrences": {
+        "descoberta": 1,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 256,
+      "expectedUniform": 0.297,
+      "pLower": 0.96377342,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 15
+    },
+    {
+      "id": "N05_ANTI_8",
+      "incremental": 15,
+      "occurrences": {
+        "descoberta": 1,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 256,
+      "expectedUniform": 0.297,
+      "pLower": 0.96377342,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N05_ANTI_9",
+      "incremental": 79,
+      "occurrences": {
+        "descoberta": 1,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 2432,
+      "expectedUniform": 2.82,
+      "pLower": 0.22761291,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 64
+    },
+    {
+      "id": "N05_ANTI_10",
+      "incremental": 79,
+      "occurrences": {
+        "descoberta": 1,
+        "ajuste": 0,
+        "janela_pesquisada": 0
+      },
+      "rawMatches": 2432,
+      "expectedUniform": 2.82,
+      "pLower": 0.22761291,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 0
+    },
+    {
+      "id": "N05_ANTI_11",
+      "incremental": 118,
+      "occurrences": {
+        "descoberta": 1,
+        "ajuste": 0,
+        "janela_pesquisada": 1
+      },
+      "rawMatches": 3968,
+      "expectedUniform": 4.601,
+      "pLower": 0.16239199,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 39
+    },
+    {
+      "id": "N05_ANTI_13",
+      "incremental": 234,
+      "occurrences": {
+        "descoberta": 5,
+        "ajuste": 2,
+        "janela_pesquisada": 2
+      },
+      "rawMatches": 10624,
+      "expectedUniform": 12.318,
+      "pLower": 0.21526952,
+      "pBonferroni999": 1,
+      "neighborDeltaIncremental": 116
+    }
+  ]
+}

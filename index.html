@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d10" />
-  <meta name="lf-build" content="2026-10-01-candidate-audit-3793-v375" />
+  <meta name="lf-build" content="2026-10-01-threshold-robustness-3793-v375" />
   <title>LF Inteligente V3.7.5</title>
   <meta name="description" content="LF Inteligente V3.7.5 — NOVO INDICADO 5x5, Matriz 51 canônica, fechamentos matemáticos, backtest determinístico e carteira em nuvem." />
   <style>:root{
@@ -1336,7 +1336,7 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\nself.window=self;\n/* LF I
           <div id="audit-results" class="audit-grid"></div>
           <div id="filter-audit-summary" class="matrix-summary"></div>
           <article class="panel" id="candidate-rule-audit">
-            <div class="card-title"><div><h2>Regras novas · auditoria incremental</h2><p>Descoberta, contagem adicional à Matriz 51, efeito histórico por faixa de acerto e registro reproduzível.</p></div><a class="btn ghost" href="auditoria/AVALIACAO-QUATRO-MELHORIAS-3793.md" target="_blank" rel="noopener">Abrir relatório completo</a></div>
+            <div class="card-title"><div><h2>Regras novas · auditoria incremental</h2><p>Descoberta, efeito incremental, sensibilidade dos limites e correção exploratória por múltiplos testes.</p></div><div><a class="btn ghost" href="auditoria/AVALIACAO-QUATRO-MELHORIAS-3793.md" target="_blank" rel="noopener">Auditoria das cinco regras</a> <a class="btn ghost" href="auditoria/ROBUSTEZ-LIMITES-MULTIPLOS-TESTES-3793.md" target="_blank" rel="noopener">Robustez de limites</a></div></div>
             <div class="audit-grid">
               <article class="audit-card"><span>Base de referência</span><b>Concurso 3793</b></article>
               <article class="audit-card"><span>Universo Lotofácil</span><b>3.268.760 jogos</b></article>
@@ -1345,8 +1345,8 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\nself.window=self;\n/* LF I
               <article class="audit-card warn"><span>Sobreposição entre listas</span><b>231 ocorrências</b></article>
               <article class="audit-card warn"><span>Status</span><b>Monitoramento · sem bloqueios novos</b></article>
             </div>
-            <p class="notice">Protocolo cronológico: descoberta #4–#1676; ajuste #1677–#2793; janela histórica #2794–#3793. Essa janela histórica não é independente: 999 concursos já estavam na janela #2793–#3792 usada pela pesquisa anterior. As regras ficam congeladas para validação prospectiva a partir do concurso #3794.</p>
-            <div class="table-wrap"><table class="audit-table"><thead><tr><th>Regra</th><th>Condição geométrica</th><th>Jogos brutos</th><th>Adicionais após política atual</th><th>Descoberta</th><th>Ajuste</th><th>Janela histórica*</th><th>11 acertos</th><th>12</th><th>13</th><th>14</th><th>15</th><th>Estado</th></tr></thead><tbody>
+            <p class="notice">Protocolo cronológico: descoberta #4–#1676; ajuste #1677–#2793; janela histórica #2794–#3793. Essa janela histórica não é independente: 999 concursos já estavam na janela #2793–#3792 usada pela pesquisa anterior. Os limites podem ser recalibrados em novas análises. Quando concursos já observados forem usados no reajuste, eles não contam como validação independente da versão ajustada. Veja a auditoria de robustez dos cortes vizinhos e múltiplos testes.</p>
+            <div class="table-wrap"><table class="audit-table"><thead><tr><th>Regra</th><th>Condição geométrica</th><th>Jogos brutos</th><th>Adicionais após política atual</th><th>Descoberta</th><th>Ajuste</th><th>Janela posterior*</th><th>11 acertos</th><th>12</th><th>13</th><th>14</th><th>15</th><th>Estado</th></tr></thead><tbody>
               <tr><td><b>N01</b></td><td>rotation90_matches ≥ 17; max_diagonal_occupancy_ratio_x100 ≤ 75</td><td>3.232</td><td>159</td><td>0</td><td>0</td><td>0</td><td>52.919</td><td>9.974</td><td>851</td><td>0</td><td>0</td><td>Monitorar</td></tr>
               <tr><td><b>N02</b></td><td>reflection_main_diagonal_matches ≤ 7; reflection_anti_diagonal_matches ≥ 21</td><td>3.456</td><td>126</td><td>0</td><td>1</td><td>0</td><td>42.444</td><td>8.263</td><td>800</td><td>0</td><td>0</td><td>Monitorar</td></tr>
               <tr><td><b>N03</b></td><td>rotation90_matches ≥ 17; diagonal_density_spread ≤ 50</td><td>4.466</td><td>153</td><td>0</td><td>0</td><td>0</td><td>51.404</td><td>9.824</td><td>828</td><td>0</td><td>0</td><td>Monitorar</td></tr>

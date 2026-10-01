@@ -1,6 +1,6 @@
 {
   "app": "LF Inteligente V3.7.5",
-  "generatedAt": "2026-10-01T13:41:45.559Z",
+  "generatedAt": "2026-10-01T21:27:58.497Z",
   "baseThrough": 3793,
   "baseSize": 3793,
   "universe": 3268760,
@@ -15,17 +15,16 @@
       "from": 1677,
       "to": 2793
     },
-    "historicalHoldout": {
+    "laterResearchWindow": {
       "from": 2794,
       "to": 3793
     },
-    "prospectiveHoldoutBegins": 3794,
     "priorSearchWindow": {
       "from": 2793,
       "to": 3792
     }
   },
-  "holdoutStatus": "HISTÓRICO NÃO INDEPENDENTE: 999 concursos do intervalo #2794–#3793 já constavam na janela #2793–#3792 usada pela pesquisa anterior. Novas regras devem ser congeladas antes da validação prospectiva a partir do #3794.",
+  "holdoutStatus": "JANELA HISTÓRICA NÃO INDEPENDENTE: 999 concursos do intervalo #2794–#3793 já constavam na janela #2793–#3792 usada pela pesquisa anterior. O protocolo é recalibrável; dados usados para ajustar limites não podem ser chamados de validação independente.",
   "rules": [
     {
       "id": "N01",
@@ -35,7 +34,7 @@
       "selectedHistoricalOccurrences": {
         "discovery": 0,
         "tuning": 0,
-        "historicalHoldout": 0,
+        "laterResearchWindow": 0,
         "priorSearchWindow": 0
       },
       "historicalHitObservations": {
@@ -55,7 +54,7 @@
       "selectedHistoricalOccurrences": {
         "discovery": 0,
         "tuning": 1,
-        "historicalHoldout": 0,
+        "laterResearchWindow": 0,
         "priorSearchWindow": 0
       },
       "historicalHitObservations": {
@@ -75,7 +74,7 @@
       "selectedHistoricalOccurrences": {
         "discovery": 0,
         "tuning": 0,
-        "historicalHoldout": 0,
+        "laterResearchWindow": 0,
         "priorSearchWindow": 0
       },
       "historicalHitObservations": {
@@ -95,7 +94,7 @@
       "selectedHistoricalOccurrences": {
         "discovery": 0,
         "tuning": 0,
-        "historicalHoldout": 0,
+        "laterResearchWindow": 0,
         "priorSearchWindow": 0
       },
       "historicalHitObservations": {
@@ -115,7 +114,7 @@
       "selectedHistoricalOccurrences": {
         "discovery": 1,
         "tuning": 0,
-        "historicalHoldout": 0,
+        "laterResearchWindow": 0,
         "priorSearchWindow": 0
       },
       "historicalHitObservations": {
