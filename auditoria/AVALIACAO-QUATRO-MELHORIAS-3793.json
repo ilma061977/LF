@@ -1,0 +1,144 @@
+{
+  "app": "LF Inteligente V3.7.5",
+  "generatedAt": "2026-10-01T13:41:45.559Z",
+  "baseThrough": 3793,
+  "baseSize": 3793,
+  "universe": 3268760,
+  "currentWindow": 10,
+  "currentPolicy": "LFMatrix51.policyAllows com as políticas padrão e bloqueios externos atuais",
+  "chronologicalProtocol": {
+    "discovery": {
+      "from": 4,
+      "to": 1676
+    },
+    "tuning": {
+      "from": 1677,
+      "to": 2793
+    },
+    "historicalHoldout": {
+      "from": 2794,
+      "to": 3793
+    },
+    "prospectiveHoldoutBegins": 3794,
+    "priorSearchWindow": {
+      "from": 2793,
+      "to": 3792
+    }
+  },
+  "holdoutStatus": "HISTÓRICO NÃO INDEPENDENTE: 999 concursos do intervalo #2794–#3793 já constavam na janela #2793–#3792 usada pela pesquisa anterior. Novas regras devem ser congeladas antes da validação prospectiva a partir do #3794.",
+  "rules": [
+    {
+      "id": "N01",
+      "formula": "rotation90_matches >= 17 E max_diagonal_occupancy_ratio_x100 <= 75",
+      "rawMatches": 3232,
+      "incrementalAt3793": 159,
+      "selectedHistoricalOccurrences": {
+        "discovery": 0,
+        "tuning": 0,
+        "historicalHoldout": 0,
+        "priorSearchWindow": 0
+      },
+      "historicalHitObservations": {
+        "11": 52919,
+        "12": 9974,
+        "13": 851,
+        "14": 0,
+        "15": 0
+      },
+      "status": "Candidata; não ativada"
+    },
+    {
+      "id": "N02",
+      "formula": "reflection_main_diagonal_matches <= 7 E reflection_anti_diagonal_matches >= 21",
+      "rawMatches": 3456,
+      "incrementalAt3793": 126,
+      "selectedHistoricalOccurrences": {
+        "discovery": 0,
+        "tuning": 1,
+        "historicalHoldout": 0,
+        "priorSearchWindow": 0
+      },
+      "historicalHitObservations": {
+        "11": 42444,
+        "12": 8263,
+        "13": 800,
+        "14": 0,
+        "15": 0
+      },
+      "status": "Candidata; não ativada"
+    },
+    {
+      "id": "N03",
+      "formula": "rotation90_matches >= 17 E diagonal_density_spread <= 50",
+      "rawMatches": 4466,
+      "incrementalAt3793": 153,
+      "selectedHistoricalOccurrences": {
+        "discovery": 0,
+        "tuning": 0,
+        "historicalHoldout": 0,
+        "priorSearchWindow": 0
+      },
+      "historicalHitObservations": {
+        "11": 51404,
+        "12": 9824,
+        "13": 828,
+        "14": 0,
+        "15": 0
+      },
+      "status": "Candidata; não ativada"
+    },
+    {
+      "id": "N04",
+      "formula": "rotation90_matches >= 17 E diagonal_density_spread <= 47",
+      "rawMatches": 3492,
+      "incrementalAt3793": 148,
+      "selectedHistoricalOccurrences": {
+        "discovery": 0,
+        "tuning": 0,
+        "historicalHoldout": 0,
+        "priorSearchWindow": 0
+      },
+      "historicalHitObservations": {
+        "11": 49628,
+        "12": 9479,
+        "13": 795,
+        "14": 0,
+        "15": 0
+      },
+      "status": "Candidata; não ativada"
+    },
+    {
+      "id": "N05",
+      "formula": "reflection_main_diagonal_matches <= 7 E reflection_anti_diagonal_matches <= 9",
+      "rawMatches": 2432,
+      "incrementalAt3793": 79,
+      "selectedHistoricalOccurrences": {
+        "discovery": 1,
+        "tuning": 0,
+        "historicalHoldout": 0,
+        "priorSearchWindow": 0
+      },
+      "historicalHitObservations": {
+        "11": 26937,
+        "12": 5122,
+        "13": 423,
+        "14": 0,
+        "15": 0
+      },
+      "status": "Candidata; não ativada"
+    }
+  ],
+  "rawCountSum": 17078,
+  "incrementalCountSum": 665,
+  "exactIncrementalUnion": 434,
+  "overlapAmongRuleLists": 231,
+  "exactIncrementalUnionPercent": 0.013277,
+  "unionHistoricalHitObservations": {
+    "11": 145987,
+    "12": 27875,
+    "13": 2461,
+    "14": 0,
+    "15": 0
+  },
+  "hitDefinition": "Cada contagem 11–15 soma, para os jogos adicionais aprovados pela política atual na referência #3793, os acertos que cada jogo teria obtido em cada concurso histórico carregado. É contagem descritiva de jogo×concurso, não previsão nem contagem de prêmios pagos."
+}
