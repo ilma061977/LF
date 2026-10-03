@@ -45,7 +45,8 @@ assert.ok(indexSource.includes('.sidebar-v2{display:none!important}'),'Barra lat
 assert.equal((indexSource.match(/<div id="standalone-help"/g)||[]).length,0,'Aviso offline não pode existir estaticamente no HTML da Vercel');
 assert.ok(indexSource.includes("const isOffline = location.protocol === 'file:'"),'Modo offline deve depender de file://');
 assert.ok(indexSource.includes("if(!isOffline){"),'Bootstrap deve separar explicitamente modo web e file://');
-assert.ok(indexSource.includes("help.textContent='ARQUIVO ÚNICO OFFLINE"),'Aviso offline deve ser criado somente pelo bootstrap local');
+assert.equal(indexSource.includes('ARQUIVO ÚNICO OFFLINE'),false,'Mensagem offline antiga deve ter sido removida');
+assert.ok(indexSource.includes('OFFLINE LOCAL · base até #'),'Aviso offline deve explicar recursos locais e dependências online');
 assert.equal((indexSource.match(/installVersionUpdateNotice\(\);/g)||[]).length,0,'Banner de atualização não deve ser instalado');
 
 // Sincronização app inline x app externo.
@@ -164,4 +165,19 @@ assert.equal(inspect(fewColors).colorRule.blocked,true,'Menos de 8 cores distint
 for(const id of [28,29,36,37])assert.ok(filter(exact,id),'Filtro obrigatório ausente F'+id);
 
 assert.equal(M.AUDIT_BASE_THROUGH,history.at(-1).concurso,'AUDIT_BASE_THROUGH deve acompanhar a base');
+
+assert.ok(appSource.includes('function verticalRange(startSelector,endSelector)'),'Verticais devem separar intervalo calculado da janela visual');
+assert.ok(appSource.includes('displayRows=rows.slice(-30)'),'Verticais devem limitar apenas colunas visíveis a 30');
+assert.equal(appSource.includes('if(rows.length>30){rows=rows.slice(-30)'),false,'Nenhuma Vertical pode cortar o intervalo antes do cálculo');
+assert.ok(appSource.includes("label:'0%'"),'Faixa explícita de 0% deve existir');
+assert.ok(appSource.includes('function cycleVerticalNumber(n)'),'Ciclo persistente deve ser compartilhado pelas quatro Verticais');
+assert.equal(appSource.includes('cycleVertical4Number'),false,'Vertical 4 não deve manter ciclo exclusivo');
+assert.ok(indexSource.includes('dynamic-nav-counts'),'Contadores laterais devem ser calculados automaticamente');
+assert.equal(indexSource.includes('Esta página auxiliar faz parte da versão completa'),false,'Modo offline não deve bloquear links HTML auxiliares extraídos');
+const schedule=require('../lib/lotofacil-schedule');
+let sch=schedule.resolveExpectedSchedule({lastKnownContest:3795,lastKnownDate:'02/10/2026',expectedContest:3796});
+assert.equal(sch.date,'2026-10-03','Concurso 3796 deve respeitar antecipação oficial de 03/10/2026');
+sch=schedule.resolveExpectedSchedule({lastKnownContest:3796,lastKnownDate:'03/10/2026',expectedContest:3797});
+assert.equal(sch.date,'2026-10-05','Após a antecipação, 04/10/2026 não pode ser tratado como novo sorteio');
+
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');

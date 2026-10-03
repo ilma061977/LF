@@ -5,7 +5,7 @@ const clean=s=>String(s||'').replace(/<[^>]+>/g,' ').replace(/&nbsp;|&#160;/g,' 
 async function fetchPage(pg){
   const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),8000);
   try{
-    const r=await fetch(SOURCE+'?pg='+pg,{headers:{'user-agent':'Mozilla/5.0 LF-Inteligente/3.7.4'},cache:'no-store',signal:ac.signal});
+    const r=await fetch(SOURCE+'?pg='+pg,{headers:{'user-agent':'Mozilla/5.0 LF-Inteligente/3.7.5'},cache:'no-store',signal:ac.signal});
     if(!r.ok)throw new Error('Fonte de acumulados HTTP '+r.status);
     const html=await r.text(),out=[],rowRe=/<tr[^>]*>([\s\S]*?)<\/tr>/gi;let rm;
     while((rm=rowRe.exec(html))){
