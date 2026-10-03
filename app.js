@@ -1172,7 +1172,7 @@
     const manual=state.selection.size===15?[...state.selection].sort((a,b)=>a-b):[];
     const exactHistorical=manual.length===15&&historicalSimilarity(manual).max===15;
     state.decision=exactHistorical?[]:manual;state.labBase=[];
-    clearCurrentDecision();renderDecision();renderAnalysis();renderStatsDecision();renderVerticalVisual();renderVertical2();renderVertical3();
+    clearCurrentDecision();renderDecision();renderAnalysis();renderStatsDecision();renderVerticalVisual();renderVertical2();renderVertical3();renderVertical4();
     if(exactHistorical){
       const same=state.history.find(d=>hits(manual,d.dezenas||[])===15);
       const contest=same?.concurso?' #'+same.concurso:'';
@@ -1700,7 +1700,7 @@
     if(validation){validation.className='validation-line';validation.textContent='Geração pausada até você clicar em Iniciar busca exaustiva.';}
     setDecisionSearchPanel({status:'idle',tested:0,approvedCount:0,resultText:'Clique em Iniciar para começar.'});
   }
-  function refreshAll(){renderDecision();renderDecisionIdleState();renderSignals();renderAnalysis();renderGenerated();renderMatrix();renderStats();renderStatsDecision();renderGroupPatternAnalytics();renderGroupResearch();renderAdvancedAnalytics();renderNoWinnerProfile();renderLab();renderVertical();renderVertical2();renderVertical3();renderColorChoice();renderCycleClosure();renderCheckerAuto();renderMyGames();renderSavedGames();renderLineCols();renderCharts();renderPairs();renderPositions();renderGroups();renderHistory();window.LFSoloModules?.renderCurrent?.();}
+  function refreshAll(){renderDecision();renderDecisionIdleState();renderSignals();renderAnalysis();renderGenerated();renderMatrix();renderStats();renderStatsDecision();renderGroupPatternAnalytics();renderGroupResearch();renderAdvancedAnalytics();renderNoWinnerProfile();renderLab();renderVertical();renderVertical2();renderVertical3();renderVertical4();renderColorChoice();renderCycleClosure();renderCheckerAuto();renderMyGames();renderSavedGames();renderLineCols();renderCharts();renderPairs();renderPositions();renderGroups();renderHistory();window.LFSoloModules?.renderCurrent?.();}
 
   $('#color-choice-apply')?.addEventListener('click',applyColorChoice);
   $('#color-choice-fill')?.addEventListener('click',fillColorChoice);

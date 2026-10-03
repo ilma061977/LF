@@ -11,6 +11,7 @@
     {title:'Comparador',section:'Ferramentas',url:'/?page=compare',keywords:'comparar anterior indicado concurso'},
     {title:'Auditorias',section:'Ferramentas',url:'/?page=audit',keywords:'auditoria filtros base integridade'},
     {title:'Vertical 3 · Cores',section:'Explorar',url:'/?page=vertical3',keywords:'vertical 3 cores bolas oficiais'},
+    {title:'Vertical 4 · Ausentes',section:'Explorar',url:'/?page=vertical4',keywords:'vertical 4 ausentes último sorteio percentual decrescente 0%'},
     {title:'Ciclos',section:'Explorar',url:'/?page=cycles',keywords:'ciclo fechamento atraso pendentes'},
     {title:'Linhas × Colunas',section:'Explorar',url:'/?page=linecols',keywords:'linhas colunas concentração padrão'},
     {title:'Grupos',section:'Explorar',url:'/?page=groups',keywords:'grupos dezenas premiados virgens'},
