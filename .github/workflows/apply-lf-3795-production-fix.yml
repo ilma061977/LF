@@ -82,14 +82,14 @@ jobs:
                          f'<meta name="lf-build" content="{BUILD}" />', index, count=1)
           compact = json.dumps(data, ensure_ascii=False, separators=(',',':'))
           index, nbase = re.subn(r'^window\.__LF_OFFLINE_BASE=.*$',
-                                 'window.__LF_OFFLINE_BASE='+compact+';',
+                                 lambda m: 'window.__LF_OFFLINE_BASE='+compact+';',
                                  index, count=1, flags=re.M)
           if nbase != 1:
               raise SystemExit(f'offline base não encontrada: {nbase}')
           worker = Path('analysis-worker.js').read_text(encoding='utf-8')
           worker_src = json.dumps('self.window=self;\n'+worker, ensure_ascii=False)
           index, nworker = re.subn(r'^window\.__LF_OFFLINE_WORKER_SOURCE=.*$',
-                                   'window.__LF_OFFLINE_WORKER_SOURCE='+worker_src+';',
+                                   lambda m: 'window.__LF_OFFLINE_WORKER_SOURCE='+worker_src+';',
                                    index, count=1, flags=re.M)
           if nworker != 1:
               raise SystemExit(f'offline worker não encontrado: {nworker}')
