@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d10" />
-  <meta name="lf-build" content="2026-10-03-concurso-3795-v375-vertical4-click4-reset" />
+  <meta name="lf-build" content="2026-10-03-concurso-3795-v375-vertical4-click-cycle" />
   <title>LF Inteligente V3.7.5</title>
   <meta name="description" content="LF Inteligente V3.7.5 — NOVO INDICADO 5x5, Matriz 51 canônica, fechamentos matemáticos, backtest determinístico e carteira em nuvem." />
   <style>:root{
@@ -3320,9 +3320,16 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
     setDecisionSearchPanel({status:'warn',manualGame:manual,tested:0,total:decisionBoundaryUniverse([...blockedNumbers()]),resultText:manual.length===15?'Seleção manual: '+manual.map(pad).join(' ')+' · sem busca exaustiva. Inicie a busca para obter uma indicação aprovada.':'Seleção manual: '+state.selection.size+'/15 dezenas. Complete as restantes ou use o preenchimento aleatório.',mode:'Seleção manual · busca exaustiva ainda não executada'});
   }
   function completeManualSelection(){const pool=ALL.filter(n=>!state.selection.has(n)&&!blockedNumbers().has(n));for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}while(state.selection.size<15&&pool.length)state.selection.add(pool.pop());syncManualDecision();if(state.selection.size<15)toast('Bloqueios demais para completar 15 dezenas.');}
-  function verticalNumberCell(n,extraClass=''){const fixed=state.fixedNumbers.has(n),excluded=state.exclusions.has(n),mark=excluded?'⛔':fixed?'🔒':'';return `<td class="vertical-number-cell ${extraClass} ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}" data-vertical-number="${n}" title="${pad(n)} · ${excluded?'EXCLUÍDA':fixed?'FIXA':'livre'} · 1x escolher · 2x fixar · 3x excluir · 4x recomeçar"><span class="vertical-number-value">${chip(n)}</span>${mark?`<span class="vertical-state-mark">${mark}</span>`:''}</td>`;}
-  function verticalSelectionCell(n){const excluded=state.exclusions.has(n),fixed=state.fixedNumbers.has(n),selected=state.selection.has(n),status=excluded?'⛔':fixed?'🔒':selected?'✓':'+';return `<td class="vertical-game-pick ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}"><button type="button" data-vertical-game="${n}" aria-label="Dezena ${pad(n)} · ${excluded?'excluída':fixed?'fixa':selected?'escolhida':'livre'}. 1x escolhe, 2x fixa, 3x exclui, 4x recomeça" aria-pressed="${selected}" title="${pad(n)} · 1x escolher · 2x fixar · 3x excluir · 4x recomeçar">${status}</button></td>`;}
-  function bindVerticalGamePicks(wrap){wrap.querySelectorAll('[data-vertical-game],[data-vertical-number]').forEach(button=>button.onclick=()=>{const n=Number(button.dataset.verticalGame||button.dataset.verticalNumber);queueNumberGesture(n,()=>toggleSelection(n));});}
+  function verticalNumberCell(n,extraClass=''){const fixed=state.fixedNumbers.has(n),excluded=state.exclusions.has(n),mark=excluded?'⛔':fixed?'🔒':'';return `<td class="vertical-number-cell ${extraClass} ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}" data-vertical-number="${n}" title="${pad(n)} · ${excluded?'EXCLUÍDA':fixed?'FIXA':'livre'} · cliques sucessivos: escolher → fixar → excluir → recomeçar"><span class="vertical-number-value">${chip(n)}</span>${mark?`<span class="vertical-state-mark">${mark}</span>`:''}</td>`;}
+  function verticalSelectionCell(n){const excluded=state.exclusions.has(n),fixed=state.fixedNumbers.has(n),selected=state.selection.has(n),status=excluded?'⛔':fixed?'🔒':selected?'✓':'+';return `<td class="vertical-game-pick ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}"><button type="button" data-vertical-game="${n}" aria-label="Dezena ${pad(n)} · ${excluded?'excluída':fixed?'fixa':selected?'escolhida':'livre'}. Cliques sucessivos: escolhe, fixa, exclui e recomeça" aria-pressed="${selected}" title="${pad(n)} · cliques sucessivos: escolher → fixar → excluir → recomeçar">${status}</button></td>`;}
+  function cycleVertical4Number(n){
+    if(state.decisionWorker)return toast('Aguarde a busca terminar para alterar as dezenas.');
+    if(state.exclusions.has(n))return applyNumberConstraint(n,'reset');
+    if(state.fixedNumbers.has(n))return applyNumberConstraint(n,'exclude');
+    if(state.selection.has(n))return applyNumberConstraint(n,'fix');
+    toggleSelection(n);
+  }
+  function bindVerticalGamePicks(wrap){const isVertical4=!!wrap.closest('[data-page-panel="vertical4"]');wrap.querySelectorAll('[data-vertical-game],[data-vertical-number]').forEach(button=>button.onclick=()=>{const n=Number(button.dataset.verticalGame||button.dataset.verticalNumber);if(isVertical4)cycleVertical4Number(n);else queueNumberGesture(n,()=>toggleSelection(n));});}
   function toggleSelection(n){
     if(state.decisionWorker)return toast('Aguarde a busca terminar para alterar as dezenas.');
     if(state.fixedNumbers.has(n))return toast(`Dezena ${pad(n)} fixa. Use liberar para desafixá-la.`);
