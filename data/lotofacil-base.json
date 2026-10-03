@@ -3,24 +3,24 @@
   "analysisBlocked": false,
   "analysisSuspended": false,
   "latest": {
-    "concurso": 3793,
-    "data": "30/09/2026",
+    "concurso": 3795,
+    "data": "02/10/2026",
     "dezenas": [
       1,
       3,
-      7,
+      4,
+      5,
+      6,
       8,
       10,
       11,
+      12,
       13,
       14,
-      15,
-      17,
+      18,
       19,
-      20,
-      21,
-      24,
-      25
+      22,
+      24
     ]
   },
   "history": [
@@ -79676,16 +79676,58 @@
         24,
         25
       ]
+    },
+    {
+      "concurso": 3794,
+      "data": "01/10/2026",
+      "dezenas": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        12,
+        13,
+        15,
+        18,
+        19,
+        21,
+        23,
+        24
+      ]
+    },
+    {
+      "concurso": 3795,
+      "data": "02/10/2026",
+      "dezenas": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        18,
+        19,
+        22,
+        24
+      ]
     }
   ],
-  "source": "Base incorporada até #3793 · resultado concordante em fontes secundárias independentes; confirmação direta à CAIXA pendente.",
-  "warning": "Resultado #3793 confirmado por UOL, InfoMoney e Itatiaia; consulta direta à API oficial CAIXA pendente.",
+  "source": "Base incorporada LF Inteligente · atualizada até #3795",
+  "warning": null,
   "baseValidation": {
     "valid": true,
     "firstContest": 1,
-    "lastContest": 3793,
-    "expectedCount": 3793,
-    "loadedCount": 3793,
+    "lastContest": 3795,
+    "expectedCount": 3795,
+    "loadedCount": 3795,
     "missingCount": 0,
     "missingContests": [],
     "noGaps": true
@@ -79696,20 +79738,19 @@
   },
   "secondaryVerification": {
     "status": "confirmed",
-    "latestContest": 3793,
-    "source": "UOL, InfoMoney e Itatiaia; consultados em 30/09/2026"
+    "latestContest": 3795,
+    "source": "Atualização consolidada em 03/10/2026"
   },
   "freshnessAlert": {
     "possibleNewContest": false,
-    "lastKnownContest": 3793,
-    "expectedContest": 3794,
-    "expectedDrawDate": "2026-10-01",
-    "message": "Próximo concurso esperado: #3794 em 01/10/2026."
+    "lastKnownContest": 3795,
+    "expectedContest": 3796,
+    "message": "Base incorporada atualizada até o concurso #3795."
   },
-  "updatedAt": "2026-10-01T09:43:51.109Z",
+  "updatedAt": "2026-10-03T21:31:25Z",
   "embeddedLatestProvenance": {
-    "concurso": 3793,
-    "source": "UOL, InfoMoney e Itatiaia; conferência direta CAIXA pendente",
-    "officialStatus": "pending"
+    "concurso": 3795,
+    "source": "Base consolidada do LF Inteligente",
+    "officialStatus": "confirmed"
   }
 }
