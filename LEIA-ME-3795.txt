@@ -1,0 +1,48 @@
+LF INTELIGENTE V3.7.5 — PACOTE COMPLETO
+Atualizado até o concurso 3795 (02/10/2026).
+
+A base histórica incluída contém os concursos 1 a 3795, em sequência e sem lacunas.
+O concurso 3795 foi conferido em fontes secundárias independentes (UOL + Tribuna do Paraná). A consulta direta à CAIXA estava indisponível nesta atualização.
+
+Para abrir localmente:
+1. Extraia todos os arquivos do ZIP para uma pasta.
+2. Abra um terminal nessa pasta e execute: python -m http.server 8000
+3. Acesse: http://localhost:8000
+
+Para publicar na Vercel, importe a pasta extraída como projeto estático. A API incluída tenta atualizar os resultados ao vivo; a base JSON permite usar o histórico incorporado quando a API estiver indisponível.
+
+Testes do pacote: npm test
+
+
+ATUALIZAÇÃO 02/10/2026 · PESQUISA 01–12 / 13 / 14–25
+- Concurso atual excluído dos cálculos atuais.
+- Estabilidade QG/FG: janelas 10/20/50/100.
+- Transições e atrasos dos cinco padrões principais.
+- Holdout final de 1.000 concursos para estruturas Q/F/N.
+- Duplas/trincas exibidas apenas quando mantêm associação no holdout.
+- Módulo descritivo/experimental: nenhum novo bloqueio automático.
+
+PESQUISA MARGINAL DUPLAS/TRINCAS — 02/10/2026
+- Holdout final: concursos 3294–3793; concurso 3794 excluído dos cálculos atuais.
+- 356 concursos do holdout pertencem aos 5 padrões principais.
+- Percentil médio do score de afinidades: 49,18% (IC95% 46,15%–52,22%).
+- Correlação com QG−FG: 0,031; correlação com score Matriz 51 em amostra de aprovados: 0,120.
+- Decisão automática: peso do bônus = 0,00. Não altera ranking nem bloqueios.
+- O painel mantém o sinal apenas como pesquisa exploratória e registra os arquivos de auditoria em data/group-affinity-*.json.
+
+PESQUISA NOVAS AFINIDADES — 02/10/2026
+- As duplas/trincas já presentes no modelo anterior foram excluídas da nova descoberta.
+- Validação rolling walk-forward em 5 blocos; parâmetros definidos pelos 4 primeiros blocos.
+- Candidato 6–1–8: percentis exatos 52,43% / 51,88% / 50,45% / 51,27% / 50,56%.
+- Agregado: 51,42% (IC95% 48,32%–54,51%); ainda insuficiente para ativar bônus.
+- Em controles aprovados pela Matriz 51 no fold final: 57,05% (IC95% 49,24%–64,87%); apenas 2/63 resultados reais seriam aprovados pelas travas atuais.
+- Afinidades cruzadas Parte 1 × Parte 2: 49,96% no fold final; descartadas.
+- Decisão: peso = 0; candidato permanece em observação.
+
+
+ATUALIZAÇÃO 03/10/2026 · BASE 3795
+- Concurso 3795 incorporado: 01 03 04 05 06 08 10 11 12 13 14 18 19 22 24.
+- Base operacional: concursos 1–3795, sem lacunas.
+- Próximo concurso esperado: 3796 em 03/10/2026.
+- Estudos de holdout/rolling anteriores permanecem congelados nos períodos originais para preservar a validade fora da amostra; não foram retroativamente recalibrados com o 3795.
+- Matriz 51 e auditoria de base sincronizadas para 3795; regras F29/F36/F37 preservadas.

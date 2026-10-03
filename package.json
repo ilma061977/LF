@@ -1,6 +1,6 @@
 {
   "name": "lf-inteligente-2026-atualizado",
-  "version": "3.7.4",
+  "version": "3.7.5",
   "private": true,
   "scripts": {
     "test": "node --check app.js && node --check matrix-51.js && node --check analysis-worker.js && node --check api/lotofacil-no-winner-profile.js && node scripts/audit-core.js"

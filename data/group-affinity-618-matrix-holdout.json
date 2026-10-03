@@ -1,0 +1,456 @@
+{
+  "n": 60,
+  "mean_percentile": 57.05181506807116,
+  "ci95": [
+    49.236046723104316,
+    64.86758341303799
+  ],
+  "actual_approved_n": 2,
+  "actual_approved_mean_percentile": 38.04623370352486,
+  "total_approved_controls": 4594,
+  "total_candidates": 240950,
+  "mean_approved_per_target": 76.56666666666666,
+  "results": [
+    {
+      "contest": 3294,
+      "pct": 100,
+      "approved": 52,
+      "actualApproved": false,
+      "actualScore": 0.717034076748024
+    },
+    {
+      "contest": 3297,
+      "pct": 98.50746268656717,
+      "approved": 67,
+      "actualApproved": false,
+      "actualScore": 0.48908908995022965
+    },
+    {
+      "contest": 3309,
+      "pct": 79.34131736526946,
+      "approved": 167,
+      "actualApproved": false,
+      "actualScore": 0.2690449859008951
+    },
+    {
+      "contest": 3330,
+      "pct": 9.090909090909092,
+      "approved": 11,
+      "actualApproved": false,
+      "actualScore": 0.0837493574032489
+    },
+    {
+      "contest": 3343,
+      "pct": 88.29787234042553,
+      "approved": 47,
+      "actualApproved": false,
+      "actualScore": 0.32280298340165015
+    },
+    {
+      "contest": 3345,
+      "pct": 18.75,
+      "approved": 16,
+      "actualApproved": false,
+      "actualScore": 0.4018174111838295
+    },
+    {
+      "contest": 3351,
+      "pct": 31.5625,
+      "approved": 160,
+      "actualApproved": false,
+      "actualScore": 0.10647042555468152
+    },
+    {
+      "contest": 3353,
+      "pct": 15.284974093264248,
+      "approved": 193,
+      "actualApproved": false,
+      "actualScore": 0.07974566326321321
+    },
+    {
+      "contest": 3359,
+      "pct": 88.88888888888889,
+      "approved": 9,
+      "actualApproved": false,
+      "actualScore": 0.3896371311485408
+    },
+    {
+      "contest": 3364,
+      "pct": 58.92857142857143,
+      "approved": 56,
+      "actualApproved": false,
+      "actualScore": 0.22038609056684233
+    },
+    {
+      "contest": 3373,
+      "pct": 39.908256880733944,
+      "approved": 109,
+      "actualApproved": true,
+      "actualScore": 0.11479808100762787
+    },
+    {
+      "contest": 3399,
+      "pct": 37.17948717948718,
+      "approved": 39,
+      "actualApproved": false,
+      "actualScore": 0.1625745603462136
+    },
+    {
+      "contest": 3412,
+      "pct": 10.95890410958904,
+      "approved": 73,
+      "actualApproved": false,
+      "actualScore": 0.11479808100762787
+    },
+    {
+      "contest": 3434,
+      "pct": 57.84313725490197,
+      "approved": 51,
+      "actualApproved": false,
+      "actualScore": 0.31963057483074314
+    },
+    {
+      "contest": 3435,
+      "pct": 35,
+      "approved": 10,
+      "actualApproved": false,
+      "actualScore": 0.11479808100762787
+    },
+    {
+      "contest": 3436,
+      "pct": 23.717948717948715,
+      "approved": 78,
+      "actualApproved": false,
+      "actualScore": 0.25496019829793615
+    },
+    {
+      "contest": 3447,
+      "pct": 100,
+      "approved": 15,
+      "actualApproved": false,
+      "actualScore": 0.5440714899639596
+    },
+    {
+      "contest": 3471,
+      "pct": 14.622641509433961,
+      "approved": 106,
+      "actualApproved": false,
+      "actualScore": 0
+    },
+    {
+      "contest": 3480,
+      "pct": 65.51724137931035,
+      "approved": 29,
+      "actualApproved": false,
+      "actualScore": 0.45350763670881294
+    },
+    {
+      "contest": 3482,
+      "pct": 100,
+      "approved": 92,
+      "actualApproved": false,
+      "actualScore": 0.5745907731286792
+    },
+    {
+      "contest": 3483,
+      "pct": 98.73417721518987,
+      "approved": 79,
+      "actualApproved": false,
+      "actualScore": 0.4760978730764443
+    },
+    {
+      "contest": 3487,
+      "pct": 41.5,
+      "approved": 100,
+      "actualApproved": false,
+      "actualScore": 0.16567560071689008
+    },
+    {
+      "contest": 3490,
+      "pct": 7.291666666666667,
+      "approved": 96,
+      "actualApproved": false,
+      "actualScore": 0
+    },
+    {
+      "contest": 3492,
+      "pct": 96.7741935483871,
+      "approved": 31,
+      "actualApproved": false,
+      "actualScore": 0.42927340895633165
+    },
+    {
+      "contest": 3496,
+      "pct": 24.137931034482758,
+      "approved": 29,
+      "actualApproved": false,
+      "actualScore": 0.07974566326321321
+    },
+    {
+      "contest": 3501,
+      "pct": null,
+      "approved": 0,
+      "actualApproved": false,
+      "actualScore": 0.5798569141064712
+    },
+    {
+      "contest": 3513,
+      "pct": 64,
+      "approved": 75,
+      "actualApproved": false,
+      "actualScore": 0.20895739474321945
+    },
+    {
+      "contest": 3518,
+      "pct": 7.758620689655173,
+      "approved": 58,
+      "actualApproved": false,
+      "actualScore": 0.01142869582362285
+    },
+    {
+      "contest": 3520,
+      "pct": 83.06451612903226,
+      "approved": 62,
+      "actualApproved": false,
+      "actualScore": 0.3035249421384018
+    },
+    {
+      "contest": 3527,
+      "pct": 30.606060606060602,
+      "approved": 165,
+      "actualApproved": false,
+      "actualScore": 0.26042539966853456
+    },
+    {
+      "contest": 3534,
+      "pct": 68.62745098039215,
+      "approved": 51,
+      "actualApproved": false,
+      "actualScore": 0.40655234080489905
+    },
+    {
+      "contest": 3538,
+      "pct": 99.29577464788733,
+      "approved": 71,
+      "actualApproved": false,
+      "actualScore": 0.6779601583126843
+    },
+    {
+      "contest": 3541,
+      "pct": 7.751937984496124,
+      "approved": 129,
+      "actualApproved": false,
+      "actualScore": 0
+    },
+    {
+      "contest": 3542,
+      "pct": 22.47191011235955,
+      "approved": 89,
+      "actualApproved": false,
+      "actualScore": 0.10647042555468152
+    },
+    {
+      "contest": 3548,
+      "pct": 80,
+      "approved": 5,
+      "actualApproved": false,
+      "actualScore": 0.14139201151529496
+    },
+    {
+      "contest": 3550,
+      "pct": 100,
+      "approved": 9,
+      "actualApproved": false,
+      "actualScore": 0.5075362525268452
+    },
+    {
+      "contest": 3558,
+      "pct": 91.74311926605505,
+      "approved": 109,
+      "actualApproved": false,
+      "actualScore": 0.3503494062585144
+    },
+    {
+      "contest": 3566,
+      "pct": 78.125,
+      "approved": 96,
+      "actualApproved": false,
+      "actualScore": 0.33470586156114934
+    },
+    {
+      "contest": 3584,
+      "pct": 36.18421052631579,
+      "approved": 76,
+      "actualApproved": true,
+      "actualScore": 0
+    },
+    {
+      "contest": 3585,
+      "pct": null,
+      "approved": 0,
+      "actualApproved": false,
+      "actualScore": 0.32280298340165015
+    },
+    {
+      "contest": 3586,
+      "pct": 58.69565217391305,
+      "approved": 69,
+      "actualApproved": false,
+      "actualScore": 0.01142869582362285
+    },
+    {
+      "contest": 3590,
+      "pct": 88.41059602649007,
+      "approved": 151,
+      "actualApproved": false,
+      "actualScore": 0.334231679225273
+    },
+    {
+      "contest": 3597,
+      "pct": 31.25,
+      "approved": 96,
+      "actualApproved": false,
+      "actualScore": 0.1270479602659226
+    },
+    {
+      "contest": 3605,
+      "pct": 92.98245614035088,
+      "approved": 57,
+      "actualApproved": false,
+      "actualScore": 0.3896371311485408
+    },
+    {
+      "contest": 3610,
+      "pct": 60.273972602739725,
+      "approved": 73,
+      "actualApproved": false,
+      "actualScore": 0.49728042190736294
+    },
+    {
+      "contest": 3616,
+      "pct": 66.98113207547169,
+      "approved": 53,
+      "actualApproved": false,
+      "actualScore": 0.31963057483074314
+    },
+    {
+      "contest": 3619,
+      "pct": 77.77777777777779,
+      "approved": 9,
+      "actualApproved": false,
+      "actualScore": 0.26042539966853456
+    },
+    {
+      "contest": 3628,
+      "pct": 30.165289256198346,
+      "approved": 121,
+      "actualApproved": false,
+      "actualScore": 0.07974566326321321
+    },
+    {
+      "contest": 3633,
+      "pct": 88.96103896103897,
+      "approved": 77,
+      "actualApproved": false,
+      "actualScore": 0.3939110367233579
+    },
+    {
+      "contest": 3644,
+      "pct": 87.5,
+      "approved": 96,
+      "actualApproved": false,
+      "actualScore": 0.4488423063107494
+    },
+    {
+      "contest": 3646,
+      "pct": 34.523809523809526,
+      "approved": 84,
+      "actualApproved": false,
+      "actualScore": 0.26042539966853456
+    },
+    {
+      "contest": 3649,
+      "pct": 41.53846153846154,
+      "approved": 65,
+      "actualApproved": false,
+      "actualScore": 0.17492371649008498
+    },
+    {
+      "contest": 3651,
+      "pct": 52.04918032786885,
+      "approved": 122,
+      "actualApproved": false,
+      "actualScore": 0.2423202236094268
+    },
+    {
+      "contest": 3652,
+      "pct": 64.67391304347827,
+      "approved": 92,
+      "actualApproved": false,
+      "actualScore": 0.3752234806761624
+    },
+    {
+      "contest": 3691,
+      "pct": 56.25,
+      "approved": 32,
+      "actualApproved": false,
+      "actualScore": 0.1625745603462136
+    },
+    {
+      "contest": 3694,
+      "pct": 100,
+      "approved": 141,
+      "actualApproved": false,
+      "actualScore": 0.6218560235211523
+    },
+    {
+      "contest": 3697,
+      "pct": 84.76190476190476,
+      "approved": 105,
+      "actualApproved": false,
+      "actualScore": 0.31963057483074314
+    },
+    {
+      "contest": 3734,
+      "pct": 47.61904761904761,
+      "approved": 21,
+      "actualApproved": false,
+      "actualScore": 0.1625745603462136
+    },
+    {
+      "contest": 3739,
+      "pct": null,
+      "approved": 0,
+      "actualApproved": false,
+      "actualScore": 0.26042539966853456
+    },
+    {
+      "contest": 3765,
+      "pct": 37.61467889908257,
+      "approved": 109,
+      "actualApproved": false,
+      "actualScore": 0.07063387098583142
+    },
+    {
+      "contest": 3770,
+      "pct": 8.181818181818182,
+      "approved": 55,
+      "actualApproved": false,
+      "actualScore": 0
+    },
+    {
+      "contest": 3789,
+      "pct": 33.33333333333333,
+      "approved": 93,
+      "actualApproved": false,
+      "actualScore": 0.09517805322687176
+    },
+    {
+      "contest": 3793,
+      "pct": 68.09815950920245,
+      "approved": 163,
+      "actualApproved": false,
+      "actualScore": 0.26042539966853456
+    }
+  ]
+}
