@@ -369,10 +369,10 @@
   function blockedNumbers(){const out=new Set(state.exclusions);for(const item of markerData())if(state.emojiLocks.has(item.key))item.set.forEach(n=>out.add(n));return out;}
   let numberGesture=null;
   function showNumberGesture(n,count){
-    const safe=Math.max(1,Math.min(3,Number(count)||1));
+    const safe=Math.max(1,Math.min(4,Number(count)||1));
     document.querySelectorAll(`[data-vertical-game="${n}"],[data-vertical-number="${n}"]`).forEach(el=>{
       el.dataset.clickCount=String(safe);
-      el.classList.remove('gesture-1','gesture-2','gesture-3');
+      el.classList.remove('gesture-1','gesture-2','gesture-3','gesture-4');
       el.classList.add(`gesture-${safe}`);
       let badge=el.querySelector?.('.vertical-click-badge');
       if(!badge){badge=document.createElement('span');badge.className='vertical-click-badge';el.appendChild(badge);}
@@ -381,14 +381,14 @@
   }
   function clearNumberGestureVisual(n){
     document.querySelectorAll(`[data-vertical-game="${n}"],[data-vertical-number="${n}"]`).forEach(el=>{
-      delete el.dataset.clickCount;el.classList.remove('gesture-1','gesture-2','gesture-3');el.querySelector?.('.vertical-click-badge')?.remove();
+      delete el.dataset.clickCount;el.classList.remove('gesture-1','gesture-2','gesture-3','gesture-4');el.querySelector?.('.vertical-click-badge')?.remove();
     });
   }
   function queueNumberGesture(n,single){
     if(!Number.isInteger(n)||n<1||n>25)return;
     if(numberGesture&&numberGesture.n!==n){clearTimeout(numberGesture.timer);finishNumberGesture();}
     if(!numberGesture)numberGesture={n,count:0,single,timer:null};
-    numberGesture.count=Math.min(3,numberGesture.count+1);clearTimeout(numberGesture.timer);
+    numberGesture.count=Math.min(4,numberGesture.count+1);clearTimeout(numberGesture.timer);
     showNumberGesture(n,numberGesture.count);
     numberGesture.timer=setTimeout(finishNumberGesture,420);
   }
@@ -396,7 +396,8 @@
     if(!numberGesture)return;
     const {n,count,single}=numberGesture;numberGesture=null;
     clearNumberGestureVisual(n);
-    if(count>=3)applyNumberConstraint(n,'exclude');
+    if(count>=4)applyNumberConstraint(n,'reset');
+    else if(count===3)applyNumberConstraint(n,'exclude');
     else if(count===2)applyNumberConstraint(n,'fix');
     else single();
   }
@@ -415,6 +416,8 @@
       state.fixedNumbers.delete(n);toast(`Dezena ${pad(n)} desafixada; continua escolhida.`);
     }else if(action==='release'){
       state.exclusions.delete(n);toast(`Dezena ${pad(n)} liberada. Clique nela para escolher novamente.`);
+    }else if(action==='reset'){
+      state.fixedNumbers.delete(n);state.exclusions.delete(n);state.selection.delete(n);toast(`Dezena ${pad(n)} reiniciada e voltou ao estado livre.`);
     }
     state.verticalNumberSelection.delete(n);savePrefs();storageRemove(decisionCacheKey());syncManualDecision();renderExclusions();
   }
@@ -1183,8 +1186,8 @@
     setDecisionSearchPanel({status:'warn',manualGame:manual,tested:0,total:decisionBoundaryUniverse([...blockedNumbers()]),resultText:manual.length===15?'Seleção manual: '+manual.map(pad).join(' ')+' · sem busca exaustiva. Inicie a busca para obter uma indicação aprovada.':'Seleção manual: '+state.selection.size+'/15 dezenas. Complete as restantes ou use o preenchimento aleatório.',mode:'Seleção manual · busca exaustiva ainda não executada'});
   }
   function completeManualSelection(){const pool=ALL.filter(n=>!state.selection.has(n)&&!blockedNumbers().has(n));for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}while(state.selection.size<15&&pool.length)state.selection.add(pool.pop());syncManualDecision();if(state.selection.size<15)toast('Bloqueios demais para completar 15 dezenas.');}
-  function verticalNumberCell(n,extraClass=''){const fixed=state.fixedNumbers.has(n),excluded=state.exclusions.has(n),mark=excluded?'⛔':fixed?'🔒':'';return `<td class="vertical-number-cell ${extraClass} ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}" data-vertical-number="${n}" title="${pad(n)} · ${excluded?'EXCLUÍDA':fixed?'FIXA':'livre'} · 1x escolher · 2x fixar · 3x excluir"><span class="vertical-number-value">${chip(n)}</span>${mark?`<span class="vertical-state-mark">${mark}</span>`:''}</td>`;}
-  function verticalSelectionCell(n){const excluded=state.exclusions.has(n),fixed=state.fixedNumbers.has(n),selected=state.selection.has(n),status=excluded?'⛔':fixed?'🔒':selected?'✓':'+';return `<td class="vertical-game-pick ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}"><button type="button" data-vertical-game="${n}" aria-label="Dezena ${pad(n)} · ${excluded?'excluída':fixed?'fixa':selected?'escolhida':'livre'}. 1x escolhe, 2x fixa, 3x exclui" aria-pressed="${selected}" title="${pad(n)} · 1x escolher · 2x fixar · 3x excluir">${status}</button></td>`;}
+  function verticalNumberCell(n,extraClass=''){const fixed=state.fixedNumbers.has(n),excluded=state.exclusions.has(n),mark=excluded?'⛔':fixed?'🔒':'';return `<td class="vertical-number-cell ${extraClass} ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}" data-vertical-number="${n}" title="${pad(n)} · ${excluded?'EXCLUÍDA':fixed?'FIXA':'livre'} · 1x escolher · 2x fixar · 3x excluir · 4x recomeçar"><span class="vertical-number-value">${chip(n)}</span>${mark?`<span class="vertical-state-mark">${mark}</span>`:''}</td>`;}
+  function verticalSelectionCell(n){const excluded=state.exclusions.has(n),fixed=state.fixedNumbers.has(n),selected=state.selection.has(n),status=excluded?'⛔':fixed?'🔒':selected?'✓':'+';return `<td class="vertical-game-pick ${fixed?'is-fixed':''} ${excluded?'is-excluded':''}"><button type="button" data-vertical-game="${n}" aria-label="Dezena ${pad(n)} · ${excluded?'excluída':fixed?'fixa':selected?'escolhida':'livre'}. 1x escolhe, 2x fixa, 3x exclui, 4x recomeça" aria-pressed="${selected}" title="${pad(n)} · 1x escolher · 2x fixar · 3x excluir · 4x recomeçar">${status}</button></td>`;}
   function bindVerticalGamePicks(wrap){wrap.querySelectorAll('[data-vertical-game],[data-vertical-number]').forEach(button=>button.onclick=()=>{const n=Number(button.dataset.verticalGame||button.dataset.verticalNumber);queueNumberGesture(n,()=>toggleSelection(n));});}
   function toggleSelection(n){
     if(state.decisionWorker)return toast('Aguarde a busca terminar para alterar as dezenas.');
