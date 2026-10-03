@@ -111,7 +111,7 @@ jobs:
           const v=JSON.parse(fs.readFileSync('version.json','utf8'));
           if(!v.version.includes('3795')) throw new Error('version inválida');
           NODE
-          npm test
+          node scripts/audit-core.js
 
       - name: Commit corrected artifact
         shell: bash
