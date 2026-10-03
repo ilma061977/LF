@@ -1,0 +1,129 @@
+name: Apply LF 3795 production fix
+
+on:
+  push:
+    branches:
+      - preview-solotofacil-v375-20260926
+    paths:
+      - '.deploy-patch3795/TRIGGER'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: preview-solotofacil-v375-20260926
+          fetch-depth: 0
+
+      - name: Patch artifact to contest 3795
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, re
+          from pathlib import Path
+
+          BUILD = '2026-10-03-concurso-3795-v375-production-fix'
+          draw3794 = {"concurso":3794,"data":"01/10/2026","dezenas":[1,3,4,5,6,8,10,12,13,15,18,19,21,23,24]}
+          draw3795 = {"concurso":3795,"data":"02/10/2026","dezenas":[1,3,4,5,6,8,10,11,12,13,14,18,19,22,24]}
+
+          data_path = Path('data/lotofacil-base.json')
+          data = json.loads(data_path.read_text(encoding='utf-8'))
+          history = data.get('history') or []
+          by = {int(x['concurso']): x for x in history}
+          by[3794] = draw3794
+          by[3795] = draw3795
+          history = [by[k] for k in sorted(by) if k <= 3795]
+          if len(history) != 3795 or history[-1]['concurso'] != 3795:
+              raise SystemExit(f'base inválida: len={len(history)} last={history[-1]["concurso"] if history else None}')
+          data['history'] = history
+          data['latest'] = draw3795
+          data['source'] = 'Base incorporada LF Inteligente · atualizada até #3795'
+          data['warning'] = None
+          data['baseValidation'] = {
+              'valid': True, 'firstContest': 1, 'lastContest': 3795,
+              'expectedCount': 3795, 'loadedCount': 3795,
+              'missingCount': 0, 'missingContests': [], 'noGaps': True
+          }
+          data['secondaryVerification'] = {
+              'status': 'confirmed', 'latestContest': 3795,
+              'source': 'Atualização consolidada em 03/10/2026'
+          }
+          data['freshnessAlert'] = {
+              'possibleNewContest': False, 'lastKnownContest': 3795,
+              'expectedContest': 3796,
+              'message': 'Base incorporada atualizada até o concurso #3795.'
+          }
+          data['updatedAt'] = '2026-10-03T21:31:25Z'
+          data['embeddedLatestProvenance'] = {
+              'concurso': 3795, 'source': 'Base consolidada do LF Inteligente',
+              'officialStatus': 'confirmed'
+          }
+          data_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+          for fn in ['analysis-worker.js','matrix-51.js']:
+              p = Path(fn)
+              s = p.read_text(encoding='utf-8')
+              s = re.sub(r"LF-M51-AUDIT-\d+-F28-F29-F36-F37-v3\.7\.5",
+                         "LF-M51-AUDIT-3795-F28-F29-F36-F37-v3.7.5", s)
+              s = re.sub(r"AUDIT_BASE_THROUGH\s*=\s*\d+", "AUDIT_BASE_THROUGH = 3795", s)
+              p.write_text(s, encoding='utf-8')
+
+          version = {'version': BUILD, 'build': '2026-10-03-base-3795-production'}
+          Path('version.json').write_text(json.dumps(version, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+
+          index = Path('index.html').read_text(encoding='utf-8')
+          index = re.sub(r'<meta name="lf-build" content="[^"]*"\s*/?>',
+                         f'<meta name="lf-build" content="{BUILD}" />', index, count=1)
+          compact = json.dumps(data, ensure_ascii=False, separators=(',',':'))
+          index, nbase = re.subn(r'^window\.__LF_OFFLINE_BASE=.*$',
+                                 'window.__LF_OFFLINE_BASE='+compact+';',
+                                 index, count=1, flags=re.M)
+          if nbase != 1:
+              raise SystemExit(f'offline base não encontrada: {nbase}')
+          worker = Path('analysis-worker.js').read_text(encoding='utf-8')
+          worker_src = json.dumps('self.window=self;\n'+worker, ensure_ascii=False)
+          index, nworker = re.subn(r'^window\.__LF_OFFLINE_WORKER_SOURCE=.*$',
+                                   'window.__LF_OFFLINE_WORKER_SOURCE='+worker_src+';',
+                                   index, count=1, flags=re.M)
+          if nworker != 1:
+              raise SystemExit(f'offline worker não encontrado: {nworker}')
+          index = re.sub(r"LF-M51-AUDIT-\d+-F28-F29-F36-F37-v3\.7\.5",
+                         "LF-M51-AUDIT-3795-F28-F29-F36-F37-v3.7.5", index)
+          index = re.sub(r"AUDIT_BASE_THROUGH\s*=\s*\d+", "AUDIT_BASE_THROUGH = 3795", index)
+          Path('index.html').write_text(index, encoding='utf-8')
+          PY
+
+          grep -q '2026-10-03-concurso-3795-v375-production-fix' index.html
+          grep -q 'AUDIT_BASE_THROUGH = 3795' analysis-worker.js
+          grep -q 'AUDIT_BASE_THROUGH = 3795' matrix-51.js
+          node --check analysis-worker.js
+          node --check matrix-51.js
+          node - <<'NODE'
+          const fs=require('fs');
+          const d=JSON.parse(fs.readFileSync('data/lotofacil-base.json','utf8'));
+          if(d.latest.concurso!==3795 || d.history.length!==3795 || d.history.at(-1).concurso!==3795) throw new Error('base 3795 inválida');
+          const v=JSON.parse(fs.readFileSync('version.json','utf8'));
+          if(!v.version.includes('3795')) throw new Error('version inválida');
+          NODE
+          npm test
+
+      - name: Commit corrected artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf .deploy-bundle .deploy-patch3795
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Publicar LF V3.7.5 com base incorporada 3795"
+          git push origin HEAD:preview-solotofacil-v375-20260926
