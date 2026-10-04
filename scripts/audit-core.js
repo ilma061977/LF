@@ -180,4 +180,9 @@ assert.equal(sch.date,'2026-10-03','Concurso 3796 deve respeitar antecipação o
 sch=schedule.resolveExpectedSchedule({lastKnownContest:3796,lastKnownDate:'03/10/2026',expectedContest:3797});
 assert.equal(sch.date,'2026-10-05','Após a antecipação, 04/10/2026 não pode ser tratado como novo sorteio');
 
+
+assert(app.includes('function runGroupPatternScore('), 'método de score por composição ausente do app');
+assert(worker.includes("task==='group-pattern-score'"), 'Worker não possui tarefa de score por composição');
+assert(index.includes('id="group-pattern-score-result"'), 'painel de resultado por composição ausente');
+assert(app.includes('estrutura primeiro; escolha das dezenas decidida pelo score do jogo completo'), 'regra corrigida da composição não está documentada no app');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');

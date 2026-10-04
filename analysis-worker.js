@@ -646,7 +646,23 @@ function exhaustiveBest(ctx,policies,excluded=[],rankIndex=0,topLimit=200,progre
   return{audit,game:picked?.game||null,score:picked?.score??-Infinity,rankScore:picked?.rankScore??picked?.score??-Infinity,tested,total,approvedCount,eligibleCount,rankIndex,topGames:top.map(x=>x.game),topScores:top.map(x=>x.score),topMeta:top.map(x=>x.virginMeta||x.colorDelayMeta||null),virginDiverseGames:diverseTop.map(x=>x.game),virginDiverseMeta:diverseTop.map(x=>x.virginMeta),paretoGames:paretoTop.map(x=>x.game),paretoMeta:paretoTop.map(x=>x.virginMeta),virginStats,approvedHitDist,diagnostics};
 }
 
-self.onmessage=e=>{const d=e.data||{};if(d.task==='color-rank')return runColorRank(d);if(d.task==='generate')return runGenerate(d);if(d.task==='lab')return runLab(d);if(d.task==='backtest')return runBacktest(d);if(d.task==='filter-audit')return runFilterAudit(d);if(d.task==='combined-integral')return runCombinedIntegral(d);if(d.task==='closure')return runClosure(d);};
+
+function runGroupPatternScore(d){
+  const pattern=String(d.pattern||''),m=/^(\d+)-(0|1)-(\d+)$/.exec(pattern);
+  if(!m){postMessage({type:'group-pattern-score-done',pattern,error:'Composição inválida.'});return;}
+  const a=Number(m[1]),mid=Number(m[2]),b=Number(m[3]);
+  if(a<0||a>12||b<0||b>12||a+mid+b!==15){postMessage({type:'group-pattern-score-done',pattern,error:'A composição precisa totalizar 15 dezenas.'});return;}
+  const ctx=M.buildContext(d.history||[],{window:d.period||10}),policies=d.policies||{},p1=Array.from({length:12},(_,i)=>i+1),p2=Array.from({length:12},(_,i)=>i+14),total=M.nCk(12,a)*M.nCk(12,b),limit=Math.max(20,Math.min(200,Number(d.topLimit)||100)),top=[],colorDelayModel=M.buildFullColorDelayModel?M.buildFullColorDelayModel(ctx.history||[]):[];
+  let tested=0,approvedCount=0,lastProgress=0;const progressEvery=Math.max(250,Math.floor(total/500));
+  eachComb(p1,a,left=>{eachComb(p2,b,right=>{const g=[...left,...(mid?[13]:[]),...right].sort((x,y)=>x-y);tested++;
+    if(indicatedColorValid(g)){const report=M.inspect(g,ctx),score=M.candidateScoreFromReport?M.candidateScoreFromReport(report,ctx,policies):M.candidateScore(g,ctx,policies);if(Number.isFinite(score)){approvedCount++;const colorDelay=M.fullColorDelayBonus?M.fullColorDelayBonus(g,colorDelayModel):{bonus:0},rankScore=Number(score)+Number(colorDelay?.bonus||0);insertExhaustiveTop(top,{game:[...g],score,rankScore},limit);}}
+    if(tested-lastProgress>=progressEvery||tested===total){lastProgress=tested;postMessage({type:'group-pattern-score-progress',pattern,tested,total,approvedCount});}
+  });});
+  const picked=top[0]||null,stat=nums=>nums.map(n=>{const inc=top.map((x,i)=>({x,i})).filter(z=>z.x.game.includes(n));return{n,appearances:inc.length,bestRank:inc.length?inc[0].i+1:null,avgRankScore:inc.length?inc.reduce((s,z)=>s+Number(z.x.rankScore||0),0)/inc.length:null};}).sort((x,y)=>y.appearances-x.appearances||(x.bestRank??9999)-(y.bestRank??9999)||x.n-y.n);
+  postMessage({type:'group-pattern-score-done',pattern,part1Count:a,mid,part2Count:b,tested,total,approvedCount,game:picked?.game||[],score:picked?.score??null,rankScore:picked?.rankScore??null,topCount:top.length,part1Stats:stat(p1),part2Stats:stat(p2)});
+}
+
+self.onmessage=e=>{const d=e.data||{};if(d.task==='group-pattern-score')return runGroupPatternScore(d);if(d.task==='color-rank')return runColorRank(d);if(d.task==='generate')return runGenerate(d);if(d.task==='lab')return runLab(d);if(d.task==='backtest')return runBacktest(d);if(d.task==='filter-audit')return runFilterAudit(d);if(d.task==='combined-integral')return runCombinedIntegral(d);if(d.task==='closure')return runClosure(d);};
 
 function runGenerate(d){
   const ctx=M.buildContext(d.history||[],{window:d.period||10}),target=1,maxAttempts=Math.max(1000,Number(d.maxAttempts)||250000),quotaSpec=d.indicatorQuotas||(d.indicatorTargets?buildIndicatorQuotaSpec(d.history||[],d.indicatorTargets):null);
