@@ -1455,10 +1455,10 @@
     const body=$('#absentnext-body'),kpis=$('#absentnext-kpis'),topEl=$('#absentnext-top'),distEl=$('#absentnext-return-dist'),note=$('#absentnext-note');if(!body||!kpis)return;
     const h=state.history||[];if(h.length<2){body.innerHTML='<tr><td colspan="10">Histórico insuficiente.</td></tr>';return;}
     const latest=h.at(-1),latestSet=new Set(latest.dezenas||[]),absent=ALL.filter(n=>!latestSet.has(n)),f10=frequency(10),f20=frequency(20),dm=delayMap(),rankWindow=$('#absentnext-rank-window')?.value||'all';
-    const rows=absent.map(n=>({n,all:absentNextStat(n,null),w500:absentNextStat(n,500),w100:absentNextStat(n,100),f10:(f10[n]||0)/Math.min(10,h.length)*100,f20:(f20[n]||0)/Math.min(20,h.length)*100,delay:dm[n]||0}));
-    const metric=x=>rankWindow==='100'?x.w100.rate:rankWindow==='500'?x.w500.rate:x.all.rate;
+    const last10Den=Math.min(10,h.length),rows=absent.map(n=>({n,all:absentNextStat(n,null),w500:absentNextStat(n,500),w100:absentNextStat(n,100),f10Count:f10[n]||0,f10:(f10[n]||0)/Math.max(1,last10Den)*100,f20:(f20[n]||0)/Math.min(20,h.length)*100,delay:dm[n]||0}));
+    const metric=x=>rankWindow==='10'?x.f10:x.all.rate;
     rows.sort((a,b)=>(metric(b)??-1)-(metric(a)??-1)||(b.all.rate??-1)-(a.all.rate??-1)||a.n-b.n);
-    const fmt=x=>x==null?'—':x.toFixed(2).replace('.',',')+'%',rankLabel=rankWindow==='100'?'últimos 100 pares':rankWindow==='500'?'últimos 500 pares':'histórico completo';
+    const fmt=x=>x==null?'—':x.toFixed(2).replace('.',',')+'%',rankLabel=rankWindow==='10'?'Últimos 10 concursos':'Histórico completo',metricLabel=x=>rankWindow==='10'?`${x.f10.toFixed(0)}% (${x.f10Count}/${last10Den})`:fmt(x.all.rate);
     const pairCount=h.length-1,dist=Array(11).fill(0);let returnSum=0;
     for(let i=0;i<pairCount;i++){const prev=new Set(h[i].dezenas||[]),next=new Set(h[i+1].dezenas||[]),a=ALL.filter(n=>!prev.has(n)),r=a.filter(n=>next.has(n)).length;dist[r]++;returnSum+=r;}
     const avg=pairCount?returnSum/pairCount:0,mode=dist.reduce((best,v,i)=>v>dist[best]?i:best,0),top3=rows.slice(0,3);
@@ -1468,7 +1468,7 @@
       ['Probabilidade matemática','60,00%','cada dezena individual · 15/25'],
       ['Retorno médio observado',avg.toFixed(2).replace('.',',')+'/10','esperado matemático 6,00/10']
     ].map(([a,b,c])=>`<article><span>${a}</span><b>${b}</b><small>${c}</small></article>`).join('');
-    topEl.innerHTML=`<div class="summary-row"><span>Top 3 por ${rankLabel}</span><b>${top3.map((x,i)=>'#'+(i+1)+' '+pad(x.n)+' · '+fmt(metric(x))).join(' · ')}</b></div><div class="summary-row"><span>Leitura correta</span><b>ranking por frequência histórica de retorno; não é aumento da probabilidade matemática de 60%</b></div>`;
+    topEl.innerHTML=`<div class="summary-row"><span>Top 3 por ${rankLabel}</span><b>${top3.map((x,i)=>'#'+(i+1)+' '+pad(x.n)+' · '+metricLabel(x)).join(' · ')}</b></div><div class="summary-row"><span>Critério atual</span><b>${rankWindow==='10'?'frequência das 10 ausentes nos 10 concursos mais recentes':'taxa histórica de retorno no concurso seguinte quando a dezena estava ausente'}</b></div><div class="summary-row"><span>Leitura correta</span><b>é um ranking descritivo; não aumenta a probabilidade matemática individual de 60%</b></div>`;
     body.innerHTML=rows.map((x,i)=>`<tr><td><b>#${i+1}</b></td><td>${mini(x.n)}</td><td><b>60,00%</b><small>15/25</small></td><td><b>${fmt(x.all.rate)}</b></td><td>${fmt(x.w500.rate)}</td><td>${fmt(x.w100.rate)}</td><td>${x.all.returns.toLocaleString('pt-BR')}/${x.all.trials.toLocaleString('pt-BR')}</td><td>${x.f10.toFixed(0)}%</td><td>${x.f20.toFixed(0)}%</td><td>${x.delay}</td></tr>`).join('');
     const important=[4,5,6,7,8].map(n=>({n,count:dist[n],pct:pairCount?dist[n]/pairCount*100:0}));
     distEl.innerHTML=important.map(x=>`<article><span>${x.n} das 10 voltaram</span><b>${x.pct.toFixed(1).replace('.',',')}%</b><small>${x.count.toLocaleString('pt-BR')} pares de concursos</small></article>`).join('')+`<article><span>Moda histórica</span><b>${mode}/10</b><small>valor mais frequente</small></article>`;
