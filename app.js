@@ -1451,6 +1451,32 @@
     for(let i=start;i<pairTotal;i++){const prev=new Set(h[i]?.dezenas||[]);if(prev.has(n))continue;trials++;if((h[i+1]?.dezenas||[]).includes(n))returns++;}
     return{trials,returns,rate:trials?returns/trials*100:null};
   }
+  function absentDelayReturnAnalysis(){
+    const h=state.history||[],buckets=['1','2','3','4+'],stats=Object.fromEntries(buckets.map(b=>[b,{candidateInstances:0,returns:0,contests:0,candidatesPerContest:0,returnsPerContest:0,last1000:{candidateInstances:0,returns:0},last500:{candidateInstances:0,returns:0}}]));
+    const classify=d=>d>=4?'4+':String(d);
+    const addWindow=(bucket,returned,scope)=>{const x=stats[bucket][scope];x.candidateInstances++;if(returned)x.returns++;};
+    for(let i=1;i<h.length;i++){
+      const prev=new Set(h[i-1]?.dezenas||[]),next=new Set(h[i]?.dezenas||[]),abs=ALL.filter(n=>!prev.has(n)),per=Object.fromEntries(buckets.map(b=>[b,{c:0,r:0}]));
+      for(const n of abs){
+        let delay=0;for(let j=i-1;j>=0&&!(h[j]?.dezenas||[]).includes(n);j--)delay++;
+        const bucket=classify(delay),returned=next.has(n),x=stats[bucket];x.candidateInstances++;x.returns++;if(!returned)x.returns--;per[bucket].c++;if(returned)per[bucket].r++;
+        if(i>=h.length-1000)addWindow(bucket,returned,'last1000');
+        if(i>=h.length-500)addWindow(bucket,returned,'last500');
+      }
+      for(const b of buckets){stats[b].contests++;stats[b].candidatesPerContest+=per[b].c;stats[b].returnsPerContest+=per[b].r;}
+    }
+    const latest=h.at(-1),latestSet=new Set(latest?.dezenas||[]),last10=h.slice(-Math.min(10,h.length)),current=Object.fromEntries(buckets.map(b=>[b,[]]));
+    for(const n of ALL.filter(n=>!latestSet.has(n))){let d=0;for(let i=last10.length-1;i>=0;i--){if((last10[i]?.dezenas||[]).includes(n))break;d++;}current[classify(d)].push(n);}
+    return{buckets,stats,current,latest};
+  }
+  function renderAbsentDelayReturn(){
+    const currentEl=$('#absentnext-delay-current'),body=$('#absentnext-delay-body'),note=$('#absentnext-delay-note');if(!currentEl||!body)return;
+    const a=absentDelayReturnAnalysis(),fmtPct=(r,t)=>t?(100*r/t).toFixed(2).replace('.',',')+'%':'—',fmtN=v=>Number(v||0).toFixed(2).replace('.',',');
+    currentEl.innerHTML=a.buckets.map(b=>{const nums=a.current[b]||[],x=a.stats[b],rate=x.candidateInstances?x.returns/x.candidateInstances:0,proj=nums.length*rate;return`<article><span>Atraso ${b}</span><b>${nums.length} atual(is)</b><small>${nums.map(pad).join(' · ')||'nenhuma'} · retorno observado aplicado ao grupo atual: ${proj.toFixed(2).replace('.',',')}</small></article>`;}).join('');
+    body.innerHTML=a.buckets.map(b=>{const x=a.stats[b],avgCand=x.contests?x.candidatesPerContest/x.contests:0,avgRet=x.contests?x.returnsPerContest/x.contests:0,cur=a.current[b]||[];return`<tr><td><b>Atraso ${b}</b></td><td>${cur.length}</td><td>${cur.map(pad).join(' · ')||'—'}</td><td>${fmtN(avgCand)}</td><td><b>${fmtN(avgRet)}</b></td><td>${fmtPct(x.returns,x.candidateInstances)}</td><td>${fmtPct(x.last1000.returns,x.last1000.candidateInstances)}</td><td>${fmtPct(x.last500.returns,x.last500.candidateInstances)}</td><td>${x.candidateInstances.toLocaleString('pt-BR')}</td></tr>`;}).join('');
+    if(note)note.innerHTML=`<b>Leitura:</b> a média de retorno por concurso depende de quantas dezenas existem em cada faixa. A taxa individual observada fica próxima de 60% em todas as faixas; por isso atraso não deve ser tratado como certeza ou bloqueio. Histórico analisado: ${Math.max(0,(state.history||[]).length-1).toLocaleString('pt-BR')} transições.`;
+  }
+
   function renderAbsentNext(){
     const body=$('#absentnext-body'),kpis=$('#absentnext-kpis'),topEl=$('#absentnext-top'),distEl=$('#absentnext-return-dist'),note=$('#absentnext-note');if(!body||!kpis)return;
     const h=state.history||[];if(h.length<2){body.innerHTML='<tr><td colspan="10">Histórico insuficiente.</td></tr>';return;}
@@ -1473,6 +1499,7 @@
     const important=[4,5,6,7,8].map(n=>({n,count:dist[n],pct:pairCount?dist[n]/pairCount*100:0}));
     distEl.innerHTML=important.map(x=>`<article><span>${x.n} das 10 voltaram</span><b>${x.pct.toFixed(1).replace('.',',')}%</b><small>${x.count.toLocaleString('pt-BR')} pares de concursos</small></article>`).join('')+`<article><span>Moda histórica</span><b>${mode}/10</b><small>valor mais frequente</small></article>`;
     if(note)note.innerHTML=`<b>Importante:</b> cada dezena continua com probabilidade matemática de <b>60%</b> no próximo sorteio. A taxa de retorno histórica pode ficar acima ou abaixo de 60% por variação amostral; use-a como leitura estatística, não como garantia de previsão. Base atual: #${h[0]?.concurso||'—'}–#${latest.concurso}.`;
+    renderAbsentDelayReturn();
     const sel=$('#absentnext-rank-window');if(sel&&!sel.dataset.bound){sel.dataset.bound='1';sel.addEventListener('change',renderAbsentNext);}
   }
   function renderVertical3(){

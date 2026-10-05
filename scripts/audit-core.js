@@ -197,4 +197,7 @@ assert(app.includes("rankWindow==='10'?x.f10:x.all.rate"), '10 Ausentes: ordena�
 assert(app.includes("taxa histórica de retorno no concurso seguinte quando a dezena estava ausente"), '10 Ausentes: critério histórico não documentado');
 assert(app.includes('delay10:delay10(n)'), '10 Ausentes: atraso limitado aos últimos 10 ausente');
 assert(index.includes('Atraso · últimos 10'), '10 Ausentes: cabeçalho de atraso últimos 10 ausente');
+assert(app.includes('function absentDelayReturnAnalysis('), 'análise de retorno por atraso ausente');
+assert(index.includes('id="absentnext-delay-body"'), 'tabela de retorno por atraso ausente');
+assert(index.includes('ATRASO 1 · 2 · 3 · 4+'), 'painel de atraso 1/2/3/4+ ausente');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
