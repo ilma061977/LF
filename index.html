@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d10" />
-  <meta name="lf-build" content="2026-10-05-v375-ausentes-proximo-rev8" />
+  <meta name="lf-build" content="2026-10-05-v375-ausentes-proximo-rev9" />
   <title>LF Inteligente V3.7.5</title>
   <meta name="description" content="LF Inteligente V3.7.5 — NOVO INDICADO 5x5, Matriz 51 canônica, fechamentos matemáticos, backtest determinístico e carteira em nuvem." />
   <style>:root{
@@ -1223,7 +1223,7 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
           <article class="panel">
             <div class="panel-head"><div><span class="eyebrow dark">RANKING HISTÓRICO DE RETORNO</span><h2>Quais das 10 ausentes mais voltaram no concurso seguinte</h2><p class="muted">Compare duas leituras: Histórico completo (taxa de retorno no concurso seguinte quando a dezena estava ausente) e Últimos 10 (frequência recente das mesmas 10 dezenas).</p></div><div class="analytics-toolbar"><label>Ordenar por<select id="absentnext-rank-window"><option value="all" selected>Histórico completo</option><option value="10">Últimos 10</option></select></label></div></div>
             <div id="absentnext-top" class="summary-stack"></div>
-            <div class="table-wrap"><table><thead><tr><th>#</th><th>Dezena</th><th>Prob. matemática</th><th>Retorno histórico</th><th>Últimos 500</th><th>Últimos 100</th><th>Amostra histórica</th><th>Freq. últimos 10</th><th>Freq. últimos 20</th><th>Atraso atual</th></tr></thead><tbody id="absentnext-body"></tbody></table></div>
+            <div class="table-wrap"><table><thead><tr><th>#</th><th>Dezena</th><th>Prob. matemática</th><th>Retorno histórico</th><th>Últimos 500</th><th>Últimos 100</th><th>Amostra histórica</th><th>Freq. últimos 10</th><th>Freq. últimos 20</th><th>Atraso · últimos 10</th></tr></thead><tbody id="absentnext-body"></tbody></table></div>
           </article>
           <article class="panel">
             <div class="panel-head"><div><span class="eyebrow dark">QUANTAS DAS 10 VOLTAM?</span><h2>Distribuição histórica</h2><p class="muted">Para cada par de concursos consecutivos, conta quantas das 10 dezenas ausentes no primeiro apareceram no concurso seguinte. O valor matemático esperado é 6 de 10.</p></div></div>
@@ -3614,7 +3614,7 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
     const body=$('#absentnext-body'),kpis=$('#absentnext-kpis'),topEl=$('#absentnext-top'),distEl=$('#absentnext-return-dist'),note=$('#absentnext-note');if(!body||!kpis)return;
     const h=state.history||[];if(h.length<2){body.innerHTML='<tr><td colspan="10">Histórico insuficiente.</td></tr>';return;}
     const latest=h.at(-1),latestSet=new Set(latest.dezenas||[]),absent=ALL.filter(n=>!latestSet.has(n)),f10=frequency(10),f20=frequency(20),dm=delayMap(),rankWindow=$('#absentnext-rank-window')?.value||'all';
-    const last10Den=Math.min(10,h.length),rows=absent.map(n=>({n,all:absentNextStat(n,null),w500:absentNextStat(n,500),w100:absentNextStat(n,100),f10Count:f10[n]||0,f10:(f10[n]||0)/Math.max(1,last10Den)*100,f20:(f20[n]||0)/Math.min(20,h.length)*100,delay:dm[n]||0}));
+    const last10Den=Math.min(10,h.length),last10Rows=h.slice(-last10Den),delay10=n=>{let d=0;for(let i=last10Rows.length-1;i>=0;i--){if((last10Rows[i].dezenas||[]).includes(n))break;d++;}return d;},rows=absent.map(n=>({n,all:absentNextStat(n,null),w500:absentNextStat(n,500),w100:absentNextStat(n,100),f10Count:f10[n]||0,f10:(f10[n]||0)/Math.max(1,last10Den)*100,f20:(f20[n]||0)/Math.min(20,h.length)*100,delay10:delay10(n),delayFull:dm[n]||0}));
     const metric=x=>rankWindow==='10'?x.f10:x.all.rate;
     rows.sort((a,b)=>(metric(b)??-1)-(metric(a)??-1)||(b.all.rate??-1)-(a.all.rate??-1)||a.n-b.n);
     const fmt=x=>x==null?'—':x.toFixed(2).replace('.',',')+'%',rankLabel=rankWindow==='10'?'Últimos 10 concursos':'Histórico completo',metricLabel=x=>rankWindow==='10'?`${x.f10.toFixed(0)}% (${x.f10Count}/${last10Den})`:fmt(x.all.rate);
@@ -3627,8 +3627,8 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
       ['Probabilidade matemática','60,00%','cada dezena individual · 15/25'],
       ['Retorno médio observado',avg.toFixed(2).replace('.',',')+'/10','esperado matemático 6,00/10']
     ].map(([a,b,c])=>`<article><span>${a}</span><b>${b}</b><small>${c}</small></article>`).join('');
-    topEl.innerHTML=`<div class="summary-row"><span>Top 3 por ${rankLabel}</span><b>${top3.map((x,i)=>'#'+(i+1)+' '+pad(x.n)+' · '+metricLabel(x)).join(' · ')}</b></div><div class="summary-row"><span>Critério atual</span><b>${rankWindow==='10'?'frequência das 10 ausentes nos 10 concursos mais recentes':'taxa histórica de retorno no concurso seguinte quando a dezena estava ausente'}</b></div><div class="summary-row"><span>Leitura correta</span><b>é um ranking descritivo; não aumenta a probabilidade matemática individual de 60%</b></div>`;
-    body.innerHTML=rows.map((x,i)=>`<tr><td><b>#${i+1}</b></td><td>${mini(x.n)}</td><td><b>60,00%</b><small>15/25</small></td><td><b>${fmt(x.all.rate)}</b></td><td>${fmt(x.w500.rate)}</td><td>${fmt(x.w100.rate)}</td><td>${x.all.returns.toLocaleString('pt-BR')}/${x.all.trials.toLocaleString('pt-BR')}</td><td>${x.f10.toFixed(0)}%</td><td>${x.f20.toFixed(0)}%</td><td>${x.delay}</td></tr>`).join('');
+    const maxDelay10=Math.max(...rows.map(x=>x.delay10)),delayLeaders=rows.filter(x=>x.delay10===maxDelay10).map(x=>pad(x.n));topEl.innerHTML=`<div class="summary-row"><span>Top 3 por ${rankLabel}</span><b>${top3.map((x,i)=>'#'+(i+1)+' '+pad(x.n)+' · '+metricLabel(x)).join(' · ')}</b></div><div class="summary-row"><span>Maior atraso nos últimos 10</span><b>${maxDelay10} concurso(s) · ${delayLeaders.join(' · ')}</b></div><div class="summary-row"><span>Critério atual</span><b>${rankWindow==='10'?'frequência das 10 ausentes nos 10 concursos mais recentes':'taxa histórica de retorno no concurso seguinte quando a dezena estava ausente'}</b></div><div class="summary-row"><span>Leitura correta</span><b>é um ranking descritivo; não aumenta a probabilidade matemática individual de 60%</b></div>`;
+    body.innerHTML=rows.map((x,i)=>`<tr><td><b>#${i+1}</b></td><td>${mini(x.n)}</td><td><b>60,00%</b><small>15/25</small></td><td><b>${fmt(x.all.rate)}</b></td><td>${fmt(x.w500.rate)}</td><td>${fmt(x.w100.rate)}</td><td>${x.all.returns.toLocaleString('pt-BR')}/${x.all.trials.toLocaleString('pt-BR')}</td><td>${x.f10.toFixed(0)}%</td><td>${x.f20.toFixed(0)}%</td><td><b>${x.delay10}</b><small>${x.delayFull>last10Den?'histórico '+x.delayFull:x.delayFull===x.delay10?'concursos sem sair':'janela de 10'}</small></td></tr>`).join('');
     const important=[4,5,6,7,8].map(n=>({n,count:dist[n],pct:pairCount?dist[n]/pairCount*100:0}));
     distEl.innerHTML=important.map(x=>`<article><span>${x.n} das 10 voltaram</span><b>${x.pct.toFixed(1).replace('.',',')}%</b><small>${x.count.toLocaleString('pt-BR')} pares de concursos</small></article>`).join('')+`<article><span>Moda histórica</span><b>${mode}/10</b><small>valor mais frequente</small></article>`;
     if(note)note.innerHTML=`<b>Importante:</b> cada dezena continua com probabilidade matemática de <b>60%</b> no próximo sorteio. A taxa de retorno histórica pode ficar acima ou abaixo de 60% por variação amostral; use-a como leitura estatística, não como garantia de previsão. Base atual: #${h[0]?.concurso||'—'}–#${latest.concurso}.`;

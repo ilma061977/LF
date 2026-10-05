@@ -195,4 +195,6 @@ assert(app.includes('function absentNextStat('), 'cálculo histórico de retorno
 assert(index.includes('<option value="all" selected>Histórico completo</option><option value="10">Últimos 10</option>'), '10 Ausentes: seletor Histórico completo/Últimos 10 ausente');
 assert(app.includes("rankWindow==='10'?x.f10:x.all.rate"), '10 Ausentes: ordenação Últimos 10 não usa frequência recente');
 assert(app.includes("taxa histórica de retorno no concurso seguinte quando a dezena estava ausente"), '10 Ausentes: critério histórico não documentado');
+assert(app.includes('delay10:delay10(n)'), '10 Ausentes: atraso limitado aos últimos 10 ausente');
+assert(index.includes('Atraso · últimos 10'), '10 Ausentes: cabeçalho de atraso últimos 10 ausente');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
