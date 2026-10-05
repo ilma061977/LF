@@ -1416,7 +1416,7 @@
   function vertical4PreviousValidationHTML(){
     const h=state.history||[];if(h.length<2)return'';
     const targetIndex=h.length-1,target=h[targetIndex],base=h[targetIndex-1],baseSet=new Set(base.dezenas||[]),candidates=ALL.filter(n=>!baseSet.has(n)).map(n=>verticalLatestValidation(n)).filter(Boolean).sort((a,b)=>b.pct-a.pct||a.n-b.n),hits=candidates.filter(x=>x.hit);
-    const row=x=>`<span class="vertical4-validation-chip ${x.hit?'is-hit':'is-miss'}" title="#${x.from} → #${x.to} · percentual calculado sem usar o resultado #${x.to}"><b>${pad(x.n)}</b><em>${x.pct.toFixed(0)}%</em><small>${x.hit?'✓ saiu':'× não saiu'}</small></span>`;
+    const row=x=>{const band=verticalPctBand(x.pct);return `<span class="vertical4-validation-chip ${x.hit?'is-hit':'is-miss'}" title="#${x.from} → #${x.to} · percentual calculado sem usar o resultado #${x.to}"><b>${pad(x.n)}</b><em class="pct ${band.cls}">${x.pct.toFixed(0)}%</em><small>${x.hit?'✓ saiu':'× não saiu'}</small></span>`;};
     return `<section class="vertical4-validation-panel"><div class="panel-head"><div><span class="eyebrow dark">VALIDAÇÃO CRONOLÓGICA</span><h3>10 ausentes do #${base.concurso} → resultado #${target.concurso}</h3><p class="muted">Percentuais calculados somente com os ${candidates[0]?.total||0} concursos anteriores ao #${target.concurso}; o novo sorteio entra apenas para conferir acerto/erro.</p></div><span class="status-pill ${hits.length>=6?'ok':''}">${hits.length}/10 retornaram</span></div><div class="vertical4-validation-grid">${candidates.map(row).join('')}</div><div class="summary-row"><span>Acertaram no #${target.concurso}</span><b>${hits.map(x=>pad(x.n)).join(' · ')||'nenhuma'}</b></div></section>`;
   }
 

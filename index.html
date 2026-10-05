@@ -705,7 +705,17 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
 .vertical-validation-cell{min-width:118px;text-align:center!important;padding:6px 7px!important;white-space:nowrap}
 .vertical-validation-cell b{display:block;font-size:11px;letter-spacing:.02em}
 .vertical-validation-cell small{display:block;font-size:10px;margin-top:3px;color:#475569}
-.vertical-validation-cell .pct{display:inline-block;padding:1px 5px;border-radius:999px;font-size:10px}
+.vertical-validation-cell .pct,.vertical4-validation-chip .pct{display:inline-block;padding:2px 6px;border-radius:999px;font-size:10px;font-weight:900;line-height:1.35}
+.vertical-validation-cell .pct.pzero,.vertical4-validation-chip .pct.pzero{background:#374151!important;color:#fff!important}
+.vertical-validation-cell .pct.p0,.vertical4-validation-chip .pct.p0{background:#050505!important;color:#fff!important}
+.vertical-validation-cell .pct.p30,.vertical4-validation-chip .pct.p30{background:#9ca3af!important;color:#111827!important}
+.vertical-validation-cell .pct.p40,.vertical4-validation-chip .pct.p40{background:#b91c1c!important;color:#fff!important}
+.vertical-validation-cell .pct.p50,.vertical4-validation-chip .pct.p50{background:#facc15!important;color:#422006!important}
+.vertical-validation-cell .pct.p60,.vertical4-validation-chip .pct.p60{background:#f97316!important;color:#fff!important}
+.vertical-validation-cell .pct.p70,.vertical4-validation-chip .pct.p70{background:#39ff14!important;color:#052e16!important}
+.vertical-validation-cell .pct.p80,.vertical4-validation-chip .pct.p80{background:#166534!important;color:#fff!important}
+.vertical-validation-cell .pct.p90,.vertical4-validation-chip .pct.p90{background:#00e5ff!important;color:#083344!important}
+.vertical-validation-cell .pct.p100,.vertical4-validation-chip .pct.p100{background:#1e3a8a!important;color:#fff!important}
 .vertical-validation-cell.is-hit{background:#ecfdf5!important;box-shadow:inset 3px 0 #16a34a}
 .vertical-validation-cell.is-hit b{color:#166534}
 .vertical-validation-cell.is-miss{background:#fff7ed!important;box-shadow:inset 3px 0 #ea580c}
@@ -3663,7 +3673,7 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
   function vertical4PreviousValidationHTML(){
     const h=state.history||[];if(h.length<2)return'';
     const targetIndex=h.length-1,target=h[targetIndex],base=h[targetIndex-1],baseSet=new Set(base.dezenas||[]),candidates=ALL.filter(n=>!baseSet.has(n)).map(n=>verticalLatestValidation(n)).filter(Boolean).sort((a,b)=>b.pct-a.pct||a.n-b.n),hits=candidates.filter(x=>x.hit);
-    const row=x=>`<span class="vertical4-validation-chip ${x.hit?'is-hit':'is-miss'}" title="#${x.from} → #${x.to} · percentual calculado sem usar o resultado #${x.to}"><b>${pad(x.n)}</b><em>${x.pct.toFixed(0)}%</em><small>${x.hit?'✓ saiu':'× não saiu'}</small></span>`;
+    const row=x=>{const band=verticalPctBand(x.pct);return `<span class="vertical4-validation-chip ${x.hit?'is-hit':'is-miss'}" title="#${x.from} → #${x.to} · percentual calculado sem usar o resultado #${x.to}"><b>${pad(x.n)}</b><em class="pct ${band.cls}">${x.pct.toFixed(0)}%</em><small>${x.hit?'✓ saiu':'× não saiu'}</small></span>`;};
     return `<section class="vertical4-validation-panel"><div class="panel-head"><div><span class="eyebrow dark">VALIDAÇÃO CRONOLÓGICA</span><h3>10 ausentes do #${base.concurso} → resultado #${target.concurso}</h3><p class="muted">Percentuais calculados somente com os ${candidates[0]?.total||0} concursos anteriores ao #${target.concurso}; o novo sorteio entra apenas para conferir acerto/erro.</p></div><span class="status-pill ${hits.length>=6?'ok':''}">${hits.length}/10 retornaram</span></div><div class="vertical4-validation-grid">${candidates.map(row).join('')}</div><div class="summary-row"><span>Acertaram no #${target.concurso}</span><b>${hits.map(x=>pad(x.n)).join(' · ')||'nenhuma'}</b></div></section>`;
   }
 
