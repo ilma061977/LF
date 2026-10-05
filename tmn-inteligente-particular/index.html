@@ -24,7 +24,7 @@
 <body>
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="brand"><div class="brand-mark">TMN</div><div><strong>TMN Inteligente</strong><span>Particular · v12</span></div></div>
+    <div class="brand"><div class="brand-mark">TMN</div><div><strong>TMN Inteligente</strong><span>Particular · v13</span></div></div>
     <nav id="nav">
       <button class="nav-btn active" data-page="dashboard">📊 Início</button>
       <button class="nav-btn" data-page="analysis">🔎 Análise 80</button>
@@ -116,7 +116,7 @@
 
     <section class="page" id="page-filters">
       <div class="card">
-        <div class="card-head"><div><h2>Matriz de filtros e presets</h2><p class="muted">O percentual exibido só é mostrado quando a seleção corresponde exatamente a um preset validado. Configuração manual aparece como personalizado.</p></div><button class="btn secondary" id="resetFilters">Restaurar base</button></div>
+        <div class="card-head"><div><h2>Matriz de filtros e presets</h2><p class="muted">O percentual exibido só é mostrado quando a seleção corresponde exatamente a um preset validado. Configuração manual aparece como personalizado.</p></div><button class="btn secondary" id="resetFilters">Restaurar v10</button></div>
         <div class="button-row preset-row">
           <button class="btn secondary" data-preset="base">Base · 29,34%</button>
           <button class="btn secondary" data-preset="v3">v3 · 78,29%</button>
@@ -489,12 +489,12 @@ function renderFilters(){
  const conflicts=conflictMessages();
  if($('#filterUnionNotice')){
    if(preset){
-     $('#filterUnionNotice').innerHTML=`Configuração atual: <strong>${preset.label}</strong> → ${preset.kind==='exato'?'':'≈ '}${fmtPct(preset.redPct,6)} <span class="tag good">${preset.kind}</span>. ${preset.key==='base'?'Este é o padrão restaurado pelo app.':preset.key==='v10'?'Experimental 90%+: inclui regras dinâmicas calculadas sobre os últimos concursos da base carregada.':preset.key==='v8'?'Experimental: JNB01 substitui GAPGE8 + DIAG2O.':'Preset validado conforme a etapa de pesquisa correspondente.'}${conflicts.length?`<br><span class="warn-text">⚠ ${conflicts.join(' ')}</span>`:''}`;
+     $('#filterUnionNotice').innerHTML=`Configuração atual: <strong>${preset.label}</strong> → ${preset.kind==='exato'?'':'≈ '}${fmtPct(preset.redPct,6)} <span class="tag good">${preset.kind}</span>. ${preset.key==='v10'?'Este é o padrão ativo ao abrir/restaurar o app; inclui regras dinâmicas calculadas sobre os últimos concursos da base carregada.':preset.key==='base'?'Base conservadora disponível para seleção manual.':preset.key==='v8'?'Experimental: JNB01 substitui GAPGE8 + DIAG2O.':'Preset validado conforme a etapa de pesquisa correspondente.'}${conflicts.length?`<br><span class="warn-text">⚠ ${conflicts.join(' ')}</span>`:''}`;
    }else{
      $('#filterUnionNotice').innerHTML=`Configuração atual: <strong>PERSONALIZADA</strong> — percentual conjunto <strong>não calculado</strong>. Não some percentuais individuais.${conflicts.length?`<br><span class="warn-text">⚠ ${conflicts.join(' ')}</span>`:''}`;
    }
  }
- if($('#presetAdvice'))$('#presetAdvice').innerHTML=`<strong>Indicação:</strong> Base 29,343452% continua sendo o padrão ao restaurar. v6 ≈87,829907% = rolling estabilizada. v8/JNB01 ≈89,403748% = experimental estrutural. <strong>v10 ≈90,078626%</strong> agora é executável por preset e calcula as regras dinâmicas somente com o histórico carregado; continua experimental e não é ativada automaticamente.`;
+ if($('#presetAdvice'))$('#presetAdvice').innerHTML=`<strong>Indicação:</strong> <strong>v10 ≈90,078626%</strong> é o padrão ativo ao abrir/restaurar o app e calcula as regras dinâmicas somente com o histórico carregado. Base 29,343452%, v6 ≈87,829907% e v8/JNB01 ≈89,403748% continuam disponíveis para seleção manual.`;
 }
 function renderBacktest(){
  const zero=RESEARCH_RESULTS.filter(r=>r.fails===0).length;
@@ -511,7 +511,7 @@ function renderBacktest(){
  if($('#rollingV6Summary'))$('#rollingV6Summary').innerHTML=`<div class="research-callout"><div><span>Blocos aprovados</span><strong>${ROLLING_V6.blocksPassingFloor}/${ROLLING_V6.blocks}</strong></div><div><span>OOS avaliados</span><strong>${fmtInt(ROLLING_V6.oosContests)}</strong></div><div><span>Estabilização</span><strong>após #${fmtInt(ROLLING_V6.stabilizationTrain)}</strong></div><div><span>Redução 50M</span><strong>≈ ${fmtPct(ROLLING_V6.red50m,6)}</strong></div></div><p class="muted">No rolling completo 801–2449 houve <strong>${ROLLING_V6.oosFloorViolations}</strong> violações do piso de 500 nas duas primeiras janelas e <strong>${ROLLING_V6.oosZeroFailures}</strong> falha total. A partir de treino 1–1200, a matriz ficou idêntica em todas as recalibrações e preservou mínimo <strong>${fmtInt(ROLLING_V6.stableFutureMin)}</strong> em 1201–2449. A candidata estabilizada abre mão de ${fmtPct(Math.abs(ROLLING_V6.deltaVsV5),6)} vs v5 para ganhar evidência temporal.</p>`;
  if($('#rollingV6Table'))$('#rollingV6Table').innerHTML=ROLLING_V6.stages.map(s=>`<tr><td>${s.train}</td><td>${s.test}</td><td>≈ ${fmtPct(s.red,6)}</td><td>${fmtInt(s.min)}</td><td>${s.viol}</td><td>${s.zero}</td><td>${s.viol===0?'<span class="tag good">PASSOU</span>':'<span class="tag warn">REVISAR</span>'}</td></tr>`).join('');
  if($('#v8Summary'))$('#v8Summary').innerHTML=`<div class="research-callout"><div><span>Redução 50M</span><strong>≈ ${fmtPct(V8_RESEARCH.red50m,6)}</strong></div><div><span>Mínimo 1–1200</span><strong>${fmtInt(V8_RESEARCH.trainMin)}</strong></div><div><span>Mínimo 1201–2449</span><strong>${fmtInt(V8_RESEARCH.futureMin)}</strong></div><div><span>Falhas futuras</span><strong>0</strong></div></div><p class="muted">JNB01 = GAPGE8 × DIAG2O. ${V8_RESEARCH.note} Estimativa: ≈${fmtInt(V8_RESEARCH.blockedEst)} bloqueados e ≈${fmtInt(V8_RESEARCH.survivorsEst)} restantes.</p>`;
- if($('#v10Summary'))$('#v10Summary').innerHTML=`<div class="research-callout"><div><span>Redução 50M</span><strong>≈ ${fmtPct(V10_RESEARCH.red50m,6)}</strong></div><div><span>Mínimo treino</span><strong>${fmtInt(V10_RESEARCH.trainMin)}</strong></div><div><span>Mínimo futuro</span><strong>${fmtInt(V10_RESEARCH.futureMin)}</strong></div><div><span>Status</span><strong>EXECUTÁVEL · EXPERIMENTAL</strong></div></div><p class="muted">Bandas estáticas: ${V10_RESEARCH.staticRules.join(', ')}. Dinâmicos: ${V10_RESEARCH.dynamicRules.join(', ')}. Regra final: <strong>${V10_RESEARCH.finalRule}</strong>. Preset operacional incluído nesta versão; permanece experimental e desativado por padrão.</p>`;
+ if($('#v10Summary'))$('#v10Summary').innerHTML=`<div class="research-callout"><div><span>Redução 50M</span><strong>≈ ${fmtPct(V10_RESEARCH.red50m,6)}</strong></div><div><span>Mínimo treino</span><strong>${fmtInt(V10_RESEARCH.trainMin)}</strong></div><div><span>Mínimo futuro</span><strong>${fmtInt(V10_RESEARCH.futureMin)}</strong></div><div><span>Status</span><strong>EXECUTÁVEL · EXPERIMENTAL</strong></div></div><p class="muted">Bandas estáticas: ${V10_RESEARCH.staticRules.join(', ')}. Dinâmicos: ${V10_RESEARCH.dynamicRules.join(', ')}. Regra final: <strong>${V10_RESEARCH.finalRule}</strong>. Preset operacional incluído nesta versão; permanece experimental e é ativado por padrão ao abrir/restaurar o app.</p>`;
 }
 function renderDataAudit(){
  if(!$('#dataAudit'))return;
@@ -531,14 +531,14 @@ function bind(){
  $('#clearBtn').onclick=()=>{selected.clear();fixed.clear();excluded.clear();renderGenerator()};
  $('#saveGameBtn').onclick=()=>{if(selected.size!==10)return alert('O jogo precisa ter exatamente 10 dezenas.');const a=saved();a.unshift({nums:[...selected].sort((a,b)=>a-b),when:new Date().toLocaleString('pt-BR')});setSaved(a);renderSaved();alert('Jogo salvo.')};
  $('#randomFiveBtn').onclick=()=>{$('#generatedGames').innerHTML=Array.from({length:5},()=>generateValid()).map(g=>`<div class="generated-row"><div class="balls">${balls(g)}</div><button class="btn secondary use-game" data-g="${g.join('-')}">Usar</button></div>`).join('');$$('.use-game').forEach(b=>b.onclick=()=>{selected=new Set(b.dataset.g.split('-').map(Number));renderGenerator()})};
- $('#resetFilters').onclick=()=>applyPreset('base');
+ $('#resetFilters').onclick=()=>applyPreset('v10');
  $$('[data-preset]').forEach(b=>b.onclick=()=>applyPreset(b.dataset.preset));
  $('#runBacktest').onclick=renderBacktest;
  $('#clearSaved').onclick=()=>{if(confirm('Excluir todos os jogos salvos?')){setSaved([]);renderSaved()}};
  $('#importBtn').onclick=async()=>{const file=$('#csvInput').files[0];if(!file)return $('#importMessage').textContent='Selecione um arquivo CSV.';try{const x=parseCSV(await file.text());base=x;v10DynCache=null;v10DynCacheKey='';saveBase();$('#importMessage').textContent=`Importados ${x.length} concursos (${x[0].contest}–${x.at(-1).contest}).`;renderAll()}catch(e){$('#importMessage').textContent='Erro: '+e.message}};
  $('#restoreBtn').onclick=()=>{base=[...window.TMN_EMBEDDED];v10DynCache=null;v10DynCacheKey='';localStorage.removeItem('tmn_base_v2');$('#importMessage').textContent='Base embutida 1–2449 restaurada.';renderAll()};
 }
-bind();renderAll();
+bind();applyPreset('v10');renderAll();
 
 </script>
 </body>
