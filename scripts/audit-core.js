@@ -192,14 +192,20 @@ assert(app.includes('absentnext:renderAbsentNext'), 'roteamento da aba 10 Ausent
 assert(app.includes("['Probabilidade matemática','60,00%'") , 'probabilidade matemática de 60% não documentada');
 assert(app.includes('function absentNextStat('), 'cálculo histórico de retorno após ausência ausente');
 
-assert(index.includes('<option value="all" selected>Histórico completo</option><option value="10">Últimos 10</option>'), '10 Ausentes: seletor Histórico completo/Últimos 10 ausente');
-assert(app.includes("rankWindow==='10'?x.f10:x.all.rate"), '10 Ausentes: ordenação Últimos 10 não usa frequência recente');
+assert(index.includes('<option value="all" selected>Histórico completo</option><option value="10">Últimos 10</option><option value="score">Score combinado</option>'), '10 Ausentes: seletor Histórico/Últimos 10/Score ausente');
+assert(app.includes("rankWindow==='score'?x.score:rankWindow==='10'?x.f10:x.all.rate"), '10 Ausentes: ordenação Score/Últimos 10 incorreta');
 assert(app.includes("taxa histórica de retorno no concurso seguinte quando a dezena estava ausente"), '10 Ausentes: critério histórico não documentado');
 assert(app.includes('delay10:delay10(n)'), '10 Ausentes: atraso limitado aos últimos 10 ausente');
 assert(index.includes('Atraso · últimos 10'), '10 Ausentes: cabeçalho de atraso últimos 10 ausente');
 assert(app.includes('function absentDelayReturnAnalysis('), 'análise de retorno por atraso ausente');
 assert(index.includes('id="absentnext-delay-body"'), 'tabela de retorno por atraso ausente');
-assert(index.includes('ATRASO 1 · 2 · 3 · 4+'), 'painel de atraso 1/2/3/4+ ausente');
+assert(index.includes('ATRASO 1 · 2 · 3 · 4 · 5 · 6 · 7 · 8 · 9 · 10+'), 'painel de atraso 1–10+ ausente');
 assert(app.includes('function absentCurrentProfileAnalysis('), 'perfil atual exato das ausentes ausente');
 assert(index.includes('id="absentnext-profile-current"'), 'painel perfil atual exato ausente');
+assert(app.includes("function absentDelayBuckets(){return ['1','2','3','4','5','6','7','8','9','10+'];}"), 'faixas de atraso 1–9/10+ ausentes');
+assert(app.includes('function absentScoreRows('), 'Score das 10 ausentes ausente');
+assert(index.includes('id="absentnext-score-panel"'), 'painel Score das 10 ausentes ausente');
+assert(index.includes('Histórico · 25%'), 'componentes do Score das ausentes não documentados');
+assert(app.includes('(components.history+components.recent+components.delay+components.profile)/4'), 'Score das ausentes não usa quatro componentes iguais');
+assert(app.includes('Não é chance calculada'), 'Score das ausentes precisa declarar que não é probabilidade');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
