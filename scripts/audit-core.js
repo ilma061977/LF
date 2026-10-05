@@ -250,4 +250,10 @@ assert.ok(appSource.includes('✓ ACERTO'),'Marca visual de acerto das Verticais
 assert.ok(appSource.includes('function vertical4PreviousValidationHTML('),'Validação da lista anterior da Vertical 4 ausente');
 assert.ok((appSource.slice(appSource.indexOf('function renderVertical3()'),appSource.indexOf('function renderClosures()'))).includes('${verticalValidationCell(x.n)}'),'Vertical 3 sem célula individual de validação ✓/×');
 assert.ok(indexSource.includes('id="vertical-validation-v1"'),'CSS da validação cronológica das Verticais ausente');
+
+assert(app.includes('function absentVerticalCell('), 'marcação Ausente Próximo ausente das Verticais');
+assert((app.match(/absentVerticalHeader\(\)/g)||[]).length>=5, 'cabeçalho Ausente Próximo não está nas quatro Verticais');
+assert((app.match(/absentVerticalCell\(x\.n\)/g)||[]).length===4, 'Score das ausentes não está marcado exatamente nas quatro Verticais');
+assert(index.includes('data-page-panel="absentnext"'), 'aba 10 Ausentes · Próximo ausente');
+assert(index.includes('id="absentnext-combo-window"'), 'janela 5/10 das combinações ausentes ausente');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
