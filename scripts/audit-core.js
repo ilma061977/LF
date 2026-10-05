@@ -200,4 +200,6 @@ assert(index.includes('Atraso · últimos 10'), '10 Ausentes: cabeçalho de atra
 assert(app.includes('function absentDelayReturnAnalysis('), 'análise de retorno por atraso ausente');
 assert(index.includes('id="absentnext-delay-body"'), 'tabela de retorno por atraso ausente');
 assert(index.includes('ATRASO 1 · 2 · 3 · 4+'), 'painel de atraso 1/2/3/4+ ausente');
+assert(app.includes('function absentCurrentProfileAnalysis('), 'perfil atual exato das ausentes ausente');
+assert(index.includes('id="absentnext-profile-current"'), 'painel perfil atual exato ausente');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');

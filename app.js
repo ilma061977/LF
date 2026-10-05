@@ -1469,12 +1469,29 @@
     for(const n of ALL.filter(n=>!latestSet.has(n))){let d=0;for(let i=last10.length-1;i>=0;i--){if((last10[i]?.dezenas||[]).includes(n))break;d++;}current[classify(d)].push(n);}
     return{buckets,stats,current,latest};
   }
+  function absentCurrentProfileAnalysis(){
+    const h=state.history||[],buckets=['1','2','3','4+'],classify=d=>d>=4?'4+':String(d);
+    if(h.length<2)return null;
+    const latest=h.at(-1),latestSet=new Set(latest.dezenas||[]),target=Object.fromEntries(buckets.map(b=>[b,0]));
+    for(const n of ALL.filter(n=>!latestSet.has(n))){let d=0;for(let j=h.length-1;j>=0&&!(h[j]?.dezenas||[]).includes(n);j--)d++;target[classify(d)]++;}
+    const matches=[];
+    for(let i=1;i<h.length;i++){
+      const prev=new Set(h[i-1]?.dezenas||[]),next=new Set(h[i]?.dezenas||[]),counts=Object.fromEntries(buckets.map(b=>[b,0])),returns=Object.fromEntries(buckets.map(b=>[b,0]));
+      for(const n of ALL.filter(n=>!prev.has(n))){let d=0;for(let j=i-1;j>=0&&!(h[j]?.dezenas||[]).includes(n);j--)d++;const b=classify(d);counts[b]++;if(next.has(n))returns[b]++;}
+      if(buckets.every(b=>counts[b]===target[b]))matches.push({contest:h[i].concurso,returns,total:buckets.reduce((s,b)=>s+returns[b],0)});
+    }
+    const n=matches.length,avg=Object.fromEntries(buckets.map(b=>[b,n?matches.reduce((s,x)=>s+x.returns[b],0)/n:0])),totalAvg=n?matches.reduce((s,x)=>s+x.total,0)/n:0,dist={};
+    for(const x of matches)dist[x.total]=(dist[x.total]||0)+1;
+    const mode=Object.keys(dist).length?Number(Object.entries(dist).sort((a,b)=>b[1]-a[1]||Number(a[0])-Number(b[0]))[0][0]):null;
+    return{target,matches,n,avg,totalAvg,dist,mode};
+  }
   function renderAbsentDelayReturn(){
-    const currentEl=$('#absentnext-delay-current'),body=$('#absentnext-delay-body'),note=$('#absentnext-delay-note');if(!currentEl||!body)return;
+    const currentEl=$('#absentnext-delay-current'),body=$('#absentnext-delay-body'),note=$('#absentnext-delay-note'),profileEl=$('#absentnext-profile-current');if(!currentEl||!body)return;
     const a=absentDelayReturnAnalysis(),fmtPct=(r,t)=>t?(100*r/t).toFixed(2).replace('.',',')+'%':'—',fmtN=v=>Number(v||0).toFixed(2).replace('.',',');
     currentEl.innerHTML=a.buckets.map(b=>{const nums=a.current[b]||[],x=a.stats[b],rate=x.candidateInstances?x.returns/x.candidateInstances:0,proj=nums.length*rate;return`<article><span>Atraso ${b}</span><b>${nums.length} atual(is)</b><small>${nums.map(pad).join(' · ')||'nenhuma'} · retorno observado aplicado ao grupo atual: ${proj.toFixed(2).replace('.',',')}</small></article>`;}).join('');
     body.innerHTML=a.buckets.map(b=>{const x=a.stats[b],avgCand=x.contests?x.candidatesPerContest/x.contests:0,avgRet=x.contests?x.returnsPerContest/x.contests:0,cur=a.current[b]||[];return`<tr><td><b>Atraso ${b}</b></td><td>${cur.length}</td><td>${cur.map(pad).join(' · ')||'—'}</td><td>${fmtN(avgCand)}</td><td><b>${fmtN(avgRet)}</b></td><td>${fmtPct(x.returns,x.candidateInstances)}</td><td>${fmtPct(x.last1000.returns,x.last1000.candidateInstances)}</td><td>${fmtPct(x.last500.returns,x.last500.candidateInstances)}</td><td>${x.candidateInstances.toLocaleString('pt-BR')}</td></tr>`;}).join('');
     if(note)note.innerHTML=`<b>Leitura:</b> a média de retorno por concurso depende de quantas dezenas existem em cada faixa. A taxa individual observada fica próxima de 60% em todas as faixas; por isso atraso não deve ser tratado como certeza ou bloqueio. Histórico analisado: ${Math.max(0,(state.history||[]).length-1).toLocaleString('pt-BR')} transições.`;
+    if(profileEl){const p=absentCurrentProfileAnalysis();if(!p||!p.n)profileEl.innerHTML='<div class="bi-empty"><b>Perfil atual</b><span>Sem ocorrências históricas idênticas.</span></div>';else{const key=`A1=${p.target['1']} · A2=${p.target['2']} · A3=${p.target['3']} · A4+=${p.target['4+']}`,pct=(v,t)=>t?(100*v/t).toFixed(1).replace('.',',')+'%':'—';profileEl.innerHTML=`<div class="panel-head"><div><span class="eyebrow dark">PERFIL ATUAL EXATO</span><h3>${key}</h3><p class="muted">Compara somente concursos históricos que tinham exatamente a mesma quantidade de dezenas em cada faixa de atraso.</p></div><span class="status-pill ok">${p.n} ocorrências</span></div><div class="stats-kpis bi-kpis"><article><span>Média total que voltou</span><b>${p.totalAvg.toFixed(2).replace('.',',')}/10</b><small>perfil idêntico</small></article><article><span>Moda</span><b>${p.mode??'—'}/10</b><small>quantidade total mais frequente</small></article><article><span>Atraso 1</span><b>${p.avg['1'].toFixed(2).replace('.',',')}</b><small>média que retornou</small></article><article><span>Atraso 2</span><b>${p.avg['2'].toFixed(2).replace('.',',')}</b><small>média que retornou</small></article><article><span>Atraso 3</span><b>${p.avg['3'].toFixed(2).replace('.',',')}</b><small>média que retornou</small></article><article><span>Atraso 4+</span><b>${p.avg['4+'].toFixed(2).replace('.',',')}</b><small>média que retornou</small></article></div><div class="summary-row"><span>Distribuição total</span><b>${Object.entries(p.dist).sort((a,b)=>Number(a[0])-Number(b[0])).map(([k,v])=>`${k}/10: ${v}× (${pct(v,p.n)})`).join(' · ')}</b></div>`;}}
   }
 
   function renderAbsentNext(){
