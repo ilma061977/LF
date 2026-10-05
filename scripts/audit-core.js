@@ -216,4 +216,11 @@ assert(app.includes("stability=stableHigh===3&&stabilityAvg>=65?'Forte'"), 'esta
 assert(app.includes("confidence=x.profileExact?"), 'confiança da amostra do Score ausente');
 assert(index.includes('id="absentnext-profile-transition"'), 'transição de perfil das ausentes ausente');
 assert(app.includes('nextProfiles'), 'cálculo da transição de perfil ausente');
+
+assert(app.includes("['Últimos 100',all.slice(-100)]"), '10 Ausentes: backtest Últimos 100 ausente');
+assert(app.includes("['Últimos 500',all.slice(-500)]"), '10 Ausentes: backtest Últimos 500 ausente');
+assert(app.includes("['Últimos 1.000',all.slice(-1000)]"), '10 Ausentes: backtest Últimos 1.000 ausente');
+assert(app.includes('random5=top10*5/10'), '10 Ausentes: acaso empírico Top 5 ausente');
+assert(app.includes("INFORMATIVO · NÃO USAR NO NOVO INDICADO"), '10 Ausentes: trava informativa sem consistência ausente');
+assert(index.includes('id="absentnext-wf-status"'), '10 Ausentes: status do walk-forward ausente');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d10" />
-  <meta name="lf-build" content="2026-10-05-concurso-3796-v375-ausentes-score-wf-completo-hotfix1" />
+  <meta name="lf-build" content="2026-10-05-concurso-3796-v375-ausentes-wf-100-500-1000-hotfix2" />
   <title>LF Inteligente V3.7.5</title>
   <meta name="description" content="LF Inteligente V3.7.5 — NOVO INDICADO 5x5, Matriz 51 canônica, fechamentos matemáticos, backtest determinístico e carteira em nuvem." />
   <style>:root{
@@ -1245,7 +1245,7 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
             <div id="absentnext-delay-note" class="notice"></div>
           </article>
           <article class="panel" id="absentnext-wf-panel">
-            <div class="panel-head"><div><span class="eyebrow dark">WALK-FORWARD VERDADEIRO</span><h2>Top 3 / Top 5 × acaso</h2><p class="muted">Cada concurso é ranqueado somente com informações anteriores. Mede se o Score das ausentes acrescenta algo além de escolher aleatoriamente entre as 10.</p></div><span class="status-pill">SEM FUTURO</span></div>
+            <div class="panel-head"><div><span class="eyebrow dark">WALK-FORWARD VERDADEIRO</span><h2>Top 3 / Top 5 × acaso · 100 / 500 / 1.000</h2><p class="muted">Cada concurso é ranqueado somente com informações anteriores. Compara o Score com uma seleção aleatória do mesmo tamanho entre as mesmas 10 ausentes.</p></div><span class="status-pill" id="absentnext-wf-status">CALCULANDO</span></div>
             <div id="absentnext-wf-kpis" class="stats-kpis bi-kpis"></div>
             <div class="table-wrap"><table><thead><tr><th>Validação</th><th>Concursos</th><th>Top 3 observado</th><th>Acaso Top 3</th><th>Ganho</th><th>Top 5 observado</th><th>Acaso Top 5</th><th>Ganho</th></tr></thead><tbody id="absentnext-wf-body"></tbody></table></div>
             <div id="absentnext-wf-note" class="notice"></div>
@@ -3717,16 +3717,17 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
     const data={records,buckets};absentWfCache={key:cacheKey,data};return data;
   }
   function absentWfSummary(records){
-    const n=records.length,avg=k=>n?records.reduce((s,r)=>s+Number(r[k]||0),0)/n:0,top3=avg('hits3'),top5=avg('hits5'),top10=avg('hits10');return{n,top3,top5,top10,gain3:top3-1.8,gain5:top5-3,gain10:top10-6};
+    const n=records.length,avg=k=>n?records.reduce((s,r)=>s+Number(r[k]||0),0)/n:0,top3=avg('hits3'),top5=avg('hits5'),top10=avg('hits10'),random3=top10*3/10,random5=top10*5/10;
+    return{n,top3,top5,top10,random3,random5,gain3:top3-random3,gain5:top5-random5,theoretical3:1.8,theoretical5:3};
   }
   function renderAbsentWalkForward(){
-    const body=$('#absentnext-wf-body'),kpis=$('#absentnext-wf-kpis'),note=$('#absentnext-wf-note');if(!body||!kpis)return;
+    const body=$('#absentnext-wf-body'),kpis=$('#absentnext-wf-kpis'),note=$('#absentnext-wf-note'),status=$('#absentnext-wf-status');if(!body||!kpis)return;
     const all=absentWalkForwardBuild().records;if(!all.length){body.innerHTML='<tr><td colspan="8">Histórico insuficiente.</td></tr>';return;}
-    const holdN=Math.max(1,Math.ceil(all.length*.2)),scopes=[['Últimos 500',all.slice(-500)],['Últimos 1.000',all.slice(-1000)],['Holdout final 20%',all.slice(-holdN)],['Todos elegíveis',all]];
-    const sums=scopes.map(([name,r])=>({name,...absentWfSummary(r)})),hold=sums[2],fmt=v=>Number(v).toFixed(3).replace('.',','),gain=v=>`${v>=0?'+':''}${fmt(v)}`;
-    kpis.innerHTML=[['Top 3 · holdout',fmt(hold.top3)+'/3','acaso esperado 1,800'],['Ganho Top 3',gain(hold.gain3),'sobre escolha aleatória entre as 10'],['Top 5 · holdout',fmt(hold.top5)+'/5','acaso esperado 3,000'],['Ganho Top 5',gain(hold.gain5),'sobre escolha aleatória entre as 10']].map(([a,b,c])=>`<article><span>${a}</span><b>${b}</b><small>${c}</small></article>`).join('');
-    body.innerHTML=sums.map(x=>`<tr><td><b>${x.name}</b></td><td>${x.n.toLocaleString('pt-BR')}</td><td><b>${fmt(x.top3)}</b></td><td>1,800</td><td class="${x.gain3>0?'good':x.gain3<0?'warn':''}">${gain(x.gain3)}</td><td><b>${fmt(x.top5)}</b></td><td>3,000</td><td class="${x.gain5>0?'good':x.gain5<0?'warn':''}">${gain(x.gain5)}</td></tr>`).join('');
-    if(note)note.innerHTML='<b>Walk-forward verdadeiro:</b> cada concurso é ranqueado usando somente concursos anteriores. O resultado-alvo entra apenas depois para medir acertos. Top 10 sempre contém as 10 ausentes e serve como controle: esperado matemático 6,00 retornos.';
+    const holdN=Math.max(1,Math.ceil(all.length*.2)),requested=[['Últimos 100',all.slice(-100)],['Últimos 500',all.slice(-500)],['Últimos 1.000',all.slice(-1000)]],extra=[['Holdout final 20%',all.slice(-holdN)]],scopes=[...requested,...extra],sums=scopes.map(([name,r])=>({name,...absentWfSummary(r)})),req=sums.slice(0,3),consistent=req.every(x=>x.n>0&&x.gain5>0),hold=sums.at(-1),fmt=v=>Number(v).toFixed(3).replace('.',','),gain=v=>`${v>=0?'+':''}${fmt(v)}`;
+    if(status){status.textContent=consistent?'TOP 5 CONSISTENTE · CANDIDATO':'INFORMATIVO · NÃO USAR NO NOVO INDICADO';status.className=`status-pill ${consistent?'ok':'warn'}`;}
+    kpis.innerHTML=[['Top 5 · 100',fmt(req[0]?.top5||0)+'/5',`aleatório empírico ${fmt(req[0]?.random5||0)}`],['Top 5 · 500',fmt(req[1]?.top5||0)+'/5',`aleatório empírico ${fmt(req[1]?.random5||0)}`],['Top 5 · 1.000',fmt(req[2]?.top5||0)+'/5',`aleatório empírico ${fmt(req[2]?.random5||0)}`],['Decisão',consistent?'SINAL CONSISTENTE':'SOMENTE INFORMATIVO',consistent?'Top 5 venceu o aleatório nas 3 janelas':'Top 5 não venceu o aleatório em 100, 500 e 1.000 simultaneamente']].map(([a,b,c])=>`<article><span>${a}</span><b>${b}</b><small>${c}</small></article>`).join('');
+    body.innerHTML=sums.map(x=>`<tr><td><b>${x.name}</b></td><td>${x.n.toLocaleString('pt-BR')}</td><td><b>${fmt(x.top3)}</b></td><td>${fmt(x.random3)}<small> · teórico 1,800</small></td><td class="${x.gain3>0?'good':x.gain3<0?'warn':''}">${gain(x.gain3)}</td><td><b>${fmt(x.top5)}</b></td><td>${fmt(x.random5)}<small> · teórico 3,000</small></td><td class="${x.gain5>0?'good':x.gain5<0?'warn':''}">${gain(x.gain5)}</td></tr>`).join('');
+    if(note)note.innerHTML=`<b>Walk-forward verdadeiro:</b> cada concurso é ranqueado usando somente concursos anteriores; o resultado-alvo entra apenas depois para medir acertos. A coluna “Acaso” usa a referência aleatória empírica da mesma janela: média real de retornos das 10 ausentes × 30% para Top 3 ou × 50% para Top 5. Os valores teóricos permanecem 1,800 e 3,000. <b>Regra:</b> se o Top 5 não superar o aleatório nas janelas 100, 500 e 1.000, o Score fica <b>somente INFORMATIVO</b> e não deve influenciar o NOVO INDICADO. Status atual: <b>${consistent?'sinal consistente nas três janelas; ainda tratado como candidato até validação adicional':'informativo; não usar no NOVO INDICADO'}</b>.`;
   }
   function absentEvaluateWeights(records,weights){
     let h3=0,h5=0;for(const r of records){const ranked=r.rows.map(x=>({n:x.n,returned:x.returned,s:weights.history*x.components.history+weights.recent10*x.components.recent10+weights.recent20*x.components.recent20+weights.delay*x.components.delay+weights.profile*x.components.profile})).sort((a,b)=>b.s-a.s||a.n-b.n);h3+=ranked.slice(0,3).filter(x=>x.returned).length;h5+=ranked.slice(0,5).filter(x=>x.returned).length;}const n=Math.max(1,records.length);return{n,top3:h3/n,top5:h5/n};}

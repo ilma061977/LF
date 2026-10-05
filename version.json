@@ -1,4 +1,4 @@
 {
-  "version": "2026-10-05-concurso-3796-v375-ausentes-score-wf-completo-hotfix1",
-  "build": "2026-10-05-absentnext-all-score20-u20-stability-confidence-transition-wf-weights-syntaxfix"
+  "version": "2026-10-05-concurso-3796-v375-ausentes-wf-100-500-1000-hotfix2",
+  "build": "2026-10-05-absentnext-wf-random-empirical-100-500-1000-info-guard"
 }
