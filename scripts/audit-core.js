@@ -192,8 +192,8 @@ assert(app.includes('absentnext:renderAbsentNext'), 'roteamento da aba 10 Ausent
 assert(app.includes("['Probabilidade matemática','60,00%'") , 'probabilidade matemática de 60% não documentada');
 assert(app.includes('function absentNextStat('), 'cálculo histórico de retorno após ausência ausente');
 
-assert(index.includes('<option value="all" selected>Histórico completo</option><option value="10">Últimos 10</option><option value="20">Últimos 20</option><option value="score">Score combinado</option>'), '10 Ausentes: seletor Histórico/Últimos 10/Últimos 20/Score ausente');
-assert(app.includes("rankWindow==='score'?x.score:rankWindow==='20'?x.f20:rankWindow==='10'?x.f10:x.all.rate"), '10 Ausentes: ordenação Score/Últimos 10/Últimos 20 incorreta');
+assert(index.includes('<option value="all" selected>Histórico completo</option>')&&index.includes('<option value="5">Últimos 5</option>')&&index.includes('<option value="10">Últimos 10</option>')&&index.includes('<option value="20">Últimos 20</option>')&&index.includes('<option value="score">Score combinado</option>'), '10 Ausentes: seletor Histórico/U5/U10/U20/Score ausente');
+assert(app.includes("rankWindow==='score'?x.score:rankWindow==='20'?x.f20:rankWindow==='10'?x.f10:rankWindow==='5'?x.f5:x.all.rate"), '10 Ausentes: ordenação Score/U5/U10/U20 incorreta');
 assert(app.includes("taxa histórica de retorno no concurso seguinte quando a dezena estava ausente"), '10 Ausentes: critério histórico não documentado');
 assert(app.includes('delay10:delay10(n)'), '10 Ausentes: atraso limitado aos últimos 10 ausente');
 assert(index.includes('Atraso · últimos 10'), '10 Ausentes: cabeçalho de atraso últimos 10 ausente');
@@ -227,4 +227,10 @@ assert(index.includes('id="absentnext-component-panel"'), 'painel de auditoria U
 assert(index.includes('<option value="5">Últimos 5</option>'), 'ordenação Últimos 5 ausente');
 assert(app.includes('function renderAbsentComponentAudit()'), 'auditoria de componentes ausente do app');
 assert(app.includes('recent5:recentPct(x.n,5)'), 'walk-forward não calcula janela U5');
+assert(app.includes('function absentComboAnalysisData('), '10 Ausentes: análise de duplas/trincas/quadras ausente');
+assert(app.includes('function renderAbsentComboAnalysis()'), '10 Ausentes: renderer de combinações ausente');
+assert(index.includes('id="absentnext-combo-panel"'), '10 Ausentes: painel de combinações ausente');
+assert(index.includes('Últimos 10 sem o atual'), '10 Ausentes: janela 10 sem concurso atual não documentada');
+assert(app.includes('Math.sqrt(Math.max(0,f)*Math.max(0,d))'), '10 Ausentes: score briga frequência × atraso ausente');
+assert(app.includes('renderAbsentComboAnalysis();'), '10 Ausentes: combinações não ligadas ao renderer principal');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
