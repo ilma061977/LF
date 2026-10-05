@@ -233,4 +233,13 @@ assert(index.includes('id="absentnext-combo-panel"'), '10 Ausentes: painel de co
 assert(index.includes('Últimos 10 sem o atual'), '10 Ausentes: janela 10 sem concurso atual não documentada');
 assert(app.includes('Math.sqrt(Math.max(0,f)*Math.max(0,d))'), '10 Ausentes: score briga frequência × atraso ausente');
 assert(app.includes('renderAbsentComboAnalysis();'), '10 Ausentes: combinações não ligadas ao renderer principal');
+
+assert.ok(indexSource.includes('class="page absentnext-page" data-page-panel="absentnext"'),'Ausentes Próximo deve usar layout dedicado');
+assert.ok(indexSource.includes('id="absentnext-overview"'),'Resumo Agora das ausentes ausente');
+assert.ok(indexSource.includes('data-absent-jump="absentnext-component-panel"'),'Atalhos da aba Ausentes Próximo ausentes');
+assert.ok(indexSource.includes('id="absentnext-layout-v2"'),'CSS dedicado da aba Ausentes Próximo ausente');
+assert.ok(appSource.includes("Top 5 · Score atual"),'Resumo Top 5 do Score ausente');
+assert.ok(appSource.includes("Top 5 · Últimos 5"),'Resumo Top 5 U5 ausente');
+assert.ok(appSource.includes("Top 5 · Últimos 10"),'Resumo Top 5 U10 ausente');
+assert.ok(appSource.includes("Componente que mais ajuda · holdout"),'Resumo da auditoria de componentes ausente');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
