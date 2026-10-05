@@ -24,7 +24,7 @@
 <body>
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="brand"><div class="brand-mark">TMN</div><div><strong>TMN Inteligente</strong><span>Particular · v13</span></div></div>
+    <div class="brand"><div class="brand-mark">TMN</div><div><strong>TMN Inteligente</strong><span>Particular · v14</span></div></div>
     <nav id="nav">
       <button class="nav-btn active" data-page="dashboard">📊 Início</button>
       <button class="nav-btn" data-page="analysis">🔎 Análise 80</button>
@@ -116,7 +116,7 @@
 
     <section class="page" id="page-filters">
       <div class="card">
-        <div class="card-head"><div><h2>Matriz de filtros e presets</h2><p class="muted">O percentual exibido só é mostrado quando a seleção corresponde exatamente a um preset validado. Configuração manual aparece como personalizado.</p></div><button class="btn secondary" id="resetFilters">Restaurar v10</button></div>
+        <div class="card-head"><div><h2>Matriz de filtros e presets</h2><p class="muted">O percentual exibido só é mostrado quando a seleção corresponde exatamente a um preset validado. Padrões raros são bloqueios de seleção — não significam menor probabilidade matemática individual.</p></div><button class="btn secondary" id="resetFilters">Restaurar v10</button></div>
         <div class="button-row preset-row">
           <button class="btn secondary" data-preset="base">Base · 29,34%</button>
           <button class="btn secondary" data-preset="v3">v3 · 78,29%</button>
@@ -340,7 +340,7 @@ const V10_RESEARCH={
   staticRules:['DR-SP1','DR-SP2','DR-SP3','DR-M7A','M6-S1','DR-S1'],
   dynamicRules:['R1','R2','R3','U2','U5','F10','F20','UNSEEN10','HOT20'],
   finalRule:'NB15 · F20 + 5×UNSEEN10 entre 24 e 57',
-  status:'PESQUISA — não operacional por padrão; requer rolling integral das novas bandas e NB15.'
+  status:'ATIVA POR PADRÃO NO APP · bloqueios por padrão raro e dinâmicos identificados separadamente; probabilidade oficial por aposta permanece inalterada.'
 };
 function gapCount(g,threshold){const a=[...g].sort((x,y)=>x-y);let c=0;for(let i=1;i<a.length;i++)if(a[i]-a[i-1]>=threshold)c++;return c}
 function diagonalCount(g,dir){const s=new Set();for(const n of g){const r=Math.floor((n-1)/10),c=(n-1)%10;s.add(dir==='nwse'?r-c:r+c)}return s.size}
@@ -442,6 +442,19 @@ const PRESETS={
   v8:{key:'v8',label:'v8/JNB01 experimental',redPct:V8_RESEARCH.red50m,kind:'estimado 50M',ids:PRESET_IDS.v8},
   v10:{key:'v10',label:'v10 · 90%+ experimental',redPct:V10_RESEARCH.red50m,kind:'estimado 50M',ids:PRESET_IDS.v10}
 };
+const RARE_PATTERN_IDS=new Set([
+ 'QOCC2','P2','L2','ROCC1','S5','AMP3','COCC1','CSEQ1','COL67','SINGLE3_4','MOD4_ALL','B5_6_9',
+ 'CGE23','MOD8_57','MOD3_ALL','CENT2_7','PR1_6','M31','EDGE1_6','DIG25_61','MAX64','MIRLE2','M4LE5','MAXG12_37',
+ 'J_CGE_CENT','J_MIR_M4','J6_CGE_CENT','J6_MIR_M4','DIAG1O','GAPGE8','DIAG2O','GAPGE10','MOD9O','NEAR81','BORDER','ODDRUN','B8O','JNB01',
+ 'DR_SP1','DR_SP2','DR_SP3','DR_M7A','M6_S1','DR_S1'
+]);
+const DYNAMIC_FILTER_IDS=new Set(['V10_R1','V10_R2','V10_R3','V10_U2','V10_U5','V10_F10','V10_F20','V10_UNSEEN10','V10_HOT20','V10_NB15']);
+function filterCategory(id){
+ if(RARE_PATTERN_IDS.has(id))return '<span class="tag warn">BLOQUEIO POR PADRÃO RARO</span>';
+ if(DYNAMIC_FILTER_IDS.has(id))return '<span class="tag">BLOQUEIO HISTÓRICO / DINÂMICO</span>';
+ return '<span class="tag">BLOQUEIO ESTRUTURAL</span>';
+}
+
 function activeFilterIds(){return filters.filter(f=>f.active).map(f=>f.id).sort()}
 function sameIds(a,b){const x=[...a].sort(),y=[...b].sort();return x.length===y.length&&x.every((v,i)=>v===y[i])}
 function currentPreset(){const a=activeFilterIds();return Object.values(PRESETS).find(p=>sameIds(a,p.ids))||null}
@@ -483,7 +496,7 @@ function generateValid(maxTries=3000){const active=filters.filter(f=>f.active);f
 function renderFilters(){
  if(!$('#filterList'))return;
  const preset=currentPreset();
- $('#filterList').innerHTML=filters.map(f=>{const r=RESEARCH_RESULTS.find(x=>x.id===f.id);return `<div class="filter-row"><div class="switch ${f.active?'on':''}" data-filter="${f.id}"></div><div><strong>${f.name}</strong><small>${f.desc}</small></div><div class="filter-status">${f.active?'ATIVO':'desativado'}${r?` · ${fmtPct(r.redPct,3)} · ${r.fails} falha(s)`:''}</div></div>`}).join('');
+ $('#filterList').innerHTML=filters.map(f=>{const r=RESEARCH_RESULTS.find(x=>x.id===f.id);return `<div class="filter-row"><div class="switch ${f.active?'on':''}" data-filter="${f.id}"></div><div><strong>${f.name}</strong><div style="margin:5px 0 4px">${filterCategory(f.id)}</div><small>${f.desc}</small></div><div class="filter-status">${f.active?'ATIVO':'desativado'}${r?` · ${fmtPct(r.redPct,3)} · ${r.fails} falha(s)`:''}</div></div>`}).join('');
  $$('[data-filter]').forEach(s=>s.onclick=()=>{const f=filters.find(x=>x.id===s.dataset.filter);f.active=!f.active;renderFilters()});
  $$('[data-preset]').forEach(b=>b.classList.toggle('preset-active',!!preset&&b.dataset.preset===preset.key));
  const conflicts=conflictMessages();
@@ -494,7 +507,7 @@ function renderFilters(){
      $('#filterUnionNotice').innerHTML=`Configuração atual: <strong>PERSONALIZADA</strong> — percentual conjunto <strong>não calculado</strong>. Não some percentuais individuais.${conflicts.length?`<br><span class="warn-text">⚠ ${conflicts.join(' ')}</span>`:''}`;
    }
  }
- if($('#presetAdvice'))$('#presetAdvice').innerHTML=`<strong>Indicação:</strong> <strong>v10 ≈90,078626%</strong> é o padrão ativo ao abrir/restaurar o app e calcula as regras dinâmicas somente com o histórico carregado. Base 29,343452%, v6 ≈87,829907% e v8/JNB01 ≈89,403748% continuam disponíveis para seleção manual.`;
+ if($('#presetAdvice'))$('#presetAdvice').innerHTML=`<strong>v10 ativa por padrão:</strong> ≈ <strong>90,078626% bloqueados</strong> · <strong>9,921374% aprovados</strong> · ≈ <strong>163.354.640.125 jogos aprovados</strong> de C(80,10). <br><strong>Importante:</strong> filtros marcados como “BLOQUEIO POR PADRÃO RARO” excluem classes historicamente raras ou estruturalmente extremas (concentrações, amplitudes, quadrantes, gaps etc.). Isso <strong>não significa menor probabilidade matemática individual</strong>. Cada aposta válida de 10 dezenas continua com a probabilidade oficial de <strong>1 em 26.472.637</strong> para 7 acertos.`;
 }
 function renderBacktest(){
  const zero=RESEARCH_RESULTS.filter(r=>r.fails===0).length;
