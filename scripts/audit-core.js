@@ -223,4 +223,8 @@ assert(app.includes("['Últimos 1.000',all.slice(-1000)]"), '10 Ausentes: backte
 assert(app.includes('random5=top10*5/10'), '10 Ausentes: acaso empírico Top 5 ausente');
 assert(app.includes("INFORMATIVO · NÃO USAR NO NOVO INDICADO"), '10 Ausentes: trava informativa sem consistência ausente');
 assert(index.includes('id="absentnext-wf-status"'), '10 Ausentes: status do walk-forward ausente');
+assert(index.includes('id="absentnext-component-panel"'), 'painel de auditoria U5/U10 ausente');
+assert(index.includes('<option value="5">Últimos 5</option>'), 'ordenação Últimos 5 ausente');
+assert(app.includes('function renderAbsentComponentAudit()'), 'auditoria de componentes ausente do app');
+assert(app.includes('recent5:recentPct(x.n,5)'), 'walk-forward não calcula janela U5');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');

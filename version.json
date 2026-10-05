@@ -1,4 +1,4 @@
 {
-  "version": "2026-10-05-concurso-3796-v375-ausentes-wf-100-500-1000-hotfix2",
-  "build": "2026-10-05-absentnext-wf-random-empirical-100-500-1000-info-guard"
+  "version": "2026-10-05-concurso-3796-v375-ausentes-u5-u10-ablation",
+  "build": "2026-10-05-absentnext-u5-u10-component-ablation-no-decision-weight"
 }
