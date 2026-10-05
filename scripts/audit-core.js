@@ -248,5 +248,6 @@ assert.ok(appSource.includes('history.slice(Math.max(0,targetIndex-windowSize),t
 assert.ok(appSource.includes('function verticalValidationCell('),'Célula de acerto/erro das Verticais ausente');
 assert.ok(appSource.includes('✓ ACERTO'),'Marca visual de acerto das Verticais ausente');
 assert.ok(appSource.includes('function vertical4PreviousValidationHTML('),'Validação da lista anterior da Vertical 4 ausente');
+assert.ok((appSource.slice(appSource.indexOf('function renderVertical3()'),appSource.indexOf('function renderClosures()'))).includes('${verticalValidationCell(x.n)}'),'Vertical 3 sem célula individual de validação ✓/×');
 assert.ok(indexSource.includes('id="vertical-validation-v1"'),'CSS da validação cronológica das Verticais ausente');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
