@@ -185,4 +185,10 @@ assert(app.includes('function runGroupPatternScore('), 'método de score por com
 assert(worker.includes("task==='group-pattern-score'"), 'Worker não possui tarefa de score por composição');
 assert(index.includes('id="group-pattern-score-result"'), 'painel de resultado por composição ausente');
 assert(app.includes('estrutura primeiro; escolha das dezenas decidida pelo score do jogo completo'), 'regra corrigida da composição não está documentada no app');
+assert(index.includes('data-page-panel="absentnext"'), 'aba 10 Ausentes Próximo ausente');
+assert(index.includes('data-page="absentnext"'), 'menu da aba 10 Ausentes Próximo ausente');
+assert(app.includes('function renderAbsentNext()'), 'renderer da aba 10 Ausentes Próximo ausente');
+assert(app.includes('absentnext:renderAbsentNext'), 'roteamento da aba 10 Ausentes Próximo ausente');
+assert(app.includes("['Probabilidade matemática','60,00%'") , 'probabilidade matemática de 60% não documentada');
+assert(app.includes('function absentNextStat('), 'cálculo histórico de retorno após ausência ausente');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
