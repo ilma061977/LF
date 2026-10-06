@@ -1739,7 +1739,84 @@
   function renderMyGames(){const el=$('#my-games'),contest=state.myGamesContest||Number($('#mygames-contest')?.value)||state.history.at(-1)?.concurso,target=state.history.find(d=>d.concurso===contest);if(!state.savedGames.length){el.className='generated-games empty';el.textContent='Nenhum jogo salvo.';return;}el.className='generated-games';el.innerHTML=state.savedGames.map((x,i)=>{const r=M.inspect(x.game,state.ctx),points=target?hits(x.game,target.dezenas):null;return `<article class="game-card mygame-card"><header><b>Jogo ${i+1}</b><div><span class="classification-pill ${x.classification}">${x.classification}</span><button class="icon-btn" data-remove-game="${x.id}">×</button></div></header>${gameNumbers(x.game)}<div class="game-foot"><span>${policyFailures(r).length} falhas · ${policyWarnings(r).length} avisos</span><span>${historicalSimilarity(x.game).max}/15 hist.${points!=null?` · <b>${points} pts #${contest}</b>`:''}</span></div><div class="mygame-meta"><label>Classificação<select data-game-class="${x.id}"><option value="principal" ${x.classification==='principal'?'selected':''}>Principal</option><option value="reserva" ${x.classification==='reserva'?'selected':''}>Reserva</option><option value="teste" ${x.classification==='teste'?'selected':''}>Teste</option></select></label><label>Nota<input data-game-note="${x.id}" value="${String(x.note||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}" placeholder="Observação do jogo" /></label></div></article>`;}).join('');$$('[data-remove-game]').forEach(b=>b.onclick=()=>removeSavedGame(b.dataset.removeGame));$$('[data-game-class]').forEach(s=>s.onchange=()=>{const x=state.savedGames.find(g=>String(g.id)===String(s.dataset.gameClass));if(x){x.classification=s.value;x.updatedAt=new Date().toISOString();savePrefs();renderMyGames();renderSavedGames();queueCloudSync();}});$$('[data-game-note]').forEach(inp=>inp.onchange=()=>{const x=state.savedGames.find(g=>String(g.id)===String(inp.dataset.gameNote));if(x){x.note=inp.value.slice(0,240);x.updatedAt=new Date().toISOString();savePrefs();queueCloudSync();}});}
   function importMyGames(){const lines=$('#mygames-import').value.split(/\n+/),games=lines.map(parseGame).filter(Boolean);if(!games.length)return toast('Nenhum jogo válido encontrado para importar.');saveGames(games);$('#mygames-import').value='';}
   function checkMyGames(){const c=Number($('#mygames-contest').value)||state.history.at(-1)?.concurso;if(!state.history.some(d=>d.concurso===c))return toast('Concurso não encontrado na base.');state.myGamesContest=c;renderMyGames();toast(`Carteira conferida no concurso ${c}.`);}
-  function renderLineCols(){const rows=rowsForPeriod(),allR=patternCounts(rows,'row'),allC=patternCounts(rows,'col'),rp=allR.slice(0,10),cp=allC.slice(0,10);$('#rows-patterns').innerHTML=rp.map(([p,c])=>`<div class="summary-row"><span>${p}</span><b>${c}× · ${(c/Math.max(1,rows.length)*100).toFixed(1)}%</b></div>`).join('');$('#cols-patterns').innerHTML=cp.map(([p,c])=>`<div class="summary-row"><span>${p}</span><b>${c}× · ${(c/Math.max(1,rows.length)*100).toFixed(1)}%</b></div>`).join('');const f=frequency(),mx=Math.max(...Object.values(f),1),set=new Set(state.decision);$('#linecol-heatmap').innerHTML=ALL.map(n=>`<div class="heat-cell ${set.has(n)?'selected':''}" style="--heat:${f[n]/mx}"><b>${chip(n)}</b><span>${f[n]}×</span></div>`).join('');const rs=[0,0,0,0,0],cs=[0,0,0,0,0];state.decision.forEach(n=>{rs[Math.floor((n-1)/5)]++;cs[(n-1)%5]++;});const rk=rs.join('-'),ck=cs.join('-'),rc=allR.find(x=>x[0]===rk)?.[1]||0,cc=allC.find(x=>x[0]===ck)?.[1]||0,devR=rs.reduce((s,v)=>s+Math.abs(v-3),0),devC=cs.reduce((s,v)=>s+Math.abs(v-3),0),balance=Math.max(0,Math.round(100-(devR+devC)/24*100)),box=$('#linecols-decision');if(box)box.innerHTML=[['INDICADO · linhas',state.decision.length?rk:'—'],['Ocorrência histórica',rows.length?`${rc}/${rows.length} · ${(rc/rows.length*100).toFixed(1)}%`:'—'],['INDICADO · colunas',state.decision.length?ck:'—'],['Ocorrência histórica',rows.length?`${cc}/${rows.length} · ${(cc/rows.length*100).toFixed(1)}%`:'—'],['Equilíbrio da grade',state.decision.length===15?`${balance}/100`:'—']].map(([a,b])=>`<article><span>${a}</span><b>${b}</b></article>`).join('');const guide=$('#linecols-guidance');if(guide)guide.innerHTML=state.decision.length===15?[['Maior linha',Math.max(...rs),`linha ${rs.indexOf(Math.max(...rs))+1} · distribuição ${rk}`,Math.max(...rs)<=4?'good':'warn'],['Maior coluna',Math.max(...cs),`coluna ${cs.indexOf(Math.max(...cs))+1} · distribuição ${ck}`,Math.max(...cs)<=4?'good':'warn'],['Desvio do centro',devR+devC,`soma |quantidade − 3| em linhas e colunas`,'info'],['Equilíbrio',`${balance}/100`,'100 representa 3 dezenas em cada linha e coluna',balance>=75?'good':'warn']].map(([a,b,c,k])=>`<div class="decision-insight-card ${k}"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join('')+'<p class="muted" style="grid-column:1/-1">O equilíbrio mede apenas distribuição espacial na grade 5×5; não prevê o sorteio.</p>':'<div class="bi-empty"><b>Aguardando indicado</b><span>Conclua a busca para calcular a grade.</span></div>';}
+  let linecolsPatternWindow='10';
+  function linecolsRowsForWindow(){
+    if(linecolsPatternWindow==='all')return state.history.slice();
+    const n=Math.max(1,Number(linecolsPatternWindow)||10);
+    return state.history.slice(-Math.min(n,state.history.length));
+  }
+  function linecolsOrderedSignature(game,kind){
+    const a=[0,0,0,0,0];
+    for(const n of game||[])a[kind==='row'?Math.floor((n-1)/5):(n-1)%5]++;
+    return a.join('-');
+  }
+  function linecolsCombinedSignature(draw){
+    const g=draw?.dezenas||draw||[];
+    return `Linhas ${linecolsOrderedSignature(g,'row')} | Colunas ${linecolsOrderedSignature(g,'col')}`;
+  }
+  function linecolsPatternStats(){
+    const history=state.history||[],selected=linecolsRowsForWindow(),selectedSet=new Set(selected.map(d=>Number(d.concurso))),latestIndex=history.length-1;
+    const map=new Map(),priorCounts=new Map();
+    const ensure=key=>{if(!map.has(key))map.set(key,{key,total:0,windowCount:0,indices:[],contests:[],wfTests:0,wfRankSum:0,wfTop5:0,wfTop10:0,wfTop20:0});return map.get(key);};
+    for(let i=0;i<history.length;i++){
+      const d=history[i],key=linecolsCombinedSignature(d),row=ensure(key),prior=priorCounts.get(key)||0;
+      let greater=0;for(const c of priorCounts.values())if(c>prior)greater++;
+      const priorRank=1+greater;
+      if(selectedSet.has(Number(d.concurso))&&i>0){
+        row.wfTests++;row.wfRankSum+=priorRank;
+        if(priorRank<=5)row.wfTop5++;
+        if(priorRank<=10)row.wfTop10++;
+        if(priorRank<=20)row.wfTop20++;
+      }
+      row.total++;row.indices.push(i);row.contests.push(Number(d.concurso));
+      if(selectedSet.has(Number(d.concurso)))row.windowCount++;
+      priorCounts.set(key,prior+1);
+    }
+    const selectedN=selected.length,totalN=history.length;
+    for(const row of map.values()){
+      const delays=[];for(let i=1;i<row.indices.length;i++)delays.push(Math.max(0,row.indices[i]-row.indices[i-1]-1));
+      row.lastContest=row.contests.at(-1)||null;
+      row.currentDelay=row.indices.length?Math.max(0,latestIndex-row.indices.at(-1)):totalN;
+      row.avgDelay=delays.length?delays.reduce((a,b)=>a+b,0)/delays.length:null;
+      row.maxDelay=Math.max(row.currentDelay,...delays,0);
+      row.windowPct=selectedN?row.windowCount/selectedN*100:0;
+      row.fullPct=totalN?row.total/totalN*100:0;
+      row.wfAvgRank=row.wfTests?row.wfRankSum/row.wfTests:null;
+      row.wfTop5Pct=row.wfTests?row.wfTop5/row.wfTests*100:null;
+      row.wfTop10Pct=row.wfTests?row.wfTop10/row.wfTests*100:null;
+      row.wfTop20Pct=row.wfTests?row.wfTop20/row.wfTests*100:null;
+    }
+    const rows=[...map.values()].sort((a,b)=>b.windowCount-a.windowCount||b.total-a.total||a.key.localeCompare(b.key));
+    return{history,selected,rows,selectedN,totalN};
+  }
+  function renderLinecolsCombined(){
+    const root=$('#linecols-combined-patterns'),table=$('#linecols-combined-body'),kpis=$('#linecols-combined-kpis'),note=$('#linecols-combined-note');
+    if(!root||!table)return;
+    const data=linecolsPatternStats(),rows=data.rows,active=rows.filter(x=>x.windowCount>0),top=active.slice(0,10),fmt=x=>x==null?'—':Number(x).toFixed(1).replace('.',',');
+    const topWrap=$('#linecols-combined-top');
+    if(topWrap)topWrap.innerHTML=top.map((x,i)=>`<div class="summary-row"><span>#${i+1} · ${x.key}</span><b>${x.windowCount}× · ${fmt(x.windowPct)}%</b><small>histórico ${x.total}× · último #${x.lastContest} · atraso ${x.currentDelay}</small></div>`).join('')||'<p class="muted">Sem dados nesta janela.</p>';
+    if(kpis)kpis.innerHTML=[
+      ['Janela',linecolsPatternWindow==='all'?'Todos':data.selectedN,'concursos analisados'],
+      ['Padrões distintos',rows.length,'histórico completo'],
+      ['Distintos na janela',active.length,'assinaturas L+C'],
+      ['Mais frequente',top[0]?.windowCount||0,top[0]?.key||'—'],
+      ['Último padrão',data.history.length?linecolsCombinedSignature(data.history.at(-1)):'—',`#${data.history.at(-1)?.concurso||'—'}`]
+    ].map(([a,b,c])=>`<article><span>${a}</span><b>${b}</b><small>${c||''}</small></article>`).join('');
+    table.innerHTML=rows.map(x=>`<tr class="${x.windowCount?'':'muted-row'}"><td><b>${x.key}</b></td><td>${x.windowCount}</td><td>${fmt(x.windowPct)}%</td><td>${x.total} · ${fmt(x.fullPct)}%</td><td>#${x.lastContest||'—'}</td><td>${x.currentDelay}</td><td>${fmt(x.avgDelay)}</td><td>${x.maxDelay}</td><td>${x.wfTests?(`rank médio ${fmt(x.wfAvgRank)} · Top5 ${fmt(x.wfTop5Pct)}% · Top10 ${fmt(x.wfTop10Pct)}%`):'amostra insuficiente'}</td></tr>`).join('');
+    if(note)note.textContent=`Walk-forward sem futuro: em cada ocorrência da janela, o rank do padrão é calculado somente com concursos anteriores. Atraso atual = concursos desde a última ocorrência; atraso médio/máximo usam intervalos históricos completos.`;
+  }
+  function renderLineCols(){
+    const rows=linecolsRowsForWindow(),allR=patternCounts(rows,'row'),allC=patternCounts(rows,'col'),rp=allR.slice(0,10),cp=allC.slice(0,10),fmtPct=(c,n)=>(c/Math.max(1,n)*100).toFixed(1).replace('.',',');
+    const sel=$('#linecols-pattern-window');if(sel&&sel.value!==linecolsPatternWindow)sel.value=linecolsPatternWindow;
+    $('#rows-patterns').innerHTML=rp.map(([p,c],i)=>`<div class="summary-row"><span>#${i+1} · ${p}</span><b>${c}× · ${fmtPct(c,rows.length)}%</b></div>`).join('');
+    $('#cols-patterns').innerHTML=cp.map(([p,c],i)=>`<div class="summary-row"><span>#${i+1} · ${p}</span><b>${c}× · ${fmtPct(c,rows.length)}%</b></div>`).join('');
+    const f=frequency(),mx=Math.max(...Object.values(f),1),set=new Set(state.decision);$('#linecol-heatmap').innerHTML=ALL.map(n=>`<div class="heat-cell ${set.has(n)?'selected':''}" style="--heat:${f[n]/mx}"><b>${chip(n)}</b><span>${f[n]}×</span></div>`).join('');
+    const rs=[0,0,0,0,0],cs=[0,0,0,0,0];state.decision.forEach(n=>{rs[Math.floor((n-1)/5)]++;cs[(n-1)%5]++;});
+    const rk=rs.join('-'),ck=cs.join('-'),rc=allR.find(x=>x[0]===rk)?.[1]||0,cc=allC.find(x=>x[0]===ck)?.[1]||0,devR=rs.reduce((s,v)=>s+Math.abs(v-3),0),devC=cs.reduce((s,v)=>s+Math.abs(v-3),0),balance=Math.max(0,Math.round(100-(devR+devC)/24*100)),box=$('#linecols-decision');
+    if(box)box.innerHTML=[['INDICADO · linhas',state.decision.length?rk:'—'],['Ocorrência na janela',rows.length?`${rc}/${rows.length} · ${fmtPct(rc,rows.length)}%`:'—'],['INDICADO · colunas',state.decision.length?ck:'—'],['Ocorrência na janela',rows.length?`${cc}/${rows.length} · ${fmtPct(cc,rows.length)}%`:'—'],['Equilíbrio da grade',state.decision.length===15?`${balance}/100`:'—']].map(([a,b])=>`<article><span>${a}</span><b>${b}</b></article>`).join('');
+    const guide=$('#linecols-guidance');if(guide)guide.innerHTML=state.decision.length===15?[['Maior linha',Math.max(...rs),`linha ${rs.indexOf(Math.max(...rs))+1} · distribuição ${rk}`,Math.max(...rs)<=4?'good':'warn'],['Maior coluna',Math.max(...cs),`coluna ${cs.indexOf(Math.max(...cs))+1} · distribuição ${ck}`,Math.max(...cs)<=4?'good':'warn'],['Desvio do centro',devR+devC,'soma |quantidade − 3| em linhas e colunas','info'],['Equilíbrio',`${balance}/100`,'100 representa 3 dezenas em cada linha e coluna',balance>=75?'good':'warn']].map(([a,b,c,k])=>`<div class="decision-insight-card ${k}"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join('')+'<p class="muted" style="grid-column:1/-1">O equilíbrio mede apenas distribuição espacial na grade 5×5; não prevê o sorteio.</p>':'<div class="bi-empty"><b>Aguardando indicado</b><span>Conclua a busca para calcular a grade.</span></div>';
+    renderLinecolsCombined();
+  }
   function stddev(a){if(!a.length)return 0;const m=mean(a);return Math.sqrt(mean(a.map(v=>(v-m)**2)));}
   function distribution(values,labels=[]){const out={};for(const l of labels)out[l]=0;for(const v of values)out[v]=(out[v]||0)+1;return Object.entries(out).sort((a,b)=>Number(a[0])-Number(b[0]));}
   function renderBIHistogram(sel,data,color='#2563eb'){const el=$(sel);if(!el)return;const mx=Math.max(1,...data.map(x=>Number(x[1])||0));el.innerHTML=`<div class="bi-bars" style="grid-template-columns:repeat(${Math.max(1,data.length)},1fr)">${data.map(([l,v])=>`<div class="bi-bar" title="${l}: ${v} ocorrência(s)"><i style="height:${Math.max(2,v/mx*100)}%;background:linear-gradient(180deg,${color},color-mix(in srgb,${color} 58%,white))"></i><em>${v}</em><b>${l}</b></div>`).join('')}</div>`;}
@@ -2028,6 +2105,7 @@
   $('#add-group').onclick=()=>{const name=$('#group-name').value.trim()||`Grupo ${state.groups.length+1}`,numbers=parseNumbers($('#group-numbers').value);if(numbers.length<2)return toast('Informe pelo menos 2 dezenas.');state.groups.push({name,numbers});savePrefs();$('#group-name').value='';$('#group-numbers').value='';renderGroups();};
   $('#run-audit').onclick=runAudit;$('#run-filter-audit').onclick=runFullFilterAudit;$('#cancel-filter-audit').onclick=cancelFilterAudit;$('#export-filter-audit').onclick=exportFilterAudit;$('#history-search').oninput=e=>renderHistory(e.target.value);
   $('#group-pattern-window')?.addEventListener('change',e=>{groupPatternWindow=e.target.value;renderGroupPatternAnalytics();});
+  $('#linecols-pattern-window')?.addEventListener('change',e=>{linecolsPatternWindow=e.target.value;renderLineCols();});
   $('#advanced-period')?.addEventListener('change',e=>{advancedAnalyticsPeriod=e.target.value;renderAdvancedAnalytics();});
   $('#affinity-period')?.addEventListener('change',e=>{affinityAnalyticsPeriod=e.target.value;renderPairs();});
   $('#affinity-filter')?.addEventListener('input',()=>renderPairs());

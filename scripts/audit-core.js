@@ -259,4 +259,9 @@ assert(index.includes('id="absentnext-combo-window"'), 'janela 5/10 das combina�
 
 assert(app.includes("consistent=req.every(x=>x.n>0&&x.gain5>0)&&!!hold&&hold.n>0&&hold.gain5>0"), '10 Ausentes: holdout final não participa da aprovação do Top 5');
 assert(index.indexOf('id="absentnext-component-panel"') < index.indexOf('id="absentnext-wf-panel"') && index.indexOf('id="absentnext-wf-panel"') < index.indexOf('id="absentnext-combo-panel"'), '10 Ausentes: ordem visual 5 Componentes → 6 Walk-forward → 7 Combinações incorreta');
+
+assert(app.includes('function linecolsPatternStats('), 'estatística completa Linhas + Colunas ausente');
+assert(app.includes('Walk-forward sem futuro'), 'texto de walk-forward Linhas + Colunas ausente');
+assert(index.includes('id="linecols-combined-patterns"'), 'terceiro painel Linhas + Colunas ausente');
+assert(index.includes('id="linecols-pattern-window"'), 'janelas 5/10/20/50/100/Todos ausentes em Linhas × Grades');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
