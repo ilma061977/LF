@@ -353,26 +353,34 @@
   }
   function histoSafe(x){return Number.isFinite(x)?x:0;}
 
-  function policyAllows(report,policies={}){
-    if(report?.valid===false||report?.patternCooldown?.blocked||report?.colorRule?.blocked||report?.lineRepeat?.blocked||report?.columnRepeat?.blocked||report?.lineColumnRepeat?.blocked)return false;
+  function externalRuleActive(policies={},key){return policies?.[key]!==false;}
+  function externalRuleBlocks(report,policies={}){
+    return (externalRuleActive(policies,'PADRAO')&&report?.patternCooldown?.blocked)||
+      (externalRuleActive(policies,'CORES')&&report?.colorRule?.blocked)||
+      (externalRuleActive(policies,'LINHA')&&report?.lineRepeat?.blocked)||
+      (externalRuleActive(policies,'COLUNA')&&report?.columnRepeat?.blocked)||
+      (externalRuleActive(policies,'LXC')&&report?.lineColumnRepeat?.blocked);
+  }
+  function policyAllows(report,policies={},externalPolicies={}){
+    if(report?.valid===false||externalRuleBlocks(report,externalPolicies))return false;
     return report.filters.every(f=>{
       const explicit=policies[f.id];const policy=Number(f.id)===29?'block':(explicit||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'))));
       return policy!=='block'||f.passed;
     });
   }
   function randomAllowedGame(excluded=[]){const blocked=new Set((excluded||[]).map(Number)),a=ALL.filter(n=>!blocked.has(n));if(a.length<15)return null;for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a.slice(0,15).sort((x,y)=>x-y);}
-  function generate(ctx,quantity=1,maxAttempts=300000,options={}){const target=Math.max(1,Math.min(20,Number(quantity)||1)),out=[],seen=new Set(),excluded=options.excluded||[],policies=options.policies||{};let tested=0;while(out.length<target&&tested<maxAttempts){const g=randomAllowedGame(excluded);if(!g)break;const k=keyOf(g);tested++;if(seen.has(k))continue;seen.add(k);const r=inspect(g,ctx);if(policyAllows(r,policies))out.push(g);}return{games:out,tested,complete:out.length===target};}
+  function generate(ctx,quantity=1,maxAttempts=300000,options={}){const target=Math.max(1,Math.min(20,Number(quantity)||1)),out=[],seen=new Set(),excluded=options.excluded||[],policies=options.policies||{},externalPolicies=options.externalPolicies||{};let tested=0;while(out.length<target&&tested<maxAttempts){const g=randomAllowedGame(excluded);if(!g)break;const k=keyOf(g);tested++;if(seen.has(k))continue;seen.add(k);const r=inspect(g,ctx);if(policyAllows(r,policies,externalPolicies))out.push(g);}return{games:out,tested,complete:out.length===target};}
 
   function rangeCentral(value,range){if(!Number.isFinite(value)||!range)return 0;const mid=(range[0]+range[1])/2,half=Math.max(.5,(range[1]-range[0])/2);return Math.max(-1,1-Math.abs(value-mid)/half);}
-  function candidateScoreFromReport(r,ctx,policies={}){if(!r?.valid||r.patternCooldown?.blocked||r.colorRule?.blocked||r.lineRepeat?.blocked||r.columnRepeat?.blocked||r.lineColumnRepeat?.blocked)return-Infinity;const blocked=r.filters.filter(f=>(((Number(f.id)===29?'block':(policies[f.id]||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))))==='block')&&!f.passed)).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>((policies[f.id]||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'))))==='warn'&&!f.passed)).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
-  function candidateScore(game,ctx,policies={}){return candidateScoreFromReport(inspect(game,ctx),ctx,policies);}
+  function candidateScoreFromReport(r,ctx,policies={},externalPolicies={}){if(!r?.valid||externalRuleBlocks(r,externalPolicies))return-Infinity;const blocked=r.filters.filter(f=>(((Number(f.id)===29?'block':(policies[f.id]||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))))==='block')&&!f.passed)).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>((policies[f.id]||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'))))==='warn'&&!f.passed)).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
+  function candidateScore(game,ctx,policies={},externalPolicies={}){return candidateScoreFromReport(inspect(game,ctx),ctx,policies,externalPolicies);}
   function nCk(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);}
   function unrank(pool,k,rank){const out=[];let start=0,r=Math.max(0,Math.floor(rank));for(let need=k;need>0;need--){for(let i=start;i<=pool.length-need;i++){const c=nCk(pool.length-i-1,need-1);if(r<c){out.push(pool[i]);start=i+1;break;}r-=c;}}return out;}
   function deterministicBest(ctx,policies={},options={}){
     const blocked=new Set((options.excluded||[]).map(Number)),pool=ALL.filter(n=>!blocked.has(n));if(pool.length<15)return{game:null,score:-Infinity,tested:0,total:0,approvedCount:0,rankIndex:0};
     const total=nCk(pool.length,15),sample=Math.max(100,Math.min(total,Number(options.sampleSize)||12000)),rankIndex=Math.max(0,Math.floor(Number(options.rankIndex)||0)),approved=[];let tested=0;
     for(let i=0;i<sample;i++){
-      const rank=sample===1?0:Math.floor(i*(total-1)/(sample-1)),g=unrank(pool,15,rank),s=candidateScore(g,ctx,policies);tested++;
+      const rank=sample===1?0:Math.floor(i*(total-1)/(sample-1)),g=unrank(pool,15,rank),s=candidateScore(g,ctx,policies,options.externalPolicies||{});tested++;
       if(Number.isFinite(s))approved.push({game:g,score:s});
     }
     approved.sort((a,b)=>b.score-a.score||keyOf(a.game).localeCompare(keyOf(b.game)));
@@ -381,5 +389,5 @@
   }
   function portfolioScore(games){const norm=games.map(normalize).filter(Boolean);if(norm.length<2)return{score:100,meanOverlap:0,maxOverlap:0};const overlaps=[];for(let i=0;i<norm.length;i++)for(let j=i+1;j<norm.length;j++)overlaps.push(intersections(norm[i],norm[j]));const mo=mean(overlaps),mx=Math.max(...overlaps);return{score:Math.max(0,Math.round(100-(mo-7)*12-(mx-10)*5)),meanOverlap:+mo.toFixed(2),maxOverlap:mx};}
 
-  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,FULL_COLOR_TRIPLES,buildContext,inspect,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,buildFullColorDelayModel,fullColorDelayBonus,exactPatternCooldown,policyAllows,candidateScore,candidateScoreFromReport,deterministicBest,nCk,unrank};
+  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,FULL_COLOR_TRIPLES,buildContext,inspect,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,buildFullColorDelayModel,fullColorDelayBonus,exactPatternCooldown,externalRuleBlocks,policyAllows,candidateScore,candidateScoreFromReport,deterministicBest,nCk,unrank};
 })();
