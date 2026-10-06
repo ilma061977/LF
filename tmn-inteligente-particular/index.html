@@ -19,12 +19,16 @@
 
 .preset-row{margin:0 0 8px}.btn.preset-active{outline:2px solid rgba(126,224,161,.75);background:#205743;border-color:#58b98e}.notice.advice{border:1px solid rgba(87,199,255,.28);background:rgba(40,111,160,.10);margin-bottom:12px}.warn-text{color:#ffd18d}.research-callout{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0 4px}.research-callout>div{padding:12px;border:1px solid var(--border);border-radius:10px;background:#0a1625}.research-callout span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.research-callout strong{display:block;margin-top:5px;font-size:16px}@media(max-width:780px){.research-callout{grid-template-columns:1fr 1fr}}
 
+
+/* v15 · padrões Linhas / Colunas / Linha×Coluna */
+.pattern-wrap{margin-top:16px}.pattern-card{min-width:0}.pattern-current{padding:12px;border:1px solid var(--border);border-radius:10px;background:#0a1625;margin-bottom:12px}.pattern-sig{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#bfe8ff;overflow-wrap:anywhere;word-break:break-word}.pattern-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px}.pattern-kpi{padding:8px;border:1px solid var(--border);border-radius:8px;background:#0b1727}.pattern-kpi span{display:block;font-size:9px;color:var(--muted);text-transform:uppercase}.pattern-kpi strong{display:block;margin-top:4px;font-size:13px}.pattern-ranks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pattern-rank{padding:9px;border:1px solid var(--border);border-radius:9px;background:#0a1625;min-width:0}.pattern-rank h3{font-size:11px;margin:0 0 7px;color:#b9c8da}.pattern-rank-row{padding:6px 0;border-top:1px solid rgba(255,255,255,.06)}.pattern-rank-row:first-of-type{border-top:0}.pattern-rank-row strong{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;overflow-wrap:anywhere}.pattern-rank-row span{font-size:10px;color:var(--muted)}@media(max-width:1100px){.pattern-ranks{grid-template-columns:1fr}.pattern-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="brand"><div class="brand-mark">TMN</div><div><strong>TMN Inteligente</strong><span>Particular · v14</span></div></div>
+    <div class="brand"><div class="brand-mark">TMN</div><div><strong>TMN Inteligente</strong><span>Particular · v15</span></div></div>
     <nav id="nav">
       <button class="nav-btn active" data-page="dashboard">📊 Início</button>
       <button class="nav-btn" data-page="analysis">🔎 Análise 80</button>
@@ -77,6 +81,11 @@
         <article class="card stat"><span>Média soma</span><strong id="avgSum">—</strong></article>
         <article class="card stat"><span>Média repetidas</span><strong id="avgRepeat">—</strong></article>
       </div>
+      <div class="grid three">
+        <article class="card stat"><span>Bloqueio ativo</span><strong id="activeBlockPct">—</strong><small id="activePresetName" class="muted">—</small></article>
+        <article class="card stat"><span>Jogos aprovados</span><strong id="activeApprovedGames">—</strong><small id="activeApprovedPct" class="muted">—</small></article>
+        <article class="card stat"><span>Chance oficial de 7 acertos</span><strong>1 em 26.472.637</strong><small class="muted">por aposta de 10 dezenas; bloqueios não alteram a probabilidade matemática individual</small></article>
+      </div>
     </section>
 
     <section class="page" id="page-analysis">
@@ -94,6 +103,41 @@
         <article class="card"><h2>Colunas (final 1 … 0)</h2><div id="colStats" class="mini-grid"></div></article>
         <article class="card"><h2>Grupos matemáticos</h2><div id="groupStats" class="metric-list"></div></article>
         <article class="card"><h2>Repetidas do anterior</h2><div id="repeatDist" class="bars"></div></article>
+      </div>
+
+      <div class="card pattern-wrap">
+        <div class="card-head">
+          <div>
+            <h2>Padrões exatos · Linhas, Colunas e Linha × Coluna</h2>
+            <p class="muted">Assinaturas calculadas sobre as 7 dezenas realmente sorteadas. Mostra frequência, repetição, atraso e intervalos; é análise descritiva, não bloqueio automático.</p>
+          </div>
+          <select id="patternWindow">
+            <option value="5">5 concursos</option>
+            <option value="10" selected>10 concursos</option>
+            <option value="20">20 concursos</option>
+            <option value="50">50 concursos</option>
+            <option value="100">100 concursos</option>
+            <option value="all">Histórico completo</option>
+          </select>
+        </div>
+        <div class="notice">Linha = contagem nas 8 faixas 01–10…71–80. Coluna = contagem pelos finais 1…0. Linha×Coluna combina as duas assinaturas. “Média para repetir” usa somente intervalos observados entre ocorrências do mesmo padrão.</div>
+        <div class="grid three">
+          <article class="pattern-card">
+            <h2>Linhas</h2>
+            <div id="linePatternCurrent" class="pattern-current"></div>
+            <div id="linePatternRanks" class="pattern-ranks"></div>
+          </article>
+          <article class="pattern-card">
+            <h2>Colunas</h2>
+            <div id="colPatternCurrent" class="pattern-current"></div>
+            <div id="colPatternRanks" class="pattern-ranks"></div>
+          </article>
+          <article class="pattern-card">
+            <h2>Linha × Coluna</h2>
+            <div id="lcPatternCurrent" class="pattern-current"></div>
+            <div id="lcPatternRanks" class="pattern-ranks"></div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -132,7 +176,7 @@
 
     <section class="page" id="page-backtest">
       <div class="card">
-        <div class="card-head"><div><h2>Pesquisa rigorosa · v3/v4 + otimização v5 + rolling v6 + JNB01 v8 + preset v10</h2><p class="muted">Redução individual calculada sobre C(80,10)=1.646.492.110.120 jogos. A falha histórica ocorre quando nenhuma das 62.196 complementações possíveis de um resultado de 7 dezenas consegue formar um jogo de 10 aprovado.</p></div><button class="btn" id="runBacktest">Atualizar painel</button></div>
+        <div class="card-head"><div><h2>Pesquisa rigorosa · v3/v4 + otimização v5 + rolling v6 + JNB01 v8 + preset v10 · padrões v15</h2><p class="muted">Redução individual calculada sobre C(80,10)=1.646.492.110.120 jogos. A falha histórica ocorre quando nenhuma das 62.196 complementações possíveis de um resultado de 7 dezenas consegue formar um jogo de 10 aprovado.</p></div><button class="btn" id="runBacktest">Atualizar painel</button></div>
         <div id="backtestSummary" class="grid four"></div>
         <div class="table-wrap"><table><thead><tr><th>Filtro</th><th>Redução exata</th><th>Jogos bloqueados</th><th>Falhas</th><th>Primeiras falhas</th><th>Status</th></tr></thead><tbody id="backtestTable"></tbody></table></div>
       </div>
@@ -483,11 +527,89 @@ function balls(nums){return [...nums].sort((a,b)=>a-b).map(n=>`<span class="ball
 function formatDate(x){if(!x)return '—';if(/^\d{4}-\d{2}-\d{2}$/.test(x)){const [y,m,d]=x.split('-');return `${d}/${m}/${y}`}return x}
 function windowData(v){const sorted=[...base].sort((a,b)=>b.contest-a.contest);return v==='all'?sorted:sorted.slice(0,+v)}
 function stats(v='10'){const d=windowData(v),freq=Array(U+1).fill(0),last=Array(U+1).fill(null);d.forEach((c,idx)=>c.nums.forEach(n=>{freq[n]++;if(last[n]===null)last[n]={idx,contest:c.contest}}));const rows=[];for(let n=1;n<=U;n++)rows.push({n,freq:freq[n],pct:d.length?freq[n]/d.length*100:0,delay:last[n]?last[n].idx:d.length,lastContest:last[n]?.contest||'—'});return {d,rows}}
-function initNav(){$$('.nav-btn').forEach(b=>b.onclick=()=>{$$('.nav-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.page').forEach(p=>p.classList.remove('active'));$('#page-'+b.dataset.page).classList.add('active');const titles={dashboard:['Painel Geral','Timemania · 80 dezenas · aposta de 10 · sorteio de 7'],analysis:['Análise 80','Frequência, atraso e comportamento por janela'],structures:['Estruturas','Distribuições históricas da base carregada'],generator:['Gerador Inteligente','Monte, fixe, exclua e audite jogos de 10 dezenas'],filters:['Matriz de Filtros','Presets validados, bloqueios experimentais e percentual ativo correto'],backtest:['Pesquisa de Filtros','v3 → v6 rolling → v8/JNB01 → v10 90%+ em pesquisa'],saved:['Jogos Salvos','Carteira persistente no navegador'],data:['Base de Dados','Auditoria e importação do histórico da Timemania']};$('#pageTitle').textContent=titles[b.dataset.page][0];$('#pageSubtitle').textContent=titles[b.dataset.page][1];renderAll();});}
-function renderDashboard(){const s=stats($('#windowSelect')?.value||'10');const latest=[...base].sort((a,b)=>b.contest-a.contest)[0]||window.TMN_EMBEDDED.at(-1);$('#latestContest').textContent=latest.contest;$('#latestDate').textContent=formatDate(latest.date);$('#latestTeam').textContent=latest.team||'—';$('#latestBalls').innerHTML=balls(latest.nums);$('#universeCount').textContent=fmtInt(TOTAL_UNIVERSE);$('#contestCount').textContent=fmtInt(base.length);const contests=base.map(x=>x.contest);$('#baseRange').textContent=contests.length?`${Math.min(...contests)}–${Math.max(...contests)}`:'sem dados';const top=[...s.rows].sort((a,b)=>b.freq-a.freq||a.n-b.n).slice(0,10);const max=Math.max(1,...top.map(x=>x.freq));$('#topFrequency').innerHTML=top.map(x=>`<div class="rank-row"><div class="rank-num">${String(x.n).padStart(2,'0')}</div><div class="rank-bar"><div class="rank-fill" style="width:${x.freq/max*100}%"></div></div><div class="rank-val">${x.freq} · ${x.pct.toFixed(1)}%</div></div>`).join('');const delays=[...s.rows].sort((a,b)=>b.delay-a.delay||a.n-b.n).slice(0,10);const md=Math.max(1,...delays.map(x=>x.delay));$('#topDelays').innerHTML=delays.map(x=>`<div class="rank-row"><div class="rank-num">${String(x.n).padStart(2,'0')}</div><div class="rank-bar"><div class="rank-fill" style="width:${x.delay/md*100}%"></div></div><div class="rank-val">${x.delay} concursos</div></div>`).join('');const d=s.d;$('#avgEven').textContent=d.length?(d.reduce((a,c)=>a+c.nums.filter(n=>n%2===0).length,0)/d.length).toFixed(2):'—';$('#avgSum').textContent=d.length?Math.round(d.reduce((a,c)=>a+sum(c.nums),0)/d.length):'—';let reps=[];for(let i=0;i<d.length-1;i++)reps.push(overlap(d[i].nums,d[i+1].nums));$('#avgRepeat').textContent=reps.length?(sum(reps)/reps.length).toFixed(2):'—';$('#dataStatus').textContent=`${base.length} concursos carregados`}
+function initNav(){$$('.nav-btn').forEach(b=>b.onclick=()=>{$$('.nav-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.page').forEach(p=>p.classList.remove('active'));$('#page-'+b.dataset.page).classList.add('active');const titles={dashboard:['Painel Geral','Timemania · 80 dezenas · aposta de 10 · sorteio de 7'],analysis:['Análise 80','Frequência, atraso e comportamento por janela'],structures:['Estruturas','Distribuições + padrões exatos de Linhas, Colunas e Linha×Coluna'],generator:['Gerador Inteligente','Monte, fixe, exclua e audite jogos de 10 dezenas'],filters:['Matriz de Filtros','Presets validados, bloqueios experimentais e percentual ativo correto'],backtest:['Pesquisa de Filtros','v3 → v6 rolling → v8/JNB01 → v10 90%+ em pesquisa'],saved:['Jogos Salvos','Carteira persistente no navegador'],data:['Base de Dados','Auditoria e importação do histórico da Timemania']};$('#pageTitle').textContent=titles[b.dataset.page][0];$('#pageSubtitle').textContent=titles[b.dataset.page][1];renderAll();});}
+function renderDashboard(){
+ const st=stats($('#windowSelect')?.value||'10');
+ const latest=[...base].sort((a,b)=>b.contest-a.contest)[0]||window.TMN_EMBEDDED.at(-1);
+ $('#latestContest').textContent=latest.contest;$('#latestDate').textContent=formatDate(latest.date);$('#latestTeam').textContent=latest.team||'—';$('#latestBalls').innerHTML=balls(latest.nums);
+ $('#universeCount').textContent=fmtInt(TOTAL_UNIVERSE);$('#contestCount').textContent=fmtInt(base.length);
+ const contests=base.map(x=>x.contest);$('#baseRange').textContent=contests.length?(Math.min(...contests)+'–'+Math.max(...contests)):'sem dados';
+ const top=[...st.rows].sort((a,b)=>b.freq-a.freq||a.n-b.n).slice(0,10),max=Math.max(1,...top.map(x=>x.freq));
+ $('#topFrequency').innerHTML=top.map(x=>'<div class="rank-row"><div class="rank-num">'+String(x.n).padStart(2,'0')+'</div><div class="rank-bar"><div class="rank-fill" style="width:'+x.freq/max*100+'%"></div></div><div class="rank-val">'+x.freq+' · '+x.pct.toFixed(1)+'%</div></div>').join('');
+ const delays=[...st.rows].sort((a,b)=>b.delay-a.delay||a.n-b.n).slice(0,10),md=Math.max(1,...delays.map(x=>x.delay));
+ $('#topDelays').innerHTML=delays.map(x=>'<div class="rank-row"><div class="rank-num">'+String(x.n).padStart(2,'0')+'</div><div class="rank-bar"><div class="rank-fill" style="width:'+x.delay/md*100+'%"></div></div><div class="rank-val">'+x.delay+' concursos</div></div>').join('');
+ const d=st.d;$('#avgEven').textContent=d.length?(d.reduce((a,c)=>a+c.nums.filter(n=>n%2===0).length,0)/d.length).toFixed(2):'—';$('#avgSum').textContent=d.length?Math.round(d.reduce((a,c)=>a+sum(c.nums),0)/d.length):'—';
+ let reps=[];for(let i=0;i<d.length-1;i++)reps.push(overlap(d[i].nums,d[i+1].nums));$('#avgRepeat').textContent=reps.length?(sum(reps)/reps.length).toFixed(2):'—';
+ const p=currentPreset();
+ if($('#activeBlockPct')){$('#activeBlockPct').textContent=p?(p.kind==='exato'?'':'≈ ')+fmtPct(p.redPct,6):'PERSONALIZADO';$('#activePresetName').textContent=p?p.label:'percentual conjunto não calculado';}
+ if($('#activeApprovedGames')){if(p){const ap=100-p.redPct;$('#activeApprovedPct').textContent='≈ '+fmtPct(ap,6)+' do universo';$('#activeApprovedGames').textContent='≈ '+fmtInt(Math.round(TOTAL_UNIVERSE*ap/100));}else{$('#activeApprovedPct').textContent='—';$('#activeApprovedGames').textContent='—';}}
+ $('#dataStatus').textContent=base.length+' concursos carregados';
+}
 function renderAnalysis(){const s=stats($('#analysisWindow')?.value||'10');const avg=s.d.length*DRAW/U;$('#analysisTable').innerHTML=s.rows.map(x=>{const cls=x.freq>avg+1?'Alta':x.freq<Math.max(0,avg-1)?'Baixa':'Média';return `<tr><td><strong>${String(x.n).padStart(2,'0')}</strong></td><td>${x.freq}</td><td>${x.pct.toFixed(1)}%</td><td>${x.delay}</td><td>${x.lastContest}</td><td><span class="tag">${cls}</span></td></tr>`}).join('')}
 function distHtml(obj){const entries=Object.entries(obj).sort((a,b)=>+a[0]-+b[0]),m=Math.max(1,...entries.map(x=>x[1]));return entries.map(([k,v])=>`<div class="bar-row"><span>${k}</span><div class="bar-track"><div class="bar-fill" style="width:${v/m*100}%"></div></div><strong>${v}</strong></div>`).join('')}
-function renderStructures(){const d=[...base].sort((a,b)=>a.contest-b.contest);let parity={},sums={},reps={};const lines=Array(8).fill(0),cols=Array(10).fill(0);let gp={Primos:0,Fibonacci:0,'Múltiplos de 3':0,'Baixos 01–40':0};d.forEach((c,i)=>{const e=c.nums.filter(n=>n%2===0).length;parity[`${e}P/${7-e}I`]=(parity[`${e}P/${7-e}I`]||0)+1;const sm=sum(c.nums),bucket=`${Math.floor(sm/50)*50}–${Math.floor(sm/50)*50+49}`;sums[bucket]=(sums[bucket]||0)+1;c.nums.forEach(n=>{lines[Math.floor((n-1)/10)]++;cols[n%10]++;if(primes.has(n))gp.Primos++;if(fib.has(n))gp.Fibonacci++;if(n%3===0)gp['Múltiplos de 3']++;if(n<=40)gp['Baixos 01–40']++});if(i>0){const r=overlap(c.nums,d[i-1].nums);reps[r]=(reps[r]||0)+1}});$('#parityDist').innerHTML=distHtml(parity);$('#sumDist').innerHTML=distHtml(sums);$('#repeatDist').innerHTML=distHtml(reps);$('#lineStats').innerHTML=lines.map((v,i)=>`<div class="mini-cell"><strong>${d.length?(v/d.length).toFixed(2):0}</strong><span>${String(i*10+1).padStart(2,'0')}–${(i+1)*10}</span></div>`).join('');$('#colStats').innerHTML=cols.map((v,i)=>`<div class="mini-cell"><strong>${d.length?(v/d.length).toFixed(2):0}</strong><span>final ${i===0?0:i}</span></div>`).join('');$('#groupStats').innerHTML=Object.entries(gp).map(([k,v])=>`<div class="metric-line"><span>${k}</span><strong>${d.length?(v/d.length).toFixed(2):0} / concurso</strong></div>`).join('')}
+function patternSignature(nums,type){
+ const r=Array(8).fill(0),c=Array(10).fill(0);
+ nums.forEach(n=>{r[Math.floor((n-1)/10)]++;c[(n-1)%10]++;});
+ const lr=r.join('-'),cr=c.join('-');
+ return type==='line'?lr:type==='col'?cr:lr+' | '+cr;
+}
+function patternCatalog(type){
+ const series=[...base].sort((a,b)=>a.contest-b.contest).map(x=>({contest:x.contest,sig:patternSignature(x.nums,type)}));
+ const map=new Map();
+ series.forEach(x=>{if(!map.has(x.sig))map.set(x.sig,[]);map.get(x.sig).push(x.contest)});
+ return {series,map};
+}
+function patternCurrentStats(type){
+ const x=patternCatalog(type),latest=x.series.at(-1);
+ if(!latest)return null;
+ const occ=x.map.get(latest.sig)||[],ints=[];
+ for(let i=1;i<occ.length;i++)ints.push(occ[i]-occ[i-1]);
+ const prev=occ.length>1?occ.at(-2):null;
+ return {sig:latest.sig,freq:occ.length,pct:x.series.length?occ.length/x.series.length*100:0,prev,repeat:prev?latest.contest-prev:null,avg:ints.length?sum(ints)/ints.length:null,max:ints.length?Math.max(...ints):null,min:ints.length?Math.min(...ints):null};
+}
+function patternRankData(type,win){
+ const x=patternCatalog(type),latest=x.series.at(-1)?.contest||0,ws=win==='all'?x.series:x.series.slice(-Number(win)),wc=new Map();
+ ws.forEach(y=>wc.set(y.sig,(wc.get(y.sig)||0)+1));
+ const rows=[...wc.entries()].map(([sig,count])=>{const occ=x.map.get(sig)||[],ints=[];for(let i=1;i<occ.length;i++)ints.push(occ[i]-occ[i-1]);return {sig,count,hist:occ.length,delay:latest-(occ.at(-1)||latest),avg:ints.length?sum(ints)/ints.length:null,max:ints.length?Math.max(...ints):null};});
+ const frequent=[...rows].sort((a,b)=>b.count-a.count||b.hist-a.hist||a.sig.localeCompare(b.sig)).slice(0,5);
+ const rare=[...rows].sort((a,b)=>a.count-b.count||a.hist-b.hist||a.sig.localeCompare(b.sig)).slice(0,5);
+ const allRows=[...x.map.entries()].map(([sig,occ])=>{const ints=[];for(let i=1;i<occ.length;i++)ints.push(occ[i]-occ[i-1]);return {sig,hist:occ.length,delay:latest-(occ.at(-1)||latest),avg:ints.length?sum(ints)/ints.length:null,max:ints.length?Math.max(...ints):null};});
+ const delayed=allRows.filter(z=>z.hist>1).sort((a,b)=>b.delay-a.delay||a.hist-b.hist).slice(0,5);
+ return {frequent,rare,delayed};
+}
+function patternRowsHtml(rows,mode){
+ if(!rows.length)return '<div class="muted">Sem dados.</div>';
+ return rows.map((x,i)=>'<div class="pattern-rank-row"><strong>'+(i+1)+'. '+x.sig+'</strong><span>'+(mode==='delay'?('atraso '+x.delay+' · hist. '+x.hist):(mode==='rare'?('janela '+x.count+' · hist. '+x.hist):('janela '+x.count+' · hist. '+x.hist+(x.avg!==null?' · rep. média '+x.avg.toFixed(1):''))))+'</span></div>').join('');
+}
+function renderPatternBox(type,currentId,ranksId,win){
+ const cur=patternCurrentStats(type),rank=patternRankData(type,win),ce=$(currentId),re=$(ranksId);
+ if(!cur||!ce||!re)return;
+ ce.innerHTML='<div class="pattern-sig">'+cur.sig+'</div><div class="pattern-kpis">'+
+ '<div class="pattern-kpi"><span>Frequência hist.</span><strong>'+cur.freq+' · '+cur.pct.toFixed(2)+'%</strong></div>'+
+ '<div class="pattern-kpi"><span>Repetição anterior</span><strong>'+(cur.prev?'#'+cur.prev:'virgem')+'</strong></div>'+
+ '<div class="pattern-kpi"><span>Intervalo atual</span><strong>'+(cur.repeat!==null?cur.repeat+' concursos':'—')+'</strong></div>'+
+ '<div class="pattern-kpi"><span>Média para repetir</span><strong>'+(cur.avg!==null?cur.avg.toFixed(1)+' concursos':'—')+'</strong></div>'+
+ '<div class="pattern-kpi"><span>Menor intervalo</span><strong>'+(cur.min!==null?cur.min:'—')+'</strong></div>'+
+ '<div class="pattern-kpi"><span>Maior intervalo</span><strong>'+(cur.max!==null?cur.max:'—')+'</strong></div></div>';
+ re.innerHTML='<div class="pattern-rank"><h3>Mais frequentes · janela</h3>'+patternRowsHtml(rank.frequent,'freq')+'</div>'+
+ '<div class="pattern-rank"><h3>Mais raros · janela</h3>'+patternRowsHtml(rank.rare,'rare')+'</div>'+
+ '<div class="pattern-rank"><h3>Mais atrasados · histórico</h3>'+patternRowsHtml(rank.delayed,'delay')+'</div>';
+}
+function renderPatternAnalysis(){
+ const w=$('#patternWindow')?.value||'10';
+ renderPatternBox('line','#linePatternCurrent','#linePatternRanks',w);
+ renderPatternBox('col','#colPatternCurrent','#colPatternRanks',w);
+ renderPatternBox('lc','#lcPatternCurrent','#lcPatternRanks',w);
+}
+function renderStructures(){
+ const d=[...base].sort((a,b)=>a.contest-b.contest);let parity={},sums={},reps={};const lines=Array(8).fill(0),cols=Array(10).fill(0);let gp={Primos:0,Fibonacci:0,'Múltiplos de 3':0,'Baixos 01–40':0};
+ d.forEach((c,i)=>{const e=c.nums.filter(n=>n%2===0).length;parity[e+'P/'+(7-e)+'I']=(parity[e+'P/'+(7-e)+'I']||0)+1;const sm=sum(c.nums),bucket=(Math.floor(sm/50)*50)+'–'+(Math.floor(sm/50)*50+49);sums[bucket]=(sums[bucket]||0)+1;c.nums.forEach(n=>{lines[Math.floor((n-1)/10)]++;cols[(n-1)%10]++;if(primes.has(n))gp.Primos++;if(fib.has(n))gp.Fibonacci++;if(n%3===0)gp['Múltiplos de 3']++;if(n<=40)gp['Baixos 01–40']++});if(i>0){const r=overlap(c.nums,d[i-1].nums);reps[r]=(reps[r]||0)+1}});
+ $('#parityDist').innerHTML=distHtml(parity);$('#sumDist').innerHTML=distHtml(sums);$('#repeatDist').innerHTML=distHtml(reps);
+ $('#lineStats').innerHTML=lines.map((v,i)=>'<div class="mini-cell"><strong>'+(d.length?(v/d.length).toFixed(2):0)+'</strong><span>'+String(i*10+1).padStart(2,'0')+'–'+((i+1)*10)+'</span></div>').join('');
+ $('#colStats').innerHTML=cols.map((v,i)=>'<div class="mini-cell"><strong>'+(d.length?(v/d.length).toFixed(2):0)+'</strong><span>final '+(i===9?0:i+1)+'</span></div>').join('');
+ $('#groupStats').innerHTML=Object.entries(gp).map(([k,v])=>'<div class="metric-line"><span>'+k+'</span><strong>'+(d.length?(v/d.length).toFixed(2):0)+' / concurso</strong></div>').join('');
+ renderPatternAnalysis();
+}
 function renderNumberGrid(){if(!$('#numberGrid'))return;$('#numberGrid').innerHTML=Array.from({length:80},(_,i)=>i+1).map(n=>`<button class="num-btn ${selected.has(n)?'selected':''} ${fixed.has(n)?'fixed':''} ${excluded.has(n)?'excluded':''}" data-n="${n}">${String(n).padStart(2,'0')}</button>`).join('');$$('.num-btn').forEach(b=>{const n=+b.dataset.n;b.onclick=()=>{if(excluded.has(n))excluded.delete(n);else if(selected.has(n)&&!fixed.has(n))selected.delete(n);else selected.add(n);renderGenerator()};b.ondblclick=e=>{e.preventDefault();excluded.delete(n);selected.add(n);if(fixed.has(n))fixed.delete(n);else fixed.add(n);renderGenerator()};b.oncontextmenu=e=>{e.preventDefault();selected.delete(n);fixed.delete(n);if(excluded.has(n))excluded.delete(n);else excluded.add(n);renderGenerator()}});$('#selCount').textContent=selected.size;$('#fixedCount').textContent=fixed.size;$('#excludedCount').textContent=excluded.size}
 function gameMetrics(g){return {Soma:sum(g),Pares:g.filter(n=>n%2===0).length,Primos:g.filter(n=>primes.has(n)).length,Fibonacci:g.filter(n=>fib.has(n)).length,'Baixos 01–40':g.filter(n=>n<=40).length,'Linhas ocupadas':new Set(g.map(n=>Math.floor((n-1)/10))).size,'Quadrantes ocupados':new Set(g.map(n=>Math.floor((n-1)/20))).size,'Maior sequência':maxConsecutive(g)}}
 function renderGenerator(){renderNumberGrid();const g=[...selected].sort((a,b)=>a-b);$('#currentGame').innerHTML=g.length?balls(g):'<span class="muted">Nenhum jogo selecionado.</span>';$('#gameAudit').innerHTML=Object.entries(gameMetrics(g)).map(([k,v])=>`<div class="audit-item"><span>${k}</span><strong>${v}</strong></div>`).join('')}
@@ -538,7 +660,7 @@ function renderSaved(){const a=saved();$('#savedGames').innerHTML=a.length?a.map
 function parseCSV(text){const lines=text.replace(/^\uFEFF/,'').trim().split(/\r?\n/);if(lines.length<2)throw Error('CSV sem dados');const sep=(lines[0].split(';').length>lines[0].split(',').length)?';':',';const h=lines[0].split(sep).map(x=>x.trim().toLowerCase());const ci=h.findIndex(x=>x.includes('concurso'));const di=h.findIndex(x=>x==='data'||x.includes('data'));const ti=h.findIndex(x=>x.includes('time'));let ni=h.map((x,i)=>/dezena|bola/.test(x)?i:-1).filter(i=>i>=0).slice(0,7);if(ni.length<7)ni=h.map((x,i)=>/^d[1-7]$/.test(x)?i:-1).filter(i=>i>=0);const out=[];for(let r=1;r<lines.length;r++){const p=lines[r].split(sep).map(x=>x.trim().replace(/^"|"$/g,''));const contest=+p[ci];const nums=ni.map(i=>+p[i]).filter(n=>n>=1&&n<=80);if(contest&&nums.length===7&&new Set(nums).size===7)out.push({contest,date:p[di]||'',team:ti>=0?p[ti]:'',nums:nums.sort((a,b)=>a-b)})}if(!out.length)throw Error('Não reconheci concursos válidos com 7 dezenas.');return out.sort((a,b)=>a.contest-b.contest)}
 function renderAll(){renderDashboard();renderAnalysis();renderStructures();renderGenerator();renderFilters();renderBacktest();renderSaved();renderDataAudit()}
 function bind(){
- initNav();$('#windowSelect').onchange=renderDashboard;$('#analysisWindow').onchange=renderAnalysis;$('#refreshStats').onclick=renderAll;
+ initNav();$('#windowSelect').onchange=renderDashboard;$('#analysisWindow').onchange=renderAnalysis;if($('#patternWindow'))$('#patternWindow').onchange=renderPatternAnalysis;$('#refreshStats').onclick=renderAll;
  $('#generateBtn').onclick=()=>{selected=new Set(generateValid());renderGenerator()};
  $('#completeBtn').onclick=()=>{const g=[...selected];for(const n of generateValid()){if(g.length>=10)break;if(!g.includes(n)&&!excluded.has(n))g.push(n)}selected=new Set(g.slice(0,10));renderGenerator()};
  $('#clearBtn').onclick=()=>{selected.clear();fixed.clear();excluded.clear();renderGenerator()};
