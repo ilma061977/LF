@@ -17,8 +17,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Copy patch helper
-        run: cp .github/mega_v114_patch.py /tmp/mega_v114_patch.py
+      - name: Refresh latest main and save patch helper
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+          cp .github/mega_v114_patch.py /tmp/mega_v114_patch.py
 
       - name: Patch main
         run: |
@@ -28,18 +31,20 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add mega-app/index.html
             git commit -m "Mega v1.14: 4.75% and 5% packages"
+            git pull --rebase origin main
             git push origin HEAD:main
           fi
 
       - name: Patch gh-pages
         run: |
           git fetch origin gh-pages
-          git checkout gh-pages
+          git checkout -B gh-pages origin/gh-pages
           python /tmp/mega_v114_patch.py
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add mega-app/index.html
             git commit -m "Mega v1.14: 4.75% and 5% packages"
+            git pull --rebase origin gh-pages
             git push origin HEAD:gh-pages
           fi
