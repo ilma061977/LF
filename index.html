@@ -886,6 +886,70 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 ‚
 .decision-number-stats-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.decision-number-stat{min-width:0;border:1px solid rgba(148,163,184,.28);border-radius:11px;background:rgba(255,255,255,.06);padding:8px;display:grid;gap:4px;color:#fff}.decision-number-stat-top{display:flex;align-items:center;justify-content:space-between;gap:6px}.decision-number-stat .lf-number-chip,.decision-number-stat .mini-ball{width:32px!important;min-width:32px!important;height:32px!important;font-size:11px!important}.decision-number-stat .pct{display:inline-flex;align-items:center;justify-content:center;min-width:46px;padding:4px 6px;border-radius:999px;font-size:10px;font-style:normal;font-weight:950}.decision-number-stat>small{font-size:9px;color:#cbd5e1}.decision-number-stat>small b{color:#fff;font-size:10px}.decision-number-stats-empty{text-align:center;padding:10px;color:#94a3b8;font-size:10px}
 @media(max-width:760px){.decision-number-stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.decision-number-stats-head{display:grid}}
 @media(max-width:480px){.decision-number-stats{padding:9px}.decision-number-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.decision-number-stat{padding:7px}.decision-number-stat .pct{min-width:43px;font-size:9px}}
+</style><style id="mobile-top-menu-fix-20261006">
+@media(max-width:980px){
+  .lf-top-menu{overflow:visible!important}
+  .lf-top-menu-inner{overflow:visible!important}
+  .lf-top-categories{
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-x:contain!important;
+    touch-action:pan-x!important;
+    position:relative!important;
+    z-index:400!important
+  }
+  .lf-top-group{
+    position:static!important;
+    flex:0 0 auto!important;
+    height:58px!important
+  }
+  .lf-top-group>summary{
+    min-height:58px!important;
+    height:58px!important;
+    padding:0 12px!important;
+    touch-action:manipulation!important;
+    -webkit-tap-highlight-color:transparent!important;
+    user-select:none!important
+  }
+  .lf-top-group[open]>.lf-top-dropdown{
+    position:fixed!important;
+    top:58px!important;
+    left:6px!important;
+    right:6px!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    max-height:calc(100dvh - 70px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding:10px!important;
+    border-radius:0 0 14px 14px!important;
+    z-index:9999!important;
+    box-shadow:0 18px 38px rgba(0,0,0,.45)!important
+  }
+  .lf-top-group[open]>.lf-top-dropdown .nav-item{
+    min-height:44px!important;
+    padding:9px 11px!important;
+    font-size:14px!important;
+    touch-action:manipulation!important
+  }
+  .lf-top-group[open]>.lf-top-dropdown .nav-item b{
+    font-size:12.5px!important;
+    line-height:1.3!important
+  }
+  .lf-top-dropdown-right{left:6px!important;right:6px!important}
+  .lf-top-matrix-group[open]>.lf-blocker-mega{
+    top:58px!important;
+    left:6px!important;
+    right:6px!important;
+    transform:none!important;
+    width:auto!important;
+    max-height:calc(100dvh - 70px)!important
+  }
+}
 </style></head>
 <body>
   <a class="skip" href="#main">Ir para o conte√∫do</a>
@@ -4752,5 +4816,32 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
 </script>
 
 <script id="dynamic-nav-counts">document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.nav-group').forEach(group=>{const badge=group.querySelector(':scope > .nav-group-toggle > b'),items=group.querySelector(':scope > .nav-group-items');if(badge&&items)badge.textContent=String(items.querySelectorAll(':scope > .nav-item').length);});});</script>
-</body>
+<script data-mobile-top-menu-fix="20261006">
+(function(){
+  const mq=window.matchMedia('(max-width: 980px)');
+  function mobile(){return mq.matches}
+  function closeOthers(current){
+    document.querySelectorAll('.lf-top-group[open]').forEach(g=>{if(g!==current)g.removeAttribute('open')});
+  }
+  document.addEventListener('toggle',function(e){
+    const g=e.target;
+    if(!mobile()||!g?.classList?.contains('lf-top-group')||!g.open)return;
+    closeOthers(g);
+    try{g.querySelector(':scope > summary')?.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'})}catch{}
+  },true);
+  document.addEventListener('click',function(e){
+    if(!mobile())return;
+    const item=e.target.closest('.lf-top-dropdown .nav-item');
+    if(item){
+      const group=item.closest('.lf-top-group');
+      setTimeout(()=>group?.removeAttribute('open'),0);
+    }
+  },true);
+  document.addEventListener('pointerdown',function(e){
+    if(!mobile())return;
+    const open=document.querySelector('.lf-top-group[open]');
+    if(open && !open.contains(e.target) && !e.target.closest('.lf-top-dropdown')) open.removeAttribute('open');
+  },true);
+})();
+</script></body>
 </html>
