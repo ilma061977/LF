@@ -1760,6 +1760,12 @@
     if(kind==='col')return linecolsOrderedSignature(g,'col');
     return linecolsCombinedSignature(g);
   }
+  function linecolsDisplayKey(key,kind='combined'){
+    const raw=String(key||'—');
+    if(kind!=='combined')return raw;
+    const m=/^Linhas\s+(.+?)\s+\|\s+Colunas\s+(.+)$/.exec(raw);
+    return m?`${m[1]} × ${m[2]}`:raw;
+  }
   function linecolsPatternCatalog(kind='combined'){
     const history=state.history||[],selected=linecolsRowsForWindow(),selectedSet=new Set(selected.map(d=>Number(d.concurso))),latestIndex=history.length-1;
     const map=new Map(),priorCounts=new Map();
@@ -1784,9 +1790,12 @@
       row.lastContest=row.contests.at(-1)||null;
       row.lastDate=row.dates.at(-1)||'—';
       row.currentDelay=row.indices.length?Math.max(0,latestIndex-row.indices.at(-1)):totalN;
+      row.intervals=intervals;
+      row.intervalCount=intervals.length;
       row.avgRepeat=intervals.length?intervals.reduce((a,b)=>a+b,0)/intervals.length:null;
       row.minRepeat=intervals.length?Math.min(...intervals):null;
       row.maxRepeat=intervals.length?Math.max(...intervals):null;
+      row.delayPercentile=intervals.length?intervals.filter(g=>g<=row.currentDelay).length/intervals.length*100:null;
       row.windowPct=selectedN?row.windowCount/selectedN*100:0;
       row.fullPct=totalN?row.total/totalN*100:0;
       row.wfAvgRank=row.wfTests?row.wfRankSum/row.wfTests:null;
@@ -1805,29 +1814,27 @@
     return{byFreq,byDelay,byRare};
   }
   function linecolsRepeatStatus(x){
-    if(x.avgRepeat==null||x.minRepeat==null||x.maxRepeat==null)return{key:'sample',label:'DADOS INSUFICIENTES',detail:'Ainda não há repetições suficientes desse padrão para calcular menor intervalo, média e maior intervalo.',cls:'warn'};
-    const d=Number(x.currentDelay||0),mn=Number(x.minRepeat),av=Number(x.avgRepeat),mx=Number(x.maxRepeat),f=v=>Number(v).toFixed(1).replace('.',',');
-    if(d<mn)return{key:'early',label:'AINDA CEDO',detail:`Atraso atual ${d}. O menor intervalo já observado foi ${mn}. Faltam ${Math.max(0,mn-d)} sorteio(s) para entrar na faixa histórica.`,cls:''};
-    if(d<av)return{key:'historical',label:'FAIXA HISTÓRICA',detail:`Atraso atual ${d}. Já entrou na faixa histórica: menor ${mn}, média ${f(av)}. Faltam ${f(Math.max(0,av-d))} sorteio(s) para chegar à média.`,cls:'ok'};
-    if(d<=mx){
-      const tail=d===mx?`Está exatamente no maior atraso histórico (${mx}).`:`Ainda está abaixo do maior atraso histórico (${mx}); faltam ${mx-d} sorteio(s) para igualá-lo.`;
-      return{key:'above-average',label:'ACIMA DA MÉDIA',detail:`Atraso atual ${d}. Já passou da média histórica (${f(av)}). ${tail}`,cls:'warn'};
-    }
-    return{key:'record',label:'NOVO RECORDE',detail:`Atraso atual ${d}. Ultrapassou o maior atraso histórico anterior (${mx}) em ${d-mx} sorteio(s).`,cls:'danger'};
+    const f=v=>Number(v).toFixed(1).replace('.',',');
+    if(!Array.isArray(x?.intervals)||!x.intervals.length||x.avgRepeat==null||x.minRepeat==null||x.maxRepeat==null)return{key:'sample',label:'SEM BASE',detail:'Estimativa descritiva indisponível: esse padrão ainda não tem repetições suficientes para formar intervalos históricos.',cls:'warn'};
+    const d=Number(x.currentDelay||0),mn=Number(x.minRepeat),av=Number(x.avgRepeat),mx=Number(x.maxRepeat),pct=Math.max(0,Math.min(100,Number(x.delayPercentile)||0)),position=`P${Math.round(pct)}`;
+    let relation='',cls='';
+    if(d<mn){relation=`abaixo do menor intervalo histórico (${mn})`;cls='';}
+    else if(d<av){relation=`entre o menor intervalo (${mn}) e a média (${f(av)})`;cls='ok';}
+    else if(d<=mx){relation=d===mx?`exatamente no maior intervalo histórico (${mx})`:`acima da média (${f(av)}) e abaixo do maior intervalo (${mx})`;cls='warn';}
+    else{relation=`acima do maior intervalo histórico anterior (${mx}) em ${d-mx} sorteio(s)`;cls='danger';}
+    return{key:'position',label:position,detail:`Estimativa descritiva: ${position} — o atraso atual é igual ou maior que ${f(pct)}% dos ${x.intervals.length} intervalos históricos observados; está ${relation}.`,cls};
   }
   function linecolsRepeatText(x){
-    const f=v=>v==null?'—':Number(v).toFixed(1).replace('.',','),st=linecolsRepeatStatus(x);
-    const hist=x.avgRepeat==null?'histórico insuficiente':`menor ${x.minRepeat} · média ${f(x.avgRepeat)} · maior ${x.maxRepeat}`;
-    return `última #${x.lastContest||'—'} · ${x.lastDate||'—'} · atraso atual ${x.currentDelay} · referência: ${hist} · ${st.detail}`;
+    const f=v=>v==null?'—':Number(v).toFixed(1).replace('.',','),st=linecolsRepeatStatus(x),plural=Number(x.currentDelay)===1?'concurso':'concursos';
+    return `Última ocorrência: #${x.lastContest||'—'}${x.lastDate&&x.lastDate!=='—'?` (${x.lastDate})`:''} · Atraso atual: ${x.currentDelay} ${plural} · Menor intervalo: ${x.minRepeat??'—'} · Média para repetir: ${f(x.avgRepeat)} · Maior intervalo: ${x.maxRepeat??'—'} · ${st.detail}`;
   }
   function linecolsRankGroupHTML(data){
     const {byFreq,byDelay,byRare}=linecolsRankSets(data,5),pct=x=>Number(x||0).toFixed(1).replace('.',',');
     const list=(title,rows,mode)=>`<div class="summary-row"><span><b>${title}</b></span><b></b></div>`+rows.map((x,i)=>{
       const main=mode==='freq'?`${x.windowCount}× · ${pct(x.windowPct)}% na janela`:mode==='delay'?`atraso ${x.currentDelay} · histórico ${x.total}×`:`${x.windowCount}× na janela · histórico ${x.total}×`;
-      const st=linecolsRepeatStatus(x);return `<div class="summary-row"><span>#${i+1} · ${x.key}</span><b>${main} · <i class="status-pill ${st.cls}">${st.label}</i></b><small>${linecolsRepeatText(x)}</small></div>`;
+      const st=linecolsRepeatStatus(x),display=linecolsDisplayKey(x.key,data.kind);return `<div class="summary-row"><span>#${i+1} · ${display}</span><b>${main} · <i class="status-pill ${st.cls}">${st.label}</i></b><small>${linecolsRepeatText(x)}</small></div>`;
     }).join('');
-    const current=data.rows.find(x=>x.key===data.currentKey);
-    const currentStatus=current?linecolsRepeatStatus(current):null;return `<div class="summary-row"><span>Padrão do último sorteio</span><b>${data.currentKey||'—'}${currentStatus?` · <i class="status-pill ${currentStatus.cls}">${currentStatus.label}</i>`:''}</b><small>${current?linecolsRepeatText(current):'—'}</small></div>`+
+    const current=data.rows.find(x=>x.key===data.currentKey),currentStatus=current?linecolsRepeatStatus(current):null,currentDisplay=linecolsDisplayKey(data.currentKey,data.kind);return `<div class="summary-row"><span>Padrão do último sorteio</span><b>${currentDisplay||'—'}${currentStatus?` · <i class="status-pill ${currentStatus.cls}">${currentStatus.label}</i>`:''}</b><small>${current?linecolsRepeatText(current):'—'}</small></div>`+
       list('Top 5 · mais frequentes',byFreq,'freq')+
       list('Top 5 · mais atrasados',byDelay,'delay')+
       list('Top 5 · mais raros',byRare,'rare');
@@ -1835,26 +1842,24 @@
   function renderLinecolsRankings(){
     const specs=[['row','#linecols-rows-rankings'],['col','#linecols-cols-rankings'],['combined','#linecols-combined-rankings']];
     for(const [kind,sel] of specs){const el=$(sel);if(!el)continue;const data=linecolsPatternCatalog(kind);el.innerHTML=linecolsRankGroupHTML(data);}
-    const note=$('#linecols-rankings-note');if(note)note.textContent=`Janela ativa: ${linecolsPatternWindow==='all'?'histórico completo':linecolsPatternWindow+' concursos'}. “Intervalo para repetir” mede quantos sorteios se passaram entre duas ocorrências do mesmo padrão; repetição no concurso seguinte = 1. Leitura simplificada: AINDA CEDO = abaixo do menor intervalo já visto; FAIXA HISTÓRICA = entre o menor intervalo e a média; ACIMA DA MÉDIA = da média até o maior atraso histórico; NOVO RECORDE = acima do maior atraso já registrado.`;
+    const note=$('#linecols-rankings-note');if(note)note.textContent=`Janela ativa: ${linecolsPatternWindow==='all'?'histórico completo':linecolsPatternWindow+' concursos'}. Para cada padrão: Última ocorrência = último concurso em que apareceu; Atraso atual = concursos já passados sem repetir; Menor/Média/Maior = intervalos históricos entre repetições. A Estimativa descritiva Pxx mostra em que posição o atraso atual está frente aos intervalos anteriores (ex.: P72 = igual ou maior que 72% dos intervalos já observados). É uma comparação histórica, não uma probabilidade do próximo sorteio.`;
   }
-
   function renderLinecolsCombined(){
     const root=$('#linecols-combined-patterns'),table=$('#linecols-combined-body'),kpis=$('#linecols-combined-kpis'),note=$('#linecols-combined-note');
     if(!root||!table)return;
     const data=linecolsPatternStats(),rows=[...data.rows].sort((a,b)=>b.windowCount-a.windowCount||b.total-a.total||a.key.localeCompare(b.key)),active=rows.filter(x=>x.windowCount>0),top=active.slice(0,10),fmt=x=>x==null?'—':Number(x).toFixed(1).replace('.',',');
     const topWrap=$('#linecols-combined-top');
-    if(topWrap)topWrap.innerHTML=top.map((x,i)=>{const st=linecolsRepeatStatus(x);return `<div class="summary-row"><span>#${i+1} · ${x.key}</span><b>${x.windowCount}× · ${fmt(x.windowPct)}% · <i class="status-pill ${st.cls}">${st.label}</i></b><small>${linecolsRepeatText(x)}</small></div>`;}).join('')||'<p class="muted">Sem dados nesta janela.</p>';
+    if(topWrap)topWrap.innerHTML=top.map((x,i)=>{const st=linecolsRepeatStatus(x);return `<div class="summary-row"><span>#${i+1} · ${linecolsDisplayKey(x.key,'combined')}</span><b>${x.windowCount}× · ${fmt(x.windowPct)}% · <i class="status-pill ${st.cls}">${st.label}</i></b><small>${linecolsRepeatText(x)}</small></div>`;}).join('')||'<p class="muted">Sem dados nesta janela.</p>';
     if(kpis)kpis.innerHTML=[
       ['Janela',linecolsPatternWindow==='all'?'Todos':data.selectedN,'concursos analisados'],
       ['Padrões distintos',rows.length,'histórico completo'],
       ['Distintos na janela',active.length,'assinaturas L+C'],
-      ['Mais frequente',top[0]?.windowCount||0,top[0]?.key||'—'],
-      ['Último padrão',data.currentKey||'—',`#${data.history.at(-1)?.concurso||'—'} · ${data.history.at(-1)?.data||'—'}`]
+      ['Mais frequente',top[0]?.windowCount||0,top[0]?linecolsDisplayKey(top[0].key,'combined'):'—'],
+      ['Último padrão',linecolsDisplayKey(data.currentKey,'combined'),`#${data.history.at(-1)?.concurso||'—'} · ${data.history.at(-1)?.data||'—'}`]
     ].map(([a,b,c])=>`<article><span>${a}</span><b>${b}</b><small>${c||''}</small></article>`).join('');
-    table.innerHTML=rows.map(x=>{const st=linecolsRepeatStatus(x);return `<tr class="${x.windowCount?'':'muted-row'}"><td><b>${x.key}</b></td><td>${x.windowCount}</td><td>${fmt(x.windowPct)}%</td><td>${x.total} · ${fmt(x.fullPct)}%</td><td>#${x.lastContest||'—'} · ${x.lastDate||'—'}</td><td>${x.currentDelay}</td><td>${fmt(x.avgRepeat)}</td><td>${x.minRepeat??'—'}</td><td>${x.maxRepeat??'—'}</td><td><span class="status-pill ${st.cls}">${st.label}</span><small>${st.detail}</small></td><td>${x.wfTests?(`rank médio ${fmt(x.wfAvgRank)} · Top5 ${fmt(x.wfTop5Pct)}% · Top10 ${fmt(x.wfTop10Pct)}%`):'amostra insuficiente'}</td></tr>`;}).join('');
-    if(note)note.textContent='Walk-forward sem futuro: em cada ocorrência da janela, o rank do padrão é calculado somente com concursos anteriores. Situação do intervalo compara o atraso atual do padrão com seu menor, médio e maior intervalo histórico: antes do mínimo, dentro mínimo→média, passou da média ou passou do máximo.';
+    table.innerHTML=rows.map(x=>{const st=linecolsRepeatStatus(x);return `<tr class="${x.windowCount?'':'muted-row'}"><td><b>${linecolsDisplayKey(x.key,'combined')}</b></td><td>${x.windowCount}</td><td>${fmt(x.windowPct)}%</td><td>${x.total} · ${fmt(x.fullPct)}%</td><td>#${x.lastContest||'—'} · ${x.lastDate||'—'}</td><td>${x.currentDelay}</td><td>${x.minRepeat??'—'}</td><td>${fmt(x.avgRepeat)}</td><td>${x.maxRepeat??'—'}</td><td><span class="status-pill ${st.cls}">${st.label}</span><small>${st.detail}</small></td><td>${x.wfTests?(`rank médio ${fmt(x.wfAvgRank)} · Top5 ${fmt(x.wfTop5Pct)}% · Top10 ${fmt(x.wfTop10Pct)}%`):'amostra insuficiente'}</td></tr>`;}).join('');
+    if(note)note.textContent='Leitura de repetição: última ocorrência, atraso atual, menor intervalo, média para repetir e maior intervalo são calculados no histórico completo do mesmo padrão. A Estimativa descritiva Pxx posiciona o atraso atual entre os intervalos já observados; não é previsão nem altera a probabilidade matemática do sorteio. O walk-forward continua sem usar o concurso-alvo.';
   }
-
   function renderLineCols(){
     const rows=linecolsRowsForWindow(),allR=patternCounts(rows,'row'),allC=patternCounts(rows,'col'),rp=allR.slice(0,10),cp=allC.slice(0,10),fmtPct=(c,n)=>(c/Math.max(1,n)*100).toFixed(1).replace('.',',');
     const sel=$('#linecols-pattern-window');if(sel&&sel.value!==linecolsPatternWindow)sel.value=linecolsPatternWindow;

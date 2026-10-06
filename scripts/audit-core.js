@@ -275,10 +275,11 @@ assert(index.includes('id="linecols-window-rankings"'), 'painel Top padrões por
 assert(index.includes('id="linecols-rows-rankings"') && index.includes('id="linecols-cols-rankings"') && index.includes('id="linecols-combined-rankings"'), 'rankings Linhas/Colunas/L+C incompletos');
 assert(index.includes('Menor intervalo') && index.includes('Maior intervalo'), 'colunas de repetição L+C ausentes');
 
-assert(app.includes('function linecolsRepeatStatus('), 'status do intervalo mínimo/médio/máximo ausente');
-assert(app.includes("label:'AINDA CEDO'"), 'estado Ainda cedo ausente');
-assert(app.includes("label:'FAIXA HISTÓRICA'"), 'estado Faixa histórica ausente');
-assert(app.includes("label:'ACIMA DA MÉDIA'"), 'estado Acima da média ausente');
-assert(app.includes("label:'NOVO RECORDE'"), 'estado Novo recorde ausente');
-assert(index.includes('Status do atraso'), 'coluna Status do atraso ausente');
+assert(app.includes('function linecolsRepeatStatus('), 'posição descritiva do atraso ausente');
+assert(app.includes('row.delayPercentile=intervals.length'), 'percentil descritivo do atraso não calculado');
+assert(app.includes('function linecolsDisplayKey('), 'formato simplificado Linhas × Colunas ausente');
+assert(app.includes('Estimativa descritiva:'), 'texto da estimativa descritiva ausente');
+assert(index.includes('Média para repetir'), 'coluna Média para repetir ausente');
+assert(index.includes('Estimativa descritiva'), 'coluna Estimativa descritiva ausente');
+assert(!app.slice(app.indexOf('function linecolsRepeatStatus('),app.indexOf('function linecolsRepeatText(')).includes('FAIXA HISTÓRICA'), 'rótulo Faixa histórica ainda presente no status Linhas/Colunas');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
