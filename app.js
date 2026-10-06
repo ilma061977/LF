@@ -1805,17 +1805,20 @@
     return{byFreq,byDelay,byRare};
   }
   function linecolsRepeatStatus(x){
-    if(x.avgRepeat==null||x.minRepeat==null||x.maxRepeat==null)return{key:'sample',label:'AMOSTRA INSUFICIENTE',detail:'Ainda não há repetições suficientes para comparar o atraso atual com mínimo, média e máximo.',cls:'warn'};
+    if(x.avgRepeat==null||x.minRepeat==null||x.maxRepeat==null)return{key:'sample',label:'DADOS INSUFICIENTES',detail:'Ainda não há repetições suficientes desse padrão para calcular menor intervalo, média e maior intervalo.',cls:'warn'};
     const d=Number(x.currentDelay||0),mn=Number(x.minRepeat),av=Number(x.avgRepeat),mx=Number(x.maxRepeat),f=v=>Number(v).toFixed(1).replace('.',',');
-    if(d<mn)return{key:'before-min',label:'ANTES DO MÍNIMO',detail:`Atraso ${d}: ainda abaixo do menor intervalo histórico (${mn}). Faltam ${Math.max(0,mn-d)} sorteio(s) para atingir o mínimo histórico.`,cls:''};
-    if(d<av)return{key:'min-avg',label:'DENTRO · MÍN→MÉDIA',detail:`Já atingiu/passou o mínimo ${mn}, mas ainda está abaixo da média ${f(av)}. Diferença até a média: ${f(av-d)} sorteio(s).`,cls:'ok'};
-    if(d<=mx)return{key:'avg-max',label:'PASSOU DA MÉDIA',detail:`Atraso ${d}: já atingiu/passou a média ${f(av)} e continua dentro do maior intervalo histórico (${mx}).`,cls:'warn'};
-    return{key:'over-max',label:'PASSOU DO MÁXIMO',detail:`Atraso ${d}: ultrapassou o maior intervalo histórico de ${mx} sorteios em ${d-mx}.`,cls:'danger'};
+    if(d<mn)return{key:'early',label:'AINDA CEDO',detail:`Atraso atual ${d}. O menor intervalo já observado foi ${mn}. Faltam ${Math.max(0,mn-d)} sorteio(s) para entrar na faixa histórica.`,cls:''};
+    if(d<av)return{key:'historical',label:'FAIXA HISTÓRICA',detail:`Atraso atual ${d}. Já entrou na faixa histórica: menor ${mn}, média ${f(av)}. Faltam ${f(Math.max(0,av-d))} sorteio(s) para chegar à média.`,cls:'ok'};
+    if(d<=mx){
+      const tail=d===mx?`Está exatamente no maior atraso histórico (${mx}).`:`Ainda está abaixo do maior atraso histórico (${mx}); faltam ${mx-d} sorteio(s) para igualá-lo.`;
+      return{key:'above-average',label:'ACIMA DA MÉDIA',detail:`Atraso atual ${d}. Já passou da média histórica (${f(av)}). ${tail}`,cls:'warn'};
+    }
+    return{key:'record',label:'NOVO RECORDE',detail:`Atraso atual ${d}. Ultrapassou o maior atraso histórico anterior (${mx}) em ${d-mx} sorteio(s).`,cls:'danger'};
   }
   function linecolsRepeatText(x){
     const f=v=>v==null?'—':Number(v).toFixed(1).replace('.',','),st=linecolsRepeatStatus(x);
-    const avg=x.avgRepeat==null?'sem repetição suficiente':`média ${f(x.avgRepeat)} sorteios · mín ${x.minRepeat} · máx ${x.maxRepeat}`;
-    return `última #${x.lastContest||'—'} · ${x.lastDate||'—'} · atraso atual ${x.currentDelay} · repete: ${avg} · ${st.label} — ${st.detail}`;
+    const hist=x.avgRepeat==null?'histórico insuficiente':`menor ${x.minRepeat} · média ${f(x.avgRepeat)} · maior ${x.maxRepeat}`;
+    return `última #${x.lastContest||'—'} · ${x.lastDate||'—'} · atraso atual ${x.currentDelay} · referência: ${hist} · ${st.detail}`;
   }
   function linecolsRankGroupHTML(data){
     const {byFreq,byDelay,byRare}=linecolsRankSets(data,5),pct=x=>Number(x||0).toFixed(1).replace('.',',');
@@ -1832,7 +1835,7 @@
   function renderLinecolsRankings(){
     const specs=[['row','#linecols-rows-rankings'],['col','#linecols-cols-rankings'],['combined','#linecols-combined-rankings']];
     for(const [kind,sel] of specs){const el=$(sel);if(!el)continue;const data=linecolsPatternCatalog(kind);el.innerHTML=linecolsRankGroupHTML(data);}
-    const note=$('#linecols-rankings-note');if(note)note.textContent=`Janela ativa: ${linecolsPatternWindow==='all'?'histórico completo':linecolsPatternWindow+' concursos'}. “Intervalo para repetir” mede quantos sorteios se passaram entre duas ocorrências do mesmo padrão; repetição no concurso seguinte = 1. A situação mostra se o atraso atual ainda está antes do mínimo, entre mínimo e média, já passou da média ou ultrapassou o máximo histórico.`;
+    const note=$('#linecols-rankings-note');if(note)note.textContent=`Janela ativa: ${linecolsPatternWindow==='all'?'histórico completo':linecolsPatternWindow+' concursos'}. “Intervalo para repetir” mede quantos sorteios se passaram entre duas ocorrências do mesmo padrão; repetição no concurso seguinte = 1. Leitura simplificada: AINDA CEDO = abaixo do menor intervalo já visto; FAIXA HISTÓRICA = entre o menor intervalo e a média; ACIMA DA MÉDIA = da média até o maior atraso histórico; NOVO RECORDE = acima do maior atraso já registrado.`;
   }
 
   function renderLinecolsCombined(){
