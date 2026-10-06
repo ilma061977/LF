@@ -950,7 +950,56 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 ‚
     max-height:calc(100dvh - 70px)!important
   }
 }
-</style></head>
+</style>
+<style id="lf-mobile-top-tabs-fix-20261006">
+@media(max-width:980px){
+  .lf-top-menu{overflow:visible!important}
+  .lf-top-menu-inner{overflow:visible!important;position:relative!important}
+  .lf-top-categories{
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    touch-action:pan-x!important;
+    position:static!important
+  }
+  .lf-top-group{position:static!important;flex:0 0 auto!important}
+  .lf-top-group>summary{
+    min-height:58px!important;
+    padding:0 12px!important;
+    touch-action:manipulation!important;
+    -webkit-tap-highlight-color:transparent!important;
+    user-select:none!important
+  }
+  .lf-top-group[open]>.lf-top-dropdown{
+    position:fixed!important;
+    top:58px!important;
+    left:6px!important;
+    right:6px!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    max-height:calc(100dvh - 70px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    z-index:9999!important;
+    border-radius:0 0 14px 14px!important;
+    box-shadow:0 18px 42px rgba(0,0,0,.42)!important
+  }
+  .lf-top-dropdown .nav-item{
+    min-height:46px!important;
+    padding:10px 12px!important
+  }
+  .lf-top-dropdown .nav-item b{font-size:13px!important}
+  .lf-top-dropdown .nav-item>span{font-size:15px!important}
+}
+@media(max-width:560px){
+  .lf-top-group>summary{font-size:12px!important;padding:0 10px!important}
+  .lf-top-group[open]>.lf-top-dropdown{left:4px!important;right:4px!important;max-height:calc(100dvh - 64px)!important}
+}
+</style>
+</head>
 <body>
   <a class="skip" href="#main">Ir para o conte√∫do</a>
   <div class="app-shell">
@@ -4721,7 +4770,30 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
 
   // Eventos
   document.addEventListener('click',e=>{const modeButton=e.target.closest('[data-decision-number-action]');if(modeButton){if(numberGesture){clearTimeout(numberGesture.timer);clearNumberGestureVisual(numberGesture.n);numberGesture=null;}state.decisionBallMode=modeButton.dataset.decisionNumberAction;renderDecisionNumberMode();bindDecisionBoard();return;}if(e.target.closest('[data-vertical-fill]')){completeManualSelection();return;}const release=e.target.closest('[data-number-release]');if(release){applyNumberConstraint(Number(release.dataset.numberRelease),release.dataset.releaseMode);return;}const pick=e.target.closest('[data-vertical-pick]');if(pick){const n=Number(pick.dataset.verticalPick);state.verticalNumberSelection.has(n)?state.verticalNumberSelection.delete(n):state.verticalNumberSelection.add(n);renderVerticalNumberTools();return;}const action=e.target.closest('[data-vertical-action]');if(action)applyVerticalNumberAction(action.dataset.verticalAction);});
-  document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.addEventListener('click',()=>{setPage(b.dataset.page);$('#sidebar')?.classList.remove('open');}));
+  document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.addEventListener('click',()=>{setPage(b.dataset.page);$('#sidebar')?.classList.remove('open');document.querySelectorAll('details.lf-top-group[open]').forEach(d=>d.removeAttribute('open'));}));
+  const topMenuGroups=[...document.querySelectorAll('details.lf-top-group')];
+  const isTopMenuMobile=()=>window.matchMedia&&window.matchMedia('(max-width:980px)').matches;
+  topMenuGroups.forEach(group=>{
+    const summary=group.querySelector(':scope > summary');
+    if(!summary)return;
+    summary.addEventListener('click',e=>{
+      if(!isTopMenuMobile())return;
+      e.preventDefault();
+      const willOpen=!group.hasAttribute('open');
+      topMenuGroups.forEach(g=>g.removeAttribute('open'));
+      if(willOpen){
+        group.setAttribute('open','');
+        setTimeout(()=>{try{summary.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}catch{}},0);
+      }
+    });
+  });
+  document.addEventListener('click',e=>{
+    if(!isTopMenuMobile())return;
+    if(e.target.closest('.lf-top-group'))return;
+    topMenuGroups.forEach(g=>g.removeAttribute('open'));
+  });
+  window.addEventListener('resize',()=>{if(!isTopMenuMobile())topMenuGroups.forEach(g=>g.removeAttribute('open'));});
+
   const navGroups=[...document.querySelectorAll('.nav-group')];
   const openNavGroup=(group,open=true)=>{if(!group)return;group.classList.toggle('open',open);group.querySelector('.nav-group-toggle')?.setAttribute('aria-expanded',String(open));};
   document.querySelectorAll('.nav-group-toggle').forEach(t=>t.addEventListener('click',()=>{const g=t.closest('.nav-group');if(g?.dataset.navGroup==='bloqueios'){navGroups.forEach(x=>{if(x!==g)openNavGroup(x,false);});openNavGroup(g,true);setPage('matrix');return;}const next=!g.classList.contains('open');navGroups.forEach(x=>{if(x!==g)openNavGroup(x,false);});openNavGroup(g,next);}));
