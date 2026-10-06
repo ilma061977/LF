@@ -1804,19 +1804,27 @@
     const byRare=[...data.rows].sort((a,b)=>a.windowCount-b.windowCount||a.total-b.total||b.currentDelay-a.currentDelay||a.key.localeCompare(b.key)).slice(0,limit);
     return{byFreq,byDelay,byRare};
   }
+  function linecolsRepeatStatus(x){
+    if(x.avgRepeat==null||x.minRepeat==null||x.maxRepeat==null)return{key:'sample',label:'AMOSTRA INSUFICIENTE',detail:'Ainda não há repetições suficientes para comparar o atraso atual com mínimo, média e máximo.',cls:'warn'};
+    const d=Number(x.currentDelay||0),mn=Number(x.minRepeat),av=Number(x.avgRepeat),mx=Number(x.maxRepeat),f=v=>Number(v).toFixed(1).replace('.',',');
+    if(d<mn)return{key:'before-min',label:'ANTES DO MÍNIMO',detail:`Atraso ${d}: ainda abaixo do menor intervalo histórico (${mn}). Faltam ${Math.max(0,mn-d)} sorteio(s) para atingir o mínimo histórico.`,cls:''};
+    if(d<av)return{key:'min-avg',label:'DENTRO · MÍN→MÉDIA',detail:`Já atingiu/passou o mínimo ${mn}, mas ainda está abaixo da média ${f(av)}. Diferença até a média: ${f(av-d)} sorteio(s).`,cls:'ok'};
+    if(d<=mx)return{key:'avg-max',label:'PASSOU DA MÉDIA',detail:`Atraso ${d}: já atingiu/passou a média ${f(av)} e continua dentro do maior intervalo histórico (${mx}).`,cls:'warn'};
+    return{key:'over-max',label:'PASSOU DO MÁXIMO',detail:`Atraso ${d}: ultrapassou o maior intervalo histórico de ${mx} sorteios em ${d-mx}.`,cls:'danger'};
+  }
   function linecolsRepeatText(x){
-    const f=v=>v==null?'—':Number(v).toFixed(1).replace('.',',');
+    const f=v=>v==null?'—':Number(v).toFixed(1).replace('.',','),st=linecolsRepeatStatus(x);
     const avg=x.avgRepeat==null?'sem repetição suficiente':`média ${f(x.avgRepeat)} sorteios · mín ${x.minRepeat} · máx ${x.maxRepeat}`;
-    return `última #${x.lastContest||'—'} · ${x.lastDate||'—'} · atraso atual ${x.currentDelay} · repete: ${avg}`;
+    return `última #${x.lastContest||'—'} · ${x.lastDate||'—'} · atraso atual ${x.currentDelay} · repete: ${avg} · ${st.label} — ${st.detail}`;
   }
   function linecolsRankGroupHTML(data){
     const {byFreq,byDelay,byRare}=linecolsRankSets(data,5),pct=x=>Number(x||0).toFixed(1).replace('.',',');
     const list=(title,rows,mode)=>`<div class="summary-row"><span><b>${title}</b></span><b></b></div>`+rows.map((x,i)=>{
       const main=mode==='freq'?`${x.windowCount}× · ${pct(x.windowPct)}% na janela`:mode==='delay'?`atraso ${x.currentDelay} · histórico ${x.total}×`:`${x.windowCount}× na janela · histórico ${x.total}×`;
-      return `<div class="summary-row"><span>#${i+1} · ${x.key}</span><b>${main}</b><small>${linecolsRepeatText(x)}</small></div>`;
+      const st=linecolsRepeatStatus(x);return `<div class="summary-row"><span>#${i+1} · ${x.key}</span><b>${main} · <i class="status-pill ${st.cls}">${st.label}</i></b><small>${linecolsRepeatText(x)}</small></div>`;
     }).join('');
     const current=data.rows.find(x=>x.key===data.currentKey);
-    return `<div class="summary-row"><span>Padrão do último sorteio</span><b>${data.currentKey||'—'}</b><small>${current?linecolsRepeatText(current):'—'}</small></div>`+
+    const currentStatus=current?linecolsRepeatStatus(current):null;return `<div class="summary-row"><span>Padrão do último sorteio</span><b>${data.currentKey||'—'}${currentStatus?` · <i class="status-pill ${currentStatus.cls}">${currentStatus.label}</i>`:''}</b><small>${current?linecolsRepeatText(current):'—'}</small></div>`+
       list('Top 5 · mais frequentes',byFreq,'freq')+
       list('Top 5 · mais atrasados',byDelay,'delay')+
       list('Top 5 · mais raros',byRare,'rare');
@@ -1824,7 +1832,7 @@
   function renderLinecolsRankings(){
     const specs=[['row','#linecols-rows-rankings'],['col','#linecols-cols-rankings'],['combined','#linecols-combined-rankings']];
     for(const [kind,sel] of specs){const el=$(sel);if(!el)continue;const data=linecolsPatternCatalog(kind);el.innerHTML=linecolsRankGroupHTML(data);}
-    const note=$('#linecols-rankings-note');if(note)note.textContent=`Janela ativa: ${linecolsPatternWindow==='all'?'histórico completo':linecolsPatternWindow+' concursos'}. “Intervalo para repetir” mede quantos sorteios se passaram entre duas ocorrências do mesmo padrão; repetição no concurso seguinte = 1. O atraso atual conta concursos desde a última ocorrência; se o padrão saiu no último sorteio, atraso = 0.`;
+    const note=$('#linecols-rankings-note');if(note)note.textContent=`Janela ativa: ${linecolsPatternWindow==='all'?'histórico completo':linecolsPatternWindow+' concursos'}. “Intervalo para repetir” mede quantos sorteios se passaram entre duas ocorrências do mesmo padrão; repetição no concurso seguinte = 1. A situação mostra se o atraso atual ainda está antes do mínimo, entre mínimo e média, já passou da média ou ultrapassou o máximo histórico.`;
   }
 
   function renderLinecolsCombined(){
@@ -1832,7 +1840,7 @@
     if(!root||!table)return;
     const data=linecolsPatternStats(),rows=[...data.rows].sort((a,b)=>b.windowCount-a.windowCount||b.total-a.total||a.key.localeCompare(b.key)),active=rows.filter(x=>x.windowCount>0),top=active.slice(0,10),fmt=x=>x==null?'—':Number(x).toFixed(1).replace('.',',');
     const topWrap=$('#linecols-combined-top');
-    if(topWrap)topWrap.innerHTML=top.map((x,i)=>`<div class="summary-row"><span>#${i+1} · ${x.key}</span><b>${x.windowCount}× · ${fmt(x.windowPct)}%</b><small>última #${x.lastContest} · ${x.lastDate} · atraso ${x.currentDelay} · repete em média ${fmt(x.avgRepeat)} sorteios</small></div>`).join('')||'<p class="muted">Sem dados nesta janela.</p>';
+    if(topWrap)topWrap.innerHTML=top.map((x,i)=>{const st=linecolsRepeatStatus(x);return `<div class="summary-row"><span>#${i+1} · ${x.key}</span><b>${x.windowCount}× · ${fmt(x.windowPct)}% · <i class="status-pill ${st.cls}">${st.label}</i></b><small>${linecolsRepeatText(x)}</small></div>`;}).join('')||'<p class="muted">Sem dados nesta janela.</p>';
     if(kpis)kpis.innerHTML=[
       ['Janela',linecolsPatternWindow==='all'?'Todos':data.selectedN,'concursos analisados'],
       ['Padrões distintos',rows.length,'histórico completo'],
@@ -1840,8 +1848,8 @@
       ['Mais frequente',top[0]?.windowCount||0,top[0]?.key||'—'],
       ['Último padrão',data.currentKey||'—',`#${data.history.at(-1)?.concurso||'—'} · ${data.history.at(-1)?.data||'—'}`]
     ].map(([a,b,c])=>`<article><span>${a}</span><b>${b}</b><small>${c||''}</small></article>`).join('');
-    table.innerHTML=rows.map(x=>`<tr class="${x.windowCount?'':'muted-row'}"><td><b>${x.key}</b></td><td>${x.windowCount}</td><td>${fmt(x.windowPct)}%</td><td>${x.total} · ${fmt(x.fullPct)}%</td><td>#${x.lastContest||'—'} · ${x.lastDate||'—'}</td><td>${x.currentDelay}</td><td>${fmt(x.avgRepeat)}</td><td>${x.minRepeat??'—'}</td><td>${x.maxRepeat??'—'}</td><td>${x.wfTests?(`rank médio ${fmt(x.wfAvgRank)} · Top5 ${fmt(x.wfTop5Pct)}% · Top10 ${fmt(x.wfTop10Pct)}%`):'amostra insuficiente'}</td></tr>`).join('');
-    if(note)note.textContent='Walk-forward sem futuro: em cada ocorrência da janela, o rank do padrão é calculado somente com concursos anteriores. Intervalo médio/mínimo/máximo = número de sorteios entre repetições históricas do mesmo padrão.';
+    table.innerHTML=rows.map(x=>{const st=linecolsRepeatStatus(x);return `<tr class="${x.windowCount?'':'muted-row'}"><td><b>${x.key}</b></td><td>${x.windowCount}</td><td>${fmt(x.windowPct)}%</td><td>${x.total} · ${fmt(x.fullPct)}%</td><td>#${x.lastContest||'—'} · ${x.lastDate||'—'}</td><td>${x.currentDelay}</td><td>${fmt(x.avgRepeat)}</td><td>${x.minRepeat??'—'}</td><td>${x.maxRepeat??'—'}</td><td><span class="status-pill ${st.cls}">${st.label}</span><small>${st.detail}</small></td><td>${x.wfTests?(`rank médio ${fmt(x.wfAvgRank)} · Top5 ${fmt(x.wfTop5Pct)}% · Top10 ${fmt(x.wfTop10Pct)}%`):'amostra insuficiente'}</td></tr>`;}).join('');
+    if(note)note.textContent='Walk-forward sem futuro: em cada ocorrência da janela, o rank do padrão é calculado somente com concursos anteriores. Situação do intervalo compara o atraso atual do padrão com seu menor, médio e maior intervalo histórico: antes do mínimo, dentro mínimo→média, passou da média ou passou do máximo.';
   }
 
   function renderLineCols(){

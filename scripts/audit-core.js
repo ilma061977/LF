@@ -274,4 +274,11 @@ assert(app.includes("row.lastDate=row.dates.at(-1)||'—'"), 'data da última oc
 assert(index.includes('id="linecols-window-rankings"'), 'painel Top padrões por janela ausente');
 assert(index.includes('id="linecols-rows-rankings"') && index.includes('id="linecols-cols-rankings"') && index.includes('id="linecols-combined-rankings"'), 'rankings Linhas/Colunas/L+C incompletos');
 assert(index.includes('Menor intervalo') && index.includes('Maior intervalo'), 'colunas de repetição L+C ausentes');
+
+assert(app.includes('function linecolsRepeatStatus('), 'status do intervalo mínimo/médio/máximo ausente');
+assert(app.includes("label:'ANTES DO MÍNIMO'"), 'estado antes do mínimo ausente');
+assert(app.includes("label:'DENTRO · MÍN→MÉDIA'"), 'estado mínimo→média ausente');
+assert(app.includes("label:'PASSOU DA MÉDIA'"), 'estado passou da média ausente');
+assert(app.includes("label:'PASSOU DO MÁXIMO'"), 'estado passou do máximo ausente');
+assert(index.includes('Situação do intervalo'), 'coluna situação do intervalo ausente');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
