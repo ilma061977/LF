@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d10" />
-  <meta name="lf-build" content="2026-10-06-linhas-colunas-combinadas-v375-rev7" />
+  <meta name="lf-build" content="2026-10-06-linecols-rankings-v375-rev8" />
   <title>LF Inteligente V3.7.5</title>
   <meta name="description" content="LF Inteligente V3.7.5 — NOVO INDICADO 5x5, Matriz 51 canônica, fechamentos matemáticos, backtest determinístico e carteira em nuvem." />
   <style>:root{
@@ -1434,7 +1434,8 @@ window.__LF_OFFLINE_WORKER_SOURCE="self.window=self;\n/* LF Inteligente V3.7.5 �
           <div id="linecols-decision" class="stats-kpis linecols-decision"></div>
           <article class="panel linecols-guidance-panel"><div class="panel-head"><div><span class="eyebrow dark">DIAGNÓSTICO</span><h2>Leitura objetiva da grade</h2></div><span class="status-pill ok">MATEMÁTICO</span></div><div id="linecols-guidance" class="decision-insight-grid"></div></article>
           <div class="linecols-three-grid"><article class="panel"><span class="eyebrow dark">1 · LINHAS</span><h2>Top padrões de linhas</h2><p class="muted">Assinatura ordenada L1-L2-L3-L4-L5 na janela escolhida.</p><div id="rows-patterns" class="summary-stack"></div></article><article class="panel"><span class="eyebrow dark">2 · COLUNAS</span><h2>Top padrões de colunas</h2><p class="muted">Assinatura ordenada C1-C2-C3-C4-C5 na janela escolhida.</p><div id="cols-patterns" class="summary-stack"></div></article><article class="panel"><span class="eyebrow dark">3 · LINHAS + COLUNAS</span><h2>Top padrões combinados</h2><p class="muted">Ex.: Linhas 3-4-3-3-2 | Colunas 4-2-1-4-4.</p><div id="linecols-combined-top" class="summary-stack"></div></article></div>
-          <article class="panel" id="linecols-combined-patterns"><div class="panel-head"><div><span class="eyebrow dark">HISTÓRICO COMPLETO · L×C</span><h2>Padrões Linhas + Colunas</h2><p class="muted">Ranking combinado completo. O painel é descritivo e não altera o bloqueio L×C já existente.</p></div><span class="status-pill ok">WALK-FORWARD SEM FUTURO</span></div><div id="linecols-combined-kpis" class="stats-kpis bi-kpis"></div><div class="table-wrap linecols-combined-table"><table><thead><tr><th>Padrão combinado</th><th>Ocorr. janela</th><th>% janela</th><th>Histórico</th><th>Última</th><th>Atraso atual</th><th>Atraso médio</th><th>Maior atraso</th><th>Walk-forward</th></tr></thead><tbody id="linecols-combined-body"></tbody></table></div><p id="linecols-combined-note" class="affinity-note"></p></article>
+          <article class="panel" id="linecols-window-rankings"><div class="panel-head"><div><span class="eyebrow dark">TOP PADRÕES · JANELA ATIVA</span><h2>Frequentes · atrasados · raros · tempo para repetir</h2><p class="muted">A mesma leitura para Linhas, Colunas e Linhas + Colunas. Cada padrão mostra última ocorrência, concurso, data e intervalo histórico de repetição.</p></div><span class="status-pill ok">5 · 10 · 20 · 50 · 100 · TODOS</span></div><div class="linecols-three-grid"><section class="analytics-card"><h3>Linhas</h3><div id="linecols-rows-rankings" class="summary-stack"></div></section><section class="analytics-card"><h3>Colunas</h3><div id="linecols-cols-rankings" class="summary-stack"></div></section><section class="analytics-card"><h3>Linhas + Colunas</h3><div id="linecols-combined-rankings" class="summary-stack"></div></section></div><p id="linecols-rankings-note" class="affinity-note"></p></article>
+          <article class="panel" id="linecols-combined-patterns"><div class="panel-head"><div><span class="eyebrow dark">HISTÓRICO COMPLETO · L×C</span><h2>Padrões Linhas + Colunas</h2><p class="muted">Ranking combinado completo. O painel é descritivo e não altera o bloqueio L×C já existente.</p></div><span class="status-pill ok">WALK-FORWARD SEM FUTURO</span></div><div id="linecols-combined-kpis" class="stats-kpis bi-kpis"></div><div class="table-wrap linecols-combined-table"><table><thead><tr><th>Padrão combinado</th><th>Ocorr. janela</th><th>% janela</th><th>Histórico</th><th>Última ocorrência</th><th>Atraso atual</th><th>Intervalo médio</th><th>Menor intervalo</th><th>Maior intervalo</th><th>Walk-forward</th></tr></thead><tbody id="linecols-combined-body"></tbody></table></div><p id="linecols-combined-note" class="affinity-note"></p></article>
           <article class="panel"><h2>Mapa 5×5 de frequência</h2><div id="linecol-heatmap" class="heatmap-board"></div></article>
         </section>
 
@@ -4024,12 +4025,18 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
     const g=draw?.dezenas||draw||[];
     return `Linhas ${linecolsOrderedSignature(g,'row')} | Colunas ${linecolsOrderedSignature(g,'col')}`;
   }
-  function linecolsPatternStats(){
+  function linecolsPatternKey(draw,kind='combined'){
+    const g=draw?.dezenas||draw||[];
+    if(kind==='row')return linecolsOrderedSignature(g,'row');
+    if(kind==='col')return linecolsOrderedSignature(g,'col');
+    return linecolsCombinedSignature(g);
+  }
+  function linecolsPatternCatalog(kind='combined'){
     const history=state.history||[],selected=linecolsRowsForWindow(),selectedSet=new Set(selected.map(d=>Number(d.concurso))),latestIndex=history.length-1;
     const map=new Map(),priorCounts=new Map();
-    const ensure=key=>{if(!map.has(key))map.set(key,{key,total:0,windowCount:0,indices:[],contests:[],wfTests:0,wfRankSum:0,wfTop5:0,wfTop10:0,wfTop20:0});return map.get(key);};
+    const ensure=key=>{if(!map.has(key))map.set(key,{key,total:0,windowCount:0,indices:[],contests:[],dates:[],wfTests:0,wfRankSum:0,wfTop5:0,wfTop10:0,wfTop20:0});return map.get(key);};
     for(let i=0;i<history.length;i++){
-      const d=history[i],key=linecolsCombinedSignature(d),row=ensure(key),prior=priorCounts.get(key)||0;
+      const d=history[i],key=linecolsPatternKey(d,kind),row=ensure(key),prior=priorCounts.get(key)||0;
       let greater=0;for(const c of priorCounts.values())if(c>prior)greater++;
       const priorRank=1+greater;
       if(selectedSet.has(Number(d.concurso))&&i>0){
@@ -4038,17 +4045,19 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
         if(priorRank<=10)row.wfTop10++;
         if(priorRank<=20)row.wfTop20++;
       }
-      row.total++;row.indices.push(i);row.contests.push(Number(d.concurso));
+      row.total++;row.indices.push(i);row.contests.push(Number(d.concurso));row.dates.push(String(d.data||'—'));
       if(selectedSet.has(Number(d.concurso)))row.windowCount++;
       priorCounts.set(key,prior+1);
     }
     const selectedN=selected.length,totalN=history.length;
     for(const row of map.values()){
-      const delays=[];for(let i=1;i<row.indices.length;i++)delays.push(Math.max(0,row.indices[i]-row.indices[i-1]-1));
+      const intervals=[];for(let i=1;i<row.indices.length;i++)intervals.push(Math.max(1,row.indices[i]-row.indices[i-1]));
       row.lastContest=row.contests.at(-1)||null;
+      row.lastDate=row.dates.at(-1)||'—';
       row.currentDelay=row.indices.length?Math.max(0,latestIndex-row.indices.at(-1)):totalN;
-      row.avgDelay=delays.length?delays.reduce((a,b)=>a+b,0)/delays.length:null;
-      row.maxDelay=Math.max(row.currentDelay,...delays,0);
+      row.avgRepeat=intervals.length?intervals.reduce((a,b)=>a+b,0)/intervals.length:null;
+      row.minRepeat=intervals.length?Math.min(...intervals):null;
+      row.maxRepeat=intervals.length?Math.max(...intervals):null;
       row.windowPct=selectedN?row.windowCount/selectedN*100:0;
       row.fullPct=totalN?row.total/totalN*100:0;
       row.wfAvgRank=row.wfTests?row.wfRankSum/row.wfTests:null;
@@ -4056,25 +4065,56 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
       row.wfTop10Pct=row.wfTests?row.wfTop10/row.wfTests*100:null;
       row.wfTop20Pct=row.wfTests?row.wfTop20/row.wfTests*100:null;
     }
-    const rows=[...map.values()].sort((a,b)=>b.windowCount-a.windowCount||b.total-a.total||a.key.localeCompare(b.key));
-    return{history,selected,rows,selectedN,totalN};
+    const rows=[...map.values()];
+    return{kind,history,selected,rows,selectedN,totalN,currentKey:history.length?linecolsPatternKey(history.at(-1),kind):null};
   }
+  function linecolsPatternStats(){return linecolsPatternCatalog('combined');}
+  function linecolsRankSets(data,limit=5){
+    const byFreq=[...data.rows].sort((a,b)=>b.windowCount-a.windowCount||b.total-a.total||a.key.localeCompare(b.key)).slice(0,limit);
+    const byDelay=[...data.rows].sort((a,b)=>b.currentDelay-a.currentDelay||b.total-a.total||a.key.localeCompare(b.key)).slice(0,limit);
+    const byRare=[...data.rows].sort((a,b)=>a.windowCount-b.windowCount||a.total-b.total||b.currentDelay-a.currentDelay||a.key.localeCompare(b.key)).slice(0,limit);
+    return{byFreq,byDelay,byRare};
+  }
+  function linecolsRepeatText(x){
+    const f=v=>v==null?'—':Number(v).toFixed(1).replace('.',',');
+    const avg=x.avgRepeat==null?'sem repetição suficiente':`média ${f(x.avgRepeat)} sorteios · mín ${x.minRepeat} · máx ${x.maxRepeat}`;
+    return `última #${x.lastContest||'—'} · ${x.lastDate||'—'} · atraso atual ${x.currentDelay} · repete: ${avg}`;
+  }
+  function linecolsRankGroupHTML(data){
+    const {byFreq,byDelay,byRare}=linecolsRankSets(data,5),pct=x=>Number(x||0).toFixed(1).replace('.',',');
+    const list=(title,rows,mode)=>`<div class="summary-row"><span><b>${title}</b></span><b></b></div>`+rows.map((x,i)=>{
+      const main=mode==='freq'?`${x.windowCount}× · ${pct(x.windowPct)}% na janela`:mode==='delay'?`atraso ${x.currentDelay} · histórico ${x.total}×`:`${x.windowCount}× na janela · histórico ${x.total}×`;
+      return `<div class="summary-row"><span>#${i+1} · ${x.key}</span><b>${main}</b><small>${linecolsRepeatText(x)}</small></div>`;
+    }).join('');
+    const current=data.rows.find(x=>x.key===data.currentKey);
+    return `<div class="summary-row"><span>Padrão do último sorteio</span><b>${data.currentKey||'—'}</b><small>${current?linecolsRepeatText(current):'—'}</small></div>`+
+      list('Top 5 · mais frequentes',byFreq,'freq')+
+      list('Top 5 · mais atrasados',byDelay,'delay')+
+      list('Top 5 · mais raros',byRare,'rare');
+  }
+  function renderLinecolsRankings(){
+    const specs=[['row','#linecols-rows-rankings'],['col','#linecols-cols-rankings'],['combined','#linecols-combined-rankings']];
+    for(const [kind,sel] of specs){const el=$(sel);if(!el)continue;const data=linecolsPatternCatalog(kind);el.innerHTML=linecolsRankGroupHTML(data);}
+    const note=$('#linecols-rankings-note');if(note)note.textContent=`Janela ativa: ${linecolsPatternWindow==='all'?'histórico completo':linecolsPatternWindow+' concursos'}. “Intervalo para repetir” mede quantos sorteios se passaram entre duas ocorrências do mesmo padrão; repetição no concurso seguinte = 1. O atraso atual conta concursos desde a última ocorrência; se o padrão saiu no último sorteio, atraso = 0.`;
+  }
+
   function renderLinecolsCombined(){
     const root=$('#linecols-combined-patterns'),table=$('#linecols-combined-body'),kpis=$('#linecols-combined-kpis'),note=$('#linecols-combined-note');
     if(!root||!table)return;
-    const data=linecolsPatternStats(),rows=data.rows,active=rows.filter(x=>x.windowCount>0),top=active.slice(0,10),fmt=x=>x==null?'—':Number(x).toFixed(1).replace('.',',');
+    const data=linecolsPatternStats(),rows=[...data.rows].sort((a,b)=>b.windowCount-a.windowCount||b.total-a.total||a.key.localeCompare(b.key)),active=rows.filter(x=>x.windowCount>0),top=active.slice(0,10),fmt=x=>x==null?'—':Number(x).toFixed(1).replace('.',',');
     const topWrap=$('#linecols-combined-top');
-    if(topWrap)topWrap.innerHTML=top.map((x,i)=>`<div class="summary-row"><span>#${i+1} · ${x.key}</span><b>${x.windowCount}× · ${fmt(x.windowPct)}%</b><small>histórico ${x.total}× · último #${x.lastContest} · atraso ${x.currentDelay}</small></div>`).join('')||'<p class="muted">Sem dados nesta janela.</p>';
+    if(topWrap)topWrap.innerHTML=top.map((x,i)=>`<div class="summary-row"><span>#${i+1} · ${x.key}</span><b>${x.windowCount}× · ${fmt(x.windowPct)}%</b><small>última #${x.lastContest} · ${x.lastDate} · atraso ${x.currentDelay} · repete em média ${fmt(x.avgRepeat)} sorteios</small></div>`).join('')||'<p class="muted">Sem dados nesta janela.</p>';
     if(kpis)kpis.innerHTML=[
       ['Janela',linecolsPatternWindow==='all'?'Todos':data.selectedN,'concursos analisados'],
       ['Padrões distintos',rows.length,'histórico completo'],
       ['Distintos na janela',active.length,'assinaturas L+C'],
       ['Mais frequente',top[0]?.windowCount||0,top[0]?.key||'—'],
-      ['Último padrão',data.history.length?linecolsCombinedSignature(data.history.at(-1)):'—',`#${data.history.at(-1)?.concurso||'—'}`]
+      ['Último padrão',data.currentKey||'—',`#${data.history.at(-1)?.concurso||'—'} · ${data.history.at(-1)?.data||'—'}`]
     ].map(([a,b,c])=>`<article><span>${a}</span><b>${b}</b><small>${c||''}</small></article>`).join('');
-    table.innerHTML=rows.map(x=>`<tr class="${x.windowCount?'':'muted-row'}"><td><b>${x.key}</b></td><td>${x.windowCount}</td><td>${fmt(x.windowPct)}%</td><td>${x.total} · ${fmt(x.fullPct)}%</td><td>#${x.lastContest||'—'}</td><td>${x.currentDelay}</td><td>${fmt(x.avgDelay)}</td><td>${x.maxDelay}</td><td>${x.wfTests?(`rank médio ${fmt(x.wfAvgRank)} · Top5 ${fmt(x.wfTop5Pct)}% · Top10 ${fmt(x.wfTop10Pct)}%`):'amostra insuficiente'}</td></tr>`).join('');
-    if(note)note.textContent=`Walk-forward sem futuro: em cada ocorrência da janela, o rank do padrão é calculado somente com concursos anteriores. Atraso atual = concursos desde a última ocorrência; atraso médio/máximo usam intervalos históricos completos.`;
+    table.innerHTML=rows.map(x=>`<tr class="${x.windowCount?'':'muted-row'}"><td><b>${x.key}</b></td><td>${x.windowCount}</td><td>${fmt(x.windowPct)}%</td><td>${x.total} · ${fmt(x.fullPct)}%</td><td>#${x.lastContest||'—'} · ${x.lastDate||'—'}</td><td>${x.currentDelay}</td><td>${fmt(x.avgRepeat)}</td><td>${x.minRepeat??'—'}</td><td>${x.maxRepeat??'—'}</td><td>${x.wfTests?(`rank médio ${fmt(x.wfAvgRank)} · Top5 ${fmt(x.wfTop5Pct)}% · Top10 ${fmt(x.wfTop10Pct)}%`):'amostra insuficiente'}</td></tr>`).join('');
+    if(note)note.textContent='Walk-forward sem futuro: em cada ocorrência da janela, o rank do padrão é calculado somente com concursos anteriores. Intervalo médio/mínimo/máximo = número de sorteios entre repetições históricas do mesmo padrão.';
   }
+
   function renderLineCols(){
     const rows=linecolsRowsForWindow(),allR=patternCounts(rows,'row'),allC=patternCounts(rows,'col'),rp=allR.slice(0,10),cp=allC.slice(0,10),fmtPct=(c,n)=>(c/Math.max(1,n)*100).toFixed(1).replace('.',',');
     const sel=$('#linecols-pattern-window');if(sel&&sel.value!==linecolsPatternWindow)sel.value=linecolsPatternWindow;
@@ -4085,6 +4125,7 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
     const rk=rs.join('-'),ck=cs.join('-'),rc=allR.find(x=>x[0]===rk)?.[1]||0,cc=allC.find(x=>x[0]===ck)?.[1]||0,devR=rs.reduce((s,v)=>s+Math.abs(v-3),0),devC=cs.reduce((s,v)=>s+Math.abs(v-3),0),balance=Math.max(0,Math.round(100-(devR+devC)/24*100)),box=$('#linecols-decision');
     if(box)box.innerHTML=[['INDICADO · linhas',state.decision.length?rk:'—'],['Ocorrência na janela',rows.length?`${rc}/${rows.length} · ${fmtPct(rc,rows.length)}%`:'—'],['INDICADO · colunas',state.decision.length?ck:'—'],['Ocorrência na janela',rows.length?`${cc}/${rows.length} · ${fmtPct(cc,rows.length)}%`:'—'],['Equilíbrio da grade',state.decision.length===15?`${balance}/100`:'—']].map(([a,b])=>`<article><span>${a}</span><b>${b}</b></article>`).join('');
     const guide=$('#linecols-guidance');if(guide)guide.innerHTML=state.decision.length===15?[['Maior linha',Math.max(...rs),`linha ${rs.indexOf(Math.max(...rs))+1} · distribuição ${rk}`,Math.max(...rs)<=4?'good':'warn'],['Maior coluna',Math.max(...cs),`coluna ${cs.indexOf(Math.max(...cs))+1} · distribuição ${ck}`,Math.max(...cs)<=4?'good':'warn'],['Desvio do centro',devR+devC,'soma |quantidade − 3| em linhas e colunas','info'],['Equilíbrio',`${balance}/100`,'100 representa 3 dezenas em cada linha e coluna',balance>=75?'good':'warn']].map(([a,b,c,k])=>`<div class="decision-insight-card ${k}"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join('')+'<p class="muted" style="grid-column:1/-1">O equilíbrio mede apenas distribuição espacial na grade 5×5; não prevê o sorteio.</p>':'<div class="bi-empty"><b>Aguardando indicado</b><span>Conclua a busca para calcular a grade.</span></div>';
+    renderLinecolsRankings();
     renderLinecolsCombined();
   }
   function stddev(a){if(!a.length)return 0;const m=mean(a);return Math.sqrt(mean(a.map(v=>(v-m)**2)));}

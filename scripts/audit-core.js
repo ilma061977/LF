@@ -264,4 +264,14 @@ assert(app.includes('function linecolsPatternStats('), 'estatística completa Li
 assert(app.includes('Walk-forward sem futuro'), 'texto de walk-forward Linhas + Colunas ausente');
 assert(index.includes('id="linecols-combined-patterns"'), 'terceiro painel Linhas + Colunas ausente');
 assert(index.includes('id="linecols-pattern-window"'), 'janelas 5/10/20/50/100/Todos ausentes em Linhas × Grades');
+
+assert(app.includes('function linecolsPatternCatalog('), 'catálogo Linhas/Colunas/L+C ausente');
+assert(app.includes('function renderLinecolsRankings()'), 'ranking frequentes/atrasados/raros ausente');
+assert(app.includes('row.avgRepeat=intervals.length'), 'intervalo médio de repetição ausente');
+assert(app.includes('row.minRepeat=intervals.length'), 'menor intervalo de repetição ausente');
+assert(app.includes('row.maxRepeat=intervals.length'), 'maior intervalo de repetição ausente');
+assert(app.includes("row.lastDate=row.dates.at(-1)||'—'"), 'data da última ocorrência ausente');
+assert(index.includes('id="linecols-window-rankings"'), 'painel Top padrões por janela ausente');
+assert(index.includes('id="linecols-rows-rankings"') && index.includes('id="linecols-cols-rankings"') && index.includes('id="linecols-combined-rankings"'), 'rankings Linhas/Colunas/L+C incompletos');
+assert(index.includes('Menor intervalo') && index.includes('Maior intervalo'), 'colunas de repetição L+C ausentes');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
