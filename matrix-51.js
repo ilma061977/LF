@@ -28,8 +28,8 @@
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
   const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.5';
-  const THRESHOLD_VERSION = 'LF-M51-2026.09.24-v3.7.5';
-  const AUDIT_VERSION = 'LF-M51-AUDIT-3796-F28-F29-F36-F37-v3.7.5';
+  const THRESHOLD_VERSION = 'LF-M51-2026.10.07-RECAL-v3.7.5';
+  const AUDIT_VERSION = 'LF-M51-AUDIT-3796-RECAL-F03-F05-F08-F09-F11-F12-F13-F28-F36-F37-v3.7.5';
   const AUDIT_BASE_THROUGH = 3796;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
@@ -136,17 +136,17 @@
   const FILTERS = [
     ['Formato comum das linhas','Canônica F01–F29','core'],
     ['Formato comum das colunas','Canônica F01–F29','core'],
-    ['Miolo entre 5 e 7','Canônica F01–F29','core'],
+    ['Miolo entre 4 e 9','Canônica F01–F29','core'],
     ['Moldura entre 9 e 11','Canônica F01–F29','core'],
-    ['Sem linha ou coluna vazia','Canônica F01–F29','core'],
+    ['Linha/coluna vazia · aviso','Canônica F01–F29','advisory'],
     ['Equilíbrio dos quadrantes','Canônica F01–F29','core'],
     ['Sequência máxima entre 3 e 5','Canônica F01–F29','core'],
-    ['Menos de 5 números vazios entre dezenas','Canônica F01–F29','core'],
-    ['Sem linhas/colunas gêmeas extremas','Canônica F01–F29','core'],
+    ['Maior salto até 6','Canônica F01–F29','core'],
+    ['Gêmeas baixas 0/1 · aviso','Canônica F01–F29','advisory'],
     ['Espelhamento horizontal: diferença até 4','Canônica F01–F29','core'],
-    ['Espelhamento vertical: diferença até 4','Canônica F01–F29','core'],
-    ['Primos entre 5 e 6','Canônica F01–F29','core'],
-    ['Ímpares entre 7 e 9','Canônica F01–F29','core'],
+    ['Espelhamento vertical: diferença até 5','Canônica F01–F29','core'],
+    ['Primos entre 4 e 8','Canônica F01–F29','core'],
+    ['Ímpares entre 5 e 10','Canônica F01–F29','core'],
     ['Soma entre 166 e 220','Canônica F01–F29','core'],
     ['Repetidas entre 8 e 10','Canônica F01–F29','core'],
     ['Paridade isolada nas colunas','Canônica F01–F29','advisory'],
@@ -161,7 +161,7 @@
     ['Atrasadas parcialmente presentes (somente com 2 ou mais atrasadas)','Canônica F01–F29','advisory'],
     ['Inércia flutuante entre 5 e 6','Canônica F01–F29','advisory'],
     ['Dispersão das linhas opostas','Canônica F01–F29','advisory'],
-    ['Até 2 alertas nos limites máximos','Canônica F01–F29','advisory'],
+    ['Até 2 alertas nos novos extremos','Canônica F01–F29','advisory'],
     ['Bloqueia combinação exata de 15 dezenas já sorteada','Canônica F01–F29','core'],
     ['Repetidas com Termômetro','Complementar F30–F44','advisory'],
     ['Ausentes Persistentes de 2 Concursos','Complementar F30–F44','advisory'],
@@ -170,7 +170,7 @@
     ['Linhas Opostas Ampliadas','Complementar F30–F44','advisory'],
     ['Ciclo de Dezenas','Complementar F30–F44','advisory'],
     ['Intersecção de Anomalias','Complementar F30–F44','advisory'],
-    ['Similaridade Histórica 14/15','Histórico','advisory'],
+    ['Similaridade 14/15 · últimos 500','Histórico','advisory'],
     ['Paridade Posicional','Histórico','advisory'],
     ['Terminação Binária','Histórico','advisory'],
     ['Variância Radial','Avançado','advisory'],
@@ -190,14 +190,14 @@
   const THRESHOLDS = Object.freeze({
     1:{type:'walk-forward',rule:'Top 7 assinaturas de linhas usando somente concursos anteriores'},
     2:{type:'walk-forward',rule:'Top 7 assinaturas de colunas usando somente concursos anteriores'},
-    3:{type:'fixed',rule:'Miolo 5–7'},4:{type:'fixed',rule:'Moldura 9–11'},5:{type:'fixed',rule:'Nenhuma linha/coluna vazia'},
-    6:{type:'fixed',rule:'3–4 por quadrante'},7:{type:'fixed',rule:'Sequência máxima 3–5'},8:{type:'fixed',rule:'Maior salto ≤5'},9:{type:'fixed',rule:'Sem gêmeas extremas adjacentes'},
-    10:{type:'fixed',rule:'|superior−inferior|≤4'},11:{type:'fixed',rule:'|esquerda−direita|≤4'},12:{type:'fixed',rule:'Primos 5–6'},13:{type:'fixed',rule:'Ímpares 7–9'},14:{type:'fixed',rule:'Soma 166–220'},15:{type:'fixed',rule:'Repetidas 8–10'},
+    3:{type:'fixed',rule:'Miolo 4–9'},4:{type:'fixed',rule:'Moldura 9–11'},5:{type:'advisory',rule:'Aviso se houver linha/coluna vazia'},
+    6:{type:'fixed',rule:'3–4 por quadrante'},7:{type:'fixed',rule:'Sequência máxima 3–5'},8:{type:'fixed',rule:'Maior salto ≤6'},9:{type:'advisory',rule:'Aviso apenas para gêmeas baixas adjacentes 0/1; 4–4 liberado'},
+    10:{type:'fixed',rule:'|superior−inferior|≤4'},11:{type:'fixed',rule:'|esquerda−direita|≤5'},12:{type:'fixed',rule:'Primos 4–8'},13:{type:'fixed',rule:'Ímpares 5–10'},14:{type:'fixed',rule:'Soma 166–220'},15:{type:'fixed',rule:'Repetidas 8–10'},
     16:{type:'fixed',rule:'<3 colunas com paridade homogênea'},17:{type:'fixed',rule:'<3 linhas com paridade homogênea'},18:{type:'fixed',rule:'Não usar as 5 da elite'},19:{type:'fixed',rule:'Usar ≥1 da elite'},
     20:{type:'conditional',rule:'Se anterior terminou baixo, evitar 21–23 no final'},21:{type:'conditional',rule:'Se anterior iniciou 04/05, iniciar abaixo de 04'},22:{type:'conditional',rule:'Se bloco extremo veio completo, não repeti-lo completo'},
-    23:{type:'conditional',rule:'Casais 01–02, 03–04, 05–06, 07–08, 09–10: se o anterior teve exatamente 1 casal, exigir pelo menos 2'},24:{type:'fixed',rule:'Ausentes do anterior 5–6'},25:{type:'conditional',rule:'Com ≥2 atrasadas (≥3), usar parte do grupo'},26:{type:'fixed',rule:'Inércia flutuante: dezenas que alternaram presença/ausência ≥2 vezes nos últimos 4 concursos; usar 5–6 quando o grupo comporta a regra'},27:{type:'fixed',rule:'|L1−L5|≤2'},28:{type:'fixed',rule:'No máximo 2 métricas no limite máximo; 3+ bloqueiam. Com as 4 métricas atuais, 4 simultâneas são impossíveis.'},29:{type:'historical-lock',rule:'Não repetir combinação histórica 15/15'},
+    23:{type:'conditional',rule:'Casais 01–02, 03–04, 05–06, 07–08, 09–10: se o anterior teve exatamente 1 casal, exigir pelo menos 2'},24:{type:'fixed',rule:'Ausentes do anterior 5–6'},25:{type:'conditional',rule:'Com ≥2 atrasadas (≥3), usar parte do grupo'},26:{type:'fixed',rule:'Inércia flutuante: dezenas que alternaram presença/ausência ≥2 vezes nos últimos 4 concursos; usar 5–6 quando o grupo comporta a regra'},27:{type:'fixed',rule:'|L1−L5|≤2'},28:{type:'fixed',rule:'No máximo 2 métricas nos novos extremos: soma 150/230, ímpares 5/10, primos 4/8 e repetidas 7/12; 3+ bloqueiam.'},29:{type:'historical-lock',rule:'Não repetir combinação histórica 15/15'},
     30:{type:'walk-forward-80',rule:'Repetidas dentro da faixa central histórica de 80%'},31:{type:'walk-forward-80',rule:'Retorno de ausentes persistentes (2 concursos) na faixa de 80%'},32:{type:'walk-forward-80',rule:'Média de atraso na faixa histórica de 80%'},33:{type:'walk-forward-80',rule:'Mudança do perfil de finais na faixa histórica de 80%'},34:{type:'walk-forward-80',rule:'Balanço L1+L5 vs L2+L4 na faixa histórica de 80%'},35:{type:'walk-forward-80',rule:'Pendentes do ciclo na faixa histórica de 80%'},36:{type:'derived',rule:'≤2 falhas simultâneas em F30–F35'},
-    37:{type:'historical-warning',rule:'Sem similaridade histórica 14/15'},38:{type:'fixed',rule:'Cadeia posicional de paridade ≤5'},39:{type:'walk-forward-80',rule:'Terminação binária reformulada: finais 0–4 vs 5–9; maior cadeia dentro da faixa histórica de 80%'},40:{type:'walk-forward-80',rule:'Variância radial na faixa histórica de 80%'},41:{type:'walk-forward-80',rule:'Faixas 01–09/10–19/20–25 dentro das faixas históricas'},42:{type:'fixed',rule:'Sem assinatura mecânica extrema'},43:{type:'walk-forward-80',rule:'Conectividade ortogonal na faixa histórica de 80%'},44:{type:'fixed',rule:'Distância do centro de massa ≤0,85'},
+    37:{type:'historical-warning',rule:'Sem similaridade 14/15 nos últimos 500 concursos'},38:{type:'fixed',rule:'Cadeia posicional de paridade ≤5'},39:{type:'walk-forward-80',rule:'Terminação binária reformulada: finais 0–4 vs 5–9; maior cadeia dentro da faixa histórica de 80%'},40:{type:'walk-forward-80',rule:'Variância radial na faixa histórica de 80%'},41:{type:'walk-forward-80',rule:'Faixas 01–09/10–19/20–25 dentro das faixas históricas'},42:{type:'fixed',rule:'Sem assinatura mecânica extrema'},43:{type:'walk-forward-80',rule:'Conectividade ortogonal na faixa histórica de 80%'},44:{type:'fixed',rule:'Distância do centro de massa ≤0,85'},
     45:{type:'experimental',rule:'Score Matrix Shear 3D; não eliminatório'},46:{type:'experimental',rule:'Score Rebote Elástico; não eliminatório'},47:{type:'experimental',rule:'Score Densidade Fractal; não eliminatório'},48:{type:'experimental',rule:'Score Ressonância Harmônica; não eliminatório'},49:{type:'experimental',rule:'Score Mapa de Calor; não eliminatório'},50:{type:'operational',rule:'Cobertura avaliada no módulo Fechamentos'},51:{type:'operational',rule:'Exportação/carteira; não estatístico'}
   });
 
@@ -210,7 +210,7 @@
     const requested=Math.max(10,Math.min(200,Number(options.window)||10));
     const analysisHistory=history.slice(-Math.min(requested,history.length||requested));
     const latest=history.at(-1)||null, previous=history.at(-2)||null, prev=new Set(latest?.dezenas||[]), hash=options.historyHash instanceof Set?options.historyHash:new Set(history.map(d=>keyOf(d.dezenas)));
-    const history14=options.history14 instanceof Map?options.history14:new Map();if(!(options.history14 instanceof Map)){for(const d of history){for(let i=0;i<15;i++){const k=keyOf(d.dezenas.filter((_,j)=>j!==i));if(!history14.has(k))history14.set(k,d.concurso);}}}
+    const history14=new Map();for(const d of history.slice(-500)){for(let i=0;i<15;i++){const k=keyOf(d.dezenas.filter((_,j)=>j!==i));history14.set(k,d.concurso);}}
     const temperatureHistory=history.slice(-Math.min(10,history.length||10)),temperatureFrequency=Object.fromEntries(ALL.map(n=>[n,0]));temperatureHistory.forEach(d=>d.dezenas.forEach(n=>temperatureFrequency[n]++));const rank=[...ALL].sort((a,b)=>temperatureFrequency[b]-temperatureFrequency[a]||a-b),hot=new Set(rank.slice(0,5)),cold=new Set([...ALL].sort((a,b)=>temperatureFrequency[a]-temperatureFrequency[b]||a-b).slice(0,5)),delay=options.delay&&typeof options.delay==='object'?options.delay:delays(history);
     const linePatterns=topPatterns(analysisHistory,row),columnPatterns=topPatterns(analysisHistory,col);
     const repeatedRange=range80(historicalSeries(analysisHistory,(d,prior)=>intersections(d.dezenas,prior.at(-1)?.dezenas||[]),1),[8,10]);
@@ -280,7 +280,7 @@
     const center=countSet(g,CENTER),border=countSet(g,BORDER),run=maxRun(g),gap=maxGap(g),primes=countSet(g,PRIMES),odds=g.filter(n=>n%2).length,total=sum(g),repeated=ctx.latest?intersections(g,ctx.latest.dezenas):null;
     const top=lines[0]+lines[1],bottom=lines[3]+lines[4],left=cols[0]+cols[1],right=cols[3]+cols[4],elite=countSet(g,ELITE),couples=CANONICAL_COUPLES.filter(([a,b])=>set.has(a)&&set.has(b)).length;
     const absentRecent=ctx.latest?g.filter(n=>!ctx.prev.has(n)).length:0,persistentAbsent=countSet(g,ctx.persistentAbsent||new Set()),delayedCount=countSet(g,ctx.delayed||new Set()),floatingCount=countSet(g,ctx.floating||new Set()),cycleCount=countSet(g,ctx.cycleMissing||new Set());
-    let boundaryAlerts=0;[[total,220],[odds,9],[primes,6],[repeated,10]].forEach(([v,max])=>{if(v!=null&&v===max)boundaryAlerts++;});
+    let boundaryAlerts=0;[[total,150,230],[odds,5,10],[primes,4,8],[repeated,7,12]].forEach(([v,min,max])=>{if(v!=null&&(v===min||v===max))boundaryAlerts++;});
     const hotCount=countSet(g,ctx.hot),coldCount=countSet(g,ctx.cold),avgDelay=mean(g.map(n=>ctx.delay[n]||0));
     const endings=Array.from({length:10},(_,d)=>g.filter(n=>n%10===d).length),prevEndings=ctx.latest?Array.from({length:10},(_,d)=>ctx.latest.dezenas.filter(n=>n%10===d).length):Array(10).fill(0),endingDelta=sum(endings.map((v,i)=>Math.abs(v-prevEndings[i])));
     const opposedBands=Math.abs((lines[0]+lines[4])-(lines[1]+lines[3]));
@@ -294,17 +294,17 @@
     const checks=[];const add=(id,pass,detail,score=null)=>checks.push({...FILTERS[id-1],passed:!!pass,detail,score});
     add(1,ctx.linePatterns.size?ctx.linePatterns.has(signature(lines)):lines.every(v=>v>=1&&v<=4),`Linhas ${lines.join('-')} · assinatura ${signature(lines)}`);
     add(2,ctx.columnPatterns.size?ctx.columnPatterns.has(signature(cols)):cols.every(v=>v>=1&&v<=4),`Colunas ${cols.join('-')} · assinatura ${signature(cols)}`);
-    add(3,center>=5&&center<=7,`${center} no miolo · regra fixa 5–7`);
+    add(3,center>=4&&center<=9,`${center} no miolo · regra fixa 4–9`);
     add(4,border>=9&&border<=11,`${border} na moldura · regra fixa 9–11`);
-    add(5,lines.every(Boolean)&&cols.every(Boolean),`Linhas ${lines.join('-')} · colunas ${cols.join('-')} · nenhuma pode zerar`);
+    add(5,lines.every(Boolean)&&cols.every(Boolean),`AVISO · linhas ${lines.join('-')} · colunas ${cols.join('-')} · linha/coluna vazia não bloqueia`);
     add(6,qs.every(v=>v>=3&&v<=4),`Quadrantes ${qs.join('-')} · regra fixa 3–4`);
     add(7,run>=3&&run<=5,`Maior sequência ${run} · regra fixa 3–5`);
-    add(8,gap<=5,`Maior salto ${gap} · menos de 5 vazios entre dezenas`);
-    add(9,!hasExtremeTwins(lines)&&!hasExtremeTwins(cols),`Linhas ${lines.join('-')} · colunas ${cols.join('-')}`);
+    add(8,gap<=6,`Maior salto ${gap} · regra fixa ≤6`);
+    add(9,!([lines,cols].some(a=>a.some((v,i)=>i<4&&v===a[i+1]&&v<=1))),`AVISO · linhas ${lines.join('-')} · colunas ${cols.join('-')} · 4–4 liberado; aviso só para 0/1 adjacente`);
     add(10,Math.abs(top-bottom)<5,`Superior ${top} × inferior ${bottom} · diferença ${Math.abs(top-bottom)}`);
-    add(11,Math.abs(left-right)<5,`Esquerda ${left} × direita ${right} · diferença ${Math.abs(left-right)}`);
-    add(12,primes>=5&&primes<=6,`${primes} primos · regra fixa 5–6`);
-    add(13,odds>=7&&odds<=9,`${odds} ímpares · regra fixa 7–9`);
+    add(11,Math.abs(left-right)<=5,`Esquerda ${left} × direita ${right} · diferença ${Math.abs(left-right)} · máximo 5`);
+    add(12,primes>=4&&primes<=8,`${primes} primos · regra fixa 4–8`);
+    add(13,odds>=5&&odds<=10,`${odds} ímpares · regra fixa 5–10`);
     add(14,total>=166&&total<=220,`Soma ${total} · regra fixa 166–220`);
     add(15,repeated==null||repeated>=8&&repeated<=10,repeated==null?'Aguardando concurso anterior':`${repeated} repetidas · regra fixa 8–10`);
     const colGroups=Array.from({length:5},(_,c)=>ALL.filter(n=>col(n)===c)),rowGroups=Array.from({length:5},(_,r)=>ALL.filter(n=>row(n)===r));
@@ -320,7 +320,7 @@
     add(25,ctx.delayed.size<2||(delayedCount>0&&delayedCount<ctx.delayed.size),`${delayedCount}/${ctx.delayed.size} atrasadas ≥3 · aplica somente com 2+ disponíveis`);
     add(26,ctx.floating.size<5||(floatingCount>=5&&floatingCount<=6),`${floatingCount}/${ctx.floating.size} flutuantes · regra canônica corrigida 5–6`);
     add(27,Math.abs(lines[0]-lines[4])<3,`Linha 1 ${lines[0]} × linha 5 ${lines[4]} · diferença ${Math.abs(lines[0]-lines[4])}`);
-    add(28,boundaryAlerts<=2,`${boundaryAlerts} métricas exatamente no limite máximo canônico · máximo 2; 3+ bloqueiam`);
+    add(28,boundaryAlerts<=2,`${boundaryAlerts} métrica(s) nos novos extremos (soma 150/230, ímpares 5/10, primos 4/8, repetidas 7/12) · máximo 2; 3+ bloqueiam`);
     add(29,!exactHistorical,exactHistorical?'Combinação exata de 15 dezenas já sorteada — bloqueada':'Combinação exata de 15 dezenas ainda não sorteada');
 
     // F30–F44: complementares, sempre definidos para não repetir mecanicamente F01–F29.
@@ -332,7 +332,7 @@
     add(35,ctx.cycleMissing.size===0||inRange(cycleCount,ctx.cycleRange),`${cycleCount}/${ctx.cycleMissing.size} dezenas pendentes no ciclo · faixa ${ctx.cycleRange.join('–')}`);
     const anomalyFails=checks.filter(f=>f.id>=30&&f.id<=35&&!f.passed).length;
     add(36,anomalyFails<=2,`${anomalyFails} anomalia(s) simultânea(s) entre F30–F35 · máximo 2`);
-    add(37,!has14&&!exactHistorical,exactHistorical?'Similaridade 15/15':has14?`Similaridade 14/15 · concurso ${histContest}`:'Nenhuma coincidência de 14/15 encontrada');
+    add(37,!has14&&!exactHistorical,exactHistorical?'Similaridade 15/15':has14?`Similaridade 14/15 nos últimos 500 · concurso ${histContest}`:'Nenhuma coincidência de 14/15 nos últimos 500 concursos');
     add(38,posParityLongest<=5,`Maior cadeia posicional de paridade ${posParityLongest}`);
     add(39,inRange(terminalBinaryLongest,ctx.terminalBandRange),`Maior cadeia de finais baixos (0–4) / altos (5–9): ${terminalBinaryLongest} · faixa ${ctx.terminalBandRange.join('–')}`);
     add(40,inRange(radial,ctx.radialRange),`Soma dos quadrados ${radial} · faixa ${ctx.radialRange.join('–')}`);
