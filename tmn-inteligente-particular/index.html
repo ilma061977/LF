@@ -20,15 +20,17 @@
 .preset-row{margin:0 0 8px}.btn.preset-active{outline:2px solid rgba(126,224,161,.75);background:#205743;border-color:#58b98e}.notice.advice{border:1px solid rgba(87,199,255,.28);background:rgba(40,111,160,.10);margin-bottom:12px}.warn-text{color:#ffd18d}.research-callout{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0 4px}.research-callout>div{padding:12px;border:1px solid var(--border);border-radius:10px;background:#0a1625}.research-callout span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.research-callout strong{display:block;margin-top:5px;font-size:16px}@media(max-width:780px){.research-callout{grid-template-columns:1fr 1fr}}
 
 
-/* v15 · padrões Linhas / Colunas / Linha×Coluna */
+/* v16 · padrões Linhas / Colunas / Linha×Coluna */
 .pattern-wrap{margin-top:16px}.pattern-card{min-width:0}.pattern-current{padding:12px;border:1px solid var(--border);border-radius:10px;background:#0a1625;margin-bottom:12px}.pattern-sig{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#bfe8ff;overflow-wrap:anywhere;word-break:break-word}.pattern-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px}.pattern-kpi{padding:8px;border:1px solid var(--border);border-radius:8px;background:#0b1727}.pattern-kpi span{display:block;font-size:9px;color:var(--muted);text-transform:uppercase}.pattern-kpi strong{display:block;margin-top:4px;font-size:13px}.pattern-ranks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pattern-rank{padding:9px;border:1px solid var(--border);border-radius:9px;background:#0a1625;min-width:0}.pattern-rank h3{font-size:11px;margin:0 0 7px;color:#b9c8da}.pattern-rank-row{padding:6px 0;border-top:1px solid rgba(255,255,255,.06)}.pattern-rank-row:first-of-type{border-top:0}.pattern-rank-row strong{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;overflow-wrap:anywhere}.pattern-rank-row span{font-size:10px;color:var(--muted)}@media(max-width:1100px){.pattern-ranks{grid-template-columns:1fr}.pattern-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+
+.priority-wrap{margin-top:16px}.priority-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.priority-item{padding:10px;border:1px solid var(--border);border-radius:10px;background:#0a1625;min-height:72px}.priority-item strong{display:block;font-size:12px;color:#ccecff}.priority-item span{display:block;margin-top:5px;font-size:10px;color:var(--muted);line-height:1.35}@media(max-width:1100px){.priority-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.priority-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="brand"><div class="brand-mark">TMN</div><div><strong>TMN Inteligente</strong><span>Particular · v15</span></div></div>
+    <div class="brand"><div class="brand-mark">TMN</div><div><strong>TMN Inteligente</strong><span>Particular · v16</span></div></div>
     <nav id="nav">
       <button class="nav-btn active" data-page="dashboard">📊 Início</button>
       <button class="nav-btn" data-page="analysis">🔎 Análise 80</button>
@@ -85,6 +87,21 @@
         <article class="card stat"><span>Bloqueio ativo</span><strong id="activeBlockPct">—</strong><small id="activePresetName" class="muted">—</small></article>
         <article class="card stat"><span>Jogos aprovados</span><strong id="activeApprovedGames">—</strong><small id="activeApprovedPct" class="muted">—</small></article>
         <article class="card stat"><span>Chance oficial de 7 acertos</span><strong>1 em 26.472.637</strong><small class="muted">por aposta de 10 dezenas; bloqueios não alteram a probabilidade matemática individual</small></article>
+      </div>
+      <div class="card priority-wrap">
+        <div class="card-head"><div><h2>10 prioridades TMN Timemania · concluídas</h2><p class="muted">Pacote consolidado v16. Padrões raros são filtros de seleção, não alteração da chance matemática oficial.</p></div><span class="tag good">10/10</span></div>
+        <div class="priority-grid">
+          <div class="priority-item"><strong>1 · Base atualizada</strong><span>Concursos 1–2451 · último 06/10/2026.</span></div>
+          <div class="priority-item"><strong>2 · v10 padrão</strong><span>Abre diretamente com ≈90,078626% ativo.</span></div>
+          <div class="priority-item"><strong>3 · Jogos aprovados</strong><span>Painel mostra quantidade e % restante do universo.</span></div>
+          <div class="priority-item"><strong>4 · Probabilidade CAIXA</strong><span>1 em 26.472.637 por aposta; permanece inalterada.</span></div>
+          <div class="priority-item"><strong>5 · Padrões raros</strong><span>Identificados como “BLOQUEIO POR PADRÃO RARO”.</span></div>
+          <div class="priority-item"><strong>6 · Gerador filtrado</strong><span>O gerador respeita todos os bloqueios ativos do preset.</span></div>
+          <div class="priority-item"><strong>7 · Linhas</strong><span>Frequência, raridade, atraso e intervalos por janela.</span></div>
+          <div class="priority-item"><strong>8 · Colunas</strong><span>Frequência, raridade, atraso e intervalos por janela.</span></div>
+          <div class="priority-item"><strong>9 · Linha × Coluna</strong><span>Análise conjunta nas janelas 5/10/20/50/100/histórico.</span></div>
+          <div class="priority-item"><strong>10 · App exclusivo</strong><span>Projeto e link exclusivos da TMN Timemania.</span></div>
+        </div>
       </div>
     </section>
 
@@ -176,7 +193,7 @@
 
     <section class="page" id="page-backtest">
       <div class="card">
-        <div class="card-head"><div><h2>Pesquisa rigorosa · v3/v4 + otimização v5 + rolling v6 + JNB01 v8 + preset v10 · padrões v15</h2><p class="muted">Redução individual calculada sobre C(80,10)=1.646.492.110.120 jogos. A falha histórica ocorre quando nenhuma das 62.196 complementações possíveis de um resultado de 7 dezenas consegue formar um jogo de 10 aprovado.</p></div><button class="btn" id="runBacktest">Atualizar painel</button></div>
+        <div class="card-head"><div><h2>Pesquisa rigorosa · v3/v4 + otimização v5 + rolling v6 + JNB01 v8 + preset v10 · padrões v16</h2><p class="muted">Redução individual calculada sobre C(80,10)=1.646.492.110.120 jogos. A falha histórica ocorre quando nenhuma das 62.196 complementações possíveis de um resultado de 7 dezenas consegue formar um jogo de 10 aprovado.</p></div><button class="btn" id="runBacktest">Atualizar painel</button></div>
         <div id="backtestSummary" class="grid four"></div>
         <div class="table-wrap"><table><thead><tr><th>Filtro</th><th>Redução exata</th><th>Jogos bloqueados</th><th>Falhas</th><th>Primeiras falhas</th><th>Status</th></tr></thead><tbody id="backtestTable"></tbody></table></div>
       </div>
@@ -261,8 +278,10 @@ kRGTEZURmBGaEZwRnxGhEaMRphGoEaoRrRGvEbERtBG2EbgRuxG9Eb8RwhHEEcYRyRHLEc0R0BHSEdQR
   const days=dates[i*2]|(dates[i*2+1]<<8);
   out.push({contest:i+1,date:new Date(baseUTC+days*86400000).toISOString().slice(0,10),team:i===2448?'PORTO VELHO/RO':'',nums:Array.from(nums.slice(i*7,i*7+7))});
  }
+ out.push({contest:2450,date:'2026-10-03',team:'ANAPOLIS /GO',nums:[1,5,13,16,30,42,76]});
+ out.push({contest:2451,date:'2026-10-06',team:'AMERICA /RN',nums:[4,6,34,38,53,58,69]});
  window.TMN_EMBEDDED=out;
- window.TMN_DATA_META={count:2449,firstContest:1,lastContest:2449,firstDate:'2008-03-01',lastDate:'2026-10-01',correctedContest:1307,correction:'Registro anômalo com 8 dezenas em espelho da API; consolidado como 11,17,26,29,32,40,70 após cruzamento histórico.',source:'Base histórica 1–2448 consolidada de eitchtee/loterias.json; concurso 2449 verificado em fontes atuais.'};
+ window.TMN_DATA_META={count:2451,firstContest:1,lastContest:2451,firstDate:'2008-03-01',lastDate:'2026-10-06',correctedContest:1307,correction:'Registro anômalo com 8 dezenas em espelho da API; consolidado como 11,17,26,29,32,40,70 após cruzamento histórico.',source:'Base histórica 1–2448 consolidada de eitchtee/loterias.json; concursos 2449–2451 verificados em fontes atuais/CAIXA.'};
 })();
 
 </script>
@@ -521,13 +540,13 @@ function maxBucket(arr,fn){const m={};arr.forEach(n=>m[fn(n)]=(m[fn(n)]||0)+1);r
 function maxConsecutive(arr){const a=[...arr].sort((x,y)=>x-y);let best=0,cur=0,prev=null;for(const n of a){cur=(prev!==null&&n===prev+1)?cur+1:1;best=Math.max(best,cur);prev=n}return best}
 function overlap(a,b){const s=new Set(b);return a.filter(x=>s.has(x)).length}
 function fmtInt(n){return Number(n).toLocaleString('pt-BR')} function fmtPct(n,d=4){return Number(n).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})+'%'}
-function loadBase(){try{const x=JSON.parse(localStorage.getItem('tmn_base_v2'));if(Array.isArray(x)&&x.length)return x}catch{}return [...window.TMN_EMBEDDED]}
+function loadBase(){let rows=null;try{const x=JSON.parse(localStorage.getItem('tmn_base_v2'));if(Array.isArray(x)&&x.length)rows=x}catch{}if(!rows)rows=[...window.TMN_EMBEDDED];const by=new Map(rows.map(x=>[x.contest,x]));for(const x of window.TMN_EMBEDDED){if(!by.has(x.contest)||x.contest>=2450)by.set(x.contest,x)}return [...by.values()].sort((a,b)=>a.contest-b.contest)}
 function saveBase(){localStorage.setItem('tmn_base_v2',JSON.stringify(base))}
 function balls(nums){return [...nums].sort((a,b)=>a-b).map(n=>`<span class="ball">${String(n).padStart(2,'0')}</span>`).join('')}
 function formatDate(x){if(!x)return '—';if(/^\d{4}-\d{2}-\d{2}$/.test(x)){const [y,m,d]=x.split('-');return `${d}/${m}/${y}`}return x}
 function windowData(v){const sorted=[...base].sort((a,b)=>b.contest-a.contest);return v==='all'?sorted:sorted.slice(0,+v)}
 function stats(v='10'){const d=windowData(v),freq=Array(U+1).fill(0),last=Array(U+1).fill(null);d.forEach((c,idx)=>c.nums.forEach(n=>{freq[n]++;if(last[n]===null)last[n]={idx,contest:c.contest}}));const rows=[];for(let n=1;n<=U;n++)rows.push({n,freq:freq[n],pct:d.length?freq[n]/d.length*100:0,delay:last[n]?last[n].idx:d.length,lastContest:last[n]?.contest||'—'});return {d,rows}}
-function initNav(){$$('.nav-btn').forEach(b=>b.onclick=()=>{$$('.nav-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.page').forEach(p=>p.classList.remove('active'));$('#page-'+b.dataset.page).classList.add('active');const titles={dashboard:['Painel Geral','Timemania · 80 dezenas · aposta de 10 · sorteio de 7'],analysis:['Análise 80','Frequência, atraso e comportamento por janela'],structures:['Estruturas','Distribuições + padrões exatos de Linhas, Colunas e Linha×Coluna'],generator:['Gerador Inteligente','Monte, fixe, exclua e audite jogos de 10 dezenas'],filters:['Matriz de Filtros','Presets validados, bloqueios experimentais e percentual ativo correto'],backtest:['Pesquisa de Filtros','v3 → v6 rolling → v8/JNB01 → v10 90%+ em pesquisa'],saved:['Jogos Salvos','Carteira persistente no navegador'],data:['Base de Dados','Auditoria e importação do histórico da Timemania']};$('#pageTitle').textContent=titles[b.dataset.page][0];$('#pageSubtitle').textContent=titles[b.dataset.page][1];renderAll();});}
+function initNav(){$$('.nav-btn').forEach(b=>b.onclick=()=>{$$('.nav-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.page').forEach(p=>p.classList.remove('active'));$('#page-'+b.dataset.page).classList.add('active');const titles={dashboard:['Painel Geral','Timemania · 80 dezenas · aposta de 10 · sorteio de 7'],analysis:['Análise 80','Frequência, atraso e comportamento por janela'],structures:['Estruturas','Distribuições + padrões exatos de Linhas, Colunas e Linha×Coluna'],generator:['Gerador Inteligente','Monte, fixe, exclua e audite jogos de 10 dezenas'],filters:['Matriz de Filtros','Presets validados, bloqueios experimentais e percentual ativo correto'],backtest:['Pesquisa de Filtros','v3 → v6 rolling → v8/JNB01 → v10 90%+ em pesquisa'],saved:['Jogos Salvos','Carteira persistente no navegador'],data:['Base de Dados','Auditoria e importação do histórico da Timemania · atualizado até #2451']};$('#pageTitle').textContent=titles[b.dataset.page][0];$('#pageSubtitle').textContent=titles[b.dataset.page][1];renderAll();});}
 function renderDashboard(){
  const st=stats($('#windowSelect')?.value||'10');
  const latest=[...base].sort((a,b)=>b.contest-a.contest)[0]||window.TMN_EMBEDDED.at(-1);
@@ -671,7 +690,7 @@ function bind(){
  $('#runBacktest').onclick=renderBacktest;
  $('#clearSaved').onclick=()=>{if(confirm('Excluir todos os jogos salvos?')){setSaved([]);renderSaved()}};
  $('#importBtn').onclick=async()=>{const file=$('#csvInput').files[0];if(!file)return $('#importMessage').textContent='Selecione um arquivo CSV.';try{const x=parseCSV(await file.text());base=x;v10DynCache=null;v10DynCacheKey='';saveBase();$('#importMessage').textContent=`Importados ${x.length} concursos (${x[0].contest}–${x.at(-1).contest}).`;renderAll()}catch(e){$('#importMessage').textContent='Erro: '+e.message}};
- $('#restoreBtn').onclick=()=>{base=[...window.TMN_EMBEDDED];v10DynCache=null;v10DynCacheKey='';localStorage.removeItem('tmn_base_v2');$('#importMessage').textContent='Base embutida 1–2449 restaurada.';renderAll()};
+ $('#restoreBtn').onclick=()=>{base=[...window.TMN_EMBEDDED];v10DynCache=null;v10DynCacheKey='';localStorage.removeItem('tmn_base_v2');$('#importMessage').textContent='Base embutida 1–2451 restaurada.';renderAll()};
 }
 bind();applyPreset('v10');renderAll();
 
