@@ -75,6 +75,9 @@ jobs:
           let end=start+1, escaped=false;
           for(;end<src.length;end++){const ch=src[end];if(escaped){escaped=false;continue;}if(ch==='\\'){escaped=true;continue;}if(ch==='"')break;}
           if(JSON.parse(src.slice(start,end+1))!==worker) throw new Error('Worker offline divergente');
+          const appMarker='/* INLINE: app.js */';
+          const ap=src.indexOf(appMarker), appStart=src.indexOf('\n',ap)+1, appEnd=src.indexOf('\n</script>',appStart);
+          if(src.slice(appStart,appEnd).trimEnd()!==app.trimEnd()) throw new Error('app.js inline divergente');
           const appMarker='/* INLINE: app.js */',ap=src.indexOf(appMarker),bodyStart=src.indexOf('\n',ap)+1,bodyEnd=src.indexOf('\n</script>',bodyStart);
           if(src.slice(bodyStart,bodyEnd).trimEnd()!==app.trimEnd()) throw new Error('app inline divergente');
           NODE
