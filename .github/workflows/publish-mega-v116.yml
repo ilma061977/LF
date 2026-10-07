@@ -1,0 +1,78 @@
+name: Publish Mega v1.16 modular
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-mega-v116.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Refresh main
+        run: |
+          git fetch origin main gh-pages
+          git checkout -B main origin/main
+
+      - name: Patch main index
+        env:
+          V116_TAGS: '<script src="v116/exa-data-01.js"></script><script src="v116/exa-data-02.js"></script><script src="v116/exa-data-03.js"></script><script src="v116/exa-data-04.js"></script><script src="v116/exa-data-05.js"></script><script src="v116/exa-data-06.js"></script><script src="v116/exa-data-07.js"></script><script src="v116/exa-data-08.js"></script><script src="v116/exa-data-09.js"></script><script src="v116/exa-data-10.js"></script><script src="v116/exa-data-11.js"></script><script src="v116/exa-data-12.js"></script><script src="v116/exa-data-13.js"></script><script src="v116/exa-data-14.js"></script><script src="v116/exa-data-15.js"></script><script src="v116/exa-data-16.js"></script><script src="v116/exa-data-17.js"></script><script src="v116/exa-data-18.js"></script><script src="v116/exa-data-19.js"></script><script src="v116/exa-data-20.js"></script><script src="v116/exa-v116.js"></script>'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          p=Path("mega-app/index.html")
+          s=p.read_text(encoding="utf-8")
+          s=s.replace("script-src 'unsafe-inline';","script-src 'self' 'unsafe-inline';")
+          tags=os.environ["V116_TAGS"]
+          if 'v116/exa-v116.js' not in s:
+              s=s.replace("</body>",tags+"</body>")
+          p.write_text(s,encoding="utf-8")
+          PY
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add mega-app/index.html
+            git commit -m "Mega v1.16: enable EXA DELTA Espelhos modules"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Save v1.16 assets
+        run: cp -a mega-app/v116 /tmp/v116
+
+      - name: Publish gh-pages
+        env:
+          V116_TAGS: '<script src="v116/exa-data-01.js"></script><script src="v116/exa-data-02.js"></script><script src="v116/exa-data-03.js"></script><script src="v116/exa-data-04.js"></script><script src="v116/exa-data-05.js"></script><script src="v116/exa-data-06.js"></script><script src="v116/exa-data-07.js"></script><script src="v116/exa-data-08.js"></script><script src="v116/exa-data-09.js"></script><script src="v116/exa-data-10.js"></script><script src="v116/exa-data-11.js"></script><script src="v116/exa-data-12.js"></script><script src="v116/exa-data-13.js"></script><script src="v116/exa-data-14.js"></script><script src="v116/exa-data-15.js"></script><script src="v116/exa-data-16.js"></script><script src="v116/exa-data-17.js"></script><script src="v116/exa-data-18.js"></script><script src="v116/exa-data-19.js"></script><script src="v116/exa-data-20.js"></script><script src="v116/exa-v116.js"></script>'
+        run: |
+          git fetch origin gh-pages
+          git checkout -B gh-pages origin/gh-pages
+          rm -rf mega-app/v116
+          cp -a /tmp/v116 mega-app/v116
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          p=Path("mega-app/index.html")
+          s=p.read_text(encoding="utf-8")
+          s=s.replace("script-src 'unsafe-inline';","script-src 'self' 'unsafe-inline';")
+          tags=os.environ["V116_TAGS"]
+          if 'v116/exa-v116.js' not in s:
+              s=s.replace("</body>",tags+"</body>")
+          p.write_text(s,encoding="utf-8")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mega-app/index.html mega-app/v116
+          if ! git diff --cached --quiet; then
+            git commit -m "Mega v1.16: Pesquisa EXA DELTA Espelhos"
+            git pull --rebase origin gh-pages
+            git push origin HEAD:gh-pages
+          fi
