@@ -1,0 +1,10 @@
+LF Inteligente V3.7.5
+Release: 2026-10-07-exa-ortho-blocks-v375-rev13
+Bloqueios EXA ativos por padrão:
+EXA-TOPO-01
+EXA-TOPO-02
+EXA-DEG-01
+EXA-DIR-01
+EXA-BITQ-01
+EXA-SYM-01
+EXA-DIST-01
