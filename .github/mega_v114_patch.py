@@ -2,8 +2,10 @@ from pathlib import Path
 
 p=Path("mega-app/index.html")
 s=p.read_text(encoding="utf-8")
+s=s.replace("Versão 1.9 · Testes 3% + 3,5%","Versão 1.14 · Bloqueio 5,023540%")
 if "5,023540%" in s and "test475_" in s and "test5_" in s:
-    print("Mega v1.14 already applied")
+    p.write_text(s,encoding="utf-8")
+    print("Mega v1.14 already applied; label synchronized")
     raise SystemExit(0)
 
 def rep(a,b):
