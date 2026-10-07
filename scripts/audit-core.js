@@ -14,6 +14,7 @@ const appSource=fs.readFileSync(require.resolve('../app.js'),'utf8');
 const workerSource=fs.readFileSync(require.resolve('../analysis-worker.js'),'utf8');
 const matrixSource=fs.readFileSync(require.resolve('../matrix-51.js'),'utf8');
 const indexSource=fs.readFileSync(require.resolve('../index.html'),'utf8');
+const app=appSource,worker=workerSource,index=indexSource;
 
 assert.equal(pkg.version,'3.7.5','package.json deve estar em V3.7.5');
 const meta=(indexSource.match(/<meta name="lf-build" content="([^"]+)"/)||[])[1];
