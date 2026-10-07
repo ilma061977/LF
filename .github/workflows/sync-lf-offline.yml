@@ -1,0 +1,79 @@
+name: Sincronizar LF offline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - analysis-worker.js
+      - version.json
+      - .github/workflows/sync-lf-offline.yml
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Sincronizar meta e Worker offline
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const indexPath='index.html';
+          const worker=fs.readFileSync('analysis-worker.js','utf8');
+          const version=require('./version.json').version;
+          let src=fs.readFileSync(indexPath,'utf8');
+
+          const meta=/<meta name="lf-build" content="[^"]+"/;
+          if(!meta.test(src)) throw new Error('meta lf-build ausente');
+          src=src.replace(meta,`<meta name="lf-build" content="${version}"`);
+
+          const marker='window.__LF_OFFLINE_WORKER_SOURCE=';
+          const p=src.indexOf(marker);
+          if(p<0) throw new Error('Worker offline ausente');
+          const start=p+marker.length;
+          if(src[start]!=='"') throw new Error('Literal do Worker offline inválido');
+          let end=start+1, escaped=false;
+          for(;end<src.length;end++){
+            const ch=src[end];
+            if(escaped){escaped=false;continue;}
+            if(ch==='\\'){escaped=true;continue;}
+            if(ch==='"') break;
+          }
+          if(end>=src.length) throw new Error('Fim do Worker offline não encontrado');
+          src=src.slice(0,start)+JSON.stringify(worker)+src.slice(end+1);
+          fs.writeFileSync(indexPath,src);
+          NODE
+      - name: Validar sincronização
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const src=fs.readFileSync('index.html','utf8');
+          const worker=fs.readFileSync('analysis-worker.js','utf8');
+          const version=require('./version.json').version;
+          const meta=(src.match(/<meta name="lf-build" content="([^"]+)"/)||[])[1];
+          if(meta!==version) throw new Error('meta/version divergentes');
+          const marker='window.__LF_OFFLINE_WORKER_SOURCE=';
+          const p=src.indexOf(marker), start=p+marker.length;
+          let end=start+1, escaped=false;
+          for(;end<src.length;end++){const ch=src[end];if(escaped){escaped=false;continue;}if(ch==='\\'){escaped=true;continue;}if(ch==='"')break;}
+          if(JSON.parse(src.slice(start,end+1))!==worker) throw new Error('Worker offline divergente');
+          NODE
+      - name: Commit
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "Nada a sincronizar"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Sincronizar LF offline com Matriz 51"
+          git push origin HEAD:main
