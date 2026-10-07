@@ -29,8 +29,8 @@ self.window=self;
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
   const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.5';
-  const THRESHOLD_VERSION = 'LF-M51-2026.10.07-EXA-STATUS-v3.7.5';
-  const AUDIT_VERSION = 'LF-M51-AUDIT-3796-EXA-ORTHO-STATUS-v3.7.5';
+  const THRESHOLD_VERSION = 'LF-M51-2026.10.07-EXA-UNION5459-v3.7.5';
+  const AUDIT_VERSION = 'LF-M51-AUDIT-3796-EXA-ORTHO-UNION5459-v3.7.5';
   const AUDIT_BASE_THROUGH = 3796;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
@@ -285,6 +285,17 @@ self.window=self;
     'EXA-SYM-01':{label:'Simetria D4',rule:'Variância inteira das 6 assimetrias D4 <= 5',threshold:'symVar6<=5',status:'ATIVO',enabledByDefault:true,exclusiveGames:833},
     'EXA-DIST-01':{label:'Espectro de distâncias',rule:'30 ou mais pares Manhattan com distância 3',threshold:'man3>=30',status:'ATIVO',enabledByDefault:true,exclusiveGames:823}
   });
+  const EXA_ORTHOGONAL_SUMMARY=Object.freeze({
+    baseThrough:3796,
+    universe:3268760,
+    matrixApprovedBeforeExa:196430,
+    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01']),
+    unionMarginalGames:5459,
+    unionPctOfMatrix:2.7791070610395563,
+    unionPctOfUniverse:0.16700522522302036,
+    countingRule:'TOPO01 || TOPO02 || DIR01 || BITQ01 || SYM01 || DIST01 · cada jogo contado uma única vez',
+    degIncluded:false
+  });
   const EXA_N4=Array.from({length:25},()=>[]);
   for(let r=0;r<5;r++)for(let c=0;c<5;c++){const i=r*5+c;if(c>0)EXA_N4[i].push(i-1);if(c<4)EXA_N4[i].push(i+1);if(r>0)EXA_N4[i].push(i-5);if(r<4)EXA_N4[i].push(i+5);}
   function exaComponentSizes(mask){
@@ -436,7 +447,7 @@ self.window=self;
   }
   function portfolioScore(games){const norm=games.map(normalize).filter(Boolean);if(norm.length<2)return{score:100,meanOverlap:0,maxOverlap:0};const overlaps=[];for(let i=0;i<norm.length;i++)for(let j=i+1;j<norm.length;j++)overlaps.push(intersections(norm[i],norm[j]));const mo=mean(overlaps),mx=Math.max(...overlaps);return{score:Math.max(0,Math.round(100-(mo-7)*12-(mx-10)*5)),meanOverlap:+mo.toFixed(2),maxOverlap:mx};}
 
-  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,FULL_COLOR_TRIPLES,EXA_ORTHOGONAL_RULES,buildContext,inspect,exaOrthogonalMetrics,exaOrthogonalBlocks,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,buildFullColorDelayModel,fullColorDelayBonus,exactPatternCooldown,externalRuleBlocks,policyAllows,candidateScore,candidateScoreFromReport,deterministicBest,nCk,unrank};
+  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,FULL_COLOR_TRIPLES,EXA_ORTHOGONAL_RULES,EXA_ORTHOGONAL_SUMMARY,buildContext,inspect,exaOrthogonalMetrics,exaOrthogonalBlocks,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,buildFullColorDelayModel,fullColorDelayBonus,exactPatternCooldown,externalRuleBlocks,policyAllows,candidateScore,candidateScoreFromReport,deterministicBest,nCk,unrank};
 })();
 
 self.window=self;

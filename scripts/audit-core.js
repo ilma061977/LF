@@ -283,4 +283,8 @@ assert(app.includes('Estimativa descritiva:'), 'texto da estimativa descritiva a
 assert(index.includes('Média para repetir'), 'coluna Média para repetir ausente');
 assert(index.includes('Estimativa descritiva'), 'coluna Estimativa descritiva ausente');
 assert(!app.slice(app.indexOf('function linecolsRepeatStatus('),app.indexOf('function linecolsRepeatText(')).includes('FAIXA HISTÓRICA'), 'rótulo Faixa histórica ainda presente no status Linhas/Colunas');
+assert(matrixSource.includes('unionMarginalGames:5459'), 'união EXA oficial 5.459 ausente da Matriz');
+assert(workerSource.includes('unionMarginalGames:5459'), 'união EXA oficial 5.459 ausente do Worker');
+assert(app.includes('União EXA oficial:'), 'painel não exibe união EXA oficial');
+assert(app.includes("EXA-ORTHO-UNION5459-2026-10-07-v3"), 'schema dos bloqueios EXA não atualizado');
 console.log('AUDITORIA OK · V3.7.5 · '+history.length+' concursos · menu superior · offline isolado · Jogo Indicado · cores · F29/F36/F37 · Worker sincronizado.');
