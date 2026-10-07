@@ -29,8 +29,8 @@ self.window=self;
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
   const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.5';
-  const THRESHOLD_VERSION = 'LF-M51-2026.10.07-RECAL-v3.7.5';
-  const AUDIT_VERSION = 'LF-M51-AUDIT-3796-RECAL-F03-F05-F08-F09-F11-F12-F13-F28-F36-F37-v3.7.5';
+  const THRESHOLD_VERSION = 'LF-M51-2026.10.07-EXA-STATUS-v3.7.5';
+  const AUDIT_VERSION = 'LF-M51-AUDIT-3796-EXA-ORTHO-STATUS-v3.7.5';
   const AUDIT_BASE_THROUGH = 3796;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
@@ -277,13 +277,13 @@ self.window=self;
 
 
   const EXA_ORTHOGONAL_RULES=Object.freeze({
-    'EXA-TOPO-01':{label:'Topologia ocupada',rule:'Maior componente ortogonal das 15 dezenas <= 4',threshold:'fgMax4<=4'},
-    'EXA-TOPO-02':{label:'Topologia ausentes',rule:'10 ausentes formam 9 ou mais componentes ortogonais',threshold:'bgComp4>=9'},
-    'EXA-DEG-01':{label:'Momento de graus',rule:'Wedges do grafo ortogonal <= 5',threshold:'wedges<=5'},
-    'EXA-DIR-01':{label:'Anisotropia direcional',rule:'|H-V| + |D1-D2| >= 8',threshold:'dirAbsDev>=8'},
-    'EXA-BITQ-01':{label:'Bit-quads diagonais',rule:'8 ou mais blocos 2x2 com exatamente 2 diagonais',threshold:'q2d>=8'},
-    'EXA-SYM-01':{label:'Simetria D4',rule:'Variância inteira das 6 assimetrias D4 <= 5',threshold:'symVar6<=5'},
-    'EXA-DIST-01':{label:'Espectro de distâncias',rule:'30 ou mais pares Manhattan com distância 3',threshold:'man3>=30'}
+    'EXA-TOPO-01':{label:'Topologia ocupada',rule:'Maior componente ortogonal das 15 dezenas <= 4',threshold:'fgMax4<=4',status:'ATIVO',enabledByDefault:true,exclusiveGames:1444},
+    'EXA-TOPO-02':{label:'Topologia ausentes',rule:'10 ausentes formam 9 ou mais componentes ortogonais',threshold:'bgComp4>=9',status:'ATIVO · OBSERVAR',enabledByDefault:true,exclusiveGames:null},
+    'EXA-DEG-01':{label:'Momento de graus',rule:'Wedges do grafo ortogonal <= 5',threshold:'wedges<=5',status:'DESLIGADO',enabledByDefault:false,exclusiveGames:null},
+    'EXA-DIR-01':{label:'Anisotropia direcional',rule:'|H-V| + |D1-D2| >= 8',threshold:'dirAbsDev>=8',status:'ATIVO',enabledByDefault:true,exclusiveGames:634},
+    'EXA-BITQ-01':{label:'Bit-quads diagonais',rule:'8 ou mais blocos 2x2 com exatamente 2 diagonais',threshold:'q2d>=8',status:'ATIVO · OBSERVAR',enabledByDefault:true,exclusiveGames:null},
+    'EXA-SYM-01':{label:'Simetria D4',rule:'Variância inteira das 6 assimetrias D4 <= 5',threshold:'symVar6<=5',status:'ATIVO',enabledByDefault:true,exclusiveGames:833},
+    'EXA-DIST-01':{label:'Espectro de distâncias',rule:'30 ou mais pares Manhattan com distância 3',threshold:'man3>=30',status:'ATIVO',enabledByDefault:true,exclusiveGames:823}
   });
   const EXA_N4=Array.from({length:25},()=>[]);
   for(let r=0;r<5;r++)for(let c=0;c<5;c++){const i=r*5+c;if(c>0)EXA_N4[i].push(i-1);if(c<4)EXA_N4[i].push(i+1);if(r>0)EXA_N4[i].push(i-5);if(r<4)EXA_N4[i].push(i+5);}
@@ -395,7 +395,12 @@ self.window=self;
   }
   function histoSafe(x){return Number.isFinite(x)?x:0;}
 
-  function externalRuleActive(policies={},key){return policies?.[key]!==false;}
+  function externalRuleActive(policies={},key){
+    if(policies?.[key]===true)return true;
+    if(policies?.[key]===false)return false;
+    const rule=EXA_ORTHOGONAL_RULES[key];
+    return rule?rule.enabledByDefault!==false:true;
+  }
   function externalRuleBlocks(report,policies={}){
     return (externalRuleActive(policies,'PADRAO')&&report?.patternCooldown?.blocked)||
       (externalRuleActive(policies,'CORES')&&report?.colorRule?.blocked)||
