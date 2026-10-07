@@ -262,7 +262,7 @@ assert(app.includes("consistent=req.every(x=>x.n>0&&x.gain5>0)&&!!hold&&hold.n>0
 assert(index.indexOf('id="absentnext-component-panel"') < index.indexOf('id="absentnext-wf-panel"') && index.indexOf('id="absentnext-wf-panel"') < index.indexOf('id="absentnext-combo-panel"'), '10 Ausentes: ordem visual 5 Componentes → 6 Walk-forward → 7 Combinações incorreta');
 
 assert(app.includes('function linecolsPatternStats('), 'estatística completa Linhas + Colunas ausente');
-assert(app.includes('Walk-forward sem futuro'), 'texto de walk-forward Linhas + Colunas ausente');
+assert(app.includes('O walk-forward continua sem usar o concurso-alvo.'), 'texto de walk-forward Linhas + Colunas ausente');
 assert(index.includes('id="linecols-combined-patterns"'), 'terceiro painel Linhas + Colunas ausente');
 assert(index.includes('id="linecols-pattern-window"'), 'janelas 5/10/20/50/100/Todos ausentes em Linhas × Grades');
 
