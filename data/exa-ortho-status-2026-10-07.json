@@ -1,0 +1,38 @@
+{
+  "release": "2026-10-07-exa-ortho-status-v375-rev14",
+  "baseContest": 3796,
+  "rules": {
+    "EXA-TOPO-01": {
+      "status": "ATIVO",
+      "enabled": true,
+      "exclusiveGames": 1444
+    },
+    "EXA-TOPO-02": {
+      "status": "ATIVO · OBSERVAR",
+      "enabled": true
+    },
+    "EXA-DEG-01": {
+      "status": "DESLIGADO",
+      "enabled": false
+    },
+    "EXA-DIR-01": {
+      "status": "ATIVO",
+      "enabled": true,
+      "exclusiveGames": 634
+    },
+    "EXA-BITQ-01": {
+      "status": "ATIVO · OBSERVAR",
+      "enabled": true
+    },
+    "EXA-SYM-01": {
+      "status": "ATIVO",
+      "enabled": true,
+      "exclusiveGames": 833
+    },
+    "EXA-DIST-01": {
+      "status": "ATIVO",
+      "enabled": true,
+      "exclusiveGames": 823
+    }
+  }
+}
