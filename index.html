@@ -2599,8 +2599,9 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
   const restoredIndicatorPicks=safeJSON('lfv3_indicator_picks',{});
   const savedPolicySchema=storageGet('lfv3_matrix_schema');
   const restoredPolicies=savedPolicySchema===M.SCHEMA_VERSION?safeJSON('lfv3_filter_policies',{}):{};
-  const DEFAULT_EXTERNAL_BLOCK_POLICIES=Object.freeze({PADRAO:true,CORES:true,LINHA:true,COLUNA:true,LXC:true,'EXA-TOPO-01':true,'EXA-TOPO-02':true,'EXA-DEG-01':true,'EXA-DIR-01':true,'EXA-BITQ-01':true,'EXA-SYM-01':true,'EXA-DIST-01':true});
-  const restoredExternalBlockPolicies=safeJSON('lfv3_external_block_policies',{});
+  const EXTERNAL_BLOCK_SCHEMA='EXA-ORTHO-STATUS-2026-10-07-v2';
+  const DEFAULT_EXTERNAL_BLOCK_POLICIES=Object.freeze({PADRAO:true,CORES:true,LINHA:true,COLUNA:true,LXC:true,'EXA-TOPO-01':true,'EXA-TOPO-02':true,'EXA-DEG-01':false,'EXA-DIR-01':true,'EXA-BITQ-01':true,'EXA-SYM-01':true,'EXA-DIST-01':true});
+  const restoredExternalBlockPolicies=storageGet('lfv3_external_block_schema')===EXTERNAL_BLOCK_SCHEMA?safeJSON('lfv3_external_block_policies',{}):{};
   const restoredDecisionRelaxations=safeJSON('lfv3_decision_relaxations',[]);
   const makeCloudId=()=>{try{return crypto.randomUUID()}catch{return `lf-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}};
   const cloudId=storageGet('lfv3_cloud_id')||makeCloudId();storageSet('lfv3_cloud_id',cloudId);
@@ -2626,6 +2627,8 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
   state.filterPolicies[29]='block'; // somente F29 é trava absoluta; F28/F36/F37 respeitam a política escolhida
   storageSet('lfv3_filter_policies',JSON.stringify(state.filterPolicies));
   storageSet('lfv3_matrix_schema',M.SCHEMA_VERSION);
+  storageSet('lfv3_external_block_schema',EXTERNAL_BLOCK_SCHEMA);
+  storageSet('lfv3_external_block_policies',JSON.stringify(state.externalBlockPolicies));
   const FILTER_GUIDANCE = {
     1:{what:'Assinatura da distribuição das 15 dezenas pelas cinco linhas, comparada aos padrões mais frequentes do histórico do período.',action:'Redistribua uma ou duas dezenas para aproximar a assinatura de linhas dos padrões historicamente mais recorrentes.'},
     2:{what:'Assinatura da distribuição das 15 dezenas pelas cinco colunas.',action:'Redistribua dezenas entre colunas para aproximar a assinatura dos padrões recorrentes no período.'},
@@ -3840,13 +3843,13 @@ window.LFSoloModules=Object.freeze({render,renderCurrent});
     {key:'LINHA',label:'Linha anterior',detail:'Bloqueia distribuição de linhas idêntica'},
     {key:'COLUNA',label:'Coluna anterior',detail:'Bloqueia distribuição de colunas idêntica'},
     {key:'LXC',label:'Linha × Coluna',detail:'Bloqueio conjunto de linha e coluna'},
-    {key:'EXA-TOPO-01',label:'EXA-TOPO-01',detail:'Maior componente ortogonal das 15 dezenas ≤4'},
-    {key:'EXA-TOPO-02',label:'EXA-TOPO-02',detail:'10 ausentes em ≥9 componentes ortogonais'},
-    {key:'EXA-DEG-01',label:'EXA-DEG-01',detail:'Wedges do grafo ortogonal ≤5'},
-    {key:'EXA-DIR-01',label:'EXA-DIR-01',detail:'Anisotropia |H−V|+|D1−D2| ≥8'},
-    {key:'EXA-BITQ-01',label:'EXA-BITQ-01',detail:'≥8 bit-quads diagonais 2×2'},
-    {key:'EXA-SYM-01',label:'EXA-SYM-01',detail:'Variância inteira D4 ≤5'},
-    {key:'EXA-DIST-01',label:'EXA-DIST-01',detail:'≥30 pares Manhattan à distância 3'}
+    {key:'EXA-TOPO-01',label:'EXA-TOPO-01 · ATIVO',detail:'Maior componente ortogonal ≤4 · 1.444 jogos exclusivos'},
+    {key:'EXA-TOPO-02',label:'EXA-TOPO-02 · ATIVO · OBSERVAR',detail:'10 ausentes em ≥9 componentes ortogonais'},
+    {key:'EXA-DEG-01',label:'EXA-DEG-01 · DESLIGADO',detail:'Wedges do grafo ortogonal ≤5 · desligado por padrão'},
+    {key:'EXA-DIR-01',label:'EXA-DIR-01 · ATIVO',detail:'Anisotropia |H−V|+|D1−D2| ≥8 · 634 jogos exclusivos'},
+    {key:'EXA-BITQ-01',label:'EXA-BITQ-01 · ATIVO · OBSERVAR',detail:'≥8 bit-quads diagonais 2×2'},
+    {key:'EXA-SYM-01',label:'EXA-SYM-01 · ATIVO',detail:'Variância inteira D4 ≤5 · 833 jogos exclusivos'},
+    {key:'EXA-DIST-01',label:'EXA-DIST-01 · ATIVO',detail:'≥30 pares Manhattan à distância 3 · 823 jogos exclusivos'}
   ];
   function invalidateBlockConfiguration(label='Bloqueios atualizados'){
     if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{}state.decisionWorker=null;state.decisionWorkerSignature='';}
