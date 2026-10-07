@@ -275,6 +275,47 @@ self.window=self;
     return{blocked,passed:!blocked,sameLines,sameCols,currentLines,currentCols,previousLines,previousCols};
   }
 
+
+  const EXA_ORTHOGONAL_RULES=Object.freeze({
+    'EXA-TOPO-01':{label:'Topologia ocupada',rule:'Maior componente ortogonal das 15 dezenas <= 4',threshold:'fgMax4<=4'},
+    'EXA-TOPO-02':{label:'Topologia ausentes',rule:'10 ausentes formam 9 ou mais componentes ortogonais',threshold:'bgComp4>=9'},
+    'EXA-DEG-01':{label:'Momento de graus',rule:'Wedges do grafo ortogonal <= 5',threshold:'wedges<=5'},
+    'EXA-DIR-01':{label:'Anisotropia direcional',rule:'|H-V| + |D1-D2| >= 8',threshold:'dirAbsDev>=8'},
+    'EXA-BITQ-01':{label:'Bit-quads diagonais',rule:'8 ou mais blocos 2x2 com exatamente 2 diagonais',threshold:'q2d>=8'},
+    'EXA-SYM-01':{label:'Simetria D4',rule:'Variância inteira das 6 assimetrias D4 <= 5',threshold:'symVar6<=5'},
+    'EXA-DIST-01':{label:'Espectro de distâncias',rule:'30 ou mais pares Manhattan com distância 3',threshold:'man3>=30'}
+  });
+  const EXA_N4=Array.from({length:25},()=>[]);
+  for(let r=0;r<5;r++)for(let c=0;c<5;c++){const i=r*5+c;if(c>0)EXA_N4[i].push(i-1);if(c<4)EXA_N4[i].push(i+1);if(r>0)EXA_N4[i].push(i-5);if(r<4)EXA_N4[i].push(i+5);}
+  function exaComponentSizes(mask){
+    const rem=new Set();for(let i=0;i<25;i++)if(mask&(1<<i))rem.add(i);const sizes=[];
+    while(rem.size){const start=rem.values().next().value;rem.delete(start);const stack=[start];let size=0;while(stack.length){const i=stack.pop();size++;for(const j of EXA_N4[i])if(rem.delete(j))stack.push(j);}sizes.push(size);}
+    return sizes.sort((a,b)=>b-a);
+  }
+  function exaTransformIndex(i,type){const r=Math.floor(i/5),c=i%5;if(type===0)return c*5+4-r;if(type===1)return(4-r)*5+4-c;if(type===2)return c*5+r;if(type===3)return(4-c)*5+4-r;if(type===4)return r*5+4-c;return(4-r)*5+c;}
+  function exaOrthogonalMetrics(game=[]){
+    const g=normalize(game);if(!g)return null;const selected=new Set(g),mask=g.reduce((m,n)=>m|(1<<(n-1)),0)>>>0,allMask=(1<<25)-1,bg=(~mask)&allMask;
+    const fgSizes=exaComponentSizes(mask),bgSizes=exaComponentSizes(bg);let wedges=0,H=0,V=0,D1=0,D2=0,q2d=0,man3=0;
+    for(const n of g){const i=n-1,r=Math.floor(i/5),c=i%5;let deg=0;for(const j of EXA_N4[i])if(mask&(1<<j))deg++;wedges+=deg*(deg-1)/2;if(c<4&&selected.has(n+1))H++;if(r<4&&selected.has(n+5))V++;if(r<4&&c<4&&selected.has(n+6))D1++;if(r<4&&c>0&&selected.has(n+4))D2++;}
+    for(let r=0;r<4;r++)for(let c=0;c<4;c++){const ix=[r*5+c,r*5+c+1,(r+1)*5+c,(r+1)*5+c+1],a=ix.map(i=>(mask>>i)&1),k=a[0]+a[1]+a[2]+a[3];if(k===2&&((a[0]&&a[3])||(a[1]&&a[2])))q2d++;}
+    const sym=[];for(let t=0;t<6;t++){let overlap=0;for(let i=0;i<25;i++)if((mask&(1<<i))&&(mask&(1<<exaTransformIndex(i,t))))overlap++;sym.push(15-overlap);}const symSum=sym.reduce((a,b)=>a+b,0),symSq=sym.reduce((a,b)=>a+b*b,0),symVar6=6*symSq-symSum*symSum;
+    for(let a=0;a<g.length;a++){const i=g[a]-1,r=Math.floor(i/5),c=i%5;for(let b=a+1;b<g.length;b++){const j=g[b]-1;if(Math.abs(r-Math.floor(j/5))+Math.abs(c-j%5)===3)man3++;}}
+    return{fgMax4:fgSizes[0]||0,bgComp4:bgSizes.length,wedges,dirAbsDev:Math.abs(H-V)+Math.abs(D1-D2),q2d,symVar6,man3};
+  }
+  function exaOrthogonalBlocks(game=[]){
+    const m=exaOrthogonalMetrics(game);if(!m)return{};
+    const defs={
+      'EXA-TOPO-01':['fgMax4',m.fgMax4,m.fgMax4<=4],
+      'EXA-TOPO-02':['bgComp4',m.bgComp4,m.bgComp4>=9],
+      'EXA-DEG-01':['wedges',m.wedges,m.wedges<=5],
+      'EXA-DIR-01':['dirAbsDev',m.dirAbsDev,m.dirAbsDev>=8],
+      'EXA-BITQ-01':['q2d',m.q2d,m.q2d>=8],
+      'EXA-SYM-01':['symVar6',m.symVar6,m.symVar6<=5],
+      'EXA-DIST-01':['man3',m.man3,m.man3>=30]
+    };
+    return Object.fromEntries(Object.entries(defs).map(([key,[metric,value,blocked]])=>[key,{key,label:EXA_ORTHOGONAL_RULES[key].label,rule:EXA_ORTHOGONAL_RULES[key].rule,metric,value,blocked:!!blocked,passed:!blocked}]));
+  }
+
   function inspect(game,ctx=buildContext()){
     const g=normalize(game);if(!g)return{valid:false,approved:false,filters:[],failed:[],warnings:[],metrics:{}};
     const set=new Set(g),lines=counts(g,row),cols=counts(g,col),qs=QUADRANTS.map(q=>countSet(g,q)),borderSectors=BORDER_SECTORS.map(q=>countSet(g,q));
@@ -349,8 +390,8 @@ self.window=self;
     add(50,true,'Cobertura calculada no módulo Fechamentos; esta posição não elimina isoladamente.');
     add(51,true,'Exportação/carteira operacional; esta posição não elimina isoladamente.');
 
-    const hardFailed=checks.filter(f=>(f.mode==='core'||MANDATORY_BLOCKS.has(f.id))&&!f.passed),warnings=checks.filter(f=>f.mode==='advisory'&&!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]),colorRule=mandatoryColorRule(g),lineRepeat=lineRepeatRule(g,ctx.latest),columnRepeat=columnRepeatRule(g,ctx.latest),lineColumnRepeat=lineColumnRepeatRule(g,ctx.latest);
-    return {valid:true,approved:hardFailed.length===0&&!patternCooldown.blocked&&!colorRule.blocked&&!lineRepeat.blocked&&!columnRepeat.blocked&&!lineColumnRepeat.blocked,filters:checks,failed:hardFailed.map(f=>f.id),warnings:warnings.map(f=>f.id),patternCooldown,colorRule,lineRepeat,columnRepeat,lineColumnRepeat,metrics:{lines,cols,qs,borderSectors,center,border,run,gap,primes,odds,total,repeated,elite,couples,absentRecent,persistentAbsent,delayedCount,floatingCount,cycleCount,opposedBands,hotCount,coldCount,avgDelay,endingDelta,ds,fib,m3,m5,maxHistorical:historicalCeiling,radial,adjacency,colors:colorRule.distinct,colorCounts:colorRule.counts,centroid:cm},calibrated:ctx.calibrated};
+    const hardFailed=checks.filter(f=>(f.mode==='core'||MANDATORY_BLOCKS.has(f.id))&&!f.passed),warnings=checks.filter(f=>f.mode==='advisory'&&!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]),colorRule=mandatoryColorRule(g),lineRepeat=lineRepeatRule(g,ctx.latest),columnRepeat=columnRepeatRule(g,ctx.latest),lineColumnRepeat=lineColumnRepeatRule(g,ctx.latest),exaBlocks=exaOrthogonalBlocks(g);
+    return {valid:true,approved:hardFailed.length===0&&!patternCooldown.blocked&&!colorRule.blocked&&!lineRepeat.blocked&&!columnRepeat.blocked&&!lineColumnRepeat.blocked,filters:checks,failed:hardFailed.map(f=>f.id),warnings:warnings.map(f=>f.id),patternCooldown,colorRule,lineRepeat,columnRepeat,lineColumnRepeat,exaBlocks,metrics:{lines,cols,qs,borderSectors,center,border,run,gap,primes,odds,total,repeated,elite,couples,absentRecent,persistentAbsent,delayedCount,floatingCount,cycleCount,opposedBands,hotCount,coldCount,avgDelay,endingDelta,ds,fib,m3,m5,maxHistorical:historicalCeiling,radial,adjacency,colors:colorRule.distinct,colorCounts:colorRule.counts,centroid:cm},calibrated:ctx.calibrated};
   }
   function histoSafe(x){return Number.isFinite(x)?x:0;}
 
@@ -360,7 +401,7 @@ self.window=self;
       (externalRuleActive(policies,'CORES')&&report?.colorRule?.blocked)||
       (externalRuleActive(policies,'LINHA')&&report?.lineRepeat?.blocked)||
       (externalRuleActive(policies,'COLUNA')&&report?.columnRepeat?.blocked)||
-      (externalRuleActive(policies,'LXC')&&report?.lineColumnRepeat?.blocked);
+      (externalRuleActive(policies,'LXC')&&report?.lineColumnRepeat?.blocked)||Object.entries(report?.exaBlocks||{}).some(([key,row])=>externalRuleActive(policies,key)&&row?.blocked);
   }
   function policyAllows(report,policies={},externalPolicies={}){
     if(report?.valid===false||externalRuleBlocks(report,externalPolicies))return false;
@@ -390,7 +431,7 @@ self.window=self;
   }
   function portfolioScore(games){const norm=games.map(normalize).filter(Boolean);if(norm.length<2)return{score:100,meanOverlap:0,maxOverlap:0};const overlaps=[];for(let i=0;i<norm.length;i++)for(let j=i+1;j<norm.length;j++)overlaps.push(intersections(norm[i],norm[j]));const mo=mean(overlaps),mx=Math.max(...overlaps);return{score:Math.max(0,Math.round(100-(mo-7)*12-(mx-10)*5)),meanOverlap:+mo.toFixed(2),maxOverlap:mx};}
 
-  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,FULL_COLOR_TRIPLES,buildContext,inspect,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,buildFullColorDelayModel,fullColorDelayBonus,exactPatternCooldown,externalRuleBlocks,policyAllows,candidateScore,candidateScoreFromReport,deterministicBest,nCk,unrank};
+  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,FULL_COLOR_TRIPLES,EXA_ORTHOGONAL_RULES,buildContext,inspect,exaOrthogonalMetrics,exaOrthogonalBlocks,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,buildFullColorDelayModel,fullColorDelayBonus,exactPatternCooldown,externalRuleBlocks,policyAllows,candidateScore,candidateScoreFromReport,deterministicBest,nCk,unrank};
 })();
 
 self.window=self;

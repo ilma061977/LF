@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - analysis-worker.js
+      - app.js
       - version.json
       - .github/workflows/sync-lf-offline.yml
 
@@ -28,6 +29,7 @@ jobs:
           const fs=require('fs');
           const indexPath='index.html';
           const worker=fs.readFileSync('analysis-worker.js','utf8');
+          const app=fs.readFileSync('app.js','utf8');
           const version=require('./version.json').version;
           let src=fs.readFileSync(indexPath,'utf8');
 
@@ -49,6 +51,13 @@ jobs:
           }
           if(end>=src.length) throw new Error('Fim do Worker offline não encontrado');
           src=src.slice(0,start)+JSON.stringify(worker)+src.slice(end+1);
+          const appMarker='/* INLINE: app.js */';
+          const ap=src.indexOf(appMarker);
+          if(ap<0) throw new Error('app inline ausente');
+          const bodyStart=src.indexOf('\n',ap)+1;
+          const bodyEnd=src.indexOf('\n</script>',bodyStart);
+          if(bodyEnd<=bodyStart) throw new Error('fim do app inline ausente');
+          src=src.slice(0,bodyStart)+app.trimEnd()+src.slice(bodyEnd);
           fs.writeFileSync(indexPath,src);
           NODE
       - name: Validar sincronização
@@ -57,6 +66,7 @@ jobs:
           const fs=require('fs');
           const src=fs.readFileSync('index.html','utf8');
           const worker=fs.readFileSync('analysis-worker.js','utf8');
+          const app=fs.readFileSync('app.js','utf8');
           const version=require('./version.json').version;
           const meta=(src.match(/<meta name="lf-build" content="([^"]+)"/)||[])[1];
           if(meta!==version) throw new Error('meta/version divergentes');
@@ -65,6 +75,8 @@ jobs:
           let end=start+1, escaped=false;
           for(;end<src.length;end++){const ch=src[end];if(escaped){escaped=false;continue;}if(ch==='\\'){escaped=true;continue;}if(ch==='"')break;}
           if(JSON.parse(src.slice(start,end+1))!==worker) throw new Error('Worker offline divergente');
+          const appMarker='/* INLINE: app.js */',ap=src.indexOf(appMarker),bodyStart=src.indexOf('\n',ap)+1,bodyEnd=src.indexOf('\n</script>',bodyStart);
+          if(src.slice(bodyStart,bodyEnd).trimEnd()!==app.trimEnd()) throw new Error('app inline divergente');
           NODE
       - name: Commit
         run: |

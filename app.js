@@ -27,7 +27,7 @@
   const restoredIndicatorPicks=safeJSON('lfv3_indicator_picks',{});
   const savedPolicySchema=storageGet('lfv3_matrix_schema');
   const restoredPolicies=savedPolicySchema===M.SCHEMA_VERSION?safeJSON('lfv3_filter_policies',{}):{};
-  const DEFAULT_EXTERNAL_BLOCK_POLICIES=Object.freeze({PADRAO:true,CORES:true,LINHA:true,COLUNA:true,LXC:true});
+  const DEFAULT_EXTERNAL_BLOCK_POLICIES=Object.freeze({PADRAO:true,CORES:true,LINHA:true,COLUNA:true,LXC:true,'EXA-TOPO-01':true,'EXA-TOPO-02':true,'EXA-DEG-01':true,'EXA-DIR-01':true,'EXA-BITQ-01':true,'EXA-SYM-01':true,'EXA-DIST-01':true});
   const restoredExternalBlockPolicies=safeJSON('lfv3_external_block_policies',{});
   const restoredDecisionRelaxations=safeJSON('lfv3_decision_relaxations',[]);
   const makeCloudId=()=>{try{return crypto.randomUUID()}catch{return `lf-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}};
@@ -473,7 +473,7 @@
   function queueCloudSync(){clearTimeout(state.cloudTimer);state.cloudTimer=setTimeout(()=>syncCloud(true),900);}
   const externalBlockActive=key=>state.externalBlockPolicies?.[key]!==false;
   function policyApproved(report){return M.policyAllows(report,state.filterPolicies,state.externalBlockPolicies);}
-  function policyFailures(report){const out=report.filters.filter(f=>(isMandatoryBlock(f.id)||state.filterPolicies[f.id]==='block')&&!f.passed);if(externalBlockActive('PADRAO')&&report?.patternCooldown?.blocked)out.push({id:'PADRAO',name:'Carência de padrão exato'});if(externalBlockActive('CORES')&&report?.colorRule?.blocked)out.push({id:'CORES',name:'Regra obrigatória de cores do indicado'});if(externalBlockActive('LINHA')&&report?.lineRepeat?.blocked)out.push({id:'LINHA',name:'Distribuição de linhas igual ao concurso anterior'});if(externalBlockActive('COLUNA')&&report?.columnRepeat?.blocked)out.push({id:'COLUNA',name:'Distribuição de colunas igual ao concurso anterior'});if(externalBlockActive('LXC')&&report?.lineColumnRepeat?.blocked)out.push({id:'L×C',name:'Linha × Coluna igual ao concurso anterior'});return out;}
+  function policyFailures(report){const out=report.filters.filter(f=>(isMandatoryBlock(f.id)||state.filterPolicies[f.id]==='block')&&!f.passed);if(externalBlockActive('PADRAO')&&report?.patternCooldown?.blocked)out.push({id:'PADRAO',name:'Carência de padrão exato'});if(externalBlockActive('CORES')&&report?.colorRule?.blocked)out.push({id:'CORES',name:'Regra obrigatória de cores do indicado'});if(externalBlockActive('LINHA')&&report?.lineRepeat?.blocked)out.push({id:'LINHA',name:'Distribuição de linhas igual ao concurso anterior'});if(externalBlockActive('COLUNA')&&report?.columnRepeat?.blocked)out.push({id:'COLUNA',name:'Distribuição de colunas igual ao concurso anterior'});if(externalBlockActive('LXC')&&report?.lineColumnRepeat?.blocked)out.push({id:'L×C',name:'Linha × Coluna igual ao concurso anterior'});for(const [key,row] of Object.entries(report?.exaBlocks||{}))if(externalBlockActive(key)&&row?.blocked)out.push({id:key,name:row.label||key});return out;}
   function policyWarnings(report){return report.filters.filter(f=>!isMandatoryBlock(f.id)&&state.filterPolicies[f.id]==='warn'&&!f.passed);}
   function historicalSimilarity(g){return M.maxHistoricalHits(g,state.history);}
   function fullHistoryStatus(){if(!state.history.length)return{complete:false,missing:0};const sorted=[...state.history].sort((a,b)=>a.concurso-b.concurso),min=sorted[0].concurso,max=sorted.at(-1).concurso;const seen=new Set(sorted.map(x=>x.concurso));let missing=0;for(let c=min;c<=max;c++)if(!seen.has(c))missing++;return{complete:min===1&&missing===0&&sorted.length===max,missing,min,max,total:sorted.length};}
@@ -1267,7 +1267,14 @@
     {key:'CORES',label:'Cores oficiais',detail:'Exige 8–10 cores distintas'},
     {key:'LINHA',label:'Linha anterior',detail:'Bloqueia distribuição de linhas idêntica'},
     {key:'COLUNA',label:'Coluna anterior',detail:'Bloqueia distribuição de colunas idêntica'},
-    {key:'LXC',label:'Linha × Coluna',detail:'Bloqueio conjunto de linha e coluna'}
+    {key:'LXC',label:'Linha × Coluna',detail:'Bloqueio conjunto de linha e coluna'},
+    {key:'EXA-TOPO-01',label:'EXA-TOPO-01',detail:'Maior componente ortogonal das 15 dezenas ≤4'},
+    {key:'EXA-TOPO-02',label:'EXA-TOPO-02',detail:'10 ausentes em ≥9 componentes ortogonais'},
+    {key:'EXA-DEG-01',label:'EXA-DEG-01',detail:'Wedges do grafo ortogonal ≤5'},
+    {key:'EXA-DIR-01',label:'EXA-DIR-01',detail:'Anisotropia |H−V|+|D1−D2| ≥8'},
+    {key:'EXA-BITQ-01',label:'EXA-BITQ-01',detail:'≥8 bit-quads diagonais 2×2'},
+    {key:'EXA-SYM-01',label:'EXA-SYM-01',detail:'Variância inteira D4 ≤5'},
+    {key:'EXA-DIST-01',label:'EXA-DIST-01',detail:'≥30 pares Manhattan à distância 3'}
   ];
   function invalidateBlockConfiguration(label='Bloqueios atualizados'){
     if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{}state.decisionWorker=null;state.decisionWorkerSignature='';}
@@ -1302,7 +1309,8 @@
       {key:'CORES',name:'Regra obrigatória de cores',active:externalBlockActive('CORES'),detail:'Exige 8 a 10 cores oficiais distintas no jogo indicado.',blocked:externalBlockActive('CORES')&&!!rep?.colorRule?.blocked},
       {key:'LINHA',name:'Linha igual ao anterior',active:externalBlockActive('LINHA'),detail:'Bloqueia quando a distribuição exata das 5 linhas repete a do concurso anterior.',blocked:externalBlockActive('LINHA')&&!!rep?.lineRepeat?.blocked},
       {key:'COLUNA',name:'Coluna igual ao anterior',active:externalBlockActive('COLUNA'),detail:'Bloqueia quando a distribuição exata das 5 colunas repete a do concurso anterior.',blocked:externalBlockActive('COLUNA')&&!!rep?.columnRepeat?.blocked},
-      {key:'L×C',name:'Linha × Coluna igual ao anterior',active:externalBlockActive('LXC'),detail:'Diagnóstico redundante: se linha e coluna repetem juntas, os bloqueios LINHA e COLUNA já reprovaram o jogo; não acrescenta redução marginal sozinho.',blocked:externalBlockActive('LXC')&&!!rep?.lineColumnRepeat?.blocked}
+      {key:'L×C',name:'Linha × Coluna igual ao anterior',active:externalBlockActive('LXC'),detail:'Diagnóstico redundante: se linha e coluna repetem juntas, os bloqueios LINHA e COLUNA já reprovaram o jogo; não acrescenta redução marginal sozinho.',blocked:externalBlockActive('LXC')&&!!rep?.lineColumnRepeat?.blocked},
+      ...Object.entries(rep?.exaBlocks||{}).map(([key,row])=>({key,name:row.label||key,active:externalBlockActive(key),detail:`${row.rule} · valor atual ${row.value}`,blocked:externalBlockActive(key)&&!!row.blocked}))
     ];
     const blockedAll=blockedNumbers(),q=indicatorQuotaSpec(),proRules=getProProfileRules(),start=state.decisionStartNumber,end=state.decisionEndNumber;
     const operational=[
