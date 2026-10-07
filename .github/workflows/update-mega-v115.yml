@@ -1,4 +1,4 @@
-name: Update Mega v1.15
+name: Update Mega v1.16
 on:
   push:
     branches: [main]
@@ -21,16 +21,16 @@ jobs:
         run: |
           git fetch origin main
           git checkout -B main origin/main
-          cp .github/mega_v115_patch.py /tmp/mega_v115_patch.py
+          cp .github/mega_v116_patch.py /tmp/mega_v116_patch.py
 
       - name: Patch main
         run: |
-          python /tmp/mega_v115_patch.py
+          python /tmp/mega_v116_patch.py
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add mega-app/index.html
-            git commit -m "Mega v1.15: quarantine GEO POS HVD"
+            git commit -m "Mega v1.16: Pesquisa Exa-2 e DELTA"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
@@ -39,12 +39,12 @@ jobs:
         run: |
           git fetch origin gh-pages
           git checkout -B gh-pages origin/gh-pages
-          python /tmp/mega_v115_patch.py
+          python /tmp/mega_v116_patch.py
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add mega-app/index.html
-            git commit -m "Mega v1.15: quarantine GEO POS HVD"
+            git commit -m "Mega v1.16: Pesquisa Exa-2 e DELTA"
             git pull --rebase origin gh-pages
             git push origin HEAD:gh-pages
           fi
