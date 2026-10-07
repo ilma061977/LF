@@ -245,7 +245,7 @@ assert.ok(appSource.includes("Top 5 · Últimos 10"),'Resumo Top 5 U10 ausente')
 assert.ok(appSource.includes("Componente que mais ajuda · holdout"),'Resumo da auditoria de componentes ausente');
 
 assert.ok(appSource.includes('function verticalLatestValidation('),'Validação cronológica das Verticais ausente');
-assert.ok(appSource.includes('history.slice(Math.max(0,targetIndex-windowSize),targetIndex)'),'Validação Vertical deve calcular percentual sem incluir o sorteio-alvo');
+assert.ok(appSource.includes('h.slice(Math.max(0,targetIndex-windowSize),targetIndex)'),'Validação Vertical deve calcular percentual sem incluir o sorteio-alvo');
 assert.ok(appSource.includes('function verticalValidationCell('),'Célula de acerto/erro das Verticais ausente');
 assert.ok(appSource.includes('✓ ACERTO'),'Marca visual de acerto das Verticais ausente');
 assert.ok(appSource.includes('function vertical4PreviousValidationHTML('),'Validação da lista anterior da Vertical 4 ausente');
