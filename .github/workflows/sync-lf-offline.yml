@@ -78,8 +78,6 @@ jobs:
           const appMarker='/* INLINE: app.js */';
           const ap=src.indexOf(appMarker), appStart=src.indexOf('\n',ap)+1, appEnd=src.indexOf('\n</script>',appStart);
           if(src.slice(appStart,appEnd).trimEnd()!==app.trimEnd()) throw new Error('app.js inline divergente');
-          const appMarker='/* INLINE: app.js */',ap=src.indexOf(appMarker),bodyStart=src.indexOf('\n',ap)+1,bodyEnd=src.indexOf('\n</script>',bodyStart);
-          if(src.slice(bodyStart,bodyEnd).trimEnd()!==app.trimEnd()) throw new Error('app inline divergente');
           NODE
       - name: Commit
         run: |
