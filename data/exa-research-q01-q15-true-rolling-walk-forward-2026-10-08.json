@@ -1,0 +1,244 @@
+{
+  "generatedAt": "2026-10-08",
+  "mode": "PESQUISA SEM DEPLOY",
+  "protocol": {
+    "name": "rolling walk-forward verdadeiro · re-seleção one-step-ahead",
+    "startTarget": 501,
+    "endTarget": 3799,
+    "targets": 3299,
+    "rule": "Antes de cada concurso alvo t, para cada família de 4 eixos seleciona-se apenas entre assinaturas com massa no universo >=100 e zero ocorrências em 1..t-1. A escolha é determinística: maior massa teórica no universo; empate por assinatura. Só depois verifica-se o concurso t. A ocorrência em t conta como falha e força nova seleção a partir de t+1.",
+    "noLookahead": true,
+    "note": "As 15 rotas Q01-Q15 colapsam em 12 famílias de quatro eixos realmente distintas; rotas duplicadas da mesma família não são contadas duas vezes."
+  },
+  "base": {
+    "through": 3799,
+    "universe": 3268760,
+    "officialApproved": 672768,
+    "officialBlocked": 2595992,
+    "officialBlockedPct": 79.41825034569683
+  },
+  "families": [
+    {
+      "family": "F|P|M3|G",
+      "failuresAll": 9,
+      "fail500": 0,
+      "fail1000": 1,
+      "fail1500": 3,
+      "fail3000": 8,
+      "currentSignature": "5|5|7|4",
+      "currentMass": 2692,
+      "currentMarginal": 806,
+      "selectedSince": 3258,
+      "last100Cv": 0,
+      "last100Failures": 0
+    },
+    {
+      "family": "F|P|M3|B",
+      "failuresAll": 8,
+      "fail500": 1,
+      "fail1000": 1,
+      "fail1500": 2,
+      "fail3000": 6,
+      "currentSignature": "4|7|6|8",
+      "currentMass": 3511,
+      "currentMarginal": 0,
+      "selectedSince": 3730,
+      "last100Cv": 0.13221834289112108,
+      "last100Failures": 1
+    },
+    {
+      "family": "F|P|M3|O",
+      "failuresAll": 8,
+      "fail500": 0,
+      "fail1000": 0,
+      "fail1500": 1,
+      "fail3000": 4,
+      "currentSignature": "4|4|6|9",
+      "currentMass": 5000,
+      "currentMarginal": 1227,
+      "selectedSince": 2363,
+      "last100Cv": 0,
+      "last100Failures": 0
+    },
+    {
+      "family": "F|P|G|O",
+      "failuresAll": 15,
+      "fail500": 0,
+      "fail1000": 2,
+      "fail1500": 7,
+      "fail3000": 13,
+      "currentSignature": "3|4|3|6",
+      "currentMass": 2590,
+      "currentMarginal": 742,
+      "selectedSince": 3054,
+      "last100Cv": 0,
+      "last100Failures": 0
+    },
+    {
+      "family": "F|P|B|O",
+      "failuresAll": 8,
+      "fail500": 1,
+      "fail1000": 1,
+      "fail1500": 3,
+      "fail3000": 6,
+      "currentSignature": "5|7|8|7",
+      "currentMass": 2898,
+      "currentMarginal": 0,
+      "selectedSince": 3312,
+      "last100Cv": 0,
+      "last100Failures": 0
+    },
+    {
+      "family": "F|M3|G|O",
+      "failuresAll": 8,
+      "fail500": 0,
+      "fail1000": 0,
+      "fail1500": 2,
+      "fail3000": 8,
+      "currentSignature": "4|4|4|10",
+      "currentMass": 3030,
+      "currentMarginal": 817,
+      "selectedSince": 2536,
+      "last100Cv": 0,
+      "last100Failures": 0
+    },
+    {
+      "family": "F|G|B|O",
+      "failuresAll": 4,
+      "fail500": 0,
+      "fail1000": 1,
+      "fail1500": 1,
+      "fail3000": 4,
+      "currentSignature": "5|4|8|8",
+      "currentMass": 3042,
+      "currentMarginal": 0,
+      "selectedSince": 3041,
+      "last100Cv": 0,
+      "last100Failures": 0
+    },
+    {
+      "family": "P|M3|G|O",
+      "failuresAll": 10,
+      "fail500": 1,
+      "fail1000": 3,
+      "fail1500": 4,
+      "fail3000": 9,
+      "currentSignature": "4|5|4|5",
+      "currentMass": 2467,
+      "currentMarginal": 690,
+      "selectedSince": 3351,
+      "last100Cv": 0,
+      "last100Failures": 0
+    },
+    {
+      "family": "P|M3|B|O",
+      "failuresAll": 7,
+      "fail500": 2,
+      "fail1000": 3,
+      "fail1500": 3,
+      "fail3000": 6,
+      "currentSignature": "5|6|11|6",
+      "currentMass": 3434,
+      "currentMarginal": 1022,
+      "selectedSince": 3581,
+      "last100Cv": 0,
+      "last100Failures": 0
+    },
+    {
+      "family": "F|M3|G|B",
+      "failuresAll": 10,
+      "fail500": 0,
+      "fail1000": 1,
+      "fail1500": 1,
+      "fail3000": 9,
+      "currentSignature": "6|6|6|8",
+      "currentMass": 2986,
+      "currentMarginal": 0,
+      "selectedSince": 3258,
+      "last100Cv": 0,
+      "last100Failures": 0
+    },
+    {
+      "family": "P|M3|G|B",
+      "failuresAll": 9,
+      "fail500": 1,
+      "fail1000": 1,
+      "fail1500": 2,
+      "fail3000": 5,
+      "currentSignature": "7|6|7|8",
+      "currentMass": 2832,
+      "currentMarginal": 0,
+      "selectedSince": 3578,
+      "last100Cv": 0,
+      "last100Failures": 0
+    },
+    {
+      "family": "M3|G|B|O",
+      "failuresAll": 5,
+      "fail500": 0,
+      "fail1000": 0,
+      "fail1500": 1,
+      "fail3000": 4,
+      "currentSignature": "7|5|11|8",
+      "currentMass": 3645,
+      "currentMarginal": 941,
+      "selectedSince": 2333,
+      "last100Cv": 0,
+      "last100Failures": 0
+    }
+  ],
+  "strongestRecent1000": [
+    {
+      "candidate": "WF-A",
+      "family": "F|P|M3|O",
+      "rule": "F=4 P=4 M3=6 Ímpares=9 (=Pares 6)",
+      "fail1000": 0,
+      "currentMarginal": 1227,
+      "currentMass": 5000,
+      "selectedSince": 2363
+    },
+    {
+      "candidate": "WF-B",
+      "family": "F|M3|G|O",
+      "rule": "F=4 M3=4 Mágicos=4 Ímpares=10 (=Pares 5)",
+      "fail1000": 0,
+      "currentMarginal": 817,
+      "currentMass": 3030,
+      "selectedSince": 2536
+    },
+    {
+      "candidate": "WF-C",
+      "family": "M3|G|B|O",
+      "rule": "M3=7 Mágicos=5 Moldura=11 (=Miolo 4) Ímpares=8 (=Pares 7)",
+      "fail1000": 0,
+      "currentMarginal": 941,
+      "currentMass": 3645,
+      "selectedSince": 2333
+    }
+  ],
+  "strongestUnion": {
+    "currentExactMarginal": 2985,
+    "overlapsOnCurrentApproved": 0,
+    "hypotheticalIfActivated": {
+      "approved": 669783,
+      "blocked": 2598977,
+      "blockedPct": 79.50956937799043,
+      "incrementPctPoints": 0.0913190322935975
+    },
+    "rollingUnionFailures": {
+      "last100": 0,
+      "last500": 0,
+      "last1000": 0,
+      "last1500": 4,
+      "last3000": 15,
+      "allSince501": 19,
+      "lastFailureContest": 2535
+    }
+  },
+  "decision": {
+    "officialPromotion": "NO",
+    "reason": "Nenhuma família teve zero falhas em todo o rolling 501-3799. Portanto nenhuma satisfaz o critério estrito histórico de zero falhas.",
+    "quarantine": "WF-A, WF-B e WF-C entram em QUARENTENA FORTE por terem 0 falhas nos últimos 1000 alvos consecutivos, seleção atual estável e marginal atual >100.",
+    "nextGate": "Antes de F84+, exigir protocolo previamente fixado para horizonte rolling (por exemplo todo histórico vs janela móvel) e não alterar o critério depois de ver estes resultados."
+  }
+}
