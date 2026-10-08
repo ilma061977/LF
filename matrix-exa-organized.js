@@ -76,12 +76,31 @@
     const known=new Set(PRIORITY_GROUPS.flatMap(g=>g.ids));const leftovers=[...byId.entries()].filter(([id])=>!known.has(id)).map(([,card])=>card);
     if(leftovers.length){const section=document.createElement('section');section.className='matrix-priority-group';section.dataset.priority='other';section.innerHTML='<header><b>OUTROS</b><small>Filtros fora do agrupamento canônico</small></header><div class="matrix-priority-items"></div>';leftovers.forEach(card=>section.querySelector('.matrix-priority-items').appendChild(card));grid.appendChild(section);}
   }
+  const EXPERIMENTAL_RESEARCH=[
+    {id:'C8-R1',name:'max8 ≤ 5',occ:0,last:null,delay:null,universe:290,marginal:0},
+    {id:'C8-R2',name:'isolados8 ≥ 3',occ:1,last:2916,delay:883,universe:2200,marginal:0},
+    {id:'DIA-R1',name:'componentes diagonais ≥ 12',occ:1,last:192,delay:3607,universe:1382,marginal:0},
+    {id:'DIA-R2',name:'diagMax ≤ 2',occ:1,last:192,delay:3607,universe:402,marginal:0},
+    {id:'C8-SIG-753',name:'assinatura 8-vizinhos 7-5-3',occ:0,last:null,delay:null,universe:1160,marginal:0}
+  ];
+  function renderExperimentalResearch(panel,root){
+    let box=panel.querySelector('#matrix-exa-experimental-research');
+    if(!box){box=document.createElement('section');box.id='matrix-exa-experimental-research';box.className='matrix-external-section';root.parentNode.insertBefore(box,root);}
+    const rows=EXPERIMENTAL_RESEARCH.map(x=>card(
+      x.id+' · '+x.name,
+      'EXPERIMENTAL / OBSERVAR',
+      `Ocorrências históricas: <b>${x.occ}</b> · Última: <b>${x.last?'#'+x.last:'nunca até #3799'}</b> · Atraso: <b>${x.delay==null?'—':x.delay+' concursos'}</b><br>Universo exato: <b>${fmt(x.universe)}</b> jogos · Ganho marginal sobre os <b>190.971</b> atuais: <b>0</b>.`,
+      'is-active'
+    )).join('');
+    box.innerHTML=`<h3>EXPERIMENTAIS · OBSERVAR · 5 CANDIDATOS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note"><b>Walk-forward / holdout:</b> max8≤5 = 0 ocorrências; isolados8≥3 = 1 ocorrência (#2916); componentes diagonais≥12 = 1 (#192); diagMax≤2 = 1 (#192); assinatura 7-5-3 = 0. No holdout #2797–#3799, somente isolados8≥3 marcou 1 concurso. <b>União exata dos 5 no universo:</b> 5.010 jogos. <b>União marginal após F01–F58:</b> 0 jogos. Portanto, nenhum é ativado como bloqueio.</div>`;
+  }
   function apply(){
     organizeMatrixByPriority();
     numberExaLabels();
     const panel=document.querySelector('#matrix-external-audit-panel');
     const root=document.querySelector('#matrix-external-blockers');
     if(!panel||!root)return;
+    renderExperimentalResearch(panel,root);
     const head=panel.querySelector('.panel-head');
     if(head&&!head.dataset.exaOrganized){
       head.dataset.exaOrganized='1';
