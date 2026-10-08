@@ -1,0 +1,41 @@
+{
+  "mode": "PESQUISA_SEM_DEPLOY",
+  "status": "ACTIVE",
+  "deploymentEnabled": false,
+  "publicAppMutationAllowed": false,
+  "allowedDuringResearch": [
+    "arquivos de pesquisa",
+    "arquivos de cálculo",
+    "resultados de testes",
+    "cruzamentos EXA",
+    "auditorias walk-forward",
+    "artefatos internos de análise"
+  ],
+  "forbiddenWithoutExplicitPublishCommand": [
+    "criar deployment Vercel",
+    "alterar alias público",
+    "gerar novo link público",
+    "declarar versão pública atualizada",
+    "empacotar ZIP como versão publicada"
+  ],
+  "explicitPublishCommands": [
+    "PUBLICAR",
+    "FAZER DEPLOY",
+    "GERAR LINK ATUALIZADO",
+    "PUBLICAR NA VERCEL"
+  ],
+  "releaseRequirementsWhenPublishIsExplicit": [
+    "reativar deploy",
+    "validar app",
+    "criar ZIP completo da mesma versão",
+    "publicar link público sem senha",
+    "verificar acesso público",
+    "confirmar que ZIP e deployment correspondem à mesma revisão"
+  ],
+  "vercelGuard": {
+    "commandForIgnoringBuildStep": "exit 0",
+    "previewDeploymentsDisabled": true
+  },
+  "scope": "LF Inteligente e pesquisas EXA relacionadas",
+  "updatedAt": "2026-10-08"
+}
