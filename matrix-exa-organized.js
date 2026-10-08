@@ -33,7 +33,13 @@
     'EXA-CROSS-01':74,
     'EXA-CROSS-02':75,
     'EXA-CROSS-03':76,
-    'EXA-CROSS-04':77
+    'EXA-CROSS-04':77,
+    'EXA-CROSS-05':78,
+    'EXA-CROSS-06':79,
+    'EXA-CROSS-07':80,
+    'EXA-CROSS-08':81,
+    'EXA-CROSS-09':82,
+    'EXA-CROSS-10':83
   });
   function numberExaLabels(){
     const all=[...document.querySelectorAll('body *')];
