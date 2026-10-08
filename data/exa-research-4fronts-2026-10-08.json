@@ -454,5 +454,78 @@
       "remainingPct": 20.977373682986823
     },
     "note": "F06 permanece apenas AVISO/OBSERVAR. F54 permanece desligado. As quatro regras temporais selecionadas têm zero ocorrência histórica e >=100 jogos marginais."
+  },
+  "exaLag1To10Expansion20261008": {
+    "policy": "Pesquisar lag 1 a lag 10. Só promover regra com zero ocorrência histórica em walk-forward e ganho marginal exato >=100 após F01-F68.",
+    "sourcesReviewed": 20,
+    "zeroHistoricalCandidatesScreened": 17257,
+    "finalists": [
+      {
+        "id": 69,
+        "key": "EXA-TEMP-05",
+        "rule": "lag7: compD>=4 AND gapL1<=6",
+        "historicalOccurrences": 0,
+        "universeCurrent": 6899,
+        "marginalExact": 254,
+        "exclusiveExact": 253
+      },
+      {
+        "id": 70,
+        "key": "EXA-TEMP-06",
+        "rule": "lag2: gapL1<=6 AND lag9: compD>=4",
+        "historicalOccurrences": 0,
+        "universeCurrent": 2787,
+        "marginalExact": 749,
+        "exclusiveExact": 747
+      },
+      {
+        "id": 71,
+        "key": "EXA-TEMP-07",
+        "rule": "lag3: gapL1<=6 AND lag4: compD>=4",
+        "historicalOccurrences": 0,
+        "universeCurrent": 810,
+        "marginalExact": 157,
+        "exclusiveExact": 155
+      },
+      {
+        "id": 72,
+        "key": "EXA-TEMP-08",
+        "rule": "lag4: colL1>=10 AND lag6: gapL1<=6",
+        "historicalOccurrences": 0,
+        "universeCurrent": 9478,
+        "marginalExact": 2076,
+        "exclusiveExact": 2075
+      }
+    ],
+    "overlaps": {
+      "F69-F72": 1,
+      "F70-F71": 2,
+      "others": 0,
+      "unionMarginalExact": 3233
+    },
+    "rejectedExamples": [
+      {
+        "rule": "lag6 lineL1>=10 AND gapL1<=7",
+        "historicalOccurrences": 0,
+        "currentUniverse": 687,
+        "marginalAfterF01F68": 0
+      },
+      {
+        "rule": "lag10 lineL1>=10 AND colL1>=10",
+        "historicalOccurrences": 0,
+        "currentUniverse": 1539,
+        "marginalAfterF01F68": 0
+      }
+    ],
+    "final": {
+      "approvedBeforeNewLag4To10": 685700,
+      "approvedAfterF01F72": 682467,
+      "blockedTotal": 2586293,
+      "blockedPct": 79.1215323241841,
+      "remainingPct": 20.878467675815905,
+      "concentrationRatio": 4.789623527584484,
+      "exaUnionMarginalFrom698339": 15872
+    },
+    "validation": "Concurso 3799 segue aprovado; F06 permanece apenas aviso; nenhum F59-F72 bloqueou o 3799 no teste walk-forward."
   }
 }
