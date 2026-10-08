@@ -6,6 +6,35 @@
   const fmt=n=>Number(n).toLocaleString('pt-BR');
   const pct=n=>Number(n).toLocaleString('pt-BR',{minimumFractionDigits:6,maximumFractionDigits:6})+'%';
   function card(title,badge,body,cls='is-active') { return `<article class="matrix-external-card ${cls}"><header><b>${title}</b><span class="matrix-external-badge">${badge}</span></header><p>${body}</p></article>`; }
+
+  const EXA_NUMBERING=Object.freeze({
+    'EXA-TOPO-01':52,
+    'EXA-TOPO-02':53,
+    'EXA-DEG-01':54,
+    'EXA-DIR-01':55,
+    'EXA-BITQ-01':56,
+    'EXA-SYM-01':57,
+    'EXA-DIST-01':58
+  });
+  function numberExaLabels(){
+    const all=[...document.querySelectorAll('body *')];
+    for(const el of all){
+      if(el.children.length)continue;
+      const t=(el.textContent||'').trim();
+      for(const [key,num] of Object.entries(EXA_NUMBERING)){
+        if(!t.includes(key))continue;
+        if(t.includes('F'+num))break;
+        el.textContent=t.replace(key,`F${num} · ${key}`);
+        break;
+      }
+    }
+    document.querySelectorAll('h1,h2,h3,.status-pill,.eyebrow').forEach(el=>{
+      const t=el.textContent||'';
+      if(/Matriz 51/i.test(t))el.textContent=t.replace(/Matriz 51/ig,'Matriz 58');
+      if(/^51\s*\+\s*EXA$/i.test(t.trim()))el.textContent='58 filtros';
+    });
+  }
+
   const PRIORITY_GROUPS=[
     {key:'p1',title:'P1 · EXTREMA',subtitle:'F29 · trava histórica absoluta',ids:[29]},
     {key:'p2',title:'P2 · ESTRUTURAIS',subtitle:'F01–F15 · estrutura base do jogo',ids:Array.from({length:15},(_,i)=>i+1)},
@@ -13,7 +42,8 @@
     {key:'p4',title:'P4 · COMPLEMENTARES',subtitle:'F30–F37 · filtros complementares',ids:Array.from({length:8},(_,i)=>i+30)},
     {key:'p5',title:'P5 · AVANÇADOS',subtitle:'F38–F44 · análises avançadas',ids:Array.from({length:7},(_,i)=>i+38)},
     {key:'p6',title:'P6 · EXPERIMENTAIS',subtitle:'F45–F49 · hipóteses em validação',ids:Array.from({length:5},(_,i)=>i+45)},
-    {key:'p7',title:'P7 · OPERACIONAIS',subtitle:'F50–F51 · controles operacionais',ids:[50,51]}
+    {key:'p7',title:'P7 · OPERACIONAIS',subtitle:'F50–F51 · controles operacionais',ids:[50,51]},
+    {key:'p8',title:'P8 · EXA',subtitle:'F52–F58 · novos bloqueios EXA numerados',ids:[]}
   ];
   const priorityOf=id=>PRIORITY_GROUPS.find(g=>g.ids.includes(Number(id)))||null;
   function ensurePriorityStyles(){
@@ -48,6 +78,7 @@
   }
   function apply(){
     organizeMatrixByPriority();
+    numberExaLabels();
     const panel=document.querySelector('#matrix-external-audit-panel');
     const root=document.querySelector('#matrix-external-blockers');
     if(!panel||!root)return;
@@ -55,8 +86,8 @@
     if(head&&!head.dataset.exaOrganized){
       head.dataset.exaOrganized='1';
       const eyebrow=head.querySelector('.eyebrow'); if(eyebrow)eyebrow.textContent='BLOQUEIOS EXA · EXTERNOS À MATRIZ 51';
-      const h2=head.querySelector('h2'); if(h2)h2.textContent='Matriz 51 canônica + novos bloqueios EXA';
-      const p=head.querySelector('p'); if(p)p.textContent='F01–F51 permanecem intactos. Os novos bloqueios EXA ficam separados, auditáveis e sem renumeração como F52+. A união oficial conta cada jogo uma única vez.';
+      const h2=head.querySelector('h2'); if(h2)h2.textContent='Matriz 58 · Matriz 58 filtros numerados';
+      const p=head.querySelector('p'); if(p)p.textContent='F01–F51 permanecem intactos. Os novos bloqueios EXA agora recebem F52–F58 na interface, preservando os IDs técnicos EXA-*. A união oficial conta cada jogo uma única vez.';
       const pill=head.querySelector('.status-pill'); if(pill)pill.textContent='51 + EXA';
     }
     let summary=panel.querySelector('#matrix-exa-official-summary');
