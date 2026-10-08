@@ -699,5 +699,47 @@
       }
     ],
     "conclusion": "Nenhum novo zero-histórico das quatro frentes virgens entregou >=100 marginais após F01-F72. MOM-MIXHI e RQA-10-STATE são os dois melhores novos candidatos, mas ambos têm 1 ocorrência histórica e permanecem em quarentena."
+  },
+  "rqa10DeepValidation20261008": {
+    "status": "QUARENTENA FORTE / INSTÁVEL",
+    "promotedToBlocker": false,
+    "proposedId": "F73",
+    "historicalOccurrences": 1,
+    "historicalContest": 3618,
+    "historicalDate": "21/02/2026",
+    "holdout2797_3799": {
+      "hits": 1,
+      "contests": [
+        3618
+      ]
+    },
+    "permutation": {
+      "n": 1000,
+      "observed": 1,
+      "mean": 1.4,
+      "sd": 1.2280065146407002,
+      "pGeObserved": 0.749,
+      "probZero": 0.251
+    },
+    "stabilityLast100Origins": {
+      "zeroOrigins": 52,
+      "nonZeroOrigins": 48,
+      "ge1000": 30,
+      "ge5000": 10,
+      "medianMass": 0,
+      "q75Mass": 1585,
+      "maxMass": 12117,
+      "meanMass": 1326.6,
+      "sdMass": 2434.6217693925273,
+      "cv": 1.835234260057687,
+      "currentMassAt3799": 12117
+    },
+    "currentMarginalOnF01F72": 1647,
+    "reasons": [
+      "1 falha histórica real (#3618)",
+      "permutação não mostra raridade estatística convincente",
+      "massa altamente instável entre origins"
+    ],
+    "decision": "Não promover para F73. Manter visível em pesquisa/quarentena."
   }
 }
