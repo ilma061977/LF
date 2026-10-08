@@ -289,11 +289,11 @@ self.window=self;
     baseThrough:3799,
     universe:3268760,
     matrixApprovedBeforeExa:698339,
-    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04']),
-    unionMarginalGames:12639,
-    unionPctOfMatrix:1.8098041190295802,
-    unionPctOfUniverse:0.3866581596623108,
-    countingRule:'F52-F53 || F55-F68 · cada jogo contado uma única vez',
+    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08']),
+    unionMarginalGames:15872,
+    unionPctOfMatrix:2.272797688538079,
+    unionPctOfUniverse:0.48556678917455714,
+    countingRule:'F52-F53 || F55-F72 · cada jogo contado uma única vez',
     degIncluded:false
   });
   const EXA_N4=Array.from({length:25},()=>[]);
@@ -323,7 +323,11 @@ self.window=self;
     'EXA-TEMP-01':{label:'Transição perímetro × linhas',rule:'|perímetro atual-lag1| >= 10 E L1 linhas vs lag3 >= 12',status:'ATIVO',enabledByDefault:true,id:65,marginalGames:1048},
     'EXA-TEMP-02':{label:'Transição furos × perímetro',rule:'|furos atual-lag1| >= 2 E |perímetro atual-lag3| >= 16',status:'ATIVO',enabledByDefault:true,id:66,marginalGames:1028},
     'EXA-TEMP-03':{label:'Transição furos extremos × perímetro',rule:'|furos atual-lag1| >= 4 E |perímetro atual-lag3| >= 10',status:'ATIVO',enabledByDefault:true,id:67,marginalGames:136},
-    'EXA-TEMP-04':{label:'Transição componentes × gaps',rule:'|componentes atual-lag1| >= 3 E L1 gaps vs lag3 <= 4',status:'ATIVO',enabledByDefault:true,id:68,marginalGames:204}
+    'EXA-TEMP-04':{label:'Transição componentes × gaps',rule:'|componentes atual-lag1| >= 3 E L1 gaps vs lag3 <= 4',status:'ATIVO',enabledByDefault:true,id:68,marginalGames:204},
+    'EXA-TEMP-05':{label:'Lag7 componentes × gaps',rule:'|componentes atual-lag7| >= 4 E L1 gaps vs lag7 <= 6',status:'ATIVO',enabledByDefault:true,id:69,marginalGames:254},
+    'EXA-TEMP-06':{label:'Lag2 gaps × lag9 componentes',rule:'L1 gaps vs lag2 <= 6 E |componentes atual-lag9| >= 4',status:'ATIVO',enabledByDefault:true,id:70,marginalGames:749},
+    'EXA-TEMP-07':{label:'Lag3 gaps × lag4 componentes',rule:'L1 gaps vs lag3 <= 6 E |componentes atual-lag4| >= 4',status:'ATIVO',enabledByDefault:true,id:71,marginalGames:157},
+    'EXA-TEMP-08':{label:'Lag4 colunas × lag6 gaps',rule:'L1 colunas vs lag4 >= 10 E L1 gaps vs lag6 <= 6',status:'ATIVO',enabledByDefault:true,id:72,marginalGames:2076}
   });
   function exaShapeMetrics(game=[]){
     const g=normalize(game);if(!g)return null;
@@ -339,18 +343,18 @@ self.window=self;
   }
   function exaTemporalMetrics(game=[],ctx={}){
     const cur=exaShapeMetrics(game);if(!cur)return{};
-    const hist=ctx?.history||[],lag1=hist.at?.(-1),lag3=hist.at?.(-3);
-    if(!lag1||!lag3)return{};
-    const a1=exaShapeMetrics(lag1.dezenas||lag1),a3=exaShapeMetrics(lag3.dezenas||lag3);
-    const l1=(a,b)=>a.reduce((s,v,i)=>s+Math.abs(v-b[i]),0);
-    return{
-      perimD1:Math.abs(cur.perimeter-a1.perimeter),
-      holesD1:Math.abs(cur.holes-a1.holes),
-      compD1:Math.abs(cur.compN-a1.compN),
-      perimD3:Math.abs(cur.perimeter-a3.perimeter),
-      lineL13:l1(cur.lines,a3.lines),
-      gapL13:l1(cur.gaps,a3.gaps)
-    };
+    const hist=ctx?.history||[],l1=(a,b)=>a.reduce((s,v,i)=>s+Math.abs(v-b[i]),0),out={};
+    for(let lag=1;lag<=10;lag++){
+      const d=hist.at?.(-lag);if(!d)continue;
+      const a=exaShapeMetrics(d.dezenas||d);if(!a)continue;
+      out['perimD'+lag]=Math.abs(cur.perimeter-a.perimeter);
+      out['holesD'+lag]=Math.abs(cur.holes-a.holes);
+      out['compD'+lag]=Math.abs(cur.compN-a.compN);
+      out['lineL1'+lag]=l1(cur.lines,a.lines);
+      out['colL1'+lag]=l1(counts(game,col),counts(d.dezenas||d,col));
+      out['gapL1'+lag]=l1(cur.gaps,a.gaps);
+    }
+    return out;
   }
   function exaOrthogonalBlocks(game=[],ctx={}){
     const m=exaOrthogonalMetrics(game);if(!m)return{};const sh=exaShapeMetrics(game),tm=exaTemporalMetrics(game,ctx);
@@ -371,7 +375,11 @@ self.window=self;
       'EXA-TEMP-01':['perimD1|lineL13',(tm.perimD1??'—')+'|'+(tm.lineL13??'—'),Number.isFinite(tm.perimD1)&&tm.perimD1>=10&&tm.lineL13>=12],
       'EXA-TEMP-02':['holesD1|perimD3',(tm.holesD1??'—')+'|'+(tm.perimD3??'—'),Number.isFinite(tm.holesD1)&&tm.holesD1>=2&&tm.perimD3>=16],
       'EXA-TEMP-03':['holesD1|perimD3',(tm.holesD1??'—')+'|'+(tm.perimD3??'—'),Number.isFinite(tm.holesD1)&&tm.holesD1>=4&&tm.perimD3>=10],
-      'EXA-TEMP-04':['compD1|gapL13',(tm.compD1??'—')+'|'+(tm.gapL13??'—'),Number.isFinite(tm.compD1)&&tm.compD1>=3&&tm.gapL13<=4]
+      'EXA-TEMP-04':['compD1|gapL13',(tm.compD1??'—')+'|'+(tm.gapL13??'—'),Number.isFinite(tm.compD1)&&tm.compD1>=3&&tm.gapL13<=4],
+      'EXA-TEMP-05':['compD7|gapL17',(tm.compD7??'—')+'|'+(tm.gapL17??'—'),Number.isFinite(tm.compD7)&&tm.compD7>=4&&tm.gapL17<=6],
+      'EXA-TEMP-06':['gapL12|compD9',(tm.gapL12??'—')+'|'+(tm.compD9??'—'),Number.isFinite(tm.gapL12)&&tm.gapL12<=6&&tm.compD9>=4],
+      'EXA-TEMP-07':['gapL13|compD4',(tm.gapL13??'—')+'|'+(tm.compD4??'—'),Number.isFinite(tm.gapL13)&&tm.gapL13<=6&&tm.compD4>=4],
+      'EXA-TEMP-08':['colL14|gapL16',(tm.colL14??'—')+'|'+(tm.gapL16??'—'),Number.isFinite(tm.colL14)&&tm.colL14>=10&&tm.gapL16<=6]
     };
     return Object.fromEntries(Object.entries(defs).map(([key,[metric,value,blocked]])=>[key,{key,label:(EXA_ORTHOGONAL_RULES[key]||EXA_EXTENDED_RULES[key]).label,rule:(EXA_ORTHOGONAL_RULES[key]||EXA_EXTENDED_RULES[key]).rule,metric,value,blocked:!!blocked,passed:!blocked}]));
   }
