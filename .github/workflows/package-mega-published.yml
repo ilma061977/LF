@@ -1,0 +1,29 @@
+name: Package Mega published app
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/package-mega-published.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Mega v1.16 markers
+        run: |
+          grep -q "v116/exa-v116.js" mega-app/index.html
+          grep -q "SIG-589" mega-app/v116/exa-v116.js
+      - name: Build exact published package
+        run: |
+          mkdir -p artifact/Mega-Particular-Publicado
+          cp -a mega-app/. artifact/Mega-Particular-Publicado/
+          printf '%s\n' "Pacote completo do diretório mega-app publicado no branch main." > artifact/Mega-Particular-Publicado/PUBLICADO.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Mega-Particular-v1.16-PUBLICADO-COMPLETO
+          path: artifact/Mega-Particular-Publicado
+          if-no-files-found: error
+          compression-level: 9
