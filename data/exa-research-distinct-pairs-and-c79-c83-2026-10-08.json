@@ -1,0 +1,120 @@
+{
+  "generatedAt": "2026-10-08",
+  "mode": "PESQUISA SEM DEPLOY",
+  "base": {
+    "through": 3799,
+    "universe": 3268760,
+    "officialMatrix": "F01-F83",
+    "approved": 672768,
+    "blocked": 2595992,
+    "blockedPct": 79.41825034569683
+  },
+  "canonicalization": {
+    "note": "Para evitar duplicidade de informação: Pares=15-Ímpares e Miolo=15-Moldura. Portanto, Fibonacci×Pares é equivalente a Fibonacci×Ímpares com contagem transformada; M3×Pares equivale a M3×Ímpares; Miolo equivale à Moldura.",
+    "independentRepresentatives": [
+      "Fibonacci",
+      "Primos",
+      "Múltiplos de 3",
+      "Mágicos",
+      "Moldura",
+      "Ímpares"
+    ]
+  },
+  "newDistinctPairs": [
+    {
+      "pair": "Fibonacci × Moldura",
+      "bestZeroHistorical": "F=1 | Moldura=11",
+      "universe": 1995,
+      "trueMarginalOnF01F83": 326,
+      "status": "QUARENTENA"
+    },
+    {
+      "pair": "Fibonacci × Ímpares",
+      "equivalent": "Fibonacci × Pares",
+      "bestZeroHistorical": "F=7 | Ímpares=6 (=Pares 9)",
+      "universe": 960,
+      "trueMarginalOnF01F83": 179,
+      "status": "QUARENTENA"
+    },
+    {
+      "pair": "Primos × Moldura",
+      "bestZeroHistorical": "P=7 | Moldura=6",
+      "universe": 1650,
+      "trueMarginalOnF01F83": 0,
+      "status": "REDUNDANTE"
+    },
+    {
+      "pair": "Primos × Ímpares",
+      "equivalent": "Primos × Pares",
+      "bestZeroHistorical": "P=7 | Ímpares=12 (=Pares 3)",
+      "universe": 1320,
+      "trueMarginalOnF01F83": 0,
+      "status": "REDUNDANTE"
+    },
+    {
+      "pair": "M3 × Moldura",
+      "bestZeroHistorical": "M3=1 | Moldura=9",
+      "universe": 1815,
+      "trueMarginalOnF01F83": 494,
+      "status": "QUARENTENA"
+    },
+    {
+      "pair": "M3 × Ímpares",
+      "equivalent": "M3 × Pares",
+      "bestZeroHistorical": "M3=1 | Ímpares=6 (=Pares 9)",
+      "universe": 336,
+      "trueMarginalOnF01F83": 64,
+      "status": "OBSERVAR"
+    },
+    {
+      "pair": "Mágicos × Moldura",
+      "bestZeroHistorical": "G=9 | Moldura=10",
+      "universe": 924,
+      "trueMarginalOnF01F83": 350,
+      "status": "QUARENTENA"
+    },
+    {
+      "pair": "Mágicos × Ímpares",
+      "equivalent": "Mágicos × Pares",
+      "bestZeroHistorical": "G=9 | Ímpares=6 (=Pares 9)",
+      "universe": 448,
+      "trueMarginalOnF01F83": 92,
+      "status": "OBSERVAR"
+    }
+  ],
+  "bestFourPolicyThreshold": {
+    "rules": [
+      "Fibonacci×Moldura",
+      "Fibonacci×Ímpares",
+      "M3×Moldura",
+      "Mágicos×Moldura"
+    ],
+    "individualMarginals": [
+      326,
+      179,
+      494,
+      350
+    ],
+    "exactUnionMarginal": 1349,
+    "overlapsOnApproved": 0,
+    "hypotheticalIfActivated": {
+      "approved": 671419,
+      "blocked": 2597341,
+      "blockedPct": 79.45951981791261
+    },
+    "decision": "Não ativar ainda; manter em quarentena até validação walk-forward/reselection e controle de múltiplas hipóteses."
+  },
+  "c79c81c82c83": {
+    "individualMarginals": {
+      "C79": 1065,
+      "C81": 1022,
+      "C82": 878,
+      "C83": 941
+    },
+    "exactUnionMarginal": 3906,
+    "allPairIntersections": 0,
+    "allTripleIntersections": 0,
+    "fourWayIntersection": 0,
+    "note": "As quatro assinaturas selecionadas são mutuamente incompatíveis; por isso a união marginal é exatamente 3906."
+  }
+}
