@@ -1,0 +1,22 @@
+LF Inteligente V3.7.5 · Rev16
+Data: 2026-10-08
+
+MATRIZ 51
+- F01-F51 preservados sem renumeração.
+- Nova seção: BLOQUEIOS EXA · EXTERNOS À MATRIZ 51.
+- EXA ativos: TOPO-01, TOPO-02, DIR-01, BITQ-01, SYM-01, DIST-01.
+- EXA-DEG-01 visível e DESLIGADO por padrão.
+- União EXA exata: 5.459 jogos marginais únicos.
+
+QUADRO OFICIAL
+- Universo: 3.268.760
+- Aprovados Matriz 51 antes do EXA: 196.430
+- Novos bloqueios EXA: 5.459
+- Aprovados finais: 190.971
+- Bloqueados totais: 3.077.789
+- Percentual bloqueado: 94,157693%
+- Percentual restante: 5,842307%
+- Universo final: 17,12x menor.
+
+NOTA
+Os filtros não alteram a probabilidade matemática individual de uma combinação da Lotofácil, que continua 1 em 3.268.760. O valor 1 em 190.971 só é uma leitura condicional se o resultado estiver dentro do conjunto aprovado.
