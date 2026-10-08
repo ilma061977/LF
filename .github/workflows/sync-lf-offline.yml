@@ -37,6 +37,17 @@ jobs:
           if(!meta.test(src)) throw new Error('meta lf-build ausente');
           src=src.replace(meta,`<meta name="lf-build" content="${version}"`);
 
+          const appMarker='/* INLINE: app.js */';
+          const ap=src.indexOf(appMarker);
+          if(ap<0) throw new Error('marcador inline app.js ausente');
+          const appStart=src.indexOf('\n',ap)+1;
+          const appEnd=src.indexOf('\n</script>',appStart);
+          if(appEnd<=appStart) throw new Error('fim do app.js inline não encontrado');
+          src=src.slice(0,appStart)+app.trimEnd()+src.slice(appEnd);
+
+          const appMarker='/* INLINE: app.js */';
+          const ap=src.indexOf(appMarker), appStart=src.indexOf('\n',ap)+1, appEnd=src.indexOf('\n</script>',appStart);
+          if(src.slice(appStart,appEnd).trimEnd()!==app.trimEnd()) throw new Error('app.js inline divergente');
           const marker='window.__LF_OFFLINE_WORKER_SOURCE=';
           const p=src.indexOf(marker);
           if(p<0) throw new Error('Worker offline ausente');
