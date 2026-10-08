@@ -279,22 +279,22 @@ self.window=self;
   const EXA_ORTHOGONAL_RULES=Object.freeze({
     'EXA-TOPO-01':{label:'Topologia ocupada',rule:'Maior componente ortogonal das 15 dezenas <= 4',threshold:'fgMax4<=4',status:'ATIVO',enabledByDefault:true,isolatedGames:1929,exclusiveGames:1444},
     'EXA-TOPO-02':{label:'Topologia ausentes',rule:'10 ausentes formam 9 ou mais componentes ortogonais',threshold:'bgComp4>=9',status:'ATIVO',enabledByDefault:true,isolatedGames:735,exclusiveGames:485},
-    'EXA-DEG-01':{label:'Momento de graus',rule:'Wedges do grafo ortogonal <= 5',threshold:'wedges<=5',status:'ATIVO',enabledByDefault:true,isolatedGames:557,exclusiveGames:101},
+    'EXA-DEG-01':{label:'Momento de graus',rule:'Wedges do grafo ortogonal <= 5',threshold:'wedges<=5',status:'OBSERVAR',enabledByDefault:false,isolatedGames:557,exclusiveGames:101},
     'EXA-DIR-01':{label:'Anisotropia direcional',rule:'|H-V| + |D1-D2| >= 8',threshold:'dirAbsDev>=8',status:'ATIVO',enabledByDefault:true,isolatedGames:639,exclusiveGames:634},
     'EXA-BITQ-01':{label:'Bit-quads diagonais',rule:'8 ou mais blocos 2x2 com exatamente 2 diagonais',threshold:'q2d>=8',status:'ATIVO',enabledByDefault:true,isolatedGames:908,exclusiveGames:479},
     'EXA-SYM-01':{label:'Simetria D4',rule:'Variância inteira das 6 assimetrias D4 <= 5',threshold:'symVar6<=5',status:'ATIVO',enabledByDefault:true,isolatedGames:851,exclusiveGames:833},
     'EXA-DIST-01':{label:'Espectro de distâncias',rule:'30 ou mais pares Manhattan com distância 3',threshold:'man3>=30',status:'ATIVO',enabledByDefault:true,isolatedGames:845,exclusiveGames:823}
   });
   const EXA_ORTHOGONAL_SUMMARY=Object.freeze({
-    baseThrough:3796,
+    baseThrough:3799,
     universe:3268760,
-    matrixApprovedBeforeExa:196430,
-    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DEG-01','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01']),
-    unionMarginalGames:5560,
-    unionPctOfMatrix:2.8305248689100444,
-    unionPctOfUniverse:0.1700950819270916,
-    countingRule:'TOPO01 || TOPO02 || DEG01 || DIR01 || BITQ01 || SYM01 || DIST01 · cada jogo contado uma única vez',
-    degIncluded:true
+    matrixApprovedBeforeExa:698339,
+    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01']),
+    unionMarginalGames:10196,
+    unionPctOfMatrix:1.4600358851503352,
+    unionPctOfUniverse:0.3119225639080263,
+    countingRule:'TOPO01 || TOPO02 || DIR01 || BITQ01 || SYM01 || DIST01 · cada jogo contado uma única vez',
+    degIncluded:false
   });
   const EXA_N4=Array.from({length:25},()=>[]);
   for(let r=0;r<5;r++)for(let c=0;c<5;c++){const i=r*5+c;if(c>0)EXA_N4[i].push(i-1);if(c<4)EXA_N4[i].push(i+1);if(r>0)EXA_N4[i].push(i-5);if(r<4)EXA_N4[i].push(i+5);}
