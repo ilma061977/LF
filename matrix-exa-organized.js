@@ -125,6 +125,29 @@
     const known=new Set(PRIORITY_GROUPS.flatMap(g=>g.ids));const leftovers=[...byId.entries()].filter(([id])=>!known.has(id)).map(([,card])=>card);
     if(leftovers.length){const section=document.createElement('section');section.className='matrix-priority-group';section.dataset.priority='other';section.innerHTML='<header><b>OUTROS</b><small>Filtros fora do agrupamento canônico</small></header><div class="matrix-priority-items"></div>';leftovers.forEach(card=>section.querySelector('.matrix-priority-items').appendChild(card));grid.appendChild(section);}
   }
+
+  const EXA_QUARANTINE_8=[
+    {id:'Q-MOM-ANIS',name:'Momento · anisotropia extrema',occ:1,last:2109,delay:1690,universe:1112,status:'QUARENTENA'},
+    {id:'Q-MOM-DET-LO',name:'Momento · determinante muito baixo',occ:1,last:2789,delay:1010,universe:2200,status:'QUARENTENA'},
+    {id:'Q-MOM-DET-HI',name:'Momento · determinante muito alto',occ:1,last:1965,delay:1834,universe:614,status:'QUARENTENA'},
+    {id:'Q-MORPH-D8',name:'Morfologia · dilatação 8-vizinhos compacta',occ:1,last:89,delay:3710,universe:1636,status:'QUARENTENA'},
+    {id:'Q-GRAPH-L3',name:'Graphlet · blocos 2×2 com 3 ocupados',occ:1,last:2333,delay:1466,universe:2546,status:'QUARENTENA'},
+    {id:'Q-GRAPH-Q4',name:'Graphlet · quadrados 2×2 completos',occ:1,last:2653,delay:1146,universe:1070,status:'QUARENTENA'},
+    {id:'Q-MOM-TRACE-LO',name:'Momento · traço muito baixo',occ:1,last:775,delay:3024,universe:2200,status:'QUARENTENA'},
+    {id:'Q-MOM-TRACE-HI',name:'Momento · traço muito alto',occ:1,last:1965,delay:1834,universe:718,status:'QUARENTENA'}
+  ];
+  function renderQuarantine8(panel,root){
+    let box=panel.querySelector('#matrix-exa-quarantine-8');
+    if(!box){box=document.createElement('section');box.id='matrix-exa-quarantine-8';box.className='matrix-external-section';root.parentNode.insertBefore(box,root);}
+    const rows=EXA_QUARANTINE_8.map(x=>card(
+      x.id+' · '+x.name,
+      x.status,
+      `Ocorrências históricas: <b>${x.occ}</b> · Última: <b>#${x.last}</b> · Atraso: <b>${x.delay}</b><br>Universo exato: <b>${fmt(x.universe)}</b> jogos · <b>não ativo como bloqueio</b> enquanto o ganho marginal sobre F01–F72 é validado.`,
+      'is-active'
+    )).join('');
+    box.innerHTML=`<h3>QUARENTENA EXA · 8 CANDIDATOS NOVOS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note">Famílias: momentos/inércia, morfologia multiescala e graphlets. Todos têm 1 ocorrência histórica e permanecem desligados até concluir ganho marginal, walk-forward e redundância.</div>`;
+  }
+
   const EXPERIMENTAL_RESEARCH=[
     {id:'C8-R1',name:'max8 ≤ 5',occ:0,last:null,delay:null,universe:290,marginal:1},
     {id:'C8-R2',name:'isolados8 ≥ 3',occ:1,last:2916,delay:883,universe:2200,marginal:7},
@@ -150,6 +173,7 @@
     const root=document.querySelector('#matrix-external-blockers');
     if(!panel||!root)return;
     renderExperimentalResearch(panel,root);
+    renderQuarantine8(panel,root);
     const head=panel.querySelector('.panel-head');
     if(head&&!head.dataset.exaOrganized){
       head.dataset.exaOrganized='1';
