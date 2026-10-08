@@ -1,0 +1,2 @@
+LF Inteligente V3.7.5 · release publicada em 08/10/2026
+Base e lógica sincronizadas com Matriz 51 revisada e bloqueios EXA oficiais.
