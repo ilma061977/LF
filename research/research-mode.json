@@ -1,0 +1,29 @@
+{
+  "mode": "PESQUISA SEM DEPLOY",
+  "enabled": true,
+  "researchBranch": "research-no-deploy",
+  "productionBranch": "main",
+  "policy": {
+    "researchWrites": [
+      "data/exa-research-*.json",
+      "research/**",
+      "scripts/**",
+      "analysis/**",
+      "docs/research/**"
+    ],
+    "doNotDeployDuringResearch": true,
+    "doNotPackageDuringResearch": true,
+    "publishOnlyWhen": [
+      "usuário autorizar explicitamente publicação/deploy",
+      "revisão for marcada como concluída para release"
+    ],
+    "releaseFlow": [
+      "auditar resultados",
+      "promover somente filtros aprovados",
+      "mesclar research-no-deploy -> main",
+      "gerar ZIP completo da mesma revisão",
+      "criar/verificar link público sem senha"
+    ]
+  },
+  "note": "Enquanto este modo estiver ativo, alterações EXA permanecem isoladas da main e não devem disparar publicação do app."
+}
