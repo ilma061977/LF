@@ -289,11 +289,11 @@ self.window=self;
     baseThrough:3799,
     universe:3268760,
     matrixApprovedBeforeExa:698339,
-    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01']),
-    unionMarginalGames:16019,
-    unionPctOfMatrix:2.293846396666951,
-    unionPctOfUniverse:0.4900635149220189,
-    countingRule:'F52-F53 || F55-F73 · cada jogo contado uma única vez',
+    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01','EXA-CROSS-01','EXA-CROSS-02','EXA-CROSS-03','EXA-CROSS-04']),
+    unionMarginalGames:19284,
+    unionPctOfMatrix:2.761409173741169,
+    unionPctOfUniverse:0.589973843301745,
+    countingRule:'F52-F53 || F55-F77 · cada jogo contado uma única vez',
     degIncluded:false
   });
   const EXA_N4=Array.from({length:25},()=>[]);
@@ -328,7 +328,11 @@ self.window=self;
     'EXA-TEMP-06':{label:'Lag2 gaps × lag9 componentes',rule:'L1 gaps vs lag2 <= 6 E |componentes atual-lag9| >= 4',status:'ATIVO',enabledByDefault:true,id:70,marginalGames:749},
     'EXA-TEMP-07':{label:'Lag3 gaps × lag4 componentes',rule:'L1 gaps vs lag3 <= 6 E |componentes atual-lag4| >= 4',status:'ATIVO',enabledByDefault:true,id:71,marginalGames:157},
     'EXA-TEMP-08':{label:'Lag4 colunas × lag6 gaps',rule:'L1 colunas vs lag4 >= 10 E L1 gaps vs lag6 <= 6',status:'ATIVO',enabledByDefault:true,id:72,marginalGames:2076},
-    'EXA-WJ-01':{label:'Walsh alta-sequência × Johnson20',rule:'Energia Walsh alta-sequência >= 900 E variância Johnson20 >= 55',status:'ATIVO',enabledByDefault:true,id:73,marginalGames:147}
+    'EXA-WJ-01':{label:'Walsh alta-sequência × Johnson20',rule:'Energia Walsh alta-sequência >= 900 E variância Johnson20 >= 55',status:'ATIVO',enabledByDefault:true,id:73,marginalGames:147},
+    'EXA-CROSS-01':{label:'Moldura × Primos',rule:'assinaturas 2x2 moldura/miolo × primo/não-primo',status:'ATIVO',enabledByDefault:true,id:74,marginalGames:1395},
+    'EXA-CROSS-02':{label:'Moldura × Paridade',rule:'assinaturas 2x2 moldura/miolo × par/ímpar',status:'ATIVO',enabledByDefault:true,id:75,marginalGames:824},
+    'EXA-CROSS-03':{label:'Baixas × Primos',rule:'assinaturas 2x2 baixas/altas × primo/não-primo',status:'ATIVO',enabledByDefault:true,id:76,marginalGames:647},
+    'EXA-CROSS-04':{label:'Paridade × Baixas',rule:'assinaturas 2x2 par/ímpar × baixas/altas',status:'ATIVO',enabledByDefault:true,id:77,marginalGames:411}
   });
   function exaShapeMetrics(game=[]){
     const g=normalize(game);if(!g)return null;
@@ -400,8 +404,22 @@ self.window=self;
     }
     return{walshHigh,j20M2};
   }
+  const EXA_BORDER_SET=new Set([1,2,3,4,5,6,10,11,15,16,20,21,22,23,24,25]);
+  const EXA_PRIME_SET=new Set([2,3,5,7,11,13,17,19,23]);
+  const EXA_CROSS_SIGS=Object.freeze({
+    'EXA-CROSS-01':new Set(['5-1-4-5','1-3-10-1','0-4-9-2','5-0-5-5','2-4-9-0']),
+    'EXA-CROSS-02':new Set(['5-1-2-7','4-1-2-8','1-3-8-3','5-0-3-7']),
+    'EXA-CROSS-03':new Set(['8-0-2-5','7-0-2-6']),
+    'EXA-CROSS-04':new Set(['2-7-5-1','6-1-3-5'])
+  });
+  function exaCrossSignature(game=[],a,b){const c=[0,0,0,0];for(const n of game){const x=a(n)?1:0,y=b(n)?1:0;c[x*2+y]++;}return c.join('-');}
+  function exaCross4Metrics(game=[]){
+    const g=normalize(game);if(!g)return{};
+    const border=n=>EXA_BORDER_SET.has(n),prime=n=>EXA_PRIME_SET.has(n),parity=n=>n%2===0,low=n=>n<=13;
+    return{br:exaCrossSignature(g,border,prime),bp:exaCrossSignature(g,border,parity),lr:exaCrossSignature(g,low,prime),pl:exaCrossSignature(g,parity,low)};
+  }
   function exaOrthogonalBlocks(game=[],ctx={}){
-    const m=exaOrthogonalMetrics(game);if(!m)return{};const sh=exaShapeMetrics(game),tm=exaTemporalMetrics(game,ctx),wj=exaWalshJohnsonMetrics(game,ctx);
+    const m=exaOrthogonalMetrics(game);if(!m)return{};const sh=exaShapeMetrics(game),tm=exaTemporalMetrics(game,ctx),wj=exaWalshJohnsonMetrics(game,ctx),cr=exaCross4Metrics(game);
     const defs={
       'EXA-TOPO-01':['fgMax4',m.fgMax4,m.fgMax4<=4],
       'EXA-TOPO-02':['bgComp4',m.bgComp4,m.bgComp4>=9],
@@ -424,7 +442,11 @@ self.window=self;
       'EXA-TEMP-06':['gapL12|compD9',(tm.gapL12??'—')+'|'+(tm.compD9??'—'),Number.isFinite(tm.gapL12)&&tm.gapL12<=6&&tm.compD9>=4],
       'EXA-TEMP-07':['gapL13|compD4',(tm.gapL13??'—')+'|'+(tm.compD4??'—'),Number.isFinite(tm.gapL13)&&tm.gapL13<=6&&tm.compD4>=4],
       'EXA-TEMP-08':['colL14|gapL16',(tm.colL14??'—')+'|'+(tm.gapL16??'—'),Number.isFinite(tm.colL14)&&tm.colL14>=10&&tm.gapL16<=6],
-      'EXA-WJ-01':['walshHigh|j20M2',(wj.walshHigh??'—')+'|'+(Number.isFinite(wj.j20M2)?wj.j20M2.toFixed(2):'—'),wj.walshHigh>=900&&wj.j20M2>=55]
+      'EXA-WJ-01':['walshHigh|j20M2',(wj.walshHigh??'—')+'|'+(Number.isFinite(wj.j20M2)?wj.j20M2.toFixed(2):'—'),wj.walshHigh>=900&&wj.j20M2>=55],
+      'EXA-CROSS-01':['moldura×primos',cr.br,EXA_CROSS_SIGS['EXA-CROSS-01'].has(cr.br)],
+      'EXA-CROSS-02':['moldura×paridade',cr.bp,EXA_CROSS_SIGS['EXA-CROSS-02'].has(cr.bp)],
+      'EXA-CROSS-03':['baixas×primos',cr.lr,EXA_CROSS_SIGS['EXA-CROSS-03'].has(cr.lr)],
+      'EXA-CROSS-04':['paridade×baixas',cr.pl,EXA_CROSS_SIGS['EXA-CROSS-04'].has(cr.pl)]
     };
     return Object.fromEntries(Object.entries(defs).map(([key,[metric,value,blocked]])=>[key,{key,label:(EXA_ORTHOGONAL_RULES[key]||EXA_EXTENDED_RULES[key]).label,rule:(EXA_ORTHOGONAL_RULES[key]||EXA_EXTENDED_RULES[key]).rule,metric,value,blocked:!!blocked,passed:!blocked}]));
   }
