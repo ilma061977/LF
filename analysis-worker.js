@@ -31,7 +31,7 @@ self.window=self;
   const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.5';
   const THRESHOLD_VERSION = 'LF-M51-2026.10.07-EXA-UNION5560-7ACTIVE-v3.7.5';
   const AUDIT_VERSION = 'LF-M51-AUDIT-3796-EXA-ORTHO-UNION5560-7ACTIVE-v3.7.5';
-  const AUDIT_BASE_THROUGH = 3796;
+  const AUDIT_BASE_THROUGH = 3799;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
   const PATTERN_COOLDOWNS = Object.freeze({
@@ -140,7 +140,7 @@ self.window=self;
     ['Miolo entre 4 e 9','Canônica F01–F29','core'],
     ['Moldura entre 9 e 11','Canônica F01–F29','core'],
     ['Linha/coluna vazia · aviso','Canônica F01–F29','advisory'],
-    ['Equilíbrio dos quadrantes','Canônica F01–F29','core'],
+    ['Equilíbrio dos quadrantes · observar','Canônica F01–F29','advisory'],
     ['Sequência máxima entre 3 e 5','Canônica F01–F29','core'],
     ['Maior salto até 6','Canônica F01–F29','core'],
     ['Gêmeas baixas 0/1 · aviso','Canônica F01–F29','advisory'],
@@ -192,7 +192,7 @@ self.window=self;
     1:{type:'walk-forward',rule:'Top 7 assinaturas de linhas usando somente concursos anteriores'},
     2:{type:'walk-forward',rule:'Top 7 assinaturas de colunas usando somente concursos anteriores'},
     3:{type:'fixed',rule:'Miolo 4–9'},4:{type:'fixed',rule:'Moldura 9–11'},5:{type:'advisory',rule:'Aviso se houver linha/coluna vazia'},
-    6:{type:'fixed',rule:'3–4 por quadrante'},7:{type:'fixed',rule:'Sequência máxima 3–5'},8:{type:'fixed',rule:'Maior salto ≤6'},9:{type:'advisory',rule:'Aviso apenas para gêmeas baixas adjacentes 0/1; 4–4 liberado'},
+    6:{type:'advisory',rule:'Aviso: quadrantes 3–4; não bloqueia'},7:{type:'fixed',rule:'Sequência máxima 3–5'},8:{type:'fixed',rule:'Maior salto ≤6'},9:{type:'advisory',rule:'Aviso apenas para gêmeas baixas adjacentes 0/1; 4–4 liberado'},
     10:{type:'fixed',rule:'|superior−inferior|≤4'},11:{type:'fixed',rule:'|esquerda−direita|≤5'},12:{type:'fixed',rule:'Primos 4–8'},13:{type:'fixed',rule:'Ímpares 5–10'},14:{type:'fixed',rule:'Soma 166–220'},15:{type:'fixed',rule:'Repetidas 8–10'},
     16:{type:'fixed',rule:'<3 colunas com paridade homogênea'},17:{type:'fixed',rule:'<3 linhas com paridade homogênea'},18:{type:'fixed',rule:'Não usar as 5 da elite'},19:{type:'fixed',rule:'Usar ≥1 da elite'},
     20:{type:'conditional',rule:'Se anterior terminou baixo, evitar 21–23 no final'},21:{type:'conditional',rule:'Se anterior iniciou 04/05, iniciar abaixo de 04'},22:{type:'conditional',rule:'Se bloco extremo veio completo, não repeti-lo completo'},
@@ -350,7 +350,7 @@ self.window=self;
     add(3,center>=4&&center<=9,`${center} no miolo · regra fixa 4–9`);
     add(4,border>=9&&border<=11,`${border} na moldura · regra fixa 9–11`);
     add(5,lines.every(Boolean)&&cols.every(Boolean),`AVISO · linhas ${lines.join('-')} · colunas ${cols.join('-')} · linha/coluna vazia não bloqueia`);
-    add(6,qs.every(v=>v>=3&&v<=4),`Quadrantes ${qs.join('-')} · regra fixa 3–4`);
+    add(6,qs.every(v=>v>=3&&v<=4),`AVISO · quadrantes ${qs.join('-')} · referência 3–4; não bloqueia`);
     add(7,run>=3&&run<=5,`Maior sequência ${run} · regra fixa 3–5`);
     add(8,gap<=6,`Maior salto ${gap} · regra fixa ≤6`);
     add(9,!([lines,cols].some(a=>a.some((v,i)=>i<4&&v===a[i+1]&&v<=1))),`AVISO · linhas ${lines.join('-')} · colunas ${cols.join('-')} · 4–4 liberado; aviso só para 0/1 adjacente`);
