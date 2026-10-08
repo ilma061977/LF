@@ -2,7 +2,7 @@
   'use strict';
   const UNIVERSE=3268760, BEFORE=698339, EXA=25571, APPROVED=672768, BLOCKED=2595992;
   const BLOCKED_PCT=79.41825034569683, APPROVED_PCT=20.58174965430316, RATIO=4.85867342085236;
-  const ACTIVE=['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01','EXA-CROSS-01','EXA-CROSS-02','EXA-CROSS-03','EXA-CROSS-04'];
+  const ACTIVE=['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01','EXA-CROSS-01','EXA-CROSS-02','EXA-CROSS-03','EXA-CROSS-04','EXA-CROSS-05','EXA-CROSS-06','EXA-CROSS-07','EXA-CROSS-08','EXA-CROSS-09','EXA-CROSS-10'];
   const fmt=n=>Number(n).toLocaleString('pt-BR');
   const pct=n=>Number(n).toLocaleString('pt-BR',{minimumFractionDigits:6,maximumFractionDigits:6})+'%';
   function card(title,badge,body,cls='is-active') { return `<article class="matrix-external-card ${cls}"><header><b>${title}</b><span class="matrix-external-badge">${badge}</span></header><p>${body}</p></article>`; }
@@ -112,7 +112,7 @@
     {key:'p4',title:'P4 · COMPLEMENTARES',subtitle:'Finalidade: termômetros históricos e anomalias combinadas',ids:Array.from({length:8},(_,i)=>i+30)},
     {key:'p5',title:'P5 · AVANÇADOS / GEOMÉTRICOS',subtitle:'Finalidade: geometria, simetria, topologia e forma · F38–F44 + F55–F64',ids:[...Array.from({length:7},(_,i)=>i+38),55,56,57,58,59,60,61,62,63,64]},
     {key:'p6',title:'P6 · TEMPORAIS / WALK-FORWARD',subtitle:'Finalidade: transições contra lag 1 até lag 10',ids:[65,66,67,68,69,70,71,72]},
-    {key:'p7',title:'P7 · ESPECTRAIS / CRUZAMENTOS',subtitle:'Finalidade: Walsh/Johnson e interações 2x2 aprovadas pela política Rev25',ids:[73,74,75,76,77]},
+    {key:'p7',title:'P7 · ESPECTRAIS / CRUZAMENTOS',subtitle:'Finalidade: Walsh/Johnson e interações 2x2 aprovadas pela política Rev25',ids:[73,74,75,76,77,78,79,80,81,82,83]},
     {key:'p8',title:'P8 · EXPERIMENTAIS / OBSERVAR',subtitle:'Finalidade: hipóteses ainda não eliminatórias · F45–F49 + F54',ids:[...Array.from({length:5},(_,i)=>i+45),54]},
     {key:'p9',title:'P9 · OPERACIONAIS',subtitle:'Finalidade: cobertura, carteira e exportação',ids:[50,51]}
   ];
