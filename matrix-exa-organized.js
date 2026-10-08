@@ -29,7 +29,11 @@
     'EXA-TEMP-06':70,
     'EXA-TEMP-07':71,
     'EXA-TEMP-08':72,
-    'EXA-WJ-01':73
+    'EXA-WJ-01':73,
+    'EXA-CROSS-01':74,
+    'EXA-CROSS-02':75,
+    'EXA-CROSS-03':76,
+    'EXA-CROSS-04':77
   });
   function numberExaLabels(){
     const all=[...document.querySelectorAll('body *')];
