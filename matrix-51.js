@@ -28,8 +28,8 @@
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
   const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.5';
-  const THRESHOLD_VERSION = 'LF-M73-2026.10.08-WALSH-JOHNSON-BASE3799-v3.7.5';
-  const AUDIT_VERSION = 'LF-M73-AUDIT-3799-WALSH-JOHNSON-v3.7.5';
+  const THRESHOLD_VERSION = 'LF-M77-2026.10.08-CROSS4-BASE3799-v3.7.5';
+  const AUDIT_VERSION = 'LF-M77-AUDIT-3799-CROSS4-v3.7.5';
   const AUDIT_BASE_THROUGH = 3799;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
@@ -288,11 +288,11 @@
     baseThrough:3799,
     universe:3268760,
     matrixApprovedBeforeExa:698339,
-    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01']),
-    unionMarginalGames:16019,
-    unionPctOfMatrix:2.293846396666951,
-    unionPctOfUniverse:0.4900635149220189,
-    countingRule:'F52-F53 || F55-F73 · cada jogo contado uma única vez',
+    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01','EXA-CROSS-01','EXA-CROSS-02','EXA-CROSS-03','EXA-CROSS-04']),
+    unionMarginalGames:19284,
+    unionPctOfMatrix:2.761409173741169,
+    unionPctOfUniverse:0.589973843301745,
+    countingRule:'F52-F53 || F55-F77 · cada jogo contado uma única vez',
     degIncluded:false
   });
   const EXA_N4=Array.from({length:25},()=>[]);
@@ -427,7 +427,7 @@
     };
   }
   function exaOrthogonalBlocks(game=[],ctx={}){
-    const m=exaOrthogonalMetrics(game);if(!m)return{};const sh=exaShapeMetrics(game),tm=exaTemporalMetrics(game,ctx),wj=exaWalshJohnsonMetrics(game,ctx);
+    const m=exaOrthogonalMetrics(game);if(!m)return{};const sh=exaShapeMetrics(game),tm=exaTemporalMetrics(game,ctx),wj=exaWalshJohnsonMetrics(game,ctx),cr=exaCross4Metrics(game);
     const defs={
       'EXA-TOPO-01':['fgMax4',m.fgMax4,m.fgMax4<=4],
       'EXA-TOPO-02':['bgComp4',m.bgComp4,m.bgComp4>=9],
@@ -450,7 +450,11 @@
       'EXA-TEMP-06':['gapL12|compD9',(tm.gapL12??'—')+'|'+(tm.compD9??'—'),Number.isFinite(tm.gapL12)&&tm.gapL12<=6&&tm.compD9>=4],
       'EXA-TEMP-07':['gapL13|compD4',(tm.gapL13??'—')+'|'+(tm.compD4??'—'),Number.isFinite(tm.gapL13)&&tm.gapL13<=6&&tm.compD4>=4],
       'EXA-TEMP-08':['colL14|gapL16',(tm.colL14??'—')+'|'+(tm.gapL16??'—'),Number.isFinite(tm.colL14)&&tm.colL14>=10&&tm.gapL16<=6],
-      'EXA-WJ-01':['walshHigh|j20M2',(wj.walshHigh??'—')+'|'+(Number.isFinite(wj.j20M2)?wj.j20M2.toFixed(2):'—'),wj.walshHigh>=900&&wj.j20M2>=55]
+      'EXA-WJ-01':['walshHigh|j20M2',(wj.walshHigh??'—')+'|'+(Number.isFinite(wj.j20M2)?wj.j20M2.toFixed(2):'—'),wj.walshHigh>=900&&wj.j20M2>=55],
+      'EXA-CROSS-01':['moldura×primos',cr.br,EXA_CROSS_SIGS['EXA-CROSS-01'].has(cr.br)],
+      'EXA-CROSS-02':['moldura×paridade',cr.bp,EXA_CROSS_SIGS['EXA-CROSS-02'].has(cr.bp)],
+      'EXA-CROSS-03':['baixas×primos',cr.lr,EXA_CROSS_SIGS['EXA-CROSS-03'].has(cr.lr)],
+      'EXA-CROSS-04':['paridade×baixas',cr.pl,EXA_CROSS_SIGS['EXA-CROSS-04'].has(cr.pl)]
     };
     return Object.fromEntries(Object.entries(defs).map(([key,[metric,value,blocked]])=>[key,{key,label:(EXA_ORTHOGONAL_RULES[key]||EXA_EXTENDED_RULES[key]).label,rule:(EXA_ORTHOGONAL_RULES[key]||EXA_EXTENDED_RULES[key]).rule,metric,value,blocked:!!blocked,passed:!blocked}]));
   }
