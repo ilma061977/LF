@@ -1,0 +1,158 @@
+{
+  "generatedAt": "2026-10-08",
+  "mode": "PESQUISA SEM DEPLOY",
+  "base": {
+    "through": 3799,
+    "draws": 3799,
+    "universe": 3268760,
+    "officialMatrix": "F01-F83",
+    "officialApproved": 672768,
+    "officialBlocked": 2595992,
+    "officialBlockedPct": 79.41825034569683
+  },
+  "method": {
+    "description": "Para cada família F78-F83, analisar assinatura conjunta [contagem grupo A, contagem grupo B, moldura, ímpares]. Miolo=15-moldura e pares=15-ímpares são derivados para evitar redundância.",
+    "exaSourcesReviewed": 40,
+    "multipleTesting": "2872 células com 0 histórico e massa >=100 foram encontradas; BH/FDR mínimo ~0.8903, portanto nenhuma é promovida por evidência estatística isolada.",
+    "discovery": "1-2796",
+    "holdout": "2797-3799"
+  },
+  "candidates": [
+    {
+      "id": "C78-BP",
+      "family": "F78 base · Fibonacci×Primos + Moldura/Miolo + Ímpares/Pares",
+      "signature": {
+        "fibonacci": 5,
+        "primos": 7,
+        "moldura": 8,
+        "miolo": 7,
+        "impares": 7,
+        "pares": 8
+      },
+      "universe": 2898,
+      "historicalHits": 0,
+      "expectedHits": 3.368,
+      "rawP0": 0.034455,
+      "bhQ": 0.890278,
+      "trueMarginalOnF01F83": 0,
+      "holdoutHits": 0,
+      "status": "REDUNDANTE SOBRE F01-F83"
+    },
+    {
+      "id": "C79-BP",
+      "family": "F79 base · Fibonacci×M3 + Moldura/Miolo + Ímpares/Pares",
+      "signature": {
+        "fibonacci": 3,
+        "m3": 4,
+        "moldura": 11,
+        "miolo": 4,
+        "impares": 9,
+        "pares": 6
+      },
+      "universe": 3550,
+      "historicalHits": 0,
+      "expectedHits": 4.126,
+      "rawP0": 0.01615,
+      "bhQ": 0.890278,
+      "trueMarginalOnF01F83": 1065,
+      "holdoutHits": 0,
+      "status": "QUARENTENA"
+    },
+    {
+      "id": "C80-BP",
+      "family": "F80 base · Fibonacci×Mágicos + Moldura/Miolo + Ímpares/Pares",
+      "signature": {
+        "fibonacci": 5,
+        "magicos": 4,
+        "moldura": 8,
+        "miolo": 7,
+        "impares": 8,
+        "pares": 7
+      },
+      "universe": 3042,
+      "historicalHits": 0,
+      "expectedHits": 3.535,
+      "rawP0": 0.029145,
+      "bhQ": 0.890278,
+      "trueMarginalOnF01F83": 0,
+      "holdoutHits": 0,
+      "status": "REDUNDANTE SOBRE F01-F83"
+    },
+    {
+      "id": "C81-BP",
+      "family": "F81 base · Primos×M3 + Moldura/Miolo + Ímpares/Pares",
+      "signature": {
+        "primos": 5,
+        "m3": 6,
+        "moldura": 11,
+        "miolo": 4,
+        "impares": 6,
+        "pares": 9
+      },
+      "universe": 3434,
+      "historicalHits": 0,
+      "expectedHits": 3.991,
+      "rawP0": 0.01848,
+      "bhQ": 0.890278,
+      "trueMarginalOnF01F83": 1022,
+      "holdoutHits": 0,
+      "status": "QUARENTENA"
+    },
+    {
+      "id": "C82-BP",
+      "family": "F82 base · Primos×Mágicos + Moldura/Miolo + Ímpares/Pares",
+      "signature": {
+        "primos": 6,
+        "magicos": 4,
+        "moldura": 11,
+        "miolo": 4,
+        "impares": 10,
+        "pares": 5
+      },
+      "universe": 3077,
+      "historicalHits": 0,
+      "expectedHits": 3.576,
+      "rawP0": 0.027984,
+      "bhQ": 0.890278,
+      "trueMarginalOnF01F83": 878,
+      "holdoutHits": 0,
+      "status": "QUARENTENA"
+    },
+    {
+      "id": "C83-BP",
+      "family": "F83 base · M3×Mágicos + Moldura/Miolo + Ímpares/Pares",
+      "signature": {
+        "m3": 7,
+        "magicos": 5,
+        "moldura": 11,
+        "miolo": 4,
+        "impares": 8,
+        "pares": 7
+      },
+      "universe": 3645,
+      "historicalHits": 0,
+      "expectedHits": 4.236,
+      "rawP0": 0.014461,
+      "bhQ": 0.890278,
+      "trueMarginalOnF01F83": 941,
+      "holdoutHits": 0,
+      "status": "QUARENTENA"
+    }
+  ],
+  "exactUnion": {
+    "gross": 19646,
+    "alreadyBlockedByF01F83": 15740,
+    "trueMarginalOnF01F83": 3906,
+    "ifAllActivated": {
+      "approved": 668862,
+      "blocked": 2599898,
+      "blockedPct": 79.53774520001468,
+      "incrementPctPoints": 0.11949485431785
+    }
+  },
+  "discoveryHoldout": {
+    "note": "Os melhores candidatos escolhidos apenas no discovery nem sempre sobreviveram ao holdout: F78/F79/F80/F81/F82 tiveram células de maior massa com 1-4 hits futuros. O candidato principal F83 7|5|11|8 permaneceu 0 no holdout. Por isso nenhuma promoção automática.",
+    "selectedSixAllHaveHoldoutZero": true
+  },
+  "decision": "Nenhum novo F84+ promovido. C79, C81, C82 e C83 seguem QUARENTENA; C78 e C80 são redundantes na Matriz F01-F83 atual. Exigir validação walk-forward/reselection e controle de múltiplas hipóteses antes de ativar."
+}
