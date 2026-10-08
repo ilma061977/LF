@@ -1,4 +1,4 @@
-name: Finalize Mega v1.16
+name: Finalize Mega v1.16 Current
 on:
   push:
     branches: [main]
