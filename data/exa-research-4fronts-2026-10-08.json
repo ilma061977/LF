@@ -743,7 +743,7 @@
     "decision": "Não promover para F73. Manter visível em pesquisa/quarentena."
   },
   "formalAcceptancePolicy20261008": {
-    "officialMatrix": "F01-F72",
+    "officialMatrix": "F01-F77",
     "rqaRole": "Painel analítico de regime; nunca bloqueio enquanto não passar todos os critérios.",
     "criteria": [
       "zero falhas walk-forward",
@@ -863,5 +863,78 @@
       "approvedPct": 20.873970557642654,
       "concentrationRatio": 4.790655410950873
     }
+  },
+  "exaCross4Audit20261008": {
+    "policy": "Rev25",
+    "families": [
+      {
+        "id": 74,
+        "key": "EXA-CROSS-01",
+        "name": "Moldura x Primos",
+        "marginal": 1395,
+        "exclusive": 1387,
+        "historicalHits": 0,
+        "massGe100Origins": 100,
+        "cv": 0
+      },
+      {
+        "id": 75,
+        "key": "EXA-CROSS-02",
+        "name": "Moldura x Paridade",
+        "marginal": 824,
+        "exclusive": 816,
+        "historicalHits": 0,
+        "massGe100Origins": 100,
+        "cv": 0
+      },
+      {
+        "id": 76,
+        "key": "EXA-CROSS-03",
+        "name": "Baixas x Primos",
+        "marginal": 647,
+        "exclusive": 643,
+        "historicalHits": 0,
+        "massGe100Origins": 100,
+        "cv": 0
+      },
+      {
+        "id": 77,
+        "key": "EXA-CROSS-04",
+        "name": "Paridade x Baixas",
+        "marginal": 411,
+        "exclusive": 407,
+        "historicalHits": 0,
+        "massGe100Origins": 100,
+        "cv": 0
+      }
+    ],
+    "holdoutCuts": [
+      1000,
+      1500,
+      2000,
+      2500,
+      2800,
+      3000,
+      3200,
+      3400,
+      3600
+    ],
+    "holdoutFailures": 0,
+    "pairOverlaps": {
+      "F74-F75": 8,
+      "F74-F76": 0,
+      "F74-F77": 0,
+      "F75-F76": 0,
+      "F75-F77": 0,
+      "F76-F77": 4
+    },
+    "unionMarginalExact": 3265,
+    "approvedBefore": 682320,
+    "approvedAfter": 679055,
+    "blockedAfter": 2589705,
+    "blockedPct": 79.22591441402857,
+    "approvedPct": 20.774085585971438,
+    "concentrationRatio": 4.8136896127706885,
+    "decision": "Promovidos como bloqueios oficiais F74-F77."
   }
 }
