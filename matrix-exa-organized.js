@@ -131,7 +131,7 @@
     {key:'MORPH-CLOSE1',family:'MULTIESCALA',occ:1,universe:522,marginal:29,status:'OBSERVAR'},
     {key:'MOM-MIXHI',family:'MOMENTOS GEOMÉTRICOS',occ:1,universe:428,marginal:161,status:'QUARENTENA FORTE'},
     {key:'GRAPH-P4',family:'MOTIVOS DE GRAFO',occ:1,universe:1186,marginal:0,status:'REDUNDANTE'},
-    {key:'RQA-10-STATE',family:'DINÂMICA DE SEQUÊNCIA INTEIRA',occ:1,universe:12117,marginal:1647,status:'QUARENTENA FORTE'}
+    {key:'RQA-10-STATE',family:'DINÂMICA DE SEQUÊNCIA INTEIRA',occ:1,universe:12117,marginal:1647,status:'QUARENTENA FORTE / INSTÁVEL'}
   ];
   function renderVirginFronts(panel,root){
     let box=panel.querySelector('#matrix-exa-virgin-fronts');
@@ -142,7 +142,7 @@
       `Ocorrências históricas: <b>${x.occ}</b> · Universo atual: <b>${fmt(x.universe)}</b> · Ganho marginal sobre F01–F72: <b>${fmt(x.marginal)}</b>.`,
       x.marginal>=100?'is-active':''
     )).join('');
-    box.innerHTML=`<h3>PESQUISA EXA · FRENTES VIRGENS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note"><b>Resultado:</b> nenhum cruzamento com zero ocorrência histórica conseguiu ≥100 marginais. Os melhores novos candidatos são <b>MOM-MIXHI = 161 marginais</b> e <b>RQA-10-STATE = 1.647 marginais</b>, mas ambos têm 1 ocorrência histórica e permanecem em quarentena.</div>`;
+    box.innerHTML=`<h3>PESQUISA EXA · FRENTES VIRGENS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note"><b>Resultado:</b> nenhum cruzamento com zero ocorrência histórica conseguiu ≥100 marginais. Os melhores novos candidatos são <b>MOM-MIXHI = 161 marginais</b> e <b>RQA-10-STATE = 1.647 marginais</b>. O RQA permanece <b>QUARENTENA FORTE / INSTÁVEL</b>: 1 falha histórica (#3618), permutação sem raridade estatística convincente e alta oscilação de massa entre origins.</div>`;
   }
 
   const EXA_QUARANTINE_8=[
