@@ -741,5 +741,24 @@
       "massa altamente instável entre origins"
     ],
     "decision": "Não promover para F73. Manter visível em pesquisa/quarentena."
+  },
+  "formalAcceptancePolicy20261008": {
+    "officialMatrix": "F01-F72",
+    "rqaRole": "Painel analítico de regime; nunca bloqueio enquanto não passar todos os critérios.",
+    "criteria": [
+      "zero falhas walk-forward",
+      "ganho marginal exato >= 100 jogos",
+      "massa >= 100 jogos em pelo menos 70 dos últimos 100 origins",
+      "CV da massa <= 1.0"
+    ],
+    "promotionRule": "Todos os quatro critérios são obrigatórios e simultâneos.",
+    "rqa10State": {
+      "status": "QUARENTENA FORTE / INSTÁVEL",
+      "promoted": false
+    },
+    "rqaAdaptive": {
+      "status": "EXPERIMENTAL / INSTABILIDADE EXTREMA",
+      "promoted": false
+    }
   }
 }
