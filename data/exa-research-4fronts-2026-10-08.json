@@ -760,5 +760,108 @@
       "status": "EXPERIMENTAL / INSTABILIDADE EXTREMA",
       "promoted": false
     }
+  },
+  "exaDeepOriginalBlocks20261008": {
+    "sourcesReviewed": 40,
+    "workstreams": 4,
+    "families": [
+      "medial axis / skeleton real",
+      "Walsh 2D completo",
+      "espectro do grafo",
+      "Johnson/Krawtchouk"
+    ],
+    "formalPolicy": {
+      "zeroWalkForwardFailures": true,
+      "minMarginal": 100,
+      "minMassOrigins": "massa >=100 em pelo menos 70/100",
+      "maxCV": 1
+    },
+    "finalists": [
+      {
+        "id": 73,
+        "key": "EXA-WJ-01",
+        "rule": "Walsh high-sequency energy >=900 AND Johnson20 M2 >=55",
+        "historicalWalkForward": {
+          "from": 21,
+          "to": 3799,
+          "hits": 0
+        },
+        "currentUniverseExact": 767,
+        "marginalExact": 147,
+        "stability100": {
+          "massGe100": 100,
+          "nonzero": 100,
+          "min": 265,
+          "q25": 818,
+          "median": 1271,
+          "q75": 1720,
+          "max": 3329,
+          "mean": 1404.21,
+          "sd": 757.722340900676,
+          "cv": 0.5396075664613385,
+          "current": 767
+        },
+        "status": "ATIVO · APROVADO REV25"
+      }
+    ],
+    "rejected": [
+      {
+        "key": "Walsh+grau2",
+        "historicalHits": 0,
+        "universeExact": 266,
+        "marginalExact": 82,
+        "reason": "marginal <100"
+      },
+      {
+        "key": "MedialAxis12+Johnson10H35",
+        "historicalHits": 0,
+        "universeExact": 107,
+        "marginalExact": 1
+      },
+      {
+        "key": "MedialAxis11+Johnson20H45",
+        "historicalHits": 0,
+        "universeExact": 800,
+        "marginalExact": 37
+      },
+      {
+        "key": "MedialAxis12+Johnson20H55",
+        "historicalHits": 0,
+        "universeExact": 218,
+        "marginalExact": 5
+      },
+      {
+        "key": "WalshMax17+Johnson10H40",
+        "historicalHits": 0,
+        "universeExact": 122,
+        "marginalExact": 1
+      },
+      {
+        "key": "WalshMax17+Johnson20H55",
+        "historicalHits": 0,
+        "universeExact": 462,
+        "marginalExact": 54
+      },
+      {
+        "key": "WalshMax19+Johnson50L45",
+        "historicalHits": 0,
+        "universeExact": 206,
+        "marginalExact": 59
+      },
+      {
+        "key": "WalshHigh900+Johnson10H40",
+        "historicalHits": 0,
+        "universeExact": 106,
+        "marginalExact": 4
+      }
+    ],
+    "officialAfterF73": {
+      "universe": 3268760,
+      "approved": 682320,
+      "blocked": 2586440,
+      "blockedPct": 79.12602944235735,
+      "approvedPct": 20.873970557642654,
+      "concentrationRatio": 4.790655410950873
+    }
   }
 }
