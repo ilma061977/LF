@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LF Inteligente · Pesquisa EXA · Cruzamentos</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color-scheme:dark;background:#0b1220;color:#e5edf7}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#0b1220,#111827 65%,#0b1220);min-height:100vh}
+header{padding:22px 18px;border-bottom:1px solid #263245;position:sticky;top:0;background:rgba(11,18,32,.94);backdrop-filter:blur(10px);z-index:5}
+.wrap{max-width:1180px;margin:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:16px}.eyebrow{font-size:12px;letter-spacing:.12em;color:#93c5fd;font-weight:800}.title{margin:5px 0 0;font-size:clamp(23px,4vw,38px)}.back{color:#dbeafe;text-decoration:none;border:1px solid #334155;border-radius:12px;padding:10px 14px;font-weight:700}
+main{padding:22px 18px 48px}.notice,.panel{border:1px solid #29364a;background:rgba(15,23,42,.82);border-radius:18px;padding:18px;margin-bottom:18px}.notice strong{color:#fde68a}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px}.metric{border:1px solid #334155;border-radius:15px;padding:15px;background:#111b2e}.metric small{display:block;color:#94a3b8;margin-bottom:7px}.metric b{font-size:21px}
+.group-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.group-btn{border:1px solid #334155;border-radius:14px;background:#111827;color:#dbeafe;padding:14px 8px;font-weight:800;cursor:pointer}.group-btn.active{outline:2px solid #60a5fa;background:#172554}.group-btn small{display:block;color:#93a4ba;font-weight:500;margin-top:5px}
+.mode-row{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 0}.mode{border:1px solid #334155;background:#0f172a;color:#cbd5e1;border-radius:999px;padding:9px 13px;cursor:pointer;font-weight:700}.mode.active{background:#1d4ed8;color:white}
+h2{margin:0 0 12px}.sub{color:#aab6c7;margin:0 0 16px}.result{border:1px solid #3b82f6;border-radius:18px;padding:18px;background:rgba(30,64,175,.12)}.badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900;letter-spacing:.04em;background:#334155}.official{background:#14532d;color:#dcfce7}.quarantine{background:#78350f;color:#fef3c7}.research{background:#312e81;color:#e0e7ff}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #263245}th{color:#93a4ba;font-size:12px}td b{color:#f8fafc}.scroll{overflow:auto}
+.sets{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.set{border:1px solid #2c3a50;border-radius:14px;padding:13px}.nums{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.n{width:31px;height:31px;border-radius:50%;display:grid;place-items:center;background:#1e293b;font-weight:800}
+#selection-name{font-size:25px;margin:5px 0 9px}.muted{color:#94a3b8}.footnote{font-size:13px;color:#94a3b8;line-height:1.55}
+@media(max-width:620px){.group-buttons{grid-template-columns:1fr 1fr}.top{align-items:flex-start}.back{font-size:12px;padding:9px}.title{font-size:24px}}
+</style>
+</head>
+<body>
+<header><div class="wrap top"><div><div class="eyebrow">PESQUISA EXA · CRUZAMENTOS DE GRUPOS</div><h1 class="title">Fibonacci · Primos · M3 · Mágicos</h1></div><a class="back" href="/?page=matrix">← Matriz</a></div></header>
+<main class="wrap">
+<section class="notice"><strong>Regra operacional:</strong> pares aprovados permanecem F78–F83. Trincas e quatro grupos juntos ficam em <b>QUARENTENA</b> por múltiplas hipóteses e risco de sobreajuste; esta tela não ativa novos bloqueios.</section>
+<section class="panel">
+<h2>Alternar entre os 4 grupos</h2>
+<p class="sub">Escolha exatamente 2, 3 ou 4 grupos. O painel muda automaticamente para o cruzamento correspondente.</p>
+<div id="group-buttons" class="group-buttons"></div>
+<div class="mode-row"><button class="mode active" data-mode="2">2 grupos</button><button class="mode" data-mode="3">3 grupos</button><button class="mode" data-mode="4">4 juntos</button></div>
+</section>
+<section class="panel result">
+<div id="selection-badge" class="badge research">PESQUISA</div>
+<div id="selection-name">Selecione os grupos</div>
+<div id="selection-detail" class="muted"></div>
+<div id="selection-metrics" class="grid" style="margin-top:16px"></div>
+</section>
+<section class="panel">
+<h2>Seis pares oficiais · F78–F83</h2>
+<div class="scroll"><table><thead><tr><th>Filtro</th><th>Cruzamento</th><th>Marginal</th><th>Exclusivo</th><th>Histórico</th><th>Status</th></tr></thead><tbody id="pairs"></tbody></table></div>
+</section>
+<section class="panel">
+<h2>Trincas · pesquisa</h2>
+<p class="sub">Quantidade de assinaturas com 0 ocorrências históricas e massa ≥100. Não são somadas nem ativadas automaticamente.</p>
+<div id="triples" class="grid"></div>
+</section>
+<section class="panel">
+<h2>Quatro juntos · FPMG</h2>
+<div id="four"></div>
+</section>
+<section class="panel">
+<h2>Definição dos grupos</h2>
+<div id="sets" class="sets"></div>
+</section>
+<section class="panel footnote">
+<b>Base:</b> concursos 1–3799. <b>Política Rev25:</b> zero falhas walk-forward, ganho marginal exato ≥100, massa ≥100 em pelo menos 70/100 origins e CV ≤1,0 para promoção oficial. Os resultados de trincas/FPMG continuam exploratórios até passarem controle de múltiplas hipóteses e validação prospectiva sem reajuste retroativo.
+</section>
+</main>
+<script>
+const LABELS={fibonacci:'Fibonacci',primes:'Primos',multiples3:'Múltiplos de 3',magic:'Mágicos'};
+const SHORT={fibonacci:'F',primes:'P',multiples3:'M3',magic:'G'};
+const KEY_BY_PAIR={
+ 'fibonacci|primes':'EXA-CROSS-05','fibonacci|multiples3':'EXA-CROSS-06','fibonacci|magic':'EXA-CROSS-07',
+ 'primes|multiples3':'EXA-CROSS-08','primes|magic':'EXA-CROSS-09','multiples3|magic':'EXA-CROSS-10'
+};
+const order=['fibonacci','primes','multiples3','magic'];
+let data=null,mode=2,selected=new Set(['fibonacci','primes']);
+const fmt=n=>Number(n).toLocaleString('pt-BR');
+const byOrder=a=>[...a].sort((x,y)=>order.indexOf(x)-order.indexOf(y));
+function pairKey(a){return byOrder(a).join('|')}
+function renderButtons(){
+ const box=document.querySelector('#group-buttons');box.innerHTML='';
+ for(const k of order){const b=document.createElement('button');b.className='group-btn'+(selected.has(k)?' active':'');b.innerHTML=LABELS[k]+'<small>'+SHORT[k]+'</small>';b.onclick=()=>toggle(k);box.appendChild(b)}
+}
+function toggle(k){
+ if(selected.has(k)){if(selected.size>1)selected.delete(k)}
+ else {selected.add(k);while(selected.size>mode){for(const x of order){if(selected.has(x)&&x!==k){selected.delete(x);break}}}}
+ while(selected.size<mode){for(const x of order){if(!selected.has(x)){selected.add(x);break}}}
+ renderButtons();renderSelection();
+}
+function setMode(n){mode=n;document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('active',+b.dataset.mode===n));while(selected.size>n)selected.delete(byOrder(selected).at(-1));while(selected.size<n){for(const x of order)if(!selected.has(x)){selected.add(x);break}}renderButtons();renderSelection()}
+function metric(label,value){return '<div class="metric"><small>'+label+'</small><b>'+value+'</b></div>'}
+function renderSelection(){
+ if(!data)return;
+ const a=byOrder(selected), name=a.map(x=>LABELS[x]).join(' × '), badge=document.querySelector('#selection-badge'), detail=document.querySelector('#selection-detail'), metrics=document.querySelector('#selection-metrics');
+ document.querySelector('#selection-name').textContent=name;
+ if(mode===2){
+   const key=KEY_BY_PAIR[pairKey(a)], item=data.exaFibonacciPrimeM3Magic20261008.promotedPairs.find(x=>x.key===key);
+   badge.className='badge official';badge.textContent='OFICIAL · F'+item.id;
+   detail.textContent=item.key+' · aprovado pela política Rev25.';
+   metrics.innerHTML=metric('Marginal exato',fmt(item.marginal))+metric('Exclusivo',fmt(item.exclusive))+metric('Ocorrências históricas',item.historicalHits)+metric('Origins massa ≥100',item.massGe100Origins+'/100')+metric('CV',item.cv);
+ }else if(mode===3){
+   const sig=a.map(x=>SHORT[x]).join('').replace('M3','M'), item=data.exaFibonacciPrimeM3Magic20261008.triplesResearch[sig];
+   badge.className='badge quarantine';badge.textContent='QUARENTENA';
+   detail.textContent='Pesquisa de assinaturas conjuntas. Não é bloqueio oficial.';
+   metrics.innerHTML=metric('Assinaturas 0 histórico + massa≥100',fmt(item?.zeroHistoricalSignaturesGe100||0))+metric('Status',item?.status||'PESQUISA');
+ }else{
+   const item=data.exaFibonacciPrimeM3Magic20261008.allFourResearch.FPMG;
+   badge.className='badge quarantine';badge.textContent='QUARENTENA · 4 JUNTOS';
+   detail.textContent='Fibonacci × Primos × Múltiplos de 3 × Mágicos';
+   metrics.innerHTML=metric('Assinaturas 0 histórico + massa≥100',fmt(item.zeroHistoricalSignaturesGe100))+metric('Status',item.status);
+ }
+}
+function renderAll(){
+ const x=data.exaFibonacciPrimeM3Magic20261008;
+ document.querySelector('#pairs').innerHTML=x.promotedPairs.map(p=>'<tr><td><b>F'+p.id+'</b><br><small>'+p.key+'</small></td><td>'+p.name+'</td><td>'+fmt(p.marginal)+'</td><td>'+fmt(p.exclusive)+'</td><td>'+p.historicalHits+'</td><td><span class="badge official">ATIVO</span></td></tr>').join('');
+ const names={FPM:'Fibonacci × Primos × M3',FPG:'Fibonacci × Primos × Mágicos',FMG:'Fibonacci × M3 × Mágicos',PMG:'Primos × M3 × Mágicos'};
+ document.querySelector('#triples').innerHTML=Object.entries(x.triplesResearch).map(([k,v])=>'<div class="metric"><small>'+names[k]+'</small><b>'+fmt(v.zeroHistoricalSignaturesGe100)+'</b><div class="muted">assinaturas 0 histórico + massa≥100</div><div style="margin-top:8px"><span class="badge quarantine">QUARENTENA</span></div></div>').join('');
+ const f=x.allFourResearch.FPMG;document.querySelector('#four').innerHTML='<div class="grid">'+metric('Assinaturas 0 histórico + massa≥100',fmt(f.zeroHistoricalSignaturesGe100))+metric('Status',f.status)+metric('Aprovados oficiais após F83',fmt(x.officialAfterF83.approved))+metric('Bloqueio oficial F01–F83',x.officialAfterF83.blockedPct.toLocaleString('pt-BR',{minimumFractionDigits:6,maximumFractionDigits:6})+'%')+'</div>';
+ document.querySelector('#sets').innerHTML=Object.entries(x.sets).map(([k,v])=>'<div class="set"><b>'+LABELS[k]+'</b><div class="nums">'+v.map(n=>'<span class="n">'+String(n).padStart(2,'0')+'</span>').join('')+'</div></div>').join('');
+ renderButtons();renderSelection();
+}
+document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>setMode(+b.dataset.mode));
+fetch('/data/exa-research-4fronts-2026-10-08.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{data=j;renderAll()}).catch(e=>{document.querySelector('#selection-detail').textContent='Erro ao carregar a pesquisa: '+e.message});
+</script>
+</body></html>
