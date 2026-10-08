@@ -338,5 +338,121 @@
       "approvedIfAllFiveWereActivated": 688116,
       "recommendation": "Manter todos como EXPERIMENTAIS / OBSERVAR; ganho marginal conjunto de apenas 27 jogos."
     }
+  },
+  "exaTemporalResearch20261008": {
+    "sourcesReviewed": 36,
+    "workstreams": 3,
+    "policy": "Novas pesquisas só podem promover bloqueios com ganho marginal >=100 jogos; prioridade para zero ocorrência em walk-forward verdadeiro.",
+    "shapeBlockersActivated": [
+      {
+        "id": 59,
+        "key": "EXA-SHAPE-01",
+        "rule": "checker>=7 AND q3>=10",
+        "historicalOccurrences": 1,
+        "universeExact": 952,
+        "marginalBeforeTemporal": 0
+      },
+      {
+        "id": 60,
+        "key": "EXA-SHAPE-02",
+        "rule": "checker>=9 AND holes>=3",
+        "historicalOccurrences": 1,
+        "universeExact": 1376,
+        "marginalBeforeTemporal": 0
+      },
+      {
+        "id": 61,
+        "key": "EXA-SHAPE-03",
+        "rule": "edges>=19 AND q3<=2",
+        "historicalOccurrences": 1,
+        "universeExact": 2354,
+        "marginalBeforeTemporal": 11
+      },
+      {
+        "id": 62,
+        "key": "EXA-SHAPE-04",
+        "rule": "edges>=20 AND endpoints<=1",
+        "historicalOccurrences": 1,
+        "universeExact": 3374,
+        "marginalBeforeTemporal": 4
+      },
+      {
+        "id": 63,
+        "key": "EXA-SHAPE-05",
+        "rule": "endpoints<=1 AND junctions>=9",
+        "historicalOccurrences": 1,
+        "universeExact": 2106,
+        "marginalBeforeTemporal": 5
+      },
+      {
+        "id": 64,
+        "key": "EXA-SHAPE-06",
+        "rule": "endpoints<=1 AND q3>=10",
+        "historicalOccurrences": 1,
+        "universeExact": 482,
+        "marginalBeforeTemporal": 7
+      }
+    ],
+    "temporalBlockersActivated": [
+      {
+        "id": 65,
+        "key": "EXA-TEMP-01",
+        "rule": "perimD lag1 >=10 AND lineL1 lag3 >=12",
+        "historicalOccurrences": 0,
+        "currentUniverseExact": 8872,
+        "marginalExact": 1048,
+        "exclusiveExact": 1048
+      },
+      {
+        "id": 66,
+        "key": "EXA-TEMP-02",
+        "rule": "holesD lag1 >=2 AND perimD lag3 >=16",
+        "historicalOccurrences": 0,
+        "currentUniverseExact": 11350,
+        "marginalExact": 1028,
+        "exclusiveExact": 1028
+      },
+      {
+        "id": 67,
+        "key": "EXA-TEMP-03",
+        "rule": "holesD lag1 >=4 AND perimD lag3 >=10",
+        "historicalOccurrences": 0,
+        "currentUniverseExact": 2632,
+        "marginalExact": 136,
+        "exclusiveExact": 136
+      },
+      {
+        "id": 68,
+        "key": "EXA-TEMP-04",
+        "rule": "compD lag1 >=3 AND gapL1 lag3 <=4",
+        "historicalOccurrences": 0,
+        "currentUniverseExact": 533,
+        "marginalExact": 204,
+        "exclusiveExact": 204
+      }
+    ],
+    "rejectedAsRedundant": [
+      {
+        "rule": "perimD lag1 >=10 AND lineL1 lag2 >=12",
+        "marginalExact": 337,
+        "exclusiveAgainstFinalSet": 0
+      },
+      {
+        "rule": "perimD lag1 >=12 AND lineL1 lag3 >=12",
+        "marginalExact": 130,
+        "exclusiveAgainstFinalSet": 0
+      }
+    ],
+    "exactUnion": {
+      "approvedRev21": 688143,
+      "afterShape6": 688116,
+      "shape6MarginalUnion": 27,
+      "temporal4MarginalUnion": 2416,
+      "approvedFinal": 685700,
+      "blockedTotal": 2583060,
+      "blockedPct": 79.02262631701318,
+      "remainingPct": 20.977373682986823
+    },
+    "note": "F06 permanece apenas AVISO/OBSERVAR. F54 permanece desligado. As quatro regras temporais selecionadas têm zero ocorrência histórica e >=100 jogos marginais."
   }
 }
