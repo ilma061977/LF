@@ -331,7 +331,13 @@
     'EXA-CROSS-01':{label:'Moldura × Primos',rule:'assinaturas 2x2 moldura/miolo × primo/não-primo',status:'ATIVO',enabledByDefault:true,id:74,marginalGames:1395},
     'EXA-CROSS-02':{label:'Moldura × Paridade',rule:'assinaturas 2x2 moldura/miolo × par/ímpar',status:'ATIVO',enabledByDefault:true,id:75,marginalGames:824},
     'EXA-CROSS-03':{label:'Baixas × Primos',rule:'assinaturas 2x2 baixas/altas × primo/não-primo',status:'ATIVO',enabledByDefault:true,id:76,marginalGames:647},
-    'EXA-CROSS-04':{label:'Paridade × Baixas',rule:'assinaturas 2x2 par/ímpar × baixas/altas',status:'ATIVO',enabledByDefault:true,id:77,marginalGames:411}
+    'EXA-CROSS-04':{label:'Paridade × Baixas',rule:'assinaturas 2x2 par/ímpar × baixas/altas',status:'ATIVO',enabledByDefault:true,id:77,marginalGames:411},
+    'EXA-CROSS-05':{label:'Fibonacci × Primos',rule:'assinaturas 2x2 Fibonacci × Primos',status:'ATIVO',enabledByDefault:true,id:78,marginalGames:249},
+    'EXA-CROSS-06':{label:'Fibonacci × Múltiplos de 3',rule:'assinaturas 2x2 Fibonacci × Múltiplos de 3',status:'ATIVO',enabledByDefault:true,id:79,marginalGames:1890},
+    'EXA-CROSS-07':{label:'Fibonacci × Mágicos',rule:'assinaturas 2x2 Fibonacci × Mágicos',status:'ATIVO',enabledByDefault:true,id:80,marginalGames:1284},
+    'EXA-CROSS-08':{label:'Primos × Múltiplos de 3',rule:'assinaturas 2x2 Primos × Múltiplos de 3',status:'ATIVO',enabledByDefault:true,id:81,marginalGames:850},
+    'EXA-CROSS-09':{label:'Primos × Mágicos',rule:'assinaturas 2x2 Primos × Mágicos',status:'ATIVO',enabledByDefault:true,id:82,marginalGames:1098},
+    'EXA-CROSS-10':{label:'Múltiplos de 3 × Mágicos',rule:'assinaturas 2x2 Múltiplos de 3 × Mágicos',status:'ATIVO',enabledByDefault:true,id:83,marginalGames:1175}
   });
   function exaShapeMetrics(game=[]){
     const g=normalize(game);if(!g)return null;
