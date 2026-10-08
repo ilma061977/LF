@@ -205,5 +205,115 @@
       "DIA_02": 0
     },
     "note": "Nenhuma das seis regras principais marcou os concursos 3797-3799."
+  },
+  "exactDecision20261008": {
+    "baseline": {
+      "matrixApproved": 196430,
+      "afterOfficialExa": 190971,
+      "verifiedExact": true
+    },
+    "candidates": [
+      {
+        "id": "C8-R1",
+        "label": "max8 ≤ 5",
+        "status": "EXPERIMENTAL / OBSERVAR",
+        "historicalOccurrences": 0,
+        "lastContest": null,
+        "currentDelay": null,
+        "universeExact": 290,
+        "marginalOn190971": 0,
+        "exclusiveOn190971": 0
+      },
+      {
+        "id": "C8-R2",
+        "label": "isolados8 ≥ 3",
+        "status": "EXPERIMENTAL / OBSERVAR",
+        "historicalOccurrences": 1,
+        "lastContest": 2916,
+        "currentDelay": 883,
+        "universeExact": 2200,
+        "marginalOn190971": 0,
+        "exclusiveOn190971": 0
+      },
+      {
+        "id": "DIA-R1",
+        "label": "componentes diagonais ≥ 12",
+        "status": "EXPERIMENTAL / OBSERVAR",
+        "historicalOccurrences": 1,
+        "lastContest": 192,
+        "currentDelay": 3607,
+        "universeExact": 1382,
+        "marginalOn190971": 0,
+        "exclusiveOn190971": 0
+      },
+      {
+        "id": "DIA-R2",
+        "label": "diagMax ≤ 2",
+        "status": "EXPERIMENTAL / OBSERVAR",
+        "historicalOccurrences": 1,
+        "lastContest": 192,
+        "currentDelay": 3607,
+        "universeExact": 402,
+        "marginalOn190971": 0,
+        "exclusiveOn190971": 0
+      },
+      {
+        "id": "C8-SIG-753",
+        "label": "assinatura 8-vizinhos 7-5-3",
+        "status": "EXPERIMENTAL / OBSERVAR",
+        "historicalOccurrences": 0,
+        "lastContest": null,
+        "currentDelay": null,
+        "universeExact": 1160,
+        "marginalOn190971": 0,
+        "exclusiveOn190971": 0
+      }
+    ],
+    "unionFive": {
+      "universeExact": 5010,
+      "marginalOn190971": 0,
+      "afterIfActivated": 190971
+    },
+    "walkForward": {
+      "note": "Regras estruturais fixas; avaliação cronológica sem dados futuros. Holdout de seleção: 2797-3799.",
+      "windows": {
+        "1-999": {
+          "max8<=5": 0,
+          "isolados8>=3": 0,
+          "diagComp>=12": 1,
+          "diagMax<=2": 1,
+          "sig8=7-5-3": 0
+        },
+        "1000-1999": {
+          "max8<=5": 0,
+          "isolados8>=3": 0,
+          "diagComp>=12": 0,
+          "diagMax<=2": 0,
+          "sig8=7-5-3": 0
+        },
+        "2000-2999": {
+          "max8<=5": 0,
+          "isolados8>=3": 1,
+          "diagComp>=12": 0,
+          "diagMax<=2": 0,
+          "sig8=7-5-3": 0
+        },
+        "3000-3799": {
+          "max8<=5": 0,
+          "isolados8>=3": 0,
+          "diagComp>=12": 0,
+          "diagMax<=2": 0,
+          "sig8=7-5-3": 0
+        }
+      },
+      "holdout2797_3799": {
+        "max8<=5": 0,
+        "isolados8>=3": 1,
+        "diagComp>=12": 0,
+        "diagMax<=2": 0,
+        "sig8=7-5-3": 0
+      }
+    },
+    "recommendation": "Não promover a F59+. As cinco regras são totalmente redundantes sobre os 190.971 aprovados atuais."
   }
 }
