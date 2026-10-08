@@ -285,13 +285,13 @@
     'EXA-DIST-01':{label:'Espectro de distâncias',rule:'30 ou mais pares Manhattan com distância 3',threshold:'man3>=30',status:'ATIVO',enabledByDefault:true,isolatedGames:845,exclusiveGames:823}
   });
   const EXA_ORTHOGONAL_SUMMARY=Object.freeze({
-    baseThrough:3796,
+    baseThrough:3799,
     universe:3268760,
-    matrixApprovedBeforeExa:196430,
+    matrixApprovedBeforeExa:698339,
     activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01']),
-    unionMarginalGames:5459,
-    unionPctOfMatrix:2.7791070610395563,
-    unionPctOfUniverse:0.16700522522302036,
+    unionMarginalGames:10196,
+    unionPctOfMatrix:1.4600358851503352,
+    unionPctOfUniverse:0.3119225639080263,
     countingRule:'TOPO01 || TOPO02 || DIR01 || BITQ01 || SYM01 || DIST01 · cada jogo contado uma única vez',
     degIncluded:false
   });
