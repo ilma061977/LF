@@ -743,7 +743,7 @@
     "decision": "Não promover para F73. Manter visível em pesquisa/quarentena."
   },
   "formalAcceptancePolicy20261008": {
-    "officialMatrix": "F01-F77",
+    "officialMatrix": "F01-F83",
     "rqaRole": "Painel analítico de regime; nunca bloqueio enquanto não passar todos os critérios.",
     "criteria": [
       "zero falhas walk-forward",
@@ -936,5 +936,163 @@
     "approvedPct": 20.774085585971438,
     "concentrationRatio": 4.8136896127706885,
     "decision": "Promovidos como bloqueios oficiais F74-F77."
+  },
+  "exaFibonacciPrimeM3Magic20261008": {
+    "sets": {
+      "fibonacci": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        13,
+        21
+      ],
+      "primes": [
+        2,
+        3,
+        5,
+        7,
+        11,
+        13,
+        17,
+        19,
+        23
+      ],
+      "multiples3": [
+        3,
+        6,
+        9,
+        12,
+        15,
+        18,
+        21,
+        24
+      ],
+      "magic": [
+        5,
+        6,
+        7,
+        12,
+        13,
+        14,
+        19,
+        20,
+        21
+      ]
+    },
+    "promotedPairs": [
+      {
+        "id": 78,
+        "key": "EXA-CROSS-05",
+        "name": "Fibonacci x Primos",
+        "marginal": 249,
+        "exclusive": 249,
+        "historicalHits": 0,
+        "massGe100Origins": 100,
+        "cv": 0
+      },
+      {
+        "id": 79,
+        "key": "EXA-CROSS-06",
+        "name": "Fibonacci x Multiplos de 3",
+        "marginal": 1890,
+        "exclusive": 1754,
+        "historicalHits": 0,
+        "massGe100Origins": 100,
+        "cv": 0
+      },
+      {
+        "id": 80,
+        "key": "EXA-CROSS-07",
+        "name": "Fibonacci x Magicos",
+        "marginal": 1284,
+        "exclusive": 1272,
+        "historicalHits": 0,
+        "massGe100Origins": 100,
+        "cv": 0
+      },
+      {
+        "id": 81,
+        "key": "EXA-CROSS-08",
+        "name": "Primos x Multiplos de 3",
+        "marginal": 850,
+        "exclusive": 791,
+        "historicalHits": 0,
+        "massGe100Origins": 100,
+        "cv": 0
+      },
+      {
+        "id": 82,
+        "key": "EXA-CROSS-09",
+        "name": "Primos x Magicos",
+        "marginal": 1098,
+        "exclusive": 1011,
+        "historicalHits": 0,
+        "massGe100Origins": 100,
+        "cv": 0
+      },
+      {
+        "id": 83,
+        "key": "EXA-CROSS-10",
+        "name": "Multiplos de 3 x Magicos",
+        "marginal": 1175,
+        "exclusive": 959,
+        "historicalHits": 0,
+        "massGe100Origins": 100,
+        "cv": 0
+      }
+    ],
+    "pairOverlaps": {
+      "F78-F79": 0,
+      "F78-F80": 0,
+      "F78-F81": 0,
+      "F78-F82": 0,
+      "F78-F83": 0,
+      "F79-F80": 0,
+      "F79-F81": 30,
+      "F79-F82": 0,
+      "F79-F83": 114,
+      "F80-F81": 0,
+      "F80-F82": 12,
+      "F80-F83": 0,
+      "F81-F82": 1,
+      "F81-F83": 36,
+      "F82-F83": 74
+    },
+    "pairUnionMarginalExact": 6287,
+    "triplesResearch": {
+      "FPM": {
+        "zeroHistoricalSignaturesGe100": 372,
+        "status": "QUARENTENA MULTIPLAS HIPOTESES"
+      },
+      "FPG": {
+        "zeroHistoricalSignaturesGe100": 836,
+        "status": "QUARENTENA MULTIPLAS HIPOTESES"
+      },
+      "FMG": {
+        "zeroHistoricalSignaturesGe100": 831,
+        "status": "QUARENTENA MULTIPLAS HIPOTESES"
+      },
+      "PMG": {
+        "zeroHistoricalSignaturesGe100": 610,
+        "status": "QUARENTENA MULTIPLAS HIPOTESES"
+      }
+    },
+    "allFourResearch": {
+      "FPMG": {
+        "zeroHistoricalSignaturesGe100": 5656,
+        "status": "QUARENTENA MULTIPLAS HIPOTESES"
+      }
+    },
+    "decision": "Promover apenas as seis combinacoes em pares como F78-F83. Triplos e quatro juntos permanecem pesquisa/quarentena por explosao combinatoria e risco de overfitting.",
+    "officialAfterF83": {
+      "universe": 3268760,
+      "approved": 672768,
+      "blocked": 2595992,
+      "blockedPct": 79.41825034569683,
+      "approvedPct": 20.58174965430316,
+      "concentrationRatio": 4.85867342085236
+    }
   }
 }
