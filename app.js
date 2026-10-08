@@ -27,8 +27,8 @@
   const restoredIndicatorPicks=safeJSON('lfv3_indicator_picks',{});
   const savedPolicySchema=storageGet('lfv3_matrix_schema');
   const restoredPolicies=savedPolicySchema===M.SCHEMA_VERSION?safeJSON('lfv3_filter_policies',{}):{};
-  const EXTERNAL_BLOCK_SCHEMA='EXA-ORTHO-UNION10196-F06ADVISORY-3799-2026-10-08-v6';
-  const DEFAULT_EXTERNAL_BLOCK_POLICIES=Object.freeze({PADRAO:true,CORES:true,LINHA:true,COLUNA:true,LXC:true,'EXA-TOPO-01':true,'EXA-TOPO-02':true,'EXA-DEG-01':false,'EXA-DIR-01':true,'EXA-BITQ-01':true,'EXA-SYM-01':true,'EXA-DIST-01':true});
+  const EXTERNAL_BLOCK_SCHEMA='EXA-M68-SHAPE6-TEMP4-UNION12639-3799-2026-10-08-v7';
+  const DEFAULT_EXTERNAL_BLOCK_POLICIES=Object.freeze({PADRAO:true,CORES:true,LINHA:true,COLUNA:true,LXC:true,'EXA-TOPO-01':true,'EXA-TOPO-02':true,'EXA-DEG-01':false,'EXA-DIR-01':true,'EXA-BITQ-01':true,'EXA-SYM-01':true,'EXA-DIST-01':true,'EXA-SHAPE-01':true,'EXA-SHAPE-02':true,'EXA-SHAPE-03':true,'EXA-SHAPE-04':true,'EXA-SHAPE-05':true,'EXA-SHAPE-06':true,'EXA-TEMP-01':true,'EXA-TEMP-02':true,'EXA-TEMP-03':true,'EXA-TEMP-04':true});
   const restoredExternalBlockPolicies=storageGet('lfv3_external_block_schema')===EXTERNAL_BLOCK_SCHEMA?safeJSON('lfv3_external_block_policies',{}):{};
   const restoredDecisionRelaxations=safeJSON('lfv3_decision_relaxations',[]);
   const makeCloudId=()=>{try{return crypto.randomUUID()}catch{return `lf-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}};
@@ -1265,7 +1265,7 @@
 
   function computeFilterAudit(){const cacheKey=`${state.period}:${state.history.length}:${state.history.at(-1)?.concurso||0}`;if(state.filterAuditCache.has(cacheKey))return state.filterAuditCache.get(cacheKey);const rows=rowsForPeriod(state.period),stats=Object.fromEntries(M.FILTERS.map(f=>[f.id,{pass:0,total:0,scores:[]}])) ;for(const target of rows){const ix=state.history.findIndex(d=>d.concurso===target.concurso),prior=state.history.slice(0,ix);if(prior.length<10)continue;const ctx=M.buildContext(prior,{window:state.period}),r=M.inspect(target.dezenas,ctx);for(const f of r.filters){stats[f.id].total++;if(f.passed)stats[f.id].pass++;if(Number.isFinite(f.score))stats[f.id].scores.push(f.score);}}state.filterAuditCache.set(cacheKey,stats);return stats;}
   function percentileOf(value,arr){if(!Number.isFinite(value)||!arr.length)return null;return Math.round(arr.filter(x=>x<=value).length/arr.length*100);}
-  const EXA_ORTHO_OFFICIAL_UNION=M.EXA_ORTHOGONAL_SUMMARY||Object.freeze({baseThrough:3799,matrixApprovedBeforeExa:698339,activeKeys:['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01'],unionMarginalGames:10196,unionPctOfMatrix:1.4600358851503352,unionPctOfUniverse:0.3119225639080263});
+  const EXA_ORTHO_OFFICIAL_UNION=M.EXA_ORTHOGONAL_SUMMARY||Object.freeze({baseThrough:3799,matrixApprovedBeforeExa:698339,activeKeys:['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04'],unionMarginalGames:12639,unionPctOfMatrix:1.8098041190295802,unionPctOfUniverse:0.3866581596623108});
   const TOP_EXTERNAL_BLOCKS=[
     {key:'PADRAO',label:'Padrão exato',detail:'Carência por assinatura exata de linhas'},
     {key:'CORES',label:'Cores oficiais',detail:'Exige 8–10 cores distintas'},
@@ -1278,7 +1278,17 @@
     {key:'EXA-DIR-01',label:'EXA-DIR-01 · ATIVO',detail:'Anisotropia |H−V|+|D1−D2| ≥8 · 634 jogos exclusivos'},
     {key:'EXA-BITQ-01',label:'EXA-BITQ-01 · ATIVO',detail:'≥8 bit-quads diagonais 2×2 · 908 isolados · 479 exclusivos'},
     {key:'EXA-SYM-01',label:'EXA-SYM-01 · ATIVO',detail:'Variância inteira D4 ≤5 · 833 jogos exclusivos'},
-    {key:'EXA-DIST-01',label:'EXA-DIST-01 · ATIVO',detail:'≥30 pares Manhattan à distância 3 · 823 jogos exclusivos'}
+    {key:'EXA-DIST-01',label:'EXA-DIST-01 · ATIVO',detail:'≥30 pares Manhattan à distância 3 · 823 jogos exclusivos'},
+    {key:'EXA-SHAPE-01',label:'F59 · EXA-SHAPE-01 · ATIVO',detail:'checker ≥7 e q3 ≥10 · bloqueio geométrico'},
+    {key:'EXA-SHAPE-02',label:'F60 · EXA-SHAPE-02 · ATIVO',detail:'checker ≥9 e furos ≥3 · bloqueio geométrico'},
+    {key:'EXA-SHAPE-03',label:'F61 · EXA-SHAPE-03 · ATIVO',detail:'arestas ≥19 e q3 ≤2 · 11 marginais'},
+    {key:'EXA-SHAPE-04',label:'F62 · EXA-SHAPE-04 · ATIVO',detail:'arestas ≥20 e pontas ≤1 · 4 marginais'},
+    {key:'EXA-SHAPE-05',label:'F63 · EXA-SHAPE-05 · ATIVO',detail:'pontas ≤1 e bifurcações ≥9 · 5 marginais'},
+    {key:'EXA-SHAPE-06',label:'F64 · EXA-SHAPE-06 · ATIVO',detail:'pontas ≤1 e q3 ≥10 · 7 marginais'},
+    {key:'EXA-TEMP-01',label:'F65 · EXA-TEMP-01 · ATIVO',detail:'Δ perímetro lag1 ≥10 + linhas lag3 ≥12 · 1.048 marginais · 0 histórico'},
+    {key:'EXA-TEMP-02',label:'F66 · EXA-TEMP-02 · ATIVO',detail:'Δ furos lag1 ≥2 + Δ perímetro lag3 ≥16 · 1.028 marginais · 0 histórico'},
+    {key:'EXA-TEMP-03',label:'F67 · EXA-TEMP-03 · ATIVO',detail:'Δ furos lag1 ≥4 + Δ perímetro lag3 ≥10 · 136 marginais · 0 histórico'},
+    {key:'EXA-TEMP-04',label:'F68 · EXA-TEMP-04 · ATIVO',detail:'Δ componentes lag1 ≥3 + gaps lag3 ≤4 · 204 marginais · 0 histórico'}
   ];
   function invalidateBlockConfiguration(label='Bloqueios atualizados'){
     if(state.decisionWorker){try{state.decisionWorker.terminate();}catch{}state.decisionWorker=null;state.decisionWorkerSignature='';}
@@ -1299,7 +1309,7 @@
     const filterRows=M.FILTERS.map(f=>{const p=isMandatoryBlock(f.id)?'block':(f.id===23?'ignore':state.filterPolicies[f.id]||defaultPolicy(f)),disabled=isMandatoryBlock(f.id)||f.id===23;return `<label class="top-blocker-row ${disabled?'is-fixed':''}"><span><b>F${String(f.id).padStart(2,'0')} · ${f.name}</b><small>${f.id===29?'Obrigatório permanente':f.id===23?'Informativo':f.category||f.mode}</small></span><select data-top-filter-policy="${f.id}" ${disabled?'disabled':''}><option value="block" ${p==='block'?'selected':''}>Bloquear</option><option value="warn" ${p==='warn'?'selected':''}>Avisar</option><option value="ignore" ${p==='ignore'?'selected':''}>Ignorar</option></select></label>`;}).join('');
     const extras=TOP_EXTERNAL_BLOCKS.map(x=>`<label class="top-blocker-toggle"><span><b>${x.label}</b><small>${x.detail}</small></span><input type="checkbox" data-top-external-block="${x.key}" ${externalBlockActive(x.key)?'checked':''}><i></i></label>`).join('');
     const gen=[['INDICADORES','Indicadores','Aplicar metas individuais de Quentes/Frias/Último/Atrasadas/3+'],['PERFIL_PRO','Perfil PRO','Aplicar as regras do Perfil PRO']].map(([key,name,detail])=>`<label class="top-blocker-toggle"><span><b>${name}</b><small>${detail}</small></span><input type="checkbox" data-top-generation-block="${key}" ${state.decisionRelaxations.has(key)?'':'checked'}><i></i></label>`).join('');
-    const exaUnionNote=exaUnionReady?`<div class="top-blocker-manual"><b>União EXA oficial: ${exaUnionGames} jogos novos bloqueados</b> · união exata atual das 6 máscaras ativas, sem duplicar sobreposições · ${Number(EXA_ORTHO_OFFICIAL_UNION.unionPctOfMatrix||0).toLocaleString('pt-BR',{minimumFractionDigits:4,maximumFractionDigits:4})}% dos ${Number(EXA_ORTHO_OFFICIAL_UNION.matrixApprovedBeforeExa||0).toLocaleString('pt-BR')} aprovados pela Matriz · base #${EXA_ORTHO_OFFICIAL_UNION.baseThrough||3796}</div>`:`<div class="top-blocker-manual">União EXA oficial de 10.196 jogos exige as 6 máscaras ativas; atualmente ${exaUnionActive}/${exaUnionKeys.length}.</div>`;
+    const exaUnionNote=exaUnionReady?`<div class="top-blocker-manual"><b>União EXA oficial: ${exaUnionGames} jogos novos bloqueados</b> · união exata atual das 6 máscaras ativas, sem duplicar sobreposições · ${Number(EXA_ORTHO_OFFICIAL_UNION.unionPctOfMatrix||0).toLocaleString('pt-BR',{minimumFractionDigits:4,maximumFractionDigits:4})}% dos ${Number(EXA_ORTHO_OFFICIAL_UNION.matrixApprovedBeforeExa||0).toLocaleString('pt-BR')} aprovados pela Matriz · base #${EXA_ORTHO_OFFICIAL_UNION.baseThrough||3796}</div>`:`<div class="top-blocker-manual">União EXA oficial de 12.639 jogos exige as 6 máscaras ativas; atualmente ${exaUnionActive}/${exaUnionKeys.length}.</div>`;
     root.innerHTML=`<section class="top-blocker-section"><h4>Matriz 51 · escolha individual</h4><div class="top-blocker-filter-grid">${filterRows}</div></section><section class="top-blocker-section"><h4>Bloqueios extras do motor</h4><div class="top-blocker-toggle-grid">${extras}</div>${exaUnionNote}</section><section class="top-blocker-section"><h4>Regras do NOVO INDICADO</h4><div class="top-blocker-toggle-grid">${gen}</div><div class="top-blocker-manual">Fixas: <b>${state.fixedNumbers.size}</b> · Exclusões: <b>${blockedNumbers().size}</b> · Início/fim: <b>${state.decisionStartNumber??'livre'} → ${state.decisionEndNumber??'livre'}</b></div></section>`;
     root.querySelectorAll('[data-top-filter-policy]').forEach(s=>s.onchange=()=>{const id=Number(s.dataset.topFilterPolicy);if(isMandatoryBlock(id)){s.value='block';return;}if(id===23){s.value='ignore';return;}state.filterPolicies[id]=s.value;invalidateBlockConfiguration(`F${String(id).padStart(2,'0')} = ${policyLabel(s.value)}`);});
     root.querySelectorAll('[data-top-external-block]').forEach(c=>c.onchange=()=>{const key=String(c.dataset.topExternalBlock||'');state.externalBlockPolicies[key]=!!c.checked;invalidateBlockConfiguration(`${TOP_EXTERNAL_BLOCKS.find(x=>x.key===key)?.label||key} ${c.checked?'ativado':'desativado'}`);});
