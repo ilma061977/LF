@@ -29,8 +29,8 @@ self.window=self;
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
   const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.5';
-  const THRESHOLD_VERSION = 'LF-M51-2026.10.07-EXA-UNION5560-7ACTIVE-v3.7.5';
-  const AUDIT_VERSION = 'LF-M51-AUDIT-3796-EXA-ORTHO-UNION5560-7ACTIVE-v3.7.5';
+  const THRESHOLD_VERSION = 'LF-M83-2026.10.08-FPMG-PAIRS-BASE3799-v3.7.5';
+  const AUDIT_VERSION = 'LF-M83-AUDIT-3799-FPMG-PAIRS-v3.7.5';
   const AUDIT_BASE_THROUGH = 3799;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
