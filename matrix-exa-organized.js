@@ -1,7 +1,7 @@
 (() => {
   'use strict';
-  const UNIVERSE=3268760, BEFORE=698339, EXA=15872, APPROVED=682467, BLOCKED=2586293;
-  const BLOCKED_PCT=79.1215323241841, APPROVED_PCT=20.878467675815905, RATIO=4.789623527584484;
+  const UNIVERSE=3268760, BEFORE=698339, EXA=16019, APPROVED=682320, BLOCKED=2586440;
+  const BLOCKED_PCT=79.12602944235735, APPROVED_PCT=20.873970557642654, RATIO=4.790655410950873;
   const ACTIVE=['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04'];
   const fmt=n=>Number(n).toLocaleString('pt-BR');
   const pct=n=>Number(n).toLocaleString('pt-BR',{minimumFractionDigits:6,maximumFractionDigits:6})+'%';
@@ -28,7 +28,8 @@
     'EXA-TEMP-05':69,
     'EXA-TEMP-06':70,
     'EXA-TEMP-07':71,
-    'EXA-TEMP-08':72
+    'EXA-TEMP-08':72,
+    'EXA-WJ-01':73
   });
   function numberExaLabels(){
     const all=[...document.querySelectorAll('body *')];
@@ -44,8 +45,8 @@
     }
     document.querySelectorAll('h1,h2,h3,.status-pill,.eyebrow').forEach(el=>{
       const t=el.textContent||'';
-      if(/Matriz 51/i.test(t))el.textContent=t.replace(/Matriz 51/ig,'Matriz 72');
-      if(/^51\s*\+\s*EXA$/i.test(t.trim()))el.textContent='72 filtros';
+      if(/Matriz 51/i.test(t))el.textContent=t.replace(/Matriz 51/ig,'Matriz 73');
+      if(/^51\s*\+\s*EXA$/i.test(t.trim()))el.textContent='73 filtros';
     });
   }
 
@@ -71,7 +72,8 @@
     {id:69,key:'EXA-TEMP-05',name:'Lag7 · componentes × gaps',status:'ATIVO · 0 HISTÓRICO',detail:'Δ componentes lag7 ≥4 e L1 gaps lag7 ≤6 · 254 marginais'},
     {id:70,key:'EXA-TEMP-06',name:'Lag2 × lag9',status:'ATIVO · 0 HISTÓRICO',detail:'L1 gaps lag2 ≤6 e Δ componentes lag9 ≥4 · 749 marginais'},
     {id:71,key:'EXA-TEMP-07',name:'Lag3 × lag4',status:'ATIVO · 0 HISTÓRICO',detail:'L1 gaps lag3 ≤6 e Δ componentes lag4 ≥4 · 157 marginais'},
-    {id:72,key:'EXA-TEMP-08',name:'Lag4 × lag6',status:'ATIVO · 0 HISTÓRICO',detail:'L1 colunas lag4 ≥10 e L1 gaps lag6 ≤6 · 2.076 marginais'}
+    {id:72,key:'EXA-TEMP-08',name:'Lag4 × lag6',status:'ATIVO · 0 HISTÓRICO',detail:'L1 colunas lag4 ≥10 e L1 gaps lag6 ≤6 · 2.076 marginais'},
+    {id:73,key:'EXA-WJ-01',name:'Walsh alta-sequência × Johnson20',status:'ATIVO · APROVADO REV25',detail:'Walsh alta-sequência ≥900 e Johnson20 M2 ≥55 · 147 marginais · 0 falhas #21–#3799 · massa ≥100 em 100/100 origins · CV 0,54'}
   ]);
   function makeExaPriorityCard(def){
     const article=document.createElement('article');
@@ -89,7 +91,7 @@
     {key:'p3',title:'P3 · CONDICIONAIS',subtitle:'Finalidade: condições, limites e gatilhos de contexto',ids:Array.from({length:13},(_,i)=>i+16)},
     {key:'p4',title:'P4 · COMPLEMENTARES',subtitle:'Finalidade: termômetros históricos e anomalias combinadas',ids:Array.from({length:8},(_,i)=>i+30)},
     {key:'p5',title:'P5 · AVANÇADOS / GEOMÉTRICOS',subtitle:'Finalidade: geometria, simetria, topologia e forma · F38–F44 + F55–F64',ids:[...Array.from({length:7},(_,i)=>i+38),55,56,57,58,59,60,61,62,63,64]},
-    {key:'p6',title:'P6 · TEMPORAIS / WALK-FORWARD',subtitle:'Finalidade: transições contra lag 1 até lag 10 · zero ocorrência histórica · ≥100 marginais',ids:[65,66,67,68,69,70,71,72]},
+    {key:'p6',title:'P6 · TEMPORAIS / WALK-FORWARD + ESPECTRAL',subtitle:'Finalidade: transições contra lag 1 até lag 10 + F73 Walsh/Johnson aprovado pela política Rev25',ids:[65,66,67,68,69,70,71,72,73]},
     {key:'p7',title:'P7 · EXPERIMENTAIS / OBSERVAR',subtitle:'Finalidade: hipóteses ainda não eliminatórias · F45–F49 + F54',ids:[...Array.from({length:5},(_,i)=>i+45),54]},
     {key:'p8',title:'P8 · OPERACIONAIS',subtitle:'Finalidade: cobertura, carteira e exportação',ids:[50,51]}
   ];
@@ -139,7 +141,7 @@
         <br>2. <b>Ganho marginal exato ≥ 100 jogos</b> após todos os filtros oficiais ativos.
         <br>3. <b>Massa ≥ 100 jogos em pelo menos 70 dos últimos 100 origins</b>.
         <br>4. <b>CV da massa ≤ 1,0</b>.
-        <br><br><b>Matriz oficial atual: F01–F72.</b> O RQA permanece apenas como <b>painel analítico de regime</b>, sem efeito de bloqueio.
+        <br><br><b>Matriz oficial atual: F01–F73.</b> O RQA permanece apenas como <b>painel analítico de regime</b>, sem efeito de bloqueio.
       </div>`;
   }
 
@@ -215,15 +217,15 @@
     if(head&&!head.dataset.exaOrganized){
       head.dataset.exaOrganized='1';
       const eyebrow=head.querySelector('.eyebrow'); if(eyebrow)eyebrow.textContent='MATRIZ 58 · EXA NUMERADOS';
-      const h2=head.querySelector('h2'); if(h2)h2.textContent='Matriz 72 · F01–F72 por prioridade e finalidade';
+      const h2=head.querySelector('h2'); if(h2)h2.textContent='Matriz 73 · F01–F72 por prioridade e finalidade';
       const p=head.querySelector('p'); if(p)p.textContent='F06 agora é AVISO/OBSERVAR e não elimina jogos. Os bloqueios EXA F52–F58 entram na organização por prioridade. F52/F53 ficam em Estruturais; F55–F58 em Avançados; F54 em Experimentais e desligado. A união oficial conta cada jogo uma única vez.';
-      const pill=head.querySelector('.status-pill'); if(pill)pill.textContent='72 filtros';
+      const pill=head.querySelector('.status-pill'); if(pill)pill.textContent='73 filtros';
     }
     let summary=panel.querySelector('#matrix-exa-official-summary');
     if(!summary){summary=document.createElement('section');summary.id='matrix-exa-official-summary';summary.className='matrix-external-section';root.parentNode.insertBefore(summary,root);}
-    summary.innerHTML=`<h3>RESUMO OFICIAL · MATRIZ 72</h3><div class="matrix-external-grid">${card('UNIVERSO','100%',`<b>${fmt(UNIVERSE)}</b> combinações possíveis da Lotofácil.`)}${card('APROVADOS ANTES DO EXA','F01–F51',`<b>${fmt(BEFORE)}</b> jogos aprovados pelos filtros F01–F51 antes da união F52–F72.`)}${card('UNIÃO EXA EXATA','ATIVA',`<b>${fmt(EXA)}</b> novos jogos marginais bloqueados, contando cada combinação apenas uma vez.`,'is-blocked')}${card('APROVADOS FINAIS',pct(APPROVED_PCT),`<b>${fmt(APPROVED)}</b> jogos restantes após F01–F58.`)}${card('BLOQUEADOS TOTAIS',pct(BLOCKED_PCT),`<b>${fmt(BLOCKED)}</b> combinações fora do conjunto aprovado.`,'is-blocked')}${card('CONCENTRAÇÃO',RATIO.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'× menor',`O conjunto final tem <b>${fmt(APPROVED)}</b> combinações. A chance matemática de uma aposta individual continua <b>1 em ${fmt(UNIVERSE)}</b>; 1 em ${fmt(APPROVED)} é apenas uma leitura condicional se o resultado estiver no conjunto aprovado.`)}</div>`;
+    summary.innerHTML=`<h3>RESUMO OFICIAL · MATRIZ 72</h3><div class="matrix-external-grid">${card('UNIVERSO','100%',`<b>${fmt(UNIVERSE)}</b> combinações possíveis da Lotofácil.`)}${card('APROVADOS ANTES DO EXA','F01–F51',`<b>${fmt(BEFORE)}</b> jogos aprovados pelos filtros F01–F51 antes da união F52–F73.`)}${card('UNIÃO EXA EXATA','ATIVA',`<b>${fmt(EXA)}</b> novos jogos marginais bloqueados, contando cada combinação apenas uma vez.`,'is-blocked')}${card('APROVADOS FINAIS',pct(APPROVED_PCT),`<b>${fmt(APPROVED)}</b> jogos restantes após F01–F58.`)}${card('BLOQUEADOS TOTAIS',pct(BLOCKED_PCT),`<b>${fmt(BLOCKED)}</b> combinações fora do conjunto aprovado.`,'is-blocked')}${card('CONCENTRAÇÃO',RATIO.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'× menor',`O conjunto final tem <b>${fmt(APPROVED)}</b> combinações. A chance matemática de uma aposta individual continua <b>1 em ${fmt(UNIVERSE)}</b>; 1 em ${fmt(APPROVED)} é apenas uma leitura condicional se o resultado estiver no conjunto aprovado.`)}</div>`;
     const section=root.querySelector('.matrix-external-section');
-    if(section){const grid=section.querySelector('.matrix-external-grid');if(grid){const cs=[...grid.querySelectorAll('.matrix-external-card')];const exaCards=cs.filter(c=>ACTIVE.some(k=>c.textContent.includes(k))||c.textContent.includes('EXA-DEG-01'));if(exaCards.length&&!section.dataset.exaOrganized){section.dataset.exaOrganized='1';const title=section.querySelector('h3');if(title)title.textContent='EXA · F52–F72 · CONTROLES E AUDITORIA';exaCards.forEach(c=>grid.prepend(c));const note=document.createElement('div');note.className='matrix-external-note';note.innerHTML='<b>União oficial:</b> F52–F53 || F55–F72 = <b>15.872 jogos marginais únicos</b>. F54 / EXA-DEG-01 permanece desligado por padrão.';section.appendChild(note);}}}
+    if(section){const grid=section.querySelector('.matrix-external-grid');if(grid){const cs=[...grid.querySelectorAll('.matrix-external-card')];const exaCards=cs.filter(c=>ACTIVE.some(k=>c.textContent.includes(k))||c.textContent.includes('EXA-DEG-01'));if(exaCards.length&&!section.dataset.exaOrganized){section.dataset.exaOrganized='1';const title=section.querySelector('h3');if(title)title.textContent='EXA · F52–F73 · CONTROLES E AUDITORIA';exaCards.forEach(c=>grid.prepend(c));const note=document.createElement('div');note.className='matrix-external-note';note.innerHTML='<b>União oficial:</b> F52–F53 || F55–F73 = <b>16.019 jogos marginais únicos</b>. F54 / EXA-DEG-01 permanece desligado por padrão.';section.appendChild(note);}}}
   }
   const observer=new MutationObserver(()=>apply());observer.observe(document.documentElement,{subtree:true,childList:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
