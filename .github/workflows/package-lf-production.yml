@@ -17,12 +17,12 @@ jobs:
       - name: Checkout versão publicada
         uses: actions/checkout@v4
         with:
-          ref: a14776fe74fdf00225d908769fddfd788c9f937e
+          ref: 8f64d5580927f82e20e7c1322573f50041ce52c9
           fetch-depth: 0
 
       - name: Criar ZIP LF
         run: |
-          ZIP="LF-Inteligente-V3.7.5-M77-Cross4-Rev27-20261008.zip"
+          ZIP="LF-Inteligente-V3.7.5-M83-FPMG-Pairs-Rev28-20261008.zip"
           rm -f "$ZIP"
           zip -qr "$ZIP" .             -x '.git/*'                'mega-app/*'                'tmn-inteligente-particular/*'
           sha256sum "$ZIP" | tee "$ZIP.sha256"
@@ -30,9 +30,9 @@ jobs:
       - name: Publicar artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LF-Inteligente-V3.7.5-M77-Cross4-Rev27-20261008
+          name: LF-Inteligente-V3.7.5-M83-FPMG-Pairs-Rev28-20261008
           path: |
-            LF-Inteligente-V3.7.5-M77-Cross4-Rev27-20261008.zip
-            LF-Inteligente-V3.7.5-M77-Cross4-Rev27-20261008.zip.sha256
+            LF-Inteligente-V3.7.5-M83-FPMG-Pairs-Rev28-20261008.zip
+            LF-Inteligente-V3.7.5-M83-FPMG-Pairs-Rev28-20261008.zip.sha256
           compression-level: 0
           retention-days: 30
