@@ -1,0 +1,39 @@
+name: Empacotar LF produção
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/package-lf-production.yml
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout versão publicada
+        uses: actions/checkout@v4
+        with:
+          ref: 5e77495cc8d955022921007c80883f65f971913b
+          fetch-depth: 0
+
+      - name: Criar ZIP LF
+        run: |
+          ZIP="LF-Inteligente-V3.7.5-EXA-5459-Publicado-20261008.zip"
+          rm -f "$ZIP"
+          zip -qr "$ZIP" .             -x '.git/*'                'mega-app/*'                'tmn-inteligente-particular/*'
+          sha256sum "$ZIP" | tee "$ZIP.sha256"
+
+      - name: Publicar release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="lf-prod-20261008"
+          ZIP="LF-Inteligente-V3.7.5-EXA-5459-Publicado-20261008.zip"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ZIP" "$ZIP.sha256" --clobber
+          else
+            gh release create "$TAG" "$ZIP" "$ZIP.sha256"               --target 5e77495cc8d955022921007c80883f65f971913b               --title "LF Inteligente V3.7.5 · Produção 08/10/2026"               --notes "Pacote completo da mesma versão publicada em produção no Vercel. Commit: 5e77495cc8d955022921007c80883f65f971913b."
+          fi
