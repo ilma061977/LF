@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - analysis-worker.js
       - app.js
+      - analysis-worker.js
       - version.json
       - .github/workflows/sync-lf-offline.yml
 
@@ -23,13 +23,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Sincronizar meta e Worker offline
+      - name: Sincronizar versão, app e Worker offline
         run: |
           node <<'NODE'
           const fs=require('fs');
           const indexPath='index.html';
+          const app=fs.readFileSync('app.js','utf8').trimEnd();
           const worker=fs.readFileSync('analysis-worker.js','utf8');
-          const app=fs.readFileSync('app.js','utf8');
           const version=require('./version.json').version;
           let src=fs.readFileSync(indexPath,'utf8');
 
@@ -43,11 +43,8 @@ jobs:
           const appStart=src.indexOf('\n',ap)+1;
           const appEnd=src.indexOf('\n</script>',appStart);
           if(appEnd<=appStart) throw new Error('fim do app.js inline não encontrado');
-          src=src.slice(0,appStart)+app.trimEnd()+src.slice(appEnd);
+          src=src.slice(0,appStart)+app+src.slice(appEnd);
 
-          const appMarker='/* INLINE: app.js */';
-          const ap=src.indexOf(appMarker), appStart=src.indexOf('\n',ap)+1, appEnd=src.indexOf('\n</script>',appStart);
-          if(src.slice(appStart,appEnd).trimEnd()!==app.trimEnd()) throw new Error('app.js inline divergente');
           const marker='window.__LF_OFFLINE_WORKER_SOURCE=';
           const p=src.indexOf(marker);
           if(p<0) throw new Error('Worker offline ausente');
@@ -62,33 +59,35 @@ jobs:
           }
           if(end>=src.length) throw new Error('Fim do Worker offline não encontrado');
           src=src.slice(0,start)+JSON.stringify(worker)+src.slice(end+1);
-          const appMarker='/* INLINE: app.js */';
-          const ap=src.indexOf(appMarker);
-          if(ap<0) throw new Error('app inline ausente');
-          const bodyStart=src.indexOf('\n',ap)+1;
-          const bodyEnd=src.indexOf('\n</script>',bodyStart);
-          if(bodyEnd<=bodyStart) throw new Error('fim do app inline ausente');
-          src=src.slice(0,bodyStart)+app.trimEnd()+src.slice(bodyEnd);
+
           fs.writeFileSync(indexPath,src);
           NODE
       - name: Validar sincronização
         run: |
-          node - <<'NODE'
+          node <<'NODE'
           const fs=require('fs');
           const src=fs.readFileSync('index.html','utf8');
+          const app=fs.readFileSync('app.js','utf8').trimEnd();
           const worker=fs.readFileSync('analysis-worker.js','utf8');
-          const app=fs.readFileSync('app.js','utf8');
           const version=require('./version.json').version;
           const meta=(src.match(/<meta name="lf-build" content="([^"]+)"/)||[])[1];
           if(meta!==version) throw new Error('meta/version divergentes');
+
+          const appMarker='/* INLINE: app.js */';
+          const ap=src.indexOf(appMarker), appStart=src.indexOf('\n',ap)+1, appEnd=src.indexOf('\n</script>',appStart);
+          if(ap<0||appEnd<=appStart) throw new Error('app.js inline ausente');
+          if(src.slice(appStart,appEnd).trimEnd()!==app) throw new Error('app.js inline divergente');
+
           const marker='window.__LF_OFFLINE_WORKER_SOURCE=';
           const p=src.indexOf(marker), start=p+marker.length;
           let end=start+1, escaped=false;
-          for(;end<src.length;end++){const ch=src[end];if(escaped){escaped=false;continue;}if(ch==='\\'){escaped=true;continue;}if(ch==='"')break;}
+          for(;end<src.length;end++){
+            const ch=src[end];
+            if(escaped){escaped=false;continue;}
+            if(ch==='\\'){escaped=true;continue;}
+            if(ch==='"') break;
+          }
           if(JSON.parse(src.slice(start,end+1))!==worker) throw new Error('Worker offline divergente');
-          const appMarker='/* INLINE: app.js */';
-          const ap=src.indexOf(appMarker), appStart=src.indexOf('\n',ap)+1, appEnd=src.indexOf('\n</script>',appStart);
-          if(src.slice(appStart,appEnd).trimEnd()!==app.trimEnd()) throw new Error('app.js inline divergente');
           NODE
       - name: Commit
         run: |
@@ -99,5 +98,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Sincronizar LF offline com Matriz 51"
+          git commit -m "Sincronizar LF offline com EXA 7"
           git push origin HEAD:main
