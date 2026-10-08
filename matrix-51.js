@@ -288,11 +288,11 @@
     baseThrough:3799,
     universe:3268760,
     matrixApprovedBeforeExa:698339,
-    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01']),
-    unionMarginalGames:10196,
-    unionPctOfMatrix:1.4600358851503352,
-    unionPctOfUniverse:0.3119225639080263,
-    countingRule:'TOPO01 || TOPO02 || DIR01 || BITQ01 || SYM01 || DIST01 · cada jogo contado uma única vez',
+    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04']),
+    unionMarginalGames:12639,
+    unionPctOfMatrix:1.8098041190295802,
+    unionPctOfUniverse:0.3866581596623108,
+    countingRule:'F52-F53 || F55-F68 · cada jogo contado uma única vez',
     degIncluded:false
   });
   const EXA_N4=Array.from({length:25},()=>[]);
