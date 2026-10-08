@@ -1,13 +1,11 @@
 name: Sincronizar LF offline
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - app.js
-      - analysis-worker.js
-      - version.json
-      - .github/workflows/sync-lf-offline.yml
+  workflow_dispatch:
+
+# PESQUISA SEM DEPLOY:
+# este workflow fica manual enquanto .lf-operational-mode.json estiver ACTIVE.
+# Reativar gatilho automático somente após comando explícito de publicação.
 
 permissions:
   contents: write
@@ -15,7 +13,7 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    if: github.actor != 'github-actions[bot]'
+    if: ${{ false }} # travado no modo PESQUISA SEM DEPLOY
     steps:
       - uses: actions/checkout@v4
         with:
