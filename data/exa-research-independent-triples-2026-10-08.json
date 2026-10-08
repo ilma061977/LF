@@ -1,0 +1,230 @@
+{
+  "generatedAt": "2026-10-08",
+  "mode": "PESQUISA SEM DEPLOY",
+  "base": {
+    "through": 3799,
+    "universe": 3268760,
+    "officialMatrix": "F01-F83",
+    "approved": 672768,
+    "blocked": 2595992,
+    "blockedPct": 79.41825034569683
+  },
+  "canonicalization": {
+    "independentAxes": [
+      "Fibonacci",
+      "Primos",
+      "Múltiplos de 3",
+      "Mágicos",
+      "Moldura",
+      "Ímpares"
+    ],
+    "derivedAxes": [
+      "Miolo = 15 - Moldura",
+      "Pares = 15 - Ímpares"
+    ],
+    "independentTripleCount": 20
+  },
+  "multipleTesting": {
+    "zeroHistoricalCellsMassGe100": 1590,
+    "bestRawP": 0.025707425065495924,
+    "bestBhFdrQ": 0.8902780567191768,
+    "decision": "Nenhuma promoção por raridade estatística isolada."
+  },
+  "discoveryHoldout": {
+    "discovery": "1-2796",
+    "holdout": "2797-3799",
+    "topMassSelectionsFailed": 14,
+    "topMassSelectionsPassed": 6
+  },
+  "robustCandidates": [
+    {
+      "id": "TRI-R1",
+      "triple": "Fibonacci × Primos × M3",
+      "signature": "F=7 | P=5 | M3=6",
+      "universe": 2625,
+      "historicalHitsFull": 0,
+      "holdoutHits": 0,
+      "trueMarginalOnF01F83": 460,
+      "exclusiveWithinRobustUnion": 333,
+      "status": "QUARENTENA FORTE"
+    },
+    {
+      "id": "TRI-R2",
+      "triple": "Fibonacci × Primos × Ímpares",
+      "signature": "F=7 | P=5 | Ímpares=7 (=Pares 8)",
+      "universe": 3150,
+      "historicalHitsFull": 0,
+      "holdoutHits": 0,
+      "trueMarginalOnF01F83": 517,
+      "exclusiveWithinRobustUnion": 390,
+      "status": "QUARENTENA FORTE"
+    },
+    {
+      "id": "TRI-R3",
+      "triple": "Fibonacci × Mágicos × Ímpares",
+      "signature": "F=6 | G=3 | Ímpares=9 (=Pares 6)",
+      "universe": 3150,
+      "historicalHitsFull": 0,
+      "holdoutHits": 0,
+      "trueMarginalOnF01F83": 972,
+      "exclusiveWithinRobustUnion": 972,
+      "status": "QUARENTENA FORTE"
+    },
+    {
+      "id": "TRI-R4",
+      "triple": "Primos × M3 × Ímpares",
+      "signature": "P=4 | M3=3 | Ímpares=5 (=Pares 10)",
+      "universe": 2646,
+      "historicalHitsFull": 0,
+      "holdoutHits": 0,
+      "trueMarginalOnF01F83": 909,
+      "exclusiveWithinRobustUnion": 909,
+      "status": "QUARENTENA FORTE"
+    },
+    {
+      "id": "TRI-R5",
+      "triple": "M3 × Mágicos × Moldura",
+      "signature": "M3=5 | G=2 | Moldura=10 (=Miolo 5)",
+      "universe": 2742,
+      "historicalHitsFull": 0,
+      "holdoutHits": 0,
+      "trueMarginalOnF01F83": 869,
+      "exclusiveWithinRobustUnion": 869,
+      "status": "QUARENTENA FORTE"
+    }
+  ],
+  "robustUnion": {
+    "grossUnion": 13438,
+    "exactMarginalOnF01F83": 3600,
+    "overlapOnly": "TRI-R1 × TRI-R2 = 127 jogos aprovados",
+    "hypotheticalIfActivated": {
+      "approved": 669168,
+      "blocked": 2599592,
+      "blockedPct": 79.52838385198056,
+      "incrementPctPoints": 0.11013350628373
+    }
+  },
+  "all20FirstScanBest": [
+    [
+      "F×P×M3",
+      "3|8|3",
+      1645,
+      583
+    ],
+    [
+      "F×P×G",
+      "7|5|6",
+      3024,
+      514
+    ],
+    [
+      "F×P×B",
+      "1|4|11",
+      802,
+      171
+    ],
+    [
+      "F×P×O",
+      "7|5|7",
+      3150,
+      517
+    ],
+    [
+      "F×M3×G",
+      "6|6|3",
+      1764,
+      564
+    ],
+    [
+      "F×M3×B",
+      "4|8|11",
+      1176,
+      367
+    ],
+    [
+      "F×M3×O",
+      "4|8|7",
+      2370,
+      470
+    ],
+    [
+      "F×G×B",
+      "4|9|9",
+      1260,
+      556
+    ],
+    [
+      "F×G×O",
+      "6|3|9",
+      3150,
+      972
+    ],
+    [
+      "F×B×O",
+      "7|10|10",
+      2436,
+      622
+    ],
+    [
+      "P×M3×G",
+      "5|8|6",
+      2184,
+      683
+    ],
+    [
+      "P×M3×B",
+      "8|5|11",
+      1988,
+      385
+    ],
+    [
+      "P×M3×O",
+      "4|3|5",
+      2646,
+      909
+    ],
+    [
+      "P×G×B",
+      "5|8|11",
+      1232,
+      350
+    ],
+    [
+      "P×G×O",
+      "7|8|10",
+      3038,
+      716
+    ],
+    [
+      "P×B×O",
+      "6|9|5",
+      1200,
+      545
+    ],
+    [
+      "M3×G×B",
+      "5|2|10",
+      2742,
+      869
+    ],
+    [
+      "M3×G×O",
+      "4|8|10",
+      1904,
+      504
+    ],
+    [
+      "M3×B×O",
+      "2|9|10",
+      1430,
+      609
+    ],
+    [
+      "G×B×O",
+      "8|10|10",
+      1458,
+      654
+    ]
+  ],
+  "note": "all20FirstScanBest = melhor marginal encontrado entre as 10 células 0-histórico de maior massa de cada trinca. As 5 robustas foram adicionalmente selecionadas sem olhar o holdout (top massa no discovery), sobreviveram ao holdout e têm marginal >=100. Nenhuma foi ativada."
+}
