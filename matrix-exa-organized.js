@@ -127,14 +127,14 @@
   }
 
   const EXA_QUARANTINE_8=[
-    {id:'Q-MOM-ANIS',name:'Momento · anisotropia extrema',occ:1,last:2109,delay:1690,universe:1112,status:'QUARENTENA'},
-    {id:'Q-MOM-DET-LO',name:'Momento · determinante muito baixo',occ:1,last:2789,delay:1010,universe:2200,status:'QUARENTENA'},
-    {id:'Q-MOM-DET-HI',name:'Momento · determinante muito alto',occ:1,last:1965,delay:1834,universe:614,status:'QUARENTENA'},
-    {id:'Q-MORPH-D8',name:'Morfologia · dilatação 8-vizinhos compacta',occ:1,last:89,delay:3710,universe:1636,status:'QUARENTENA'},
-    {id:'Q-GRAPH-L3',name:'Graphlet · blocos 2×2 com 3 ocupados',occ:1,last:2333,delay:1466,universe:2546,status:'QUARENTENA'},
-    {id:'Q-GRAPH-Q4',name:'Graphlet · quadrados 2×2 completos',occ:1,last:2653,delay:1146,universe:1070,status:'QUARENTENA'},
+    {id:'Q-MOM-ANIS',name:'Momento · anisotropia extrema',occ:1,last:2109,delay:1690,universe:1112,marginal:278,status:'QUARENTENA · FORTE'},
+    {id:'Q-MOM-DET-LO',name:'Momento · determinante muito baixo',occ:1,last:2789,delay:1010,universe:2200,marginal:0,status:'QUARENTENA'},
+    {id:'Q-MOM-DET-HI',name:'Momento · determinante muito alto',occ:1,last:1965,delay:1834,universe:614,marginal:0,status:'QUARENTENA'},
+    {id:'Q-MORPH-D8',name:'Morfologia · dilatação 8-vizinhos compacta',occ:1,last:89,delay:3710,universe:1636,marginal:9,status:'QUARENTENA'},
+    {id:'Q-GRAPH-L3',name:'Graphlet · blocos 2×2 com 3 ocupados',occ:1,last:2333,delay:1466,universe:2546,marginal:11,status:'QUARENTENA'},
+    {id:'Q-GRAPH-Q4',name:'Graphlet · quadrados 2×2 completos',occ:1,last:2653,delay:1146,universe:1070,marginal:0,status:'QUARENTENA'},
     {id:'Q-MOM-TRACE-LO',name:'Momento · traço muito baixo',occ:1,last:775,delay:3024,universe:2200,status:'QUARENTENA'},
-    {id:'Q-MOM-TRACE-HI',name:'Momento · traço muito alto',occ:1,last:1965,delay:1834,universe:718,status:'QUARENTENA'}
+    {id:'Q-MOM-TRACE-HI',name:'Momento · traço muito alto',occ:1,last:1965,delay:1834,universe:718,marginal:0,status:'QUARENTENA'}
   ];
   function renderQuarantine8(panel,root){
     let box=panel.querySelector('#matrix-exa-quarantine-8');
@@ -142,10 +142,10 @@
     const rows=EXA_QUARANTINE_8.map(x=>card(
       x.id+' · '+x.name,
       x.status,
-      `Ocorrências históricas: <b>${x.occ}</b> · Última: <b>#${x.last}</b> · Atraso: <b>${x.delay}</b><br>Universo exato: <b>${fmt(x.universe)}</b> jogos · <b>não ativo como bloqueio</b> enquanto o ganho marginal sobre F01–F72 é validado.`,
+      `Ocorrências históricas: <b>${x.occ}</b> · Última: <b>#${x.last}</b> · Atraso: <b>${x.delay}</b><br>Universo exato: <b>${fmt(x.universe)}</b> jogos · Ganho marginal sobre F01–F72: <b>${fmt(x.marginal||0)}</b> · <b>não ativo</b>.`,
       'is-active'
     )).join('');
-    box.innerHTML=`<h3>QUARENTENA EXA · 8 CANDIDATOS NOVOS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note">Famílias: momentos/inércia, morfologia multiescala e graphlets. Todos têm 1 ocorrência histórica e permanecem desligados até concluir ganho marginal, walk-forward e redundância.</div>`;
+    box.innerHTML=`<h3>QUARENTENA EXA · 8 CANDIDATOS NOVOS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note">Famílias: momentos/inércia, morfologia multiescala e graphlets. Todos têm 1 ocorrência histórica. MOM-ANIS é o único com ganho marginal ≥100 (278); os demais ficaram entre 0 e 11. Permanecem desligados até concluir validação.</div>`;
   }
 
   const EXPERIMENTAL_RESEARCH=[
