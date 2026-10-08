@@ -80,7 +80,8 @@
     {id:73,key:'EXA-WJ-01',name:'Walsh alta-sequência × Johnson20',status:'ATIVO · APROVADO REV25',detail:'Walsh alta-sequência ≥900 e Johnson20 M2 ≥55 · 147 marginais · 0 falhas #21–#3799 · massa ≥100 em 100/100 origins · CV 0,54'},
     {id:74,key:'EXA-CROSS-01',name:'Moldura x Primos',status:'ATIVO · APROVADO REV25',detail:'1.395 marginais · 1.387 exclusivos · 0 falhas · 100/100 origins · CV 0'},
     {id:75,key:'EXA-CROSS-02',name:'Moldura x Paridade',status:'ATIVO · APROVADO REV25',detail:'824 marginais · 816 exclusivos · 0 falhas · 100/100 origins · CV 0'},
-    {id:76,key:'EXA-CROSS-03',name:'Baixas x Primos',status:'ATIVO · APROVADO REV25',detail:'647 marginais · 643 exclusivos · 0 falhas · 100/100 origins · CV 0'}
+    {id:76,key:'EXA-CROSS-03',name:'Baixas x Primos',status:'ATIVO · APROVADO REV25',detail:'647 marginais · 643 exclusivos · 0 falhas · 100/100 origins · CV 0'},
+    {id:77,key:'EXA-CROSS-04',name:'Paridade x Baixas',status:'ATIVO · APROVADO REV25',detail:'411 marginais · 407 exclusivos · 0 falhas · 100/100 origins · CV 0'}
   ]);
   function makeExaPriorityCard(def){
     const article=document.createElement('article');
