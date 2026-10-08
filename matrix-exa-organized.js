@@ -1,8 +1,8 @@
 (() => {
   'use strict';
-  const UNIVERSE=3268760, BEFORE=698339, EXA=10196, APPROVED=688143, BLOCKED=2580617;
-  const BLOCKED_PCT=78.94788849594342, APPROVED_PCT=21.052111504056583, RATIO=4.750117344796067;
-  const ACTIVE=['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01'];
+  const UNIVERSE=3268760, BEFORE=698339, EXA=12639, APPROVED=685700, BLOCKED=2583060;
+  const BLOCKED_PCT=79.02262631701318, APPROVED_PCT=20.977373682986823, RATIO=4.767040980020417;
+  const ACTIVE=['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04'];
   const fmt=n=>Number(n).toLocaleString('pt-BR');
   const pct=n=>Number(n).toLocaleString('pt-BR',{minimumFractionDigits:6,maximumFractionDigits:6})+'%';
   function card(title,badge,body,cls='is-active') { return `<article class="matrix-external-card ${cls}"><header><b>${title}</b><span class="matrix-external-badge">${badge}</span></header><p>${body}</p></article>`; }
@@ -14,7 +14,17 @@
     'EXA-DIR-01':55,
     'EXA-BITQ-01':56,
     'EXA-SYM-01':57,
-    'EXA-DIST-01':58
+    'EXA-DIST-01':58,
+    'EXA-SHAPE-01':59,
+    'EXA-SHAPE-02':60,
+    'EXA-SHAPE-03':61,
+    'EXA-SHAPE-04':62,
+    'EXA-SHAPE-05':63,
+    'EXA-SHAPE-06':64,
+    'EXA-TEMP-01':65,
+    'EXA-TEMP-02':66,
+    'EXA-TEMP-03':67,
+    'EXA-TEMP-04':68
   });
   function numberExaLabels(){
     const all=[...document.querySelectorAll('body *')];
@@ -30,8 +40,8 @@
     }
     document.querySelectorAll('h1,h2,h3,.status-pill,.eyebrow').forEach(el=>{
       const t=el.textContent||'';
-      if(/Matriz 51/i.test(t))el.textContent=t.replace(/Matriz 51/ig,'Matriz 58');
-      if(/^51\s*\+\s*EXA$/i.test(t.trim()))el.textContent='58 filtros';
+      if(/Matriz 51/i.test(t))el.textContent=t.replace(/Matriz 51/ig,'Matriz 68');
+      if(/^51\s*\+\s*EXA$/i.test(t.trim()))el.textContent='68 filtros';
     });
   }
 
@@ -43,7 +53,17 @@
     {id:55,key:'EXA-DIR-01',name:'Anisotropia direcional',status:'ATIVO',detail:'|H−V| + |D1−D2| ≥ 8'},
     {id:56,key:'EXA-BITQ-01',name:'Bit-quads diagonais',status:'ATIVO · OBSERVAR',detail:'8+ blocos 2×2 com duas diagonais'},
     {id:57,key:'EXA-SYM-01',name:'Simetria D4',status:'ATIVO',detail:'Variância inteira das assimetrias D4 ≤ 5'},
-    {id:58,key:'EXA-DIST-01',name:'Espectro de distâncias',status:'ATIVO',detail:'30+ pares Manhattan à distância 3'}
+    {id:58,key:'EXA-DIST-01',name:'Espectro de distâncias',status:'ATIVO',detail:'30+ pares Manhattan à distância 3'},
+    {id:59,key:'EXA-SHAPE-01',name:'Xadrez + q3',status:'ATIVO',detail:'checker ≥7 e q3 ≥10'},
+    {id:60,key:'EXA-SHAPE-02',name:'Xadrez + furos',status:'ATIVO',detail:'checker ≥9 e furos ≥3'},
+    {id:61,key:'EXA-SHAPE-03',name:'Arestas + q3 baixo',status:'ATIVO',detail:'arestas ≥19 e q3 ≤2'},
+    {id:62,key:'EXA-SHAPE-04',name:'Arestas + pontas',status:'ATIVO',detail:'arestas ≥20 e pontas ≤1'},
+    {id:63,key:'EXA-SHAPE-05',name:'Pontas + bifurcações',status:'ATIVO',detail:'pontas ≤1 e bifurcações ≥9'},
+    {id:64,key:'EXA-SHAPE-06',name:'Pontas + q3 alto',status:'ATIVO',detail:'pontas ≤1 e q3 ≥10'},
+    {id:65,key:'EXA-TEMP-01',name:'Perímetro × linhas',status:'ATIVO · 0 HISTÓRICO',detail:'Δ perímetro lag1 ≥10 e L1 linhas lag3 ≥12 · 1.048 marginais'},
+    {id:66,key:'EXA-TEMP-02',name:'Furos × perímetro',status:'ATIVO · 0 HISTÓRICO',detail:'Δ furos lag1 ≥2 e Δ perímetro lag3 ≥16 · 1.028 marginais'},
+    {id:67,key:'EXA-TEMP-03',name:'Furos extremos × perímetro',status:'ATIVO · 0 HISTÓRICO',detail:'Δ furos lag1 ≥4 e Δ perímetro lag3 ≥10 · 136 marginais'},
+    {id:68,key:'EXA-TEMP-04',name:'Componentes × gaps',status:'ATIVO · 0 HISTÓRICO',detail:'Δ componentes lag1 ≥3 e L1 gaps lag3 ≤4 · 204 marginais'}
   ]);
   function makeExaPriorityCard(def){
     const article=document.createElement('article');
@@ -56,14 +76,15 @@
   }
 
   const PRIORITY_GROUPS=[
-    {key:'p1',title:'P1 · EXTREMA',subtitle:'F29 · trava histórica absoluta',ids:[29]},
-    {key:'p2',title:'P2 · ESTRUTURAIS',subtitle:'F01–F15 + F52–F53 · estrutura base e topologia EXA',ids:[...Array.from({length:15},(_,i)=>i+1),52,53]},
-    {key:'p3',title:'P3 · CONDICIONAIS',subtitle:'F16–F28 · condições e limites',ids:Array.from({length:13},(_,i)=>i+16)},
-    {key:'p4',title:'P4 · COMPLEMENTARES',subtitle:'F30–F37 · filtros complementares',ids:Array.from({length:8},(_,i)=>i+30)},
-    {key:'p5',title:'P5 · AVANÇADOS',subtitle:'F38–F44 + F55–F58 · análises avançadas e EXA ativos',ids:[...Array.from({length:7},(_,i)=>i+38),55,56,57,58]},
-    {key:'p6',title:'P6 · EXPERIMENTAIS',subtitle:'F45–F49 + F54 · hipóteses em validação; F54 desligado',ids:[...Array.from({length:5},(_,i)=>i+45),54]},
-    {key:'p7',title:'P7 · OPERACIONAIS',subtitle:'F50–F51 · controles operacionais',ids:[50,51]},
-      ];
+    {key:'p1',title:'P1 · PROTEÇÃO HISTÓRICA',subtitle:'Finalidade: travas absolutas contra repetições históricas',ids:[29]},
+    {key:'p2',title:'P2 · ESTRUTURAIS',subtitle:'Finalidade: forma básica, distribuição e topologia primária',ids:[...Array.from({length:15},(_,i)=>i+1),52,53]},
+    {key:'p3',title:'P3 · CONDICIONAIS',subtitle:'Finalidade: condições, limites e gatilhos de contexto',ids:Array.from({length:13},(_,i)=>i+16)},
+    {key:'p4',title:'P4 · COMPLEMENTARES',subtitle:'Finalidade: termômetros históricos e anomalias combinadas',ids:Array.from({length:8},(_,i)=>i+30)},
+    {key:'p5',title:'P5 · AVANÇADOS / GEOMÉTRICOS',subtitle:'Finalidade: geometria, simetria, topologia e forma · F38–F44 + F55–F64',ids:[...Array.from({length:7},(_,i)=>i+38),55,56,57,58,59,60,61,62,63,64]},
+    {key:'p6',title:'P6 · TEMPORAIS / WALK-FORWARD',subtitle:'Finalidade: transições contra lag 1 e lag 3 · zero ocorrência histórica · ≥100 marginais',ids:[65,66,67,68]},
+    {key:'p7',title:'P7 · EXPERIMENTAIS / OBSERVAR',subtitle:'Finalidade: hipóteses ainda não eliminatórias · F45–F49 + F54',ids:[...Array.from({length:5},(_,i)=>i+45),54]},
+    {key:'p8',title:'P8 · OPERACIONAIS',subtitle:'Finalidade: cobertura, carteira e exportação',ids:[50,51]}
+  ];
   const priorityOf=id=>PRIORITY_GROUPS.find(g=>g.ids.includes(Number(id)))||null;
   function ensurePriorityStyles(){
     if(document.querySelector('#matrix-priority-styles'))return;
@@ -109,10 +130,10 @@
     const rows=EXPERIMENTAL_RESEARCH.map(x=>card(
       x.id+' · '+x.name,
       'EXPERIMENTAL / OBSERVAR',
-      `Ocorrências históricas: <b>${x.occ}</b> · Última: <b>${x.last?'#'+x.last:'nunca até #3799'}</b> · Atraso: <b>${x.delay==null?'—':x.delay+' concursos'}</b><br>Universo exato: <b>${fmt(x.universe)}</b> jogos · Ganho marginal sobre os <b>688.143</b> atuais: <b>${fmt(x.marginal)}</b>.`,
+      `Ocorrências históricas: <b>${x.occ}</b> · Última: <b>${x.last?'#'+x.last:'nunca até #3799'}</b> · Atraso: <b>${x.delay==null?'—':x.delay+' concursos'}</b><br>Universo exato: <b>${fmt(x.universe)}</b> jogos · Ganho marginal sobre os <b>685.700</b> atuais: <b>${fmt(x.marginal)}</b>.`,
       'is-active'
     )).join('');
-    box.innerHTML=`<h3>EXPERIMENTAIS · OBSERVAR · 5 CANDIDATOS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note"><b>Walk-forward / holdout:</b> max8≤5 = 0 ocorrências; isolados8≥3 = 1 ocorrência (#2916); componentes diagonais≥12 = 1 (#192); diagMax≤2 = 1 (#192); assinatura 7-5-3 = 0. No holdout #2797–#3799, somente isolados8≥3 marcou 1 concurso. <b>União exata dos 5 no universo:</b> 5.010 jogos. <b>União marginal após F01–F58:</b> 27 jogos. Ganho muito pequeno; nenhum é ativado como bloqueio.</div>`;
+    box.innerHTML=`<h3>EXPERIMENTAIS · OBSERVAR · 5 CANDIDATOS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note"><b>Walk-forward / holdout:</b> max8≤5 = 0 ocorrências; isolados8≥3 = 1 ocorrência (#2916); componentes diagonais≥12 = 1 (#192); diagMax≤2 = 1 (#192); assinatura 7-5-3 = 0. No holdout #2797–#3799, somente isolados8≥3 marcou 1 concurso. <b>União exata dos 5 no universo:</b> 5.010 jogos. <b>União marginal após F01–F68:</b> 27 jogos. Ganho muito pequeno; nenhum é ativado como bloqueio.</div>`;
   }
   function apply(){
     organizeMatrixByPriority();
@@ -125,15 +146,15 @@
     if(head&&!head.dataset.exaOrganized){
       head.dataset.exaOrganized='1';
       const eyebrow=head.querySelector('.eyebrow'); if(eyebrow)eyebrow.textContent='MATRIZ 58 · EXA NUMERADOS';
-      const h2=head.querySelector('h2'); if(h2)h2.textContent='Matriz 58 · F01–F58 por prioridade';
+      const h2=head.querySelector('h2'); if(h2)h2.textContent='Matriz 68 · F01–F68 por prioridade e finalidade';
       const p=head.querySelector('p'); if(p)p.textContent='F06 agora é AVISO/OBSERVAR e não elimina jogos. Os bloqueios EXA F52–F58 entram na organização por prioridade. F52/F53 ficam em Estruturais; F55–F58 em Avançados; F54 em Experimentais e desligado. A união oficial conta cada jogo uma única vez.';
-      const pill=head.querySelector('.status-pill'); if(pill)pill.textContent='58 filtros';
+      const pill=head.querySelector('.status-pill'); if(pill)pill.textContent='68 filtros';
     }
     let summary=panel.querySelector('#matrix-exa-official-summary');
     if(!summary){summary=document.createElement('section');summary.id='matrix-exa-official-summary';summary.className='matrix-external-section';root.parentNode.insertBefore(summary,root);}
-    summary.innerHTML=`<h3>RESUMO OFICIAL · MATRIZ 58</h3><div class="matrix-external-grid">${card('UNIVERSO','100%',`<b>${fmt(UNIVERSE)}</b> combinações possíveis da Lotofácil.`)}${card('APROVADOS ANTES DO EXA','F01–F51',`<b>${fmt(BEFORE)}</b> jogos aprovados pelos filtros F01–F51 antes da união F52–F58.`)}${card('UNIÃO EXA EXATA','ATIVA',`<b>${fmt(EXA)}</b> novos jogos marginais bloqueados, contando cada combinação apenas uma vez.`,'is-blocked')}${card('APROVADOS FINAIS',pct(APPROVED_PCT),`<b>${fmt(APPROVED)}</b> jogos restantes após F01–F58.`)}${card('BLOQUEADOS TOTAIS',pct(BLOCKED_PCT),`<b>${fmt(BLOCKED)}</b> combinações fora do conjunto aprovado.`,'is-blocked')}${card('CONCENTRAÇÃO',RATIO.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'× menor',`O conjunto final tem <b>${fmt(APPROVED)}</b> combinações. A chance matemática de uma aposta individual continua <b>1 em ${fmt(UNIVERSE)}</b>; 1 em ${fmt(APPROVED)} é apenas uma leitura condicional se o resultado estiver no conjunto aprovado.`)}</div>`;
+    summary.innerHTML=`<h3>RESUMO OFICIAL · MATRIZ 68</h3><div class="matrix-external-grid">${card('UNIVERSO','100%',`<b>${fmt(UNIVERSE)}</b> combinações possíveis da Lotofácil.`)}${card('APROVADOS ANTES DO EXA','F01–F51',`<b>${fmt(BEFORE)}</b> jogos aprovados pelos filtros F01–F51 antes da união F52–F68.`)}${card('UNIÃO EXA EXATA','ATIVA',`<b>${fmt(EXA)}</b> novos jogos marginais bloqueados, contando cada combinação apenas uma vez.`,'is-blocked')}${card('APROVADOS FINAIS',pct(APPROVED_PCT),`<b>${fmt(APPROVED)}</b> jogos restantes após F01–F58.`)}${card('BLOQUEADOS TOTAIS',pct(BLOCKED_PCT),`<b>${fmt(BLOCKED)}</b> combinações fora do conjunto aprovado.`,'is-blocked')}${card('CONCENTRAÇÃO',RATIO.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'× menor',`O conjunto final tem <b>${fmt(APPROVED)}</b> combinações. A chance matemática de uma aposta individual continua <b>1 em ${fmt(UNIVERSE)}</b>; 1 em ${fmt(APPROVED)} é apenas uma leitura condicional se o resultado estiver no conjunto aprovado.`)}</div>`;
     const section=root.querySelector('.matrix-external-section');
-    if(section){const grid=section.querySelector('.matrix-external-grid');if(grid){const cs=[...grid.querySelectorAll('.matrix-external-card')];const exaCards=cs.filter(c=>ACTIVE.some(k=>c.textContent.includes(k))||c.textContent.includes('EXA-DEG-01'));if(exaCards.length&&!section.dataset.exaOrganized){section.dataset.exaOrganized='1';const title=section.querySelector('h3');if(title)title.textContent='EXA · F52–F58 · CONTROLES E AUDITORIA';exaCards.forEach(c=>grid.prepend(c));const note=document.createElement('div');note.className='matrix-external-note';note.innerHTML='<b>União oficial:</b> F52 || F53 || F55 || F56 || F57 || F58 = <b>10.196 jogos marginais únicos</b>. F54 / EXA-DEG-01 permanece desligado por padrão.';section.appendChild(note);}}}
+    if(section){const grid=section.querySelector('.matrix-external-grid');if(grid){const cs=[...grid.querySelectorAll('.matrix-external-card')];const exaCards=cs.filter(c=>ACTIVE.some(k=>c.textContent.includes(k))||c.textContent.includes('EXA-DEG-01'));if(exaCards.length&&!section.dataset.exaOrganized){section.dataset.exaOrganized='1';const title=section.querySelector('h3');if(title)title.textContent='EXA · F52–F68 · CONTROLES E AUDITORIA';exaCards.forEach(c=>grid.prepend(c));const note=document.createElement('div');note.className='matrix-external-note';note.innerHTML='<b>União oficial:</b> F52–F53 || F55–F68 = <b>12.639 jogos marginais únicos</b>. F54 / EXA-DEG-01 permanece desligado por padrão.';section.appendChild(note);}}}
   }
   const observer=new MutationObserver(()=>apply());observer.observe(document.documentElement,{subtree:true,childList:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
