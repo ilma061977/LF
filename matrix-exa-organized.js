@@ -127,6 +127,22 @@
   }
 
 
+
+  function renderExaAcceptancePolicy(panel,root){
+    let box=panel.querySelector('#exa-acceptance-policy');
+    if(!box){box=document.createElement('section');box.id='exa-acceptance-policy';box.className='matrix-external-section';root.parentNode.insertBefore(box,root);}
+    box.innerHTML=`
+      <h3>POLÍTICA FORMAL DE ACEITAÇÃO EXA</h3>
+      <div class="matrix-external-note">
+        Um novo filtro só pode ser promovido a bloqueio oficial se cumprir <b>simultaneamente</b>:
+        <br>1. <b>Zero falhas walk-forward</b>.
+        <br>2. <b>Ganho marginal exato ≥ 100 jogos</b> após todos os filtros oficiais ativos.
+        <br>3. <b>Massa ≥ 100 jogos em pelo menos 70 dos últimos 100 origins</b>.
+        <br>4. <b>CV da massa ≤ 1,0</b>.
+        <br><br><b>Matriz oficial atual: F01–F72.</b> O RQA permanece apenas como <b>painel analítico de regime</b>, sem efeito de bloqueio.
+      </div>`;
+  }
+
   const EXA_VIRGIN_FRONTS=[
     {key:'MORPH-CLOSE1',family:'MULTIESCALA',occ:1,universe:522,marginal:29,status:'OBSERVAR'},
     {key:'MOM-MIXHI',family:'MOMENTOS GEOMÉTRICOS',occ:1,universe:428,marginal:161,status:'QUARENTENA FORTE'},
@@ -194,6 +210,7 @@
     renderExperimentalResearch(panel,root);
     renderQuarantine8(panel,root);
     renderVirginFronts(panel,root);
+    renderExaAcceptancePolicy(panel,root);
     const head=panel.querySelector('.panel-head');
     if(head&&!head.dataset.exaOrganized){
       head.dataset.exaOrganized='1';
