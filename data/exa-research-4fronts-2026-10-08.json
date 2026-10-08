@@ -527,5 +527,177 @@
       "exaUnionMarginalFrom698339": 15872
     },
     "validation": "Concurso 3799 segue aprovado; F06 permanece apenas aviso; nenhum F59-F72 bloqueou o 3799 no teste walk-forward."
+  },
+  "exaVirginFronts20261008": {
+    "baseline": {
+      "approvedF01F72": 682467,
+      "baseThrough": 3799
+    },
+    "quarantine8": [
+      {
+        "key": "MOM-ANIS",
+        "historicalOccurrences": 1,
+        "last": 2109,
+        "universeExact": 1112,
+        "marginalExact": 278,
+        "status": "QUARENTENA FORTE"
+      },
+      {
+        "key": "MOM-DET-LO",
+        "historicalOccurrences": 1,
+        "last": 2789,
+        "universeExact": 2200,
+        "marginalExact": 0,
+        "status": "QUARENTENA"
+      },
+      {
+        "key": "MOM-DET-HI",
+        "historicalOccurrences": 1,
+        "last": 1965,
+        "universeExact": 614,
+        "marginalExact": 0,
+        "status": "QUARENTENA"
+      },
+      {
+        "key": "MORPH-D8",
+        "historicalOccurrences": 1,
+        "last": 89,
+        "universeExact": 1636,
+        "marginalExact": 9,
+        "status": "QUARENTENA"
+      },
+      {
+        "key": "GRAPH-L3",
+        "historicalOccurrences": 1,
+        "last": 2333,
+        "universeExact": 2546,
+        "marginalExact": 11,
+        "status": "QUARENTENA"
+      },
+      {
+        "key": "GRAPH-Q4",
+        "historicalOccurrences": 1,
+        "last": 2653,
+        "universeExact": 1070,
+        "marginalExact": 0,
+        "status": "QUARENTENA"
+      },
+      {
+        "key": "MOM-TRACE-LO",
+        "historicalOccurrences": 1,
+        "last": 775,
+        "universeExact": 2200,
+        "marginalExact": 0,
+        "status": "QUARENTENA"
+      },
+      {
+        "key": "MOM-TRACE-HI",
+        "historicalOccurrences": 1,
+        "last": 1965,
+        "universeExact": 718,
+        "marginalExact": 0,
+        "status": "QUARENTENA"
+      }
+    ],
+    "virginFronts": {
+      "multiscale": [
+        {
+          "key": "MORPH-CLOSE1",
+          "rule": "closing ortogonal de 1 passo resulta em <=15 células",
+          "historicalOccurrences": 1,
+          "universeExact": 522,
+          "marginalExact": 29,
+          "status": "OBSERVAR"
+        }
+      ],
+      "geometricMoments": [
+        {
+          "key": "MOM-M03",
+          "historicalOccurrences": 1,
+          "universeExact": 1302,
+          "marginalExact": 0
+        },
+        {
+          "key": "MOM-M30",
+          "historicalOccurrences": 1,
+          "universeExact": 2302,
+          "marginalExact": 0
+        },
+        {
+          "key": "MOM-MIX0",
+          "historicalOccurrences": 1,
+          "universeExact": 1180,
+          "marginalExact": 56
+        },
+        {
+          "key": "MOM-MIXHI",
+          "historicalOccurrences": 1,
+          "universeExact": 428,
+          "marginalExact": 161,
+          "status": "QUARENTENA FORTE"
+        },
+        {
+          "key": "MOM-SKEW",
+          "historicalOccurrences": 1,
+          "universeExact": 792,
+          "marginalExact": 1
+        }
+      ],
+      "graphMotifs": [
+        {
+          "key": "GRAPH-P4",
+          "rule": "60+ graphlets induzidos P4",
+          "historicalOccurrences": 1,
+          "universeExact": 1186,
+          "marginalExact": 0,
+          "status": "DESCARTADO POR REDUNDÂNCIA"
+        }
+      ],
+      "wholeSequenceDynamics": [
+        {
+          "key": "RQA-10-STATE",
+          "rule": "nos últimos 10: R4=0, R6=0, R8=7 para distância perímetro+linhas",
+          "historicalOccurrences": 1,
+          "universeExact": 12117,
+          "marginalExact": 1647,
+          "status": "QUARENTENA FORTE"
+        },
+        {
+          "key": "RQA4>=7",
+          "historicalOccurrences": 1,
+          "currentUniverseExact": 0,
+          "status": "IMPOSSÍVEL NO CONTEXTO ATUAL"
+        },
+        {
+          "key": "RQA6>=10",
+          "historicalOccurrences": 1,
+          "currentUniverseExact": 0,
+          "status": "IMPOSSÍVEL NO CONTEXTO ATUAL"
+        }
+      ]
+    },
+    "zeroHistoricalCrosses": [
+      {
+        "key": "MORPH16+M03",
+        "universeExact": 272,
+        "marginalExact": 0
+      },
+      {
+        "key": "MORPH16+P4_50",
+        "universeExact": 632,
+        "marginalExact": 0
+      },
+      {
+        "key": "MORPH16+P4_55",
+        "universeExact": 336,
+        "marginalExact": 0
+      },
+      {
+        "key": "MIX80K+P4_50",
+        "universeExact": 120,
+        "marginalExact": 0
+      }
+    ],
+    "conclusion": "Nenhum novo zero-histórico das quatro frentes virgens entregou >=100 marginais após F01-F72. MOM-MIXHI e RQA-10-STATE são os dois melhores novos candidatos, mas ambos têm 1 ocorrência histórica e permanecem em quarentena."
   }
 }
