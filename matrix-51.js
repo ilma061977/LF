@@ -432,6 +432,29 @@
       pl:exaCrossSignature(g,parity,low)
     };
   }
+  const EXA_FIB_SET=new Set([1,2,3,5,8,13,21]);
+  const EXA_MAGIC_SET=new Set([5,6,7,12,13,14,19,20,21]);
+  const EXA_M3_SET=new Set([3,6,9,12,15,18,21,24]);
+  const EXA_PAIR_SIGS=Object.freeze({
+    'EXA-CROSS-05':new Set(['10-0-1-4']),
+    'EXA-CROSS-06':new Set(['11-2-1-1','9-0-4-2','10-0-4-1','11-3-1-0','9-0-5-1','7-6-0-2','11-1-1-2','4-6-5-0','11-3-0-1']),
+    'EXA-CROSS-07':new Set(['4-6-4-1','9-0-4-2','5-6-4-0','10-0-2-3','10-2-0-3','3-6-4-2','6-6-0-3']),
+    'EXA-CROSS-08':new Set(['2-7-6-0','9-1-5-0','9-1-4-1','2-5-8-0','1-6-7-1']),
+    'EXA-CROSS-09':new Set(['8-2-5-0','10-0-3-2','4-5-5-1','9-0-2-4']),
+    'EXA-CROSS-10':new Set(['7-6-0-2','10-4-0-1','8-6-0-1','9-0-4-2','9-1-5-0','8-0-5-2'])
+  });
+  function exaFourGroupPairMetrics(game=[]){
+    const g=normalize(game);if(!g)return{};
+    const fib=n=>EXA_FIB_SET.has(n),prime=n=>EXA_PRIME_SET.has(n),m3=n=>EXA_M3_SET.has(n),magic=n=>EXA_MAGIC_SET.has(n);
+    return{
+      fp:exaCrossSignature(g,fib,prime),
+      fm:exaCrossSignature(g,fib,m3),
+      fg:exaCrossSignature(g,fib,magic),
+      pm:exaCrossSignature(g,prime,m3),
+      pg:exaCrossSignature(g,prime,magic),
+      mg:exaCrossSignature(g,m3,magic)
+    };
+  }
   function exaOrthogonalBlocks(game=[],ctx={}){
     const m=exaOrthogonalMetrics(game);if(!m)return{};const sh=exaShapeMetrics(game),tm=exaTemporalMetrics(game,ctx),wj=exaWalshJohnsonMetrics(game,ctx),cr=exaCross4Metrics(game);
     const defs={
