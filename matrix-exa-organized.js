@@ -224,12 +224,19 @@
     )).join('');
     box.innerHTML=`<h3>EXPERIMENTAIS · OBSERVAR · 5 CANDIDATOS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note"><b>Walk-forward / holdout:</b> max8≤5 = 0 ocorrências; isolados8≥3 = 1 ocorrência (#2916); componentes diagonais≥12 = 1 (#192); diagMax≤2 = 1 (#192); assinatura 7-5-3 = 0. No holdout #2797–#3799, somente isolados8≥3 marcou 1 concurso. <b>União exata dos 5 no universo:</b> 5.010 jogos. <b>União marginal após F01–F68:</b> 27 jogos. Ganho muito pequeno; nenhum é ativado como bloqueio.</div>`;
   }
+  function ensureCrossResearchLink(panel,root){
+    let box=panel.querySelector('#matrix-exa-cross-research-link');
+    if(!box){box=document.createElement('section');box.id='matrix-exa-cross-research-link';box.className='matrix-external-section';root.parentNode.insertBefore(box,root);}
+    box.innerHTML=`<h3>PESQUISA EXA · CRUZAMENTOS DE GRUPOS</h3><div class="matrix-external-grid">${card('FIBONACCI × PRIMOS','F78 · ATIVO','Par oficial aprovado pela política Rev25 · análise por células conjuntas.','is-active')}${card('M3 × MÁGICOS','F83 · ATIVO','Par oficial aprovado pela política Rev25 · análise por células conjuntas.','is-active')}${card('TRINCAS + 4 JUNTOS','QUARENTENA','Alterne Fibonacci, Primos, Múltiplos de 3 e Mágicos em 2, 3 ou 4 grupos. Trincas/FPMG continuam pesquisa por múltiplas hipóteses.')}</div><p style="margin-top:12px"><a class="btn primary" href="/exa-cross.html" style="display:inline-flex;text-decoration:none">ABRIR PESQUISA EXA · 4 GRUPOS</a></p>`;
+  }
+
   function apply(){
     organizeMatrixByPriority();
     numberExaLabels();
     const panel=document.querySelector('#matrix-external-audit-panel');
     const root=document.querySelector('#matrix-external-blockers');
     if(!panel||!root)return;
+    ensureCrossResearchLink(panel,root);
     renderExperimentalResearch(panel,root);
     renderQuarantine8(panel,root);
     renderVirginFronts(panel,root);
