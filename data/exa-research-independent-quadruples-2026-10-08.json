@@ -1,0 +1,186 @@
+{
+  "generatedAt": "2026-10-08",
+  "mode": "PESQUISA SEM DEPLOY",
+  "base": {
+    "through": 3799,
+    "universe": 3268760,
+    "officialMatrix": "F01-F83",
+    "approved": 672768,
+    "blocked": 2595992,
+    "blockedPct": 79.41825034569683
+  },
+  "method": {
+    "robustParents": [
+      "R1 F=7 P=5 M3=6",
+      "R2 F=7 P=5 Ímpares=7",
+      "R3 F=6 Mágicos=3 Ímpares=9",
+      "R4 P=4 M3=3 Ímpares=5",
+      "R5 M3=5 Mágicos=2 Moldura=10"
+    ],
+    "rule": "Adicionar apenas um quarto eixo independente a cada trinca robusta. Miolo e Pares continuam derivados e não geram novas famílias.",
+    "candidateCells": 15,
+    "uniqueQuadrupleFamilies": 12,
+    "historicalLogic": "Toda quádrupla é subconjunto de uma trinca robusta com 0 ocorrências no histórico completo e 0 no holdout; portanto herda 0 ocorrências. O quarto valor foi escolhido por marginal teórico na matriz, não por procurar novos zeros históricos.",
+    "caution": "Ainda é quarentena: as trincas-pai vêm de uma busca múltipla e o FDR global anterior foi fraco."
+  },
+  "selectedUniqueFamilies": [
+    {
+      "id": "Q01",
+      "rule": "F=7 P=5 M3=6 G=6",
+      "family": "F×P×M3×G",
+      "marginal": 143,
+      "exclusiveInUnion": 89
+    },
+    {
+      "id": "Q02",
+      "rule": "F=7 P=5 M3=6 Moldura=10",
+      "family": "F×P×M3×Moldura",
+      "marginal": 195,
+      "exclusiveInUnion": 108
+    },
+    {
+      "id": "Q10",
+      "rule": "F=4 P=4 M3=3 Ímpares=5",
+      "family": "F×P×M3×Ímpares",
+      "marginal": 351,
+      "exclusiveInUnion": 126
+    },
+    {
+      "id": "Q07",
+      "rule": "F=6 P=6 Mágicos=3 Ímpares=9",
+      "family": "F×P×Mágicos×Ímpares",
+      "marginal": 447,
+      "exclusiveInUnion": 149
+    },
+    {
+      "id": "Q06",
+      "rule": "F=7 P=5 Moldura=10 Ímpares=7",
+      "family": "F×P×Moldura×Ímpares",
+      "marginal": 229,
+      "exclusiveInUnion": 181
+    },
+    {
+      "id": "Q08",
+      "rule": "F=6 M3=5 Mágicos=3 Ímpares=9",
+      "family": "F×M3×Mágicos×Ímpares",
+      "marginal": 348,
+      "exclusiveInUnion": 93
+    },
+    {
+      "id": "Q09",
+      "rule": "F=6 Mágicos=3 Moldura=10 Ímpares=9",
+      "family": "F×Mágicos×Moldura×Ímpares",
+      "marginal": 437,
+      "exclusiveInUnion": 164
+    },
+    {
+      "id": "Q11",
+      "rule": "P=4 M3=3 Mágicos=5 Ímpares=5",
+      "family": "P×M3×Mágicos×Ímpares",
+      "marginal": 338,
+      "exclusiveInUnion": 110
+    },
+    {
+      "id": "Q12",
+      "rule": "P=4 M3=3 Moldura=10 Ímpares=5",
+      "family": "P×M3×Moldura×Ímpares",
+      "marginal": 400,
+      "exclusiveInUnion": 152
+    },
+    {
+      "id": "Q13",
+      "rule": "F=4 M3=5 Mágicos=2 Moldura=10",
+      "family": "F×M3×Mágicos×Moldura",
+      "marginal": 394,
+      "exclusiveInUnion": 177
+    },
+    {
+      "id": "Q14",
+      "rule": "P=5 M3=5 Mágicos=2 Moldura=10",
+      "family": "P×M3×Mágicos×Moldura",
+      "marginal": 298,
+      "exclusiveInUnion": 89
+    },
+    {
+      "id": "Q15",
+      "rule": "M3=5 Mágicos=2 Moldura=10 Ímpares=8",
+      "family": "M3×Mágicos×Moldura×Ímpares",
+      "marginal": 314,
+      "exclusiveInUnion": 102
+    }
+  ],
+  "union": {
+    "gross": 8958,
+    "exactMarginalOnF01F83": 2607,
+    "shareOfRobustTripleUnionPct": 72.4166666667,
+    "hypotheticalIfActivated": {
+      "approved": 670161,
+      "blocked": 2598599,
+      "blockedPct": 79.49800535983064,
+      "incrementPctPoints": 0.07975501413381
+    }
+  },
+  "greedy": [
+    [
+      "Q07",
+      447,
+      447
+    ],
+    [
+      "Q12",
+      400,
+      847
+    ],
+    [
+      "Q13",
+      394,
+      1241
+    ],
+    [
+      "Q09",
+      236,
+      1477
+    ],
+    [
+      "Q06",
+      229,
+      1706
+    ],
+    [
+      "Q10",
+      198,
+      1904
+    ],
+    [
+      "Q15",
+      175,
+      2079
+    ],
+    [
+      "Q02",
+      147,
+      2226
+    ],
+    [
+      "Q11",
+      110,
+      2336
+    ],
+    [
+      "Q08",
+      93,
+      2429
+    ],
+    [
+      "Q01",
+      89,
+      2518
+    ],
+    [
+      "Q14",
+      89,
+      2607
+    ]
+  ],
+  "decision": "Nenhum F84+ promovido. As 12 famílias ficam em QUARENTENA FORTE. Para reduzir redundância operacional, a ordem greedy é a referência para futuras validações."
+}
