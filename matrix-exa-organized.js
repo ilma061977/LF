@@ -78,7 +78,8 @@
     {id:71,key:'EXA-TEMP-07',name:'Lag3 × lag4',status:'ATIVO · 0 HISTÓRICO',detail:'L1 gaps lag3 ≤6 e Δ componentes lag4 ≥4 · 157 marginais'},
     {id:72,key:'EXA-TEMP-08',name:'Lag4 × lag6',status:'ATIVO · 0 HISTÓRICO',detail:'L1 colunas lag4 ≥10 e L1 gaps lag6 ≤6 · 2.076 marginais'},
     {id:73,key:'EXA-WJ-01',name:'Walsh alta-sequência × Johnson20',status:'ATIVO · APROVADO REV25',detail:'Walsh alta-sequência ≥900 e Johnson20 M2 ≥55 · 147 marginais · 0 falhas #21–#3799 · massa ≥100 em 100/100 origins · CV 0,54'},
-    {id:74,key:'EXA-CROSS-01',name:'Moldura x Primos',status:'ATIVO · APROVADO REV25',detail:'1.395 marginais · 1.387 exclusivos · 0 falhas · 100/100 origins · CV 0'}
+    {id:74,key:'EXA-CROSS-01',name:'Moldura x Primos',status:'ATIVO · APROVADO REV25',detail:'1.395 marginais · 1.387 exclusivos · 0 falhas · 100/100 origins · CV 0'},
+    {id:75,key:'EXA-CROSS-02',name:'Moldura x Paridade',status:'ATIVO · APROVADO REV25',detail:'824 marginais · 816 exclusivos · 0 falhas · 100/100 origins · CV 0'}
   ]);
   function makeExaPriorityCard(def){
     const article=document.createElement('article');
