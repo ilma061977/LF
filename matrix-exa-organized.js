@@ -45,7 +45,7 @@
     }
     document.querySelectorAll('h1,h2,h3,.status-pill,.eyebrow').forEach(el=>{
       const t=el.textContent||'';
-      if(/Matriz 51/i.test(t))el.textContent=t.replace(/Matriz 51/ig,'Matriz 73');
+      if(/Matriz 51/i.test(t))el.textContent=t.replace(/Matriz 51/ig,'Matriz 77');
       if(/^51\s*\+\s*EXA$/i.test(t.trim()))el.textContent='73 filtros';
     });
   }
