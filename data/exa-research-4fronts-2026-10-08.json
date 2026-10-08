@@ -315,5 +315,28 @@
       }
     },
     "recommendation": "Não promover a F59+. As cinco regras são totalmente redundantes sobre os 190.971 aprovados atuais."
+  },
+  "exactDecisionAfterF06Review20261008": {
+    "baseThrough": 3799,
+    "f06Policy": "ADVISORY / OBSERVAR",
+    "matrixApprovedBeforeExa": 698339,
+    "exaUnionMarginalExact": 10196,
+    "approvedAfterF01F58": 688143,
+    "blockedTotal": 2580617,
+    "blockedPct": 78.94788849594342,
+    "remainingPct": 21.052111504056583,
+    "concentrationRatio": 4.750117344796067,
+    "experimentalFive": {
+      "marginalByRule": {
+        "max8<=5": 1,
+        "isolados8>=3": 7,
+        "diagComp>=12": 0,
+        "diagMax<=2": 0,
+        "sig8=7-5-3": 19
+      },
+      "unionMarginalExact": 27,
+      "approvedIfAllFiveWereActivated": 688116,
+      "recommendation": "Manter todos como EXPERIMENTAIS / OBSERVAR; ganho marginal conjunto de apenas 27 jogos."
+    }
   }
 }
