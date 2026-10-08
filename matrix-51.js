@@ -403,6 +403,29 @@
     }
     return{walshHigh,j20M2};
   }
+  const EXA_BORDER_SET=new Set([1,2,3,4,5,6,10,11,15,16,20,21,22,23,24,25]);
+  const EXA_PRIME_SET=new Set([2,3,5,7,11,13,17,19,23]);
+  const EXA_CROSS_SIGS=Object.freeze({
+    'EXA-CROSS-01':new Set(['5-1-4-5','1-3-10-1','0-4-9-2','5-0-5-5','2-4-9-0']),
+    'EXA-CROSS-02':new Set(['5-1-2-7','4-1-2-8','1-3-8-3','5-0-3-7']),
+    'EXA-CROSS-03':new Set(['8-0-2-5','7-0-2-6']),
+    'EXA-CROSS-04':new Set(['2-7-5-1','6-1-3-5'])
+  });
+  function exaCrossSignature(game=[],a,b){
+    const c=[0,0,0,0];
+    for(const n of game){const x=a(n)?1:0,y=b(n)?1:0;c[x*2+y]++;}
+    return c.join('-');
+  }
+  function exaCross4Metrics(game=[]){
+    const g=normalize(game);if(!g)return{};
+    const border=n=>EXA_BORDER_SET.has(n),prime=n=>EXA_PRIME_SET.has(n),parity=n=>n%2===0,low=n=>n<=13;
+    return{
+      br:exaCrossSignature(g,border,prime),
+      bp:exaCrossSignature(g,border,parity),
+      lr:exaCrossSignature(g,low,prime),
+      pl:exaCrossSignature(g,parity,low)
+    };
+  }
   function exaOrthogonalBlocks(game=[],ctx={}){
     const m=exaOrthogonalMetrics(game);if(!m)return{};const sh=exaShapeMetrics(game),tm=exaTemporalMetrics(game,ctx),wj=exaWalshJohnsonMetrics(game,ctx);
     const defs={
