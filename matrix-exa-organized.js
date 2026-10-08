@@ -150,7 +150,7 @@
         <br>2. <b>Ganho marginal exato ≥ 100 jogos</b> após todos os filtros oficiais ativos.
         <br>3. <b>Massa ≥ 100 jogos em pelo menos 70 dos últimos 100 origins</b>.
         <br>4. <b>CV da massa ≤ 1,0</b>.
-        <br><br><b>Matriz oficial atual: F01–F73.</b> O RQA permanece apenas como <b>painel analítico de regime</b>, sem efeito de bloqueio.
+        <br><br><b>Matriz oficial atual: F01–F77.</b> O RQA permanece apenas como <b>painel analítico de regime</b>, sem efeito de bloqueio.
       </div>`;
   }
 
@@ -166,7 +166,7 @@
     const rows=EXA_VIRGIN_FRONTS.map(x=>card(
       x.family+' · '+x.key,
       x.status,
-      `Ocorrências históricas: <b>${x.occ}</b> · Universo atual: <b>${fmt(x.universe)}</b> · Ganho marginal sobre F01–F72: <b>${fmt(x.marginal)}</b>.`,
+      `Ocorrências históricas: <b>${x.occ}</b> · Universo atual: <b>${fmt(x.universe)}</b> · Ganho marginal sobre F01–F77: <b>${fmt(x.marginal)}</b>.`,
       x.marginal>=100?'is-active':''
     )).join('');
     box.innerHTML=`<h3>PESQUISA EXA · FRENTES VIRGENS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note"><b>Resultado:</b> nenhum cruzamento com zero ocorrência histórica conseguiu ≥100 marginais. Os melhores novos candidatos são <b>MOM-MIXHI = 161 marginais</b> e <b>RQA-10-STATE = 1.647 marginais</b>. O RQA permanece <b>QUARENTENA FORTE / INSTÁVEL</b>: 1 falha histórica (#3618), permutação sem raridade estatística convincente e alta oscilação de massa entre origins.</div>`;
@@ -188,7 +188,7 @@
     const rows=EXA_QUARANTINE_8.map(x=>card(
       x.id+' · '+x.name,
       x.status,
-      `Ocorrências históricas: <b>${x.occ}</b> · Última: <b>#${x.last}</b> · Atraso: <b>${x.delay}</b><br>Universo exato: <b>${fmt(x.universe)}</b> jogos · Ganho marginal sobre F01–F72: <b>${fmt(x.marginal||0)}</b> · <b>não ativo</b>.`,
+      `Ocorrências históricas: <b>${x.occ}</b> · Última: <b>#${x.last}</b> · Atraso: <b>${x.delay}</b><br>Universo exato: <b>${fmt(x.universe)}</b> jogos · Ganho marginal sobre F01–F77: <b>${fmt(x.marginal||0)}</b> · <b>não ativo</b>.`,
       'is-active'
     )).join('');
     box.innerHTML=`<h3>QUARENTENA EXA · 8 CANDIDATOS NOVOS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note">Famílias: momentos/inércia, morfologia multiescala e graphlets. Todos têm 1 ocorrência histórica. MOM-ANIS é o único com ganho marginal ≥100 (278); os demais ficaram entre 0 e 11. Permanecem desligados até concluir validação.</div>`;
@@ -226,15 +226,15 @@
     if(head&&!head.dataset.exaOrganized){
       head.dataset.exaOrganized='1';
       const eyebrow=head.querySelector('.eyebrow'); if(eyebrow)eyebrow.textContent='MATRIZ 58 · EXA NUMERADOS';
-      const h2=head.querySelector('h2'); if(h2)h2.textContent='Matriz 73 · F01–F72 por prioridade e finalidade';
+      const h2=head.querySelector('h2'); if(h2)h2.textContent='Matriz 73 · F01–F77 por prioridade e finalidade';
       const p=head.querySelector('p'); if(p)p.textContent='F06 agora é AVISO/OBSERVAR e não elimina jogos. Os bloqueios EXA F52–F58 entram na organização por prioridade. F52/F53 ficam em Estruturais; F55–F58 em Avançados; F54 em Experimentais e desligado. A união oficial conta cada jogo uma única vez.';
       const pill=head.querySelector('.status-pill'); if(pill)pill.textContent='73 filtros';
     }
     let summary=panel.querySelector('#matrix-exa-official-summary');
     if(!summary){summary=document.createElement('section');summary.id='matrix-exa-official-summary';summary.className='matrix-external-section';root.parentNode.insertBefore(summary,root);}
-    summary.innerHTML=`<h3>RESUMO OFICIAL · MATRIZ 72</h3><div class="matrix-external-grid">${card('UNIVERSO','100%',`<b>${fmt(UNIVERSE)}</b> combinações possíveis da Lotofácil.`)}${card('APROVADOS ANTES DO EXA','F01–F51',`<b>${fmt(BEFORE)}</b> jogos aprovados pelos filtros F01–F51 antes da união F52–F73.`)}${card('UNIÃO EXA EXATA','ATIVA',`<b>${fmt(EXA)}</b> novos jogos marginais bloqueados, contando cada combinação apenas uma vez.`,'is-blocked')}${card('APROVADOS FINAIS',pct(APPROVED_PCT),`<b>${fmt(APPROVED)}</b> jogos restantes após F01–F58.`)}${card('BLOQUEADOS TOTAIS',pct(BLOCKED_PCT),`<b>${fmt(BLOCKED)}</b> combinações fora do conjunto aprovado.`,'is-blocked')}${card('CONCENTRAÇÃO',RATIO.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'× menor',`O conjunto final tem <b>${fmt(APPROVED)}</b> combinações. A chance matemática de uma aposta individual continua <b>1 em ${fmt(UNIVERSE)}</b>; 1 em ${fmt(APPROVED)} é apenas uma leitura condicional se o resultado estiver no conjunto aprovado.`)}</div>`;
+    summary.innerHTML=`<h3>RESUMO OFICIAL · MATRIZ 72</h3><div class="matrix-external-grid">${card('UNIVERSO','100%',`<b>${fmt(UNIVERSE)}</b> combinações possíveis da Lotofácil.`)}${card('APROVADOS ANTES DO EXA','F01–F51',`<b>${fmt(BEFORE)}</b> jogos aprovados pelos filtros F01–F51 antes da união F52–F77.`)}${card('UNIÃO EXA EXATA','ATIVA',`<b>${fmt(EXA)}</b> novos jogos marginais bloqueados, contando cada combinação apenas uma vez.`,'is-blocked')}${card('APROVADOS FINAIS',pct(APPROVED_PCT),`<b>${fmt(APPROVED)}</b> jogos restantes após F01–F58.`)}${card('BLOQUEADOS TOTAIS',pct(BLOCKED_PCT),`<b>${fmt(BLOCKED)}</b> combinações fora do conjunto aprovado.`,'is-blocked')}${card('CONCENTRAÇÃO',RATIO.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'× menor',`O conjunto final tem <b>${fmt(APPROVED)}</b> combinações. A chance matemática de uma aposta individual continua <b>1 em ${fmt(UNIVERSE)}</b>; 1 em ${fmt(APPROVED)} é apenas uma leitura condicional se o resultado estiver no conjunto aprovado.`)}</div>`;
     const section=root.querySelector('.matrix-external-section');
-    if(section){const grid=section.querySelector('.matrix-external-grid');if(grid){const cs=[...grid.querySelectorAll('.matrix-external-card')];const exaCards=cs.filter(c=>ACTIVE.some(k=>c.textContent.includes(k))||c.textContent.includes('EXA-DEG-01'));if(exaCards.length&&!section.dataset.exaOrganized){section.dataset.exaOrganized='1';const title=section.querySelector('h3');if(title)title.textContent='EXA · F52–F73 · CONTROLES E AUDITORIA';exaCards.forEach(c=>grid.prepend(c));const note=document.createElement('div');note.className='matrix-external-note';note.innerHTML='<b>União oficial:</b> F52–F53 || F55–F73 = <b>16.019 jogos marginais únicos</b>. F54 / EXA-DEG-01 permanece desligado por padrão.';section.appendChild(note);}}}
+    if(section){const grid=section.querySelector('.matrix-external-grid');if(grid){const cs=[...grid.querySelectorAll('.matrix-external-card')];const exaCards=cs.filter(c=>ACTIVE.some(k=>c.textContent.includes(k))||c.textContent.includes('EXA-DEG-01'));if(exaCards.length&&!section.dataset.exaOrganized){section.dataset.exaOrganized='1';const title=section.querySelector('h3');if(title)title.textContent='EXA · F52–F77 · CONTROLES E AUDITORIA';exaCards.forEach(c=>grid.prepend(c));const note=document.createElement('div');note.className='matrix-external-note';note.innerHTML='<b>União oficial:</b> F52–F53 || F55–F73 = <b>19.284 jogos marginais únicos</b>. F54 / EXA-DEG-01 permanece desligado por padrão.';section.appendChild(note);}}}
   }
   const observer=new MutationObserver(()=>apply());observer.observe(document.documentElement,{subtree:true,childList:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
