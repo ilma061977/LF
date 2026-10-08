@@ -27,8 +27,8 @@
   const restoredIndicatorPicks=safeJSON('lfv3_indicator_picks',{});
   const savedPolicySchema=storageGet('lfv3_matrix_schema');
   const restoredPolicies=savedPolicySchema===M.SCHEMA_VERSION?safeJSON('lfv3_filter_policies',{}):{};
-  const EXTERNAL_BLOCK_SCHEMA='EXA-M77-CROSS4-UNION19284-3799-2026-10-08-v10';
-  const DEFAULT_EXTERNAL_BLOCK_POLICIES=Object.freeze({PADRAO:true,CORES:true,LINHA:true,COLUNA:true,LXC:true,'EXA-TOPO-01':true,'EXA-TOPO-02':true,'EXA-DEG-01':false,'EXA-DIR-01':true,'EXA-BITQ-01':true,'EXA-SYM-01':true,'EXA-DIST-01':true,'EXA-SHAPE-01':true,'EXA-SHAPE-02':true,'EXA-SHAPE-03':true,'EXA-SHAPE-04':true,'EXA-SHAPE-05':true,'EXA-SHAPE-06':true,'EXA-TEMP-01':true,'EXA-TEMP-02':true,'EXA-TEMP-03':true,'EXA-TEMP-04':true,'EXA-TEMP-05':true,'EXA-TEMP-06':true,'EXA-TEMP-07':true,'EXA-TEMP-08':true,'EXA-WJ-01':true,'EXA-CROSS-01':true,'EXA-CROSS-02':true,'EXA-CROSS-03':true,'EXA-CROSS-04':true});
+  const EXTERNAL_BLOCK_SCHEMA='EXA-M83-FPMG-PAIRS-UNION25571-3799-2026-10-08-v11';
+  const DEFAULT_EXTERNAL_BLOCK_POLICIES=Object.freeze({PADRAO:true,CORES:true,LINHA:true,COLUNA:true,LXC:true,'EXA-TOPO-01':true,'EXA-TOPO-02':true,'EXA-DEG-01':false,'EXA-DIR-01':true,'EXA-BITQ-01':true,'EXA-SYM-01':true,'EXA-DIST-01':true,'EXA-SHAPE-01':true,'EXA-SHAPE-02':true,'EXA-SHAPE-03':true,'EXA-SHAPE-04':true,'EXA-SHAPE-05':true,'EXA-SHAPE-06':true,'EXA-TEMP-01':true,'EXA-TEMP-02':true,'EXA-TEMP-03':true,'EXA-TEMP-04':true,'EXA-TEMP-05':true,'EXA-TEMP-06':true,'EXA-TEMP-07':true,'EXA-TEMP-08':true,'EXA-WJ-01':true,'EXA-CROSS-01':true,'EXA-CROSS-02':true,'EXA-CROSS-03':true,'EXA-CROSS-04':true,'EXA-CROSS-05':true,'EXA-CROSS-06':true,'EXA-CROSS-07':true,'EXA-CROSS-08':true,'EXA-CROSS-09':true,'EXA-CROSS-10':true});
   const restoredExternalBlockPolicies=storageGet('lfv3_external_block_schema')===EXTERNAL_BLOCK_SCHEMA?safeJSON('lfv3_external_block_policies',{}):{};
   const restoredDecisionRelaxations=safeJSON('lfv3_decision_relaxations',[]);
   const makeCloudId=()=>{try{return crypto.randomUUID()}catch{return `lf-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}};
