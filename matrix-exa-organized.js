@@ -100,7 +100,8 @@
     {key:'p4',title:'P4 · COMPLEMENTARES',subtitle:'Finalidade: termômetros históricos e anomalias combinadas',ids:Array.from({length:8},(_,i)=>i+30)},
     {key:'p5',title:'P5 · AVANÇADOS / GEOMÉTRICOS',subtitle:'Finalidade: geometria, simetria, topologia e forma · F38–F44 + F55–F64',ids:[...Array.from({length:7},(_,i)=>i+38),55,56,57,58,59,60,61,62,63,64]},
     {key:'p6',title:'P6 · TEMPORAIS / WALK-FORWARD',subtitle:'Finalidade: transições contra lag 1 até lag 10',ids:[65,66,67,68,69,70,71,72]},
-    {key:'p7',title:'P7 · EXPERIMENTAIS / OBSERVAR',subtitle:'Finalidade: hipóteses ainda não eliminatórias · F45–F49 + F54',ids:[...Array.from({length:5},(_,i)=>i+45),54]},
+    {key:'p7',title:'P7 · ESPECTRAIS / CRUZAMENTOS',subtitle:'Finalidade: Walsh/Johnson e interações 2x2 aprovadas pela política Rev25',ids:[73,74,75,76,77]},
+    {key:'p8',title:'P8 · EXPERIMENTAIS / OBSERVAR',subtitle:'Finalidade: hipóteses ainda não eliminatórias · F45–F49 + F54',ids:[...Array.from({length:5},(_,i)=>i+45),54]},
     {key:'p8',title:'P8 · OPERACIONAIS',subtitle:'Finalidade: cobertura, carteira e exportação',ids:[50,51]}
   ];
   const priorityOf=id=>PRIORITY_GROUPS.find(g=>g.ids.includes(Number(id)))||null;
