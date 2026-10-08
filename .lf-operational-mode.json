@@ -37,5 +37,13 @@
     "previewDeploymentsDisabled": true
   },
   "scope": "LF Inteligente e pesquisas EXA relacionadas",
-  "updatedAt": "2026-10-08"
+  "updatedAt": "2026-10-08",
+  "githubAutomationGuard": {
+    "syncLfOffline": "DISABLED",
+    "packageLfProduction": "DISABLED",
+    "auditWorkflows": "ALLOWED",
+    "releaseTrigger": "DISABLED"
+  },
+  "publishRequiresExplicitCommand": true,
+  "currentRule": "Pesquisa pode alterar arquivos internos de cálculo/pesquisa, mas não sincroniza app público, não gera release ZIP e não faz deploy."
 }
