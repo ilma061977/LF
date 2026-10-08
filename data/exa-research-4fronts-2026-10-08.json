@@ -3,12 +3,14 @@
   "status": "EXPERIMENTAL_ONLY",
   "activationPolicy": "Nenhum candidato ativado como bloqueio. Exigir validação walk-forward/holdout, controle de múltiplas hipóteses e ganho líquido antes de promover.",
   "base": {
-    "through": 3796,
-    "draws": 3796,
+    "through": 3799,
+    "draws": 3799,
     "discovery": "1-2796",
-    "holdout": "2797-3796",
+    "holdout": "2797-3799",
     "randomControl": 200000,
-    "universe": 3268760
+    "universe": 3268760,
+    "holdoutDraws": 1003,
+    "note": "Concursos 3797-3799 acrescentados somente à validação desta pesquisa; o arquivo lotofacil-base.json do app ainda termina em 3796."
   },
   "workstreams": {
     "connectivity8": "Conectividade Moore (horizontal, vertical e diagonal): número de componentes, maior componente, isolados e componentes pequenos.",
@@ -187,5 +189,21 @@
     ],
     "note": "Assinaturas raras ainda têm massa teórica muito pequena; nenhuma combina 0-1 ocorrência histórica com >10.000 jogos estimados."
   },
-  "conclusion": "Manter todas as quatro frentes em pesquisa. Nenhum candidato deve ser promovido a F59+ neste ciclo."
+  "conclusion": "Manter todas as quatro frentes em pesquisa. Nenhum candidato deve ser promovido a F59+ neste ciclo.",
+  "recentValidation": {
+    "contests": [
+      3797,
+      3798,
+      3799
+    ],
+    "candidateHits": {
+      "C8_01": 0,
+      "C8_02": 0,
+      "C8_03": 0,
+      "C8_04": 0,
+      "DIA_01": 0,
+      "DIA_02": 0
+    },
+    "note": "Nenhuma das seis regras principais marcou os concursos 3797-3799."
+  }
 }
