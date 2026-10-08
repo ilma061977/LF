@@ -327,7 +327,11 @@
     'EXA-TEMP-06':{label:'Lag2 gaps × lag9 componentes',rule:'L1 gaps vs lag2 <= 6 E |componentes atual-lag9| >= 4',status:'ATIVO',enabledByDefault:true,id:70,marginalGames:749},
     'EXA-TEMP-07':{label:'Lag3 gaps × lag4 componentes',rule:'L1 gaps vs lag3 <= 6 E |componentes atual-lag4| >= 4',status:'ATIVO',enabledByDefault:true,id:71,marginalGames:157},
     'EXA-TEMP-08':{label:'Lag4 colunas × lag6 gaps',rule:'L1 colunas vs lag4 >= 10 E L1 gaps vs lag6 <= 6',status:'ATIVO',enabledByDefault:true,id:72,marginalGames:2076},
-    'EXA-WJ-01':{label:'Walsh alta-sequência × Johnson20',rule:'Energia Walsh alta-sequência >= 900 E variância Johnson20 >= 55',status:'ATIVO',enabledByDefault:true,id:73,marginalGames:147}
+    'EXA-WJ-01':{label:'Walsh alta-sequência × Johnson20',rule:'Energia Walsh alta-sequência >= 900 E variância Johnson20 >= 55',status:'ATIVO',enabledByDefault:true,id:73,marginalGames:147},
+    'EXA-CROSS-01':{label:'Moldura × Primos',rule:'assinaturas 2x2 moldura/miolo × primo/não-primo',status:'ATIVO',enabledByDefault:true,id:74,marginalGames:1395},
+    'EXA-CROSS-02':{label:'Moldura × Paridade',rule:'assinaturas 2x2 moldura/miolo × par/ímpar',status:'ATIVO',enabledByDefault:true,id:75,marginalGames:824},
+    'EXA-CROSS-03':{label:'Baixas × Primos',rule:'assinaturas 2x2 baixas/altas × primo/não-primo',status:'ATIVO',enabledByDefault:true,id:76,marginalGames:647},
+    'EXA-CROSS-04':{label:'Paridade × Baixas',rule:'assinaturas 2x2 par/ímpar × baixas/altas',status:'ATIVO',enabledByDefault:true,id:77,marginalGames:411}
   });
   function exaShapeMetrics(game=[]){
     const g=normalize(game);if(!g)return null;
