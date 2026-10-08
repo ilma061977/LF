@@ -126,6 +126,25 @@
     if(leftovers.length){const section=document.createElement('section');section.className='matrix-priority-group';section.dataset.priority='other';section.innerHTML='<header><b>OUTROS</b><small>Filtros fora do agrupamento canônico</small></header><div class="matrix-priority-items"></div>';leftovers.forEach(card=>section.querySelector('.matrix-priority-items').appendChild(card));grid.appendChild(section);}
   }
 
+
+  const EXA_VIRGIN_FRONTS=[
+    {key:'MORPH-CLOSE1',family:'MULTIESCALA',occ:1,universe:522,marginal:29,status:'OBSERVAR'},
+    {key:'MOM-MIXHI',family:'MOMENTOS GEOMÉTRICOS',occ:1,universe:428,marginal:161,status:'QUARENTENA FORTE'},
+    {key:'GRAPH-P4',family:'MOTIVOS DE GRAFO',occ:1,universe:1186,marginal:0,status:'REDUNDANTE'},
+    {key:'RQA-10-STATE',family:'DINÂMICA DE SEQUÊNCIA INTEIRA',occ:1,universe:12117,marginal:1647,status:'QUARENTENA FORTE'}
+  ];
+  function renderVirginFronts(panel,root){
+    let box=panel.querySelector('#matrix-exa-virgin-fronts');
+    if(!box){box=document.createElement('section');box.id='matrix-exa-virgin-fronts';box.className='matrix-external-section';root.parentNode.insertBefore(box,root);}
+    const rows=EXA_VIRGIN_FRONTS.map(x=>card(
+      x.family+' · '+x.key,
+      x.status,
+      `Ocorrências históricas: <b>${x.occ}</b> · Universo atual: <b>${fmt(x.universe)}</b> · Ganho marginal sobre F01–F72: <b>${fmt(x.marginal)}</b>.`,
+      x.marginal>=100?'is-active':''
+    )).join('');
+    box.innerHTML=`<h3>PESQUISA EXA · FRENTES VIRGENS</h3><div class="matrix-external-grid">${rows}</div><div class="matrix-external-note"><b>Resultado:</b> nenhum cruzamento com zero ocorrência histórica conseguiu ≥100 marginais. Os melhores novos candidatos são <b>MOM-MIXHI = 161 marginais</b> e <b>RQA-10-STATE = 1.647 marginais</b>, mas ambos têm 1 ocorrência histórica e permanecem em quarentena.</div>`;
+  }
+
   const EXA_QUARANTINE_8=[
     {id:'Q-MOM-ANIS',name:'Momento · anisotropia extrema',occ:1,last:2109,delay:1690,universe:1112,marginal:278,status:'QUARENTENA · FORTE'},
     {id:'Q-MOM-DET-LO',name:'Momento · determinante muito baixo',occ:1,last:2789,delay:1010,universe:2200,marginal:0,status:'QUARENTENA'},
@@ -174,6 +193,7 @@
     if(!panel||!root)return;
     renderExperimentalResearch(panel,root);
     renderQuarantine8(panel,root);
+    renderVirginFronts(panel,root);
     const head=panel.querySelector('.panel-head');
     if(head&&!head.dataset.exaOrganized){
       head.dataset.exaOrganized='1';
