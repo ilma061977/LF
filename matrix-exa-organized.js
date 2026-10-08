@@ -102,7 +102,7 @@
     {key:'p6',title:'P6 · TEMPORAIS / WALK-FORWARD',subtitle:'Finalidade: transições contra lag 1 até lag 10',ids:[65,66,67,68,69,70,71,72]},
     {key:'p7',title:'P7 · ESPECTRAIS / CRUZAMENTOS',subtitle:'Finalidade: Walsh/Johnson e interações 2x2 aprovadas pela política Rev25',ids:[73,74,75,76,77]},
     {key:'p8',title:'P8 · EXPERIMENTAIS / OBSERVAR',subtitle:'Finalidade: hipóteses ainda não eliminatórias · F45–F49 + F54',ids:[...Array.from({length:5},(_,i)=>i+45),54]},
-    {key:'p8',title:'P8 · OPERACIONAIS',subtitle:'Finalidade: cobertura, carteira e exportação',ids:[50,51]}
+    {key:'p9',title:'P9 · OPERACIONAIS',subtitle:'Finalidade: cobertura, carteira e exportação',ids:[50,51]}
   ];
   const priorityOf=id=>PRIORITY_GROUPS.find(g=>g.ids.includes(Number(id)))||null;
   function ensurePriorityStyles(){
