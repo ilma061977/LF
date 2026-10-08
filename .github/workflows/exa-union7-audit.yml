@@ -1,0 +1,21 @@
+name: EXA união exata 7
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/exa-union7-audit.js
+      - .github/workflows/exa-union7-audit.yml
+      - matrix-51.js
+      - data/lotofacil-base.json
+
+jobs:
+  exact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Calcular união exata dos 7 EXA
+        run: node scripts/exa-union7-audit.js
