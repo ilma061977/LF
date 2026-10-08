@@ -87,7 +87,13 @@
     {id:74,key:'EXA-CROSS-01',name:'Moldura x Primos',status:'ATIVO · APROVADO REV25',detail:'1.395 marginais · 1.387 exclusivos · 0 falhas · 100/100 origins · CV 0'},
     {id:75,key:'EXA-CROSS-02',name:'Moldura x Paridade',status:'ATIVO · APROVADO REV25',detail:'824 marginais · 816 exclusivos · 0 falhas · 100/100 origins · CV 0'},
     {id:76,key:'EXA-CROSS-03',name:'Baixas x Primos',status:'ATIVO · APROVADO REV25',detail:'647 marginais · 643 exclusivos · 0 falhas · 100/100 origins · CV 0'},
-    {id:77,key:'EXA-CROSS-04',name:'Paridade x Baixas',status:'ATIVO · APROVADO REV25',detail:'411 marginais · 407 exclusivos · 0 falhas · 100/100 origins · CV 0'}
+    {id:77,key:'EXA-CROSS-04',name:'Paridade x Baixas',status:'ATIVO · APROVADO REV25',detail:'411 marginais · 407 exclusivos · 0 falhas · 100/100 origins · CV 0'},
+    {id:78,key:'EXA-CROSS-05',name:'Fibonacci x Primos',status:'ATIVO · APROVADO REV25',detail:'249 marginais · 249 exclusivos · 0 histórico · CV 0'},
+    {id:79,key:'EXA-CROSS-06',name:'Fibonacci x Múltiplos de 3',status:'ATIVO · APROVADO REV25',detail:'1.890 marginais · 1.754 exclusivos · 0 histórico · CV 0'},
+    {id:80,key:'EXA-CROSS-07',name:'Fibonacci x Mágicos',status:'ATIVO · APROVADO REV25',detail:'1.284 marginais · 1.272 exclusivos · 0 histórico · CV 0'},
+    {id:81,key:'EXA-CROSS-08',name:'Primos x Múltiplos de 3',status:'ATIVO · APROVADO REV25',detail:'850 marginais · 791 exclusivos · 0 histórico · CV 0'},
+    {id:82,key:'EXA-CROSS-09',name:'Primos x Mágicos',status:'ATIVO · APROVADO REV25',detail:'1.098 marginais · 1.011 exclusivos · 0 histórico · CV 0'},
+    {id:83,key:'EXA-CROSS-10',name:'Múltiplos de 3 x Mágicos',status:'ATIVO · APROVADO REV25',detail:'1.175 marginais · 959 exclusivos · 0 histórico · CV 0'}
   ]);
   function makeExaPriorityCard(def){
     const article=document.createElement('article');
