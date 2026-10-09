@@ -1,0 +1,71 @@
+{
+  "generatedAt": "2026-10-09",
+  "mode": "PESQUISA SEM DEPLOY",
+  "scenario": "Rebaixar exatamente 20 mecanismos problemáticos de hard block para aviso/ranking; manter todos os demais bloqueios atuais inalterados.",
+  "universe": 3268760,
+  "baseThrough": 3799,
+  "demotedInternal": [
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "F07",
+    "F08",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F14",
+    "F15",
+    "F28",
+    "F36",
+    "F37"
+  ],
+  "demotedExternal": [
+    "PADRAO",
+    "CORES",
+    "LINHA",
+    "COLUNA",
+    "LXC"
+  ],
+  "unchanged": [
+    "F29",
+    "todos os EXA enabledByDefault, inclusive os EXA antigos que ainda estão pendentes de quarentena/recalibração"
+  ],
+  "previousOfficial": {
+    "approved": 672768,
+    "blocked": 2595992,
+    "approvedPct": 20.58174965430316,
+    "blockedPct": 79.41825034569683
+  },
+  "revisedExact": {
+    "approved": 3145329,
+    "blocked": 123431,
+    "approvedPct": 96.2239197738592,
+    "blockedPct": 3.7760802261407997
+  },
+  "change": {
+    "recoveredGames": 2472561,
+    "approvedIncreasePctPoints": 75.64217011955604,
+    "blockedDecreasePctPoints": 75.64217011955604,
+    "approvedMultiplier": 4.675206014554795,
+    "blockedReductionVsPreviousPct": 95.24532433073753
+  },
+  "revisedBlockedBreakdown": {
+    "historicalExactF29": 3799,
+    "exaOnlyAfterF29": 119632,
+    "totalUnion": 123431
+  },
+  "contest3800": {
+    "passesRevisedScenario": true,
+    "note": "F01/F04/F10/F14 deixam de bloquear; nenhum EXA ativo bloqueia o resultado #3800."
+  },
+  "methodology": {
+    "enumeration": "Exaustiva sobre C(25,15)=3.268.760 combinações",
+    "implementation": "Particionada em blocos de ranking combinatório; cada jogo avaliado contra F29 e regras EXA enabledByDefault que permanecem bloqueantes.",
+    "exact": true
+  },
+  "caution": "Este cenário remove somente os 20 mecanismos pedidos. Não é ainda a versão 'zero falhas estrita' porque 12 EXA ativos apresentaram falhas no walk-forward da auditoria anterior.",
+  "appChanged": false,
+  "deployed": false
+}
