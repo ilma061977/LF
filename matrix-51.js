@@ -28,8 +28,8 @@
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
   const SCHEMA_VERSION = 'matrix51-zero-failure-2026-10-09-v3.7.6';
-  const THRESHOLD_VERSION = 'LF-M83-ZF-2026.10.09-BASE3799-v3.7.6';
-  const AUDIT_VERSION = 'LF-M83-ZF-AUDIT-3799-v3.7.6';
+  const THRESHOLD_VERSION = 'LF-M86-ZF-2026.10.09-MORPH2-SPEC2-BASE3799-v3.7.6';
+  const AUDIT_VERSION = 'LF-M86-ZF-AUDIT-3799-v3.7.6';
   const AUDIT_BASE_THROUGH = 3799;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
@@ -288,11 +288,11 @@
     baseThrough:3799,
     universe:3268760,
     matrixApprovedBeforeExa:3264961,
-    activeKeys:Object.freeze(['EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01','EXA-CROSS-01','EXA-CROSS-02','EXA-CROSS-03','EXA-CROSS-04','EXA-CROSS-05','EXA-CROSS-06','EXA-CROSS-07','EXA-CROSS-08','EXA-CROSS-09','EXA-CROSS-10']),
-    unionMarginalGames:75951,
-    unionPctOfMatrix:2.3262452445833195,
-    unionPctOfUniverse:2.3235416488209597,
-    countingRule:'F29 + EXA-TEMP-01..08 + EXA-WJ-01 + EXA-CROSS-01..10 · zero falhas walk-forward; cada jogo contado uma única vez',
+    activeKeys:Object.freeze(['EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01','EXA-CROSS-01','EXA-CROSS-02','EXA-CROSS-03','EXA-CROSS-04','EXA-CROSS-05','EXA-CROSS-06','EXA-CROSS-07','EXA-CROSS-08','EXA-CROSS-09','EXA-CROSS-10','EXA-MORPH2-01','EXA-MORPH2-02','EXA-SPEC2-01']),
+    unionMarginalGames:79014,
+    unionPctOfMatrix:2.420059535167495,
+    unionPctOfUniverse:2.417246907084032,
+    countingRule:'F29 + EXA-TEMP-01..08 + EXA-WJ-01 + EXA-CROSS-01..10 + F84-F86 · zero falhas walk-forward; cada jogo contado uma única vez',
     degIncluded:false
   });
   const EXA_N4=Array.from({length:25},()=>[]);
@@ -337,7 +337,10 @@
     'EXA-CROSS-07':{label:'Fibonacci × Mágicos',rule:'assinaturas 2x2 Fibonacci × Mágicos',status:'ATIVO',enabledByDefault:true,id:80,marginalGames:1284},
     'EXA-CROSS-08':{label:'Primos × Múltiplos de 3',rule:'assinaturas 2x2 Primos × Múltiplos de 3',status:'ATIVO',enabledByDefault:true,id:81,marginalGames:850},
     'EXA-CROSS-09':{label:'Primos × Mágicos',rule:'assinaturas 2x2 Primos × Mágicos',status:'ATIVO',enabledByDefault:true,id:82,marginalGames:1098},
-    'EXA-CROSS-10':{label:'Múltiplos de 3 × Mágicos',rule:'assinaturas 2x2 Múltiplos de 3 × Mágicos',status:'ATIVO',enabledByDefault:true,id:83,marginalGames:1175}
+    'EXA-CROSS-10':{label:'Múltiplos de 3 × Mágicos',rule:'assinaturas 2x2 Múltiplos de 3 × Mágicos',status:'ATIVO',enabledByDefault:true,id:83,marginalGames:1175},
+    'EXA-MORPH2-01':{label:'F84 · Grau × Bit-quads × Run-length',rule:'assinatura 0.7.5.3.0 | 2.4.3.6.1 | 8.6.2.1.0',status:'ATIVO · ZERO FALHAS',enabledByDefault:true,id:84,marginalGames:982},
+    'EXA-MORPH2-02':{label:'F85 · Componentes × Bit-quads × Run-length',rule:'assinatura 14.1 | 3.3.1.7.2 | 7.4.2.1.1',status:'ATIVO · ZERO FALHAS',enabledByDefault:true,id:85,marginalGames:784},
+    'EXA-SPEC2-01':{label:'F86 · Componentes × Grau × Bit-quads',rule:'assinatura 14.1 | 1.3.5.5.1 | 2.4.1.6.3',status:'ATIVO · ZERO FALHAS',enabledByDefault:true,id:86,marginalGames:1297}
   });
   function exaShapeMetrics(game=[]){
     const g=normalize(game);if(!g)return null;
@@ -455,8 +458,25 @@
       mg:exaCrossSignature(g,m3,magic)
     };
   }
+  function exaMorphSpec2Metrics(game=[]){
+    const g=normalize(game);if(!g)return{};
+    const mask=g.reduce((m,n)=>m|(1<<(n-1)),0)>>>0,comp=exaComponentSizes(mask).join('.');
+    const deg=[0,0,0,0,0];
+    for(const n of g){let d=0;for(const j of EXA_N4[n-1])if(mask&(1<<j))d++;deg[d]++;}
+    let q1=0,q2a=0,q2d=0,q3=0,q4=0;
+    for(let r=0;r<4;r++)for(let c=0;c<4;c++){
+      const ix=[r*5+c,r*5+c+1,(r+1)*5+c,(r+1)*5+c+1],on=ix.filter(i=>mask&(1<<i)),k=on.length;
+      if(k===1)q1++;else if(k===3)q3++;else if(k===4)q4++;else if(k===2){const d=Math.abs(on[0]-on[1]);if(d===1||d===5)q2a++;else q2d++;}
+    }
+    const runs=[0,0,0,0,0,0];
+    for(let r=0;r<5;r++){let len=0;for(let c=0;c<=5;c++){const on=c<5&&!!(mask&(1<<(r*5+c)));if(on)len++;else if(len){runs[len]++;len=0;}}}
+    for(let c=0;c<5;c++){let len=0;for(let r=0;r<=5;r++){const on=r<5&&!!(mask&(1<<(r*5+c)));if(on)len++;else if(len){runs[len]++;len=0;}}}
+    const qv=[q1,q2a,q2d,q3,q4].join('.'),dh=deg.join('.'),rh=runs.slice(1).join('.');
+    return{j1:dh+'|'+qv+'|'+rh,j2:comp+'|'+qv+'|'+rh,j5:comp+'|'+dh+'|'+qv};
+  }
+
   function exaOrthogonalBlocks(game=[],ctx={}){
-    const m=exaOrthogonalMetrics(game);if(!m)return{};const sh=exaShapeMetrics(game),tm=exaTemporalMetrics(game,ctx),wj=exaWalshJohnsonMetrics(game,ctx),cr=exaCross4Metrics(game),fg=exaFourGroupPairMetrics(game);
+    const m=exaOrthogonalMetrics(game);if(!m)return{};const sh=exaShapeMetrics(game),tm=exaTemporalMetrics(game,ctx),wj=exaWalshJohnsonMetrics(game,ctx),cr=exaCross4Metrics(game),fg=exaFourGroupPairMetrics(game),ms2=exaMorphSpec2Metrics(game);
     const defs={
       'EXA-TOPO-01':['fgMax4',m.fgMax4,m.fgMax4<=4],
       'EXA-TOPO-02':['bgComp4',m.bgComp4,m.bgComp4>=9],
@@ -489,7 +509,10 @@
       'EXA-CROSS-07':['fibonacci×magicos',fg.fg,EXA_PAIR_SIGS['EXA-CROSS-07'].has(fg.fg)],
       'EXA-CROSS-08':['primos×m3',fg.pm,EXA_PAIR_SIGS['EXA-CROSS-08'].has(fg.pm)],
       'EXA-CROSS-09':['primos×magicos',fg.pg,EXA_PAIR_SIGS['EXA-CROSS-09'].has(fg.pg)],
-      'EXA-CROSS-10':['m3×magicos',fg.mg,EXA_PAIR_SIGS['EXA-CROSS-10'].has(fg.mg)]
+      'EXA-CROSS-10':['m3×magicos',fg.mg,EXA_PAIR_SIGS['EXA-CROSS-10'].has(fg.mg)],
+      'EXA-MORPH2-01':['grau|bitquads|runs',ms2.j1,ms2.j1==='0.7.5.3.0|2.4.3.6.1|8.6.2.1.0'],
+      'EXA-MORPH2-02':['componentes|bitquads|runs',ms2.j2,ms2.j2==='14.1|3.3.1.7.2|7.4.2.1.1'],
+      'EXA-SPEC2-01':['componentes|grau|bitquads',ms2.j5,ms2.j5==='14.1|1.3.5.5.1|2.4.1.6.3']
     };
     return Object.fromEntries(Object.entries(defs).map(([key,[metric,value,blocked]])=>[key,{key,label:(EXA_ORTHOGONAL_RULES[key]||EXA_EXTENDED_RULES[key]).label,rule:(EXA_ORTHOGONAL_RULES[key]||EXA_EXTENDED_RULES[key]).rule,metric,value,blocked:!!blocked,passed:!blocked}]));
   }
