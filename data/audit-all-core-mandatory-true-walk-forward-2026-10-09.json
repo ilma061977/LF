@@ -1,0 +1,418 @@
+{
+  "generatedAt": "2026-10-09",
+  "mode": "PESQUISA SEM DEPLOY",
+  "scope": "Todos os mecanismos que bloqueiam por padrão: filtros internos core, F28/F36/F37 forçados a block, controles externos padrão e regras EXA enabledByDefault.",
+  "protocol": {
+    "baseThrough": 3799,
+    "targets": 3798,
+    "targetRange": "2-3799",
+    "noLookahead": true,
+    "contextRule": "Para cada alvo t, buildContext recebeu somente concursos <t; hash e atrasos foram mantidos incrementalmente. O resultado t foi inspecionado somente depois.",
+    "acceptanceRule": "Bloqueio oficial só é elegível com 0 falhas de concursos reais no walk-forward."
+  },
+  "groupUnions": {
+    "internalHard": {
+      "failTargets": 2937,
+      "pct": 77.33017377567141,
+      "last500": 379,
+      "pctLast500": 75.8,
+      "last1000": 771,
+      "pctLast1000": 77.1
+    },
+    "standardExternal": {
+      "failTargets": 171,
+      "pct": 4.502369668246446,
+      "last500": 21,
+      "pctLast500": 4.2,
+      "last1000": 47,
+      "pctLast1000": 4.7
+    },
+    "exaEnabled": {
+      "failTargets": 42,
+      "pct": 1.1058451816745656,
+      "last500": 8,
+      "pctLast500": 1.6,
+      "last1000": 14,
+      "pctLast1000": 1.4
+    },
+    "allBlockingMechanisms": {
+      "failTargets": 2977,
+      "pct": 78.38335966298051,
+      "last500": 382,
+      "pctLast500": 76.4,
+      "last1000": 782,
+      "pctLast1000": 78.2
+    }
+  },
+  "internalHard": [
+    [
+      "F07",
+      "Sequência máxima entre 3 e 5",
+      1091,
+      148,
+      293,
+      3798
+    ],
+    [
+      "F01",
+      "Formato comum das linhas",
+      982,
+      130,
+      280,
+      3797
+    ],
+    [
+      "F02",
+      "Formato comum das colunas",
+      973,
+      136,
+      254,
+      3797
+    ],
+    [
+      "F04",
+      "Moldura entre 9 e 11",
+      818,
+      92,
+      208,
+      3797
+    ],
+    [
+      "F15",
+      "Repetidas entre 8 e 10",
+      798,
+      102,
+      208,
+      3798
+    ],
+    [
+      "F14",
+      "Soma entre 166 e 220",
+      481,
+      69,
+      144,
+      3798
+    ],
+    [
+      "F03",
+      "Miolo entre 4 e 9",
+      215,
+      24,
+      58,
+      3769
+    ],
+    [
+      "F12",
+      "Primos entre 4 e 8",
+      210,
+      24,
+      59,
+      3784
+    ],
+    [
+      "F10",
+      "Espelhamento horizontal diferença até 4",
+      139,
+      16,
+      40,
+      3798
+    ],
+    [
+      "F37",
+      "Similaridade 14/15 últimos 500",
+      79,
+      9,
+      23,
+      3637
+    ],
+    [
+      "F08",
+      "Maior salto até 6",
+      64,
+      8,
+      21,
+      3759
+    ],
+    [
+      "F13",
+      "Ímpares entre 5 e 10",
+      54,
+      8,
+      12,
+      3696
+    ],
+    [
+      "F11",
+      "Espelhamento vertical diferença até 5",
+      46,
+      5,
+      10,
+      3728
+    ],
+    [
+      "F36",
+      "Intersecção de Anomalias",
+      30,
+      4,
+      8,
+      3706
+    ],
+    [
+      "F28",
+      "Até 2 alertas nos novos extremos",
+      16,
+      1,
+      4,
+      3471
+    ],
+    [
+      "F29",
+      "Não repetir combinação histórica 15/15",
+      0,
+      0,
+      0,
+      null
+    ]
+  ],
+  "standardExternal": [
+    [
+      "CORES",
+      "Cores obrigatórias",
+      97,
+      17,
+      27,
+      3716
+    ],
+    [
+      "LINHA",
+      "Repetição exata das linhas",
+      32,
+      3,
+      8,
+      3655
+    ],
+    [
+      "COLUNA",
+      "Repetição exata das colunas",
+      24,
+      1,
+      10,
+      3407
+    ],
+    [
+      "PADRAO",
+      "Cooldown de padrão exato",
+      21,
+      0,
+      3,
+      3122
+    ],
+    [
+      "LXC",
+      "Repetição linhas+colunas",
+      1,
+      0,
+      0,
+      2077
+    ]
+  ],
+  "exaWithFailures": [
+    [
+      "EXA-DIST-01",
+      "Espectro de distâncias",
+      10,
+      1,
+      3,
+      3531
+    ],
+    [
+      "EXA-BITQ-01",
+      "Bit-quads diagonais",
+      9,
+      1,
+      2,
+      3696
+    ],
+    [
+      "EXA-DIR-01",
+      "Anisotropia direcional",
+      9,
+      1,
+      2,
+      3583
+    ],
+    [
+      "EXA-SYM-01",
+      "Simetria D4",
+      5,
+      2,
+      3,
+      3414
+    ],
+    [
+      "EXA-TOPO-01",
+      "Topologia ocupada",
+      5,
+      3,
+      3,
+      3455
+    ],
+    [
+      "EXA-TOPO-02",
+      "Topologia ausentes",
+      4,
+      1,
+      2,
+      3696
+    ],
+    [
+      "EXA-SHAPE-01",
+      "Shape xadrez + q3",
+      1,
+      0,
+      0,
+      215
+    ],
+    [
+      "EXA-SHAPE-02",
+      "Shape xadrez + furos",
+      1,
+      0,
+      0,
+      278
+    ],
+    [
+      "EXA-SHAPE-03",
+      "Shape arestas + q3 baixo",
+      1,
+      0,
+      0,
+      2653
+    ],
+    [
+      "EXA-SHAPE-04",
+      "Shape arestas + pontas",
+      1,
+      0,
+      0,
+      2653
+    ],
+    [
+      "EXA-SHAPE-05",
+      "Shape pontas + bifurcações",
+      1,
+      0,
+      0,
+      2653
+    ],
+    [
+      "EXA-SHAPE-06",
+      "Shape pontas + q3 alto",
+      1,
+      1,
+      1,
+      3558
+    ]
+  ],
+  "strictZeroFailureKeep": [
+    "F29",
+    "EXA-TEMP-01",
+    "EXA-TEMP-02",
+    "EXA-TEMP-03",
+    "EXA-TEMP-04",
+    "EXA-TEMP-05",
+    "EXA-TEMP-06",
+    "EXA-TEMP-07",
+    "EXA-TEMP-08",
+    "EXA-WJ-01",
+    "EXA-CROSS-01",
+    "EXA-CROSS-02",
+    "EXA-CROSS-03",
+    "EXA-CROSS-04",
+    "EXA-CROSS-05",
+    "EXA-CROSS-06",
+    "EXA-CROSS-07",
+    "EXA-CROSS-08",
+    "EXA-CROSS-09",
+    "EXA-CROSS-10"
+  ],
+  "strictFailCount": {
+    "blockingMechanisms": 52,
+    "zeroFailure": 20,
+    "withFailures": 32
+  },
+  "contest3800": {
+    "winningNumbers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      19,
+      21
+    ],
+    "blockedBy": [
+      "F01",
+      "F04",
+      "F10",
+      "F14"
+    ],
+    "blockedByRecentExa": false
+  },
+  "externalResearch": {
+    "exaSourcesReviewed": 16,
+    "workstreams": 2,
+    "takeaway": "Literatura sobre backtest/data snooping reforça que seleção de regras após observar o histórico exige validação fora da amostra, walk-forward temporal e controle de múltiplas hipóteses; isso não altera as contagens internas desta auditoria."
+  },
+  "decision": {
+    "keepAsHardBlock": "Somente mecanismos com 0 falhas são elegíveis pelo critério estrito; ainda assim regras EXA devem preservar auditoria de seleção/múltiplas hipóteses.",
+    "demoteInternal": [
+      "F01",
+      "F02",
+      "F03",
+      "F04",
+      "F07",
+      "F08",
+      "F10",
+      "F11",
+      "F12",
+      "F13",
+      "F14",
+      "F15",
+      "F28",
+      "F36",
+      "F37"
+    ],
+    "demoteStandardExternal": [
+      "PADRAO",
+      "CORES",
+      "LINHA",
+      "COLUNA",
+      "LXC"
+    ],
+    "quarantineExaWithFailures": [
+      "EXA-TOPO-01",
+      "EXA-TOPO-02",
+      "EXA-DIR-01",
+      "EXA-BITQ-01",
+      "EXA-SYM-01",
+      "EXA-DIST-01",
+      "EXA-SHAPE-01",
+      "EXA-SHAPE-02",
+      "EXA-SHAPE-03",
+      "EXA-SHAPE-04",
+      "EXA-SHAPE-05",
+      "EXA-SHAPE-06"
+    ],
+    "noAppChange": true,
+    "noDeploy": true
+  }
+}
