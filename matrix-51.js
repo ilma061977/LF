@@ -27,9 +27,9 @@
   ];
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
-  const SCHEMA_VERSION = 'matrix51-canonical-2026-09-v3.7.5';
-  const THRESHOLD_VERSION = 'LF-M83-2026.10.08-FPMG-PAIRS-BASE3799-v3.7.5';
-  const AUDIT_VERSION = 'LF-M83-AUDIT-3799-FPMG-PAIRS-v3.7.5';
+  const SCHEMA_VERSION = 'matrix51-zero-failure-2026-10-09-v3.7.6';
+  const THRESHOLD_VERSION = 'LF-M83-ZF-2026.10.09-BASE3799-v3.7.6';
+  const AUDIT_VERSION = 'LF-M83-ZF-AUDIT-3799-v3.7.6';
   const AUDIT_BASE_THROUGH = 3799;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
@@ -276,23 +276,23 @@
 
 
   const EXA_ORTHOGONAL_RULES=Object.freeze({
-    'EXA-TOPO-01':{label:'Topologia ocupada',rule:'Maior componente ortogonal das 15 dezenas <= 4',threshold:'fgMax4<=4',status:'ATIVO',enabledByDefault:true,isolatedGames:1929,exclusiveGames:1444},
-    'EXA-TOPO-02':{label:'Topologia ausentes',rule:'10 ausentes formam 9 ou mais componentes ortogonais',threshold:'bgComp4>=9',status:'ATIVO',enabledByDefault:true,isolatedGames:735,exclusiveGames:485},
+    'EXA-TOPO-01':{label:'Topologia ocupada',rule:'Maior componente ortogonal das 15 dezenas <= 4',threshold:'fgMax4<=4',status:'QUARENTENA',enabledByDefault:false,isolatedGames:1929,exclusiveGames:1444},
+    'EXA-TOPO-02':{label:'Topologia ausentes',rule:'10 ausentes formam 9 ou mais componentes ortogonais',threshold:'bgComp4>=9',status:'QUARENTENA',enabledByDefault:false,isolatedGames:735,exclusiveGames:485},
     'EXA-DEG-01':{label:'Momento de graus',rule:'Wedges do grafo ortogonal <= 5',threshold:'wedges<=5',status:'OBSERVAR',enabledByDefault:false,isolatedGames:557,exclusiveGames:101},
-    'EXA-DIR-01':{label:'Anisotropia direcional',rule:'|H-V| + |D1-D2| >= 8',threshold:'dirAbsDev>=8',status:'ATIVO',enabledByDefault:true,isolatedGames:639,exclusiveGames:634},
-    'EXA-BITQ-01':{label:'Bit-quads diagonais',rule:'8 ou mais blocos 2x2 com exatamente 2 diagonais',threshold:'q2d>=8',status:'ATIVO',enabledByDefault:true,isolatedGames:908,exclusiveGames:479},
-    'EXA-SYM-01':{label:'Simetria D4',rule:'Variância inteira das 6 assimetrias D4 <= 5',threshold:'symVar6<=5',status:'ATIVO',enabledByDefault:true,isolatedGames:851,exclusiveGames:833},
-    'EXA-DIST-01':{label:'Espectro de distâncias',rule:'30 ou mais pares Manhattan com distância 3',threshold:'man3>=30',status:'ATIVO',enabledByDefault:true,isolatedGames:845,exclusiveGames:823}
+    'EXA-DIR-01':{label:'Anisotropia direcional',rule:'|H-V| + |D1-D2| >= 8',threshold:'dirAbsDev>=8',status:'QUARENTENA',enabledByDefault:false,isolatedGames:639,exclusiveGames:634},
+    'EXA-BITQ-01':{label:'Bit-quads diagonais',rule:'8 ou mais blocos 2x2 com exatamente 2 diagonais',threshold:'q2d>=8',status:'QUARENTENA',enabledByDefault:false,isolatedGames:908,exclusiveGames:479},
+    'EXA-SYM-01':{label:'Simetria D4',rule:'Variância inteira das 6 assimetrias D4 <= 5',threshold:'symVar6<=5',status:'QUARENTENA',enabledByDefault:false,isolatedGames:851,exclusiveGames:833},
+    'EXA-DIST-01':{label:'Espectro de distâncias',rule:'30 ou mais pares Manhattan com distância 3',threshold:'man3>=30',status:'QUARENTENA',enabledByDefault:false,isolatedGames:845,exclusiveGames:823}
   });
   const EXA_ORTHOGONAL_SUMMARY=Object.freeze({
     baseThrough:3799,
     universe:3268760,
-    matrixApprovedBeforeExa:698339,
-    activeKeys:Object.freeze(['EXA-TOPO-01','EXA-TOPO-02','EXA-DIR-01','EXA-BITQ-01','EXA-SYM-01','EXA-DIST-01','EXA-SHAPE-01','EXA-SHAPE-02','EXA-SHAPE-03','EXA-SHAPE-04','EXA-SHAPE-05','EXA-SHAPE-06','EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01','EXA-CROSS-01','EXA-CROSS-02','EXA-CROSS-03','EXA-CROSS-04','EXA-CROSS-05','EXA-CROSS-06','EXA-CROSS-07','EXA-CROSS-08','EXA-CROSS-09','EXA-CROSS-10']),
-    unionMarginalGames:25571,
-    unionPctOfMatrix:3.661111517897186,
-    unionPctOfUniverse:0.7823113625472528,
-    countingRule:'F52-F53 || F55-F83 · cada jogo contado uma única vez',
+    matrixApprovedBeforeExa:3264961,
+    activeKeys:Object.freeze(['EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01','EXA-CROSS-01','EXA-CROSS-02','EXA-CROSS-03','EXA-CROSS-04','EXA-CROSS-05','EXA-CROSS-06','EXA-CROSS-07','EXA-CROSS-08','EXA-CROSS-09','EXA-CROSS-10']),
+    unionMarginalGames:75951,
+    unionPctOfMatrix:2.3262452445833195,
+    unionPctOfUniverse:2.3235416488209597,
+    countingRule:'F29 + EXA-TEMP-01..08 + EXA-WJ-01 + EXA-CROSS-01..10 · zero falhas walk-forward; cada jogo contado uma única vez',
     degIncluded:false
   });
   const EXA_N4=Array.from({length:25},()=>[]);
@@ -313,12 +313,12 @@
     return{fgMax4:fgSizes[0]||0,bgComp4:bgSizes.length,wedges,dirAbsDev:Math.abs(H-V)+Math.abs(D1-D2),q2d,symVar6,man3};
   }
   const EXA_EXTENDED_RULES=Object.freeze({
-    'EXA-SHAPE-01':{label:'Shape xadrez + q3',rule:'checker >= 7 E q3 >= 10',status:'ATIVO',enabledByDefault:true,id:59,marginalGames:0},
-    'EXA-SHAPE-02':{label:'Shape xadrez + furos',rule:'checker >= 9 E furos >= 3',status:'ATIVO',enabledByDefault:true,id:60,marginalGames:0},
-    'EXA-SHAPE-03':{label:'Shape arestas + q3 baixo',rule:'arestas >= 19 E q3 <= 2',status:'ATIVO',enabledByDefault:true,id:61,marginalGames:11},
-    'EXA-SHAPE-04':{label:'Shape arestas + pontas',rule:'arestas >= 20 E pontas <= 1',status:'ATIVO',enabledByDefault:true,id:62,marginalGames:4},
-    'EXA-SHAPE-05':{label:'Shape pontas + bifurcações',rule:'pontas <= 1 E bifurcações >= 9',status:'ATIVO',enabledByDefault:true,id:63,marginalGames:5},
-    'EXA-SHAPE-06':{label:'Shape pontas + q3 alto',rule:'pontas <= 1 E q3 >= 10',status:'ATIVO',enabledByDefault:true,id:64,marginalGames:7},
+    'EXA-SHAPE-01':{label:'Shape xadrez + q3',rule:'checker >= 7 E q3 >= 10',status:'QUARENTENA',enabledByDefault:false,id:59,marginalGames:0},
+    'EXA-SHAPE-02':{label:'Shape xadrez + furos',rule:'checker >= 9 E furos >= 3',status:'QUARENTENA',enabledByDefault:false,id:60,marginalGames:0},
+    'EXA-SHAPE-03':{label:'Shape arestas + q3 baixo',rule:'arestas >= 19 E q3 <= 2',status:'QUARENTENA',enabledByDefault:false,id:61,marginalGames:11},
+    'EXA-SHAPE-04':{label:'Shape arestas + pontas',rule:'arestas >= 20 E pontas <= 1',status:'QUARENTENA',enabledByDefault:false,id:62,marginalGames:4},
+    'EXA-SHAPE-05':{label:'Shape pontas + bifurcações',rule:'pontas <= 1 E bifurcações >= 9',status:'QUARENTENA',enabledByDefault:false,id:63,marginalGames:5},
+    'EXA-SHAPE-06':{label:'Shape pontas + q3 alto',rule:'pontas <= 1 E q3 >= 10',status:'QUARENTENA',enabledByDefault:false,id:64,marginalGames:7},
     'EXA-TEMP-01':{label:'Transição perímetro × linhas',rule:'|perímetro atual-lag1| >= 10 E L1 linhas vs lag3 >= 12',status:'ATIVO',enabledByDefault:true,id:65,marginalGames:1048},
     'EXA-TEMP-02':{label:'Transição furos × perímetro',rule:'|furos atual-lag1| >= 2 E |perímetro atual-lag3| >= 16',status:'ATIVO',enabledByDefault:true,id:66,marginalGames:1028},
     'EXA-TEMP-03':{label:'Transição furos extremos × perímetro',rule:'|furos atual-lag1| >= 4 E |perímetro atual-lag3| >= 10',status:'ATIVO',enabledByDefault:true,id:67,marginalGames:136},
@@ -568,7 +568,7 @@
     add(50,true,'Cobertura calculada no módulo Fechamentos; esta posição não elimina isoladamente.');
     add(51,true,'Exportação/carteira operacional; esta posição não elimina isoladamente.');
 
-    const hardFailed=checks.filter(f=>(f.mode==='core'||MANDATORY_BLOCKS.has(f.id))&&!f.passed),warnings=checks.filter(f=>f.mode==='advisory'&&!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]),colorRule=mandatoryColorRule(g),lineRepeat=lineRepeatRule(g,ctx.latest),columnRepeat=columnRepeatRule(g,ctx.latest),lineColumnRepeat=lineColumnRepeatRule(g,ctx.latest),exaBlocks=exaOrthogonalBlocks(g,ctx);
+    const hardFailed=checks.filter(f=>MANDATORY_BLOCKS.has(f.id)&&!f.passed),warnings=checks.filter(f=>!MANDATORY_BLOCKS.has(f.id)&&f.id!==23&&!['experimental','operational'].includes(f.mode)&&!f.passed),patternCooldown=exactPatternCooldown(lines,ctx.history||[]),colorRule=mandatoryColorRule(g),lineRepeat=lineRepeatRule(g,ctx.latest),columnRepeat=columnRepeatRule(g,ctx.latest),lineColumnRepeat=lineColumnRepeatRule(g,ctx.latest),exaBlocks=exaOrthogonalBlocks(g,ctx);
     return {valid:true,approved:hardFailed.length===0&&!patternCooldown.blocked&&!colorRule.blocked&&!lineRepeat.blocked&&!columnRepeat.blocked&&!lineColumnRepeat.blocked,filters:checks,failed:hardFailed.map(f=>f.id),warnings:warnings.map(f=>f.id),patternCooldown,colorRule,lineRepeat,columnRepeat,lineColumnRepeat,exaBlocks,metrics:{lines,cols,qs,borderSectors,center,border,run,gap,primes,odds,total,repeated,elite,couples,absentRecent,persistentAbsent,delayedCount,floatingCount,cycleCount,opposedBands,hotCount,coldCount,avgDelay,endingDelta,ds,fib,m3,m5,maxHistorical:historicalCeiling,radial,adjacency,colors:colorRule.distinct,colorCounts:colorRule.counts,centroid:cm},calibrated:ctx.calibrated};
   }
   function histoSafe(x){return Number.isFinite(x)?x:0;}
@@ -576,8 +576,9 @@
   function externalRuleActive(policies={},key){
     if(policies?.[key]===true)return true;
     if(policies?.[key]===false)return false;
+    if(['PADRAO','CORES','LINHA','COLUNA','LXC'].includes(String(key)))return false;
     const rule=EXA_ORTHOGONAL_RULES[key]||EXA_EXTENDED_RULES[key];
-    return rule?rule.enabledByDefault!==false:true;
+    return rule?rule.enabledByDefault===true:false;
   }
   function externalRuleBlocks(report,policies={}){
     return (externalRuleActive(policies,'PADRAO')&&report?.patternCooldown?.blocked)||
@@ -589,7 +590,7 @@
   function policyAllows(report,policies={},externalPolicies={}){
     if(report?.valid===false||externalRuleBlocks(report,externalPolicies))return false;
     return report.filters.every(f=>{
-      const explicit=policies[f.id];const policy=Number(f.id)===29?'block':(explicit||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'))));
+      const explicit=policies[f.id];const policy=Number(f.id)===29?'block':(explicit||(f.id===23?'ignore':(f.mode==='core'||f.mode==='advisory')?'warn':'ignore'));
       return policy!=='block'||f.passed;
     });
   }
@@ -597,7 +598,7 @@
   function generate(ctx,quantity=1,maxAttempts=300000,options={}){const target=Math.max(1,Math.min(20,Number(quantity)||1)),out=[],seen=new Set(),excluded=options.excluded||[],policies=options.policies||{},externalPolicies=options.externalPolicies||{};let tested=0;while(out.length<target&&tested<maxAttempts){const g=randomAllowedGame(excluded);if(!g)break;const k=keyOf(g);tested++;if(seen.has(k))continue;seen.add(k);const r=inspect(g,ctx);if(policyAllows(r,policies,externalPolicies))out.push(g);}return{games:out,tested,complete:out.length===target};}
 
   function rangeCentral(value,range){if(!Number.isFinite(value)||!range)return 0;const mid=(range[0]+range[1])/2,half=Math.max(.5,(range[1]-range[0])/2);return Math.max(-1,1-Math.abs(value-mid)/half);}
-  function candidateScoreFromReport(r,ctx,policies={},externalPolicies={}){if(!r?.valid||externalRuleBlocks(r,externalPolicies))return-Infinity;const blocked=r.filters.filter(f=>(((Number(f.id)===29?'block':(policies[f.id]||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore')))))==='block')&&!f.passed)).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>((policies[f.id]||([28,36,37].includes(Number(f.id))?'block':(MANDATORY_BLOCKS.has(f.id)?'block':(f.id===23?'ignore':f.mode==='core'?'block':f.mode==='advisory'?'warn':'ignore'))))==='warn'&&!f.passed)).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
+  function candidateScoreFromReport(r,ctx,policies={},externalPolicies={}){if(!r?.valid||externalRuleBlocks(r,externalPolicies))return-Infinity;const policy=f=>Number(f.id)===29?'block':(policies[f.id]||(f.id===23?'ignore':(f.mode==='core'||f.mode==='advisory')?'warn':'ignore'));const blocked=r.filters.filter(f=>policy(f)==='block'&&!f.passed).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>policy(f)==='warn'&&!f.passed).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
   function candidateScore(game,ctx,policies={},externalPolicies={}){return candidateScoreFromReport(inspect(game,ctx),ctx,policies,externalPolicies);}
   function nCk(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);}
   function unrank(pool,k,rank){const out=[];let start=0,r=Math.max(0,Math.floor(rank));for(let need=k;need>0;need--){for(let i=start;i<=pool.length-need;i++){const c=nCk(pool.length-i-1,need-1);if(r<c){out.push(pool[i]);start=i+1;break;}r-=c;}}return out;}
