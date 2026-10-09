@@ -1,0 +1,137 @@
+{
+  "generatedAt": "2026-10-09",
+  "mode": "PESQUISA SEM DEPLOY",
+  "universe": 3268760,
+  "baseThrough": 3799,
+  "scenario": "Bloqueio final sustentado apenas por mecanismos com zero falhas no walk-forward.",
+  "removedFromHardBlock": {
+    "previouslyDemoted20": [
+      "F01",
+      "F02",
+      "F03",
+      "F04",
+      "F07",
+      "F08",
+      "F10",
+      "F11",
+      "F12",
+      "F13",
+      "F14",
+      "F15",
+      "F28",
+      "F36",
+      "F37",
+      "PADRAO",
+      "CORES",
+      "LINHA",
+      "COLUNA",
+      "LXC"
+    ],
+    "exaWithFailures": [
+      "EXA-TOPO-01",
+      "EXA-TOPO-02",
+      "EXA-DIR-01",
+      "EXA-BITQ-01",
+      "EXA-SYM-01",
+      "EXA-DIST-01",
+      "EXA-SHAPE-01",
+      "EXA-SHAPE-02",
+      "EXA-SHAPE-03",
+      "EXA-SHAPE-04",
+      "EXA-SHAPE-05",
+      "EXA-SHAPE-06"
+    ]
+  },
+  "retainedHardBlocks": {
+    "F29": "Não repetir combinação histórica exata 15/15",
+    "exaZeroFailure": [
+      "EXA-TEMP-01",
+      "EXA-TEMP-02",
+      "EXA-TEMP-03",
+      "EXA-TEMP-04",
+      "EXA-TEMP-05",
+      "EXA-TEMP-06",
+      "EXA-TEMP-07",
+      "EXA-TEMP-08",
+      "EXA-WJ-01",
+      "EXA-CROSS-01",
+      "EXA-CROSS-02",
+      "EXA-CROSS-03",
+      "EXA-CROSS-04",
+      "EXA-CROSS-05",
+      "EXA-CROSS-06",
+      "EXA-CROSS-07",
+      "EXA-CROSS-08",
+      "EXA-CROSS-09",
+      "EXA-CROSS-10"
+    ]
+  },
+  "exactFinal": {
+    "approved": 3189010,
+    "blocked": 79750,
+    "approvedPct": 97.56023690940907,
+    "blockedPct": 2.4397630905909273,
+    "breakdown": {
+      "F29HistoricalExact": 3799,
+      "exaZeroFailureUnionAfterF29": 75951,
+      "total": 79750
+    }
+  },
+  "comparison": {
+    "originalOfficial": {
+      "approved": 672768,
+      "blocked": 2595992,
+      "blockedPct": 79.41825034569683
+    },
+    "afterDemoting20": {
+      "approved": 3145329,
+      "blocked": 123431,
+      "blockedPct": 3.7760802261407997
+    },
+    "zeroFailureOnly": {
+      "approved": 3189010,
+      "blocked": 79750,
+      "blockedPct": 2.4397630905909273
+    },
+    "recoveredByRemoving12FailingExa": 43681,
+    "blockedDecreasePctPointsVsDemote20": 1.336317135549872,
+    "recoveredVsOriginalOfficial": 2516242,
+    "blockedDecreasePctPointsVsOriginal": 76.9784872551059
+  },
+  "contest3800": {
+    "passes": true
+  },
+  "methodology": {
+    "exactEnumeration": true,
+    "combinations": 3268760,
+    "chunks": [
+      [
+        0,
+        600000
+      ],
+      [
+        600000,
+        1200000
+      ],
+      [
+        1200000,
+        1800000
+      ],
+      [
+        1800000,
+        2400000
+      ],
+      [
+        2400000,
+        3000000
+      ],
+      [
+        3000000,
+        3268760
+      ]
+    ],
+    "note": "Cada combinação foi verificada contra F29 e a união das 19 regras EXA com zero falhas. F29 foi contado primeiro; a contagem EXA de 75.951 exclui as 3.799 combinações históricas, evitando dupla contagem."
+  },
+  "appChanged": false,
+  "deployed": false
+}
