@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-10-09",
+  "mode": "PESQUISA SEM DEPLOY",
+  "objective": "Investigar uma vantagem legítima/mensurável que pudesse melhorar a seleção para 15 acertos, sem assumir padrões retrospectivos como causalidade.",
+  "externalResearch": {
+    "exaSourcesReviewed": 40,
+    "webFindings": [
+      "CAIXA usa 1 globo com 25 bolas na Lotofácil; não há reposição dentro do concurso.",
+      "CAIXA informa bolas de mesmo peso/diâmetro, aferidas periodicamente, com auditoria e controle.",
+      "Literatura experimental mostra que diferenças físicas de massa podem, em alguns equipamentos, introduzir viés detectável.",
+      "Literatura de randomização em loterias recomenda analisar ordem de extração, pois um viés mecânico pode aparecer primeiro na posição de saída e não apenas na frequência final.",
+      "Estratégias de wheeling/covering aumentam cobertura apenas ao comprar mais combinações distintas; não criam probabilidade extra por combinação.",
+      "Escolher combinações menos populares pode reduzir divisão de prêmio, mas não aumenta a probabilidade de 15 acertos."
+    ]
+  },
+  "drawOrderPilot": {
+    "source": "asloterias.com.br resultados por ordem de sorteio; resultados legais sempre devem ser conferidos na CAIXA",
+    "contests": 399,
+    "range": "3401-3800",
+    "expectedOccurrencesPerNumberPosition": 15.96,
+    "strongestCell": {
+      "number": 5,
+      "position": 5,
+      "observed": 28,
+      "zApprox": 3.076
+    },
+    "strongestCellBonferroniApprox": {
+      "twoSidedRawP": 0.002098,
+      "tests": 375,
+      "adjustedPApprox": 0.7867
+    },
+    "inclusionFrequencyExtremes": [
+      {
+        "number": 8,
+        "count": 224,
+        "zApprox": -1.57
+      },
+      {
+        "number": 15,
+        "count": 253,
+        "zApprox": 1.39
+      },
+      {
+        "number": 25,
+        "count": 253,
+        "zApprox": 1.39
+      }
+    ],
+    "stability": {
+      "olderRange": "3401-3600",
+      "newerRange": "3601-3800",
+      "note": "Os maiores desvios mudam entre metades. O sinal não é estável o suficiente para uso preditivo.",
+      "recentStrongCell": {
+        "number": 1,
+        "position": 14,
+        "observed": 18,
+        "zApprox": 3.61
+      }
+    },
+    "conclusion": "Nenhum viés posicional acionável detectado neste piloto após considerar busca múltipla e instabilidade temporal."
+  },
+  "mostPromisingNextResearch": [
+    "Obter a ordem de extração de todo o histórico disponível, não apenas 399 concursos.",
+    "Segmentar por regime físico: máquina/globo, conjunto de bolas, local e datas de troca/manutenção, se esses metadados puderem ser documentados.",
+    "Aplicar testes de aleatoriedade posicional pré-especificados e correção Westfall-Young/permutação.",
+    "Testar transições posição→posição, primeira/última bola, tempo entre ejeções se vídeo/metadados permitirem.",
+    "Usar holdout prospectivo: qualquer hipótese descoberta deve ser congelada antes dos concursos futuros."
+  ],
+  "decision": {
+    "exploitableBreachFound": false,
+    "strongestLead": "Ordem de extração condicionada a equipamento/conjunto de bolas",
+    "appChange": false,
+    "deploy": false
+  }
+}
