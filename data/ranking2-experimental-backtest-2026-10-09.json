@@ -1,0 +1,140 @@
+{
+  "generatedAt": "2026-10-09",
+  "mode": "PESQUISA SEM DEPLOY",
+  "name": "RANKING 2.0 EXPERIMENTAL",
+  "objective": "Ordenar os jogos aprovados sem impor um formato estrutural ideal e sem transformar indicadores em bloqueios.",
+  "hardBlockingPolicy": "F29 + EXA zero-falhas ativos, incluindo F84-F86 na fonte interna; indicadores e Perfil PRO não eliminam no modo Ranking 2.0.",
+  "model": {
+    "name": "SHORT",
+    "score": "soma dos logits da probabilidade empírica ponderada por dezena",
+    "windows": {
+      "U5": 0.35,
+      "U10": 0.3,
+      "U20": 0.2,
+      "U50": 0.15
+    },
+    "clipping": [
+      0.03,
+      0.97
+    ],
+    "structuralPenalty": false,
+    "indicatorQuotaHardBlock": false,
+    "proProfileHardBlock": false
+  },
+  "researchComparison": {
+    "development": {
+      "range": "3501-3700",
+      "contests": 200,
+      "samplePerContest": 800,
+      "meanPercentile": 51.791875,
+      "meanTop1Hits": 9.015,
+      "actualTop10": 2,
+      "actualTop50": 13,
+      "actualTop100": 26
+    },
+    "holdoutInitial": {
+      "range": "3701-3800",
+      "contests": 100,
+      "samplePerContest": 800,
+      "meanPercentile": 53.165,
+      "meanTop1Hits": 9.25,
+      "actualTop10": 2,
+      "actualTop50": 9,
+      "actualTop100": 15
+    },
+    "holdoutConfirmation": {
+      "range": "3701-3800",
+      "contests": 100,
+      "samplePerContest": 3000,
+      "meanPercentile": 52.99066666666667,
+      "meanTop1Hits": 9.07,
+      "theoreticalRandomMeanHits": 9,
+      "actualTop100": 4,
+      "raw5BestDistribution": {
+        "7": 3,
+        "8": 5,
+        "9": 15,
+        "10": 44,
+        "11": 22,
+        "12": 10,
+        "13": 1
+      },
+      "diversified5BestDistribution": {
+        "8": 6,
+        "9": 14,
+        "10": 49,
+        "11": 18,
+        "12": 11,
+        "13": 2
+      },
+      "raw10BestDistribution": {
+        "8": 2,
+        "9": 9,
+        "10": 36,
+        "11": 36,
+        "12": 15,
+        "13": 2
+      },
+      "diversified10BestDistribution": {
+        "9": 9,
+        "10": 35,
+        "11": 35,
+        "12": 19,
+        "13": 2
+      }
+    },
+    "workerValidationLast50": {
+      "samplePerContest": 2000,
+      "meanHits": 9.16,
+      "ci95": [
+        8.786631574982565,
+        9.533368425017436
+      ],
+      "randomMean": 9.0274,
+      "randomCI95": [
+        8.74,
+        9.38
+      ],
+      "percentileVs100RandomSeries": 82,
+      "points11": 7,
+      "points13": 0,
+      "blockPassPct": 100
+    },
+    "contest3800": {
+      "samplePerContest": 3000,
+      "rank": 175,
+      "percentile": 94.2,
+      "top1Hits": 12,
+      "top100Best": 13,
+      "top1Game": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        12,
+        14,
+        15,
+        18,
+        19,
+        20
+      ]
+    }
+  },
+  "conclusion": {
+    "promoteAsDefault": false,
+    "status": "EXPERIMENTAL / COMPARAÇÃO",
+    "reason": "O modelo melhorou muito o concurso 3800 e alguns períodos recentes, mas a média geral do holdout não demonstra vantagem estatisticamente robusta sobre aleatoriedade. O IC 95% inclui a média teórica de 9 acertos.",
+    "portfolioNote": "Diversificação do Top 10 aumentou 12+ no holdout de 15 para 19 concursos, mas precisa validação adicional antes de virar padrão."
+  },
+  "implementation": {
+    "matrix51": "candidateScoreV2 + pesos U5/U10/U20/U50 no contexto",
+    "worker": "modo ranking2 em busca exaustiva e backtest; indicadores/Perfil PRO informativos",
+    "app": "opção 🧪 Ranking 2.0 experimental adicionada ao seletor do Novo Indicado",
+    "publicAppChanged": false
+  }
+}
