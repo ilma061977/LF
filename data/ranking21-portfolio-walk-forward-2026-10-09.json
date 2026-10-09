@@ -1,0 +1,133 @@
+{
+  "generatedAt": "2026-10-09",
+  "mode": "PESQUISA SEM DEPLOY",
+  "name": "RANKING 2.1 · CARTEIRA DIVERSIFICADA",
+  "objective": "Manter o score do Ranking 2.0 (U5/U10/U20/U50) e adicionar apenas componentes com ganho marginal validado fora da amostra.",
+  "scoreBase": {
+    "unchangedFromRanking20": true,
+    "windows": {
+      "U5": 0.35,
+      "U10": 0.3,
+      "U20": 0.2,
+      "U50": 0.15
+    },
+    "structuralPenalty": false
+  },
+  "featureAudit": {
+    "tested": [
+      "duplas U20/U50/U100",
+      "trincas U20/U50/U100",
+      "duplas+trincas combinadas",
+      "carteira diversificada por limite de sobreposição"
+    ],
+    "developmentRange": "3501-3700",
+    "holdoutRange": "3701-3800",
+    "pairsResult": "não promoveram ganho consistente",
+    "bestTripleDevelopment": "Trincas U50 + peso 0.5",
+    "tripleHoldout": {
+      "ranking20MeanPercentile": 52.99066666666667,
+      "ranking21CandidateMeanPercentile": 50.56333333333336,
+      "percentileDelta": -2.427333333333333,
+      "percentileDeltaCI95": [
+        -4.681105287326872,
+        -0.1735613793397941
+      ],
+      "top1HitsDelta": 0.04,
+      "top1HitsDeltaCI95": [
+        -0.12696353681646375,
+        0.20696353681646376
+      ],
+      "decision": "REJEITAR do score"
+    }
+  },
+  "portfolioSelection": {
+    "chosen": "20 jogos, sobreposição máxima 10, escolhidos entre Top 600 do Ranking 2.0",
+    "development": {
+      "range": "3501-3700",
+      "samplePerContest": 1200,
+      "meanBestHits": 11.26,
+      "points11plus": 177,
+      "points12plus": 67,
+      "points13plus": 8
+    },
+    "holdout": {
+      "range": "3701-3800",
+      "samplePerContest": 3000,
+      "rawTop20": {
+        "meanBestHits": 10.87,
+        "points11plus": 67,
+        "points12plus": 23,
+        "points13plus": 4
+      },
+      "diversified20": {
+        "meanBestHits": 11.19,
+        "points11plus": 83,
+        "points12plus": 35,
+        "points13plus": 3
+      },
+      "marginalMeanHits": 0.32,
+      "marginalCI95": [
+        0.1508200360503046,
+        0.48917996394969543
+      ]
+    },
+    "sizeComparisonHoldout": {
+      "K5": {
+        "rule": "overlap<=9; pool600",
+        "meanBestHits": 10.39,
+        "points11plus": 42,
+        "points12plus": 13,
+        "points13plus": 1
+      },
+      "K10": {
+        "rule": "overlap<=10; pool300",
+        "meanBestHits": 10.86,
+        "points11plus": 67,
+        "points12plus": 22,
+        "points13plus": 3
+      },
+      "K20": {
+        "rule": "overlap<=10; pool600",
+        "meanBestHits": 11.19,
+        "points11plus": 83,
+        "points12plus": 35,
+        "points13plus": 3
+      }
+    }
+  },
+  "fairRandomBenchmark": {
+    "range": "últimos 50 concursos",
+    "strategyPortfolioSize": 20,
+    "randomPortfolioSize": 20,
+    "sampleCandidatesPerContest": 2000,
+    "strategyMeanBestHits": 11.32,
+    "strategyCI95": [
+      11.140877016550082,
+      11.499122983449919
+    ],
+    "randomMeanBestHits": 11.2434,
+    "randomCI95": [
+      11.06,
+      11.4
+    ],
+    "percentileVs100RandomPortfolioSeries": 83,
+    "strategy13plus": 1,
+    "random13plusMean": 1.32,
+    "interpretation": "A carteira 2.1 melhora a seleção interna em relação ao Top 20 bruto do Ranking 2.0, mas ainda não demonstra vantagem estatística robusta contra 20 apostas aleatórias."
+  },
+  "contest3800": {
+    "ranking20Top20Best": 12,
+    "ranking21Diversified20Best": 12,
+    "note": "A diversificação preservou o melhor resultado do concurso 3800, mas o ganho do 2.1 aparece principalmente na robustez da carteira ao longo do holdout."
+  },
+  "implementation": {
+    "worker": "modo ranking21; mesma pontuação ranking2; carteira de até 20 escolhida entre Top 600 com overlap alvo <=10; backtest compara contra 20 jogos aleatórios",
+    "app": "opção 🧪 Ranking 2.1 · Carteira 20 no Novo Indicado",
+    "publicDeployment": false
+  },
+  "decision": {
+    "promoteAsDefault": false,
+    "status": "EXPERIMENTAL VALIDADO COMO MELHORIA DE CARTEIRA, NÃO COMO VANTAGEM SOBRE O ACASO",
+    "keepPairsTriplesOutOfScore": true
+  }
+}
