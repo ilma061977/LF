@@ -1,0 +1,185 @@
+{
+  "generatedAt": "2026-10-09",
+  "mode": "PESQUISA SEM DEPLOY",
+  "base": {
+    "through": 3799,
+    "universe": 3268760,
+    "zeroFailureBaseline": {
+      "approved": 3189010,
+      "blocked": 79750,
+      "blockedPct": 2.4397630905909273
+    }
+  },
+  "definitions": {
+    "MORPH": {
+      "perimeter": "Perímetro 4-vizinhos dos 15 pixels; como a área é fixa em 15, equivale a informação geométrica não trivial.",
+      "euler4": "C4 do foreground menos buracos do background com conectividade 8.",
+      "holes8": "Componentes brancos 8-conectados que não tocam a borda.",
+      "q3": "Número de blocos 2x2 com exatamente 3 dezenas selecionadas."
+    },
+    "SPEC": {
+      "degreeHistogram": "Contagem de vértices do grafo ortogonal com grau 0,1,2,3,4.",
+      "A4": "trace(A^4)=2E+4*sum_v C(d_v,2)+8*C4cycles; quarto momento do espectro de adjacência.",
+      "L3": "trace(L^3)=sum d_v^3+3*sum d_v^2 no grafo bipartido sem triângulos; terceiro momento do espectro Laplaciano."
+    }
+  },
+  "families": {
+    "M1": {
+      "signature": "P|Euler",
+      "discoverySelected": "36|6",
+      "universeMass": 1812,
+      "holdoutHits": 0,
+      "fullHits": 0,
+      "rollingFailures501_3799": 3,
+      "lastRollingFailure": 2248,
+      "last500": 0,
+      "last1000": 0,
+      "last1500": 0,
+      "currentSelectedSince": 2249,
+      "currentMarginal": 1679,
+      "pZeroFull": 0.12166104257247788,
+      "pZeroHoldout": 0.5734091158208078,
+      "status": "QUARENTENA FORTE"
+    },
+    "M2": {
+      "signature": "P|holes8|q3",
+      "discoverySelected": "32|0|11",
+      "universeMass": 2700,
+      "holdoutHits": 0,
+      "fullHits": 0,
+      "rollingFailures501_3799": 4,
+      "lastRollingFailure": 2635,
+      "last500": 0,
+      "last1000": 0,
+      "last1500": 2,
+      "currentSelectedSince": 2636,
+      "currentMarginal": 2600,
+      "pZeroFull": 0.04331416205422226,
+      "pZeroHoldout": 0.4365634069544282,
+      "status": "QUARENTENA FORTE"
+    },
+    "S1": {
+      "signature": "degreeHistogram",
+      "discoveryTop": "0-5-7-1-2",
+      "discoveryTopHoldoutHits": 3,
+      "currentRollingSignature": "0-6-5-2-2",
+      "universeMass": 3588,
+      "fullHitsCurrent": 0,
+      "rollingFailures501_3799": 9,
+      "lastRollingFailure": 2852,
+      "last500": 0,
+      "last1000": 1,
+      "currentSelectedSince": 2853,
+      "currentMarginal": 3550,
+      "status": "QUARENTENA / NÃO PROMOVER"
+    },
+    "S2": {
+      "signature": "A4|L3",
+      "discoveryTop": "122|378",
+      "discoveryTopHoldoutHits": 1,
+      "currentRollingSignature": "144|448",
+      "universeMass": 3428,
+      "fullHitsCurrent": 0,
+      "rollingFailures501_3799": 7,
+      "lastRollingFailure": 3256,
+      "last500": 0,
+      "last1000": 1,
+      "currentSelectedSince": 3257,
+      "currentMarginal": 3383,
+      "status": "QUARENTENA / NÃO PROMOVER"
+    },
+    "X1": {
+      "signature": "P|Euler|A4",
+      "discoveryTop": "32|4|128",
+      "discoveryTopHoldoutHits": 2,
+      "currentRollingSignature": "28|0|124",
+      "universeMass": 3072,
+      "fullHitsCurrent": 0,
+      "rollingFailures501_3799": 5,
+      "lastRollingFailure": 3458,
+      "last500": 1,
+      "last1000": 1,
+      "currentSelectedSince": 3459,
+      "currentMarginal": 3019,
+      "status": "QUARENTENA / NÃO PROMOVER"
+    },
+    "X2": {
+      "signature": "P|holes8|L3",
+      "discoveryTop": "38|0|196",
+      "discoveryTopHoldoutHits": 2,
+      "currentRollingSignature": "28|1|446",
+      "universeMass": 2176,
+      "fullHitsCurrent": 0,
+      "rollingFailures501_3799": 8,
+      "lastRollingFailure": 3212,
+      "last500": 0,
+      "last1000": 1,
+      "currentSelectedSince": 3213,
+      "currentMarginal": 2135,
+      "status": "QUARENTENA / NÃO PROMOVER"
+    }
+  },
+  "exactMarginal": {
+    "M1plusM2": {
+      "union": 4279,
+      "overlap": 0,
+      "hypotheticalBlocked": 84029,
+      "hypotheticalApproved": 3184731,
+      "hypotheticalBlockedPct": 2.570668999865392,
+      "incrementPctPoints": 0.1309059092744647
+    },
+    "allSixCurrentSignatures": {
+      "union": 16366,
+      "overlap": 0,
+      "hypotheticalBlocked": 96116,
+      "hypotheticalApproved": 3172644,
+      "hypotheticalBlockedPct": 2.9404422472130105,
+      "incrementPctPoints": 0.5006791566220832
+    }
+  },
+  "contest3800": {
+    "numbers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      19,
+      21
+    ],
+    "morphSpecMetrics": {
+      "perimeter": 22,
+      "C4": 2,
+      "holes8": 0,
+      "euler": 2,
+      "q3": 3,
+      "degreeHistogram": "1-2-3-6-3",
+      "A4": 242,
+      "L3": 728
+    },
+    "blockedByAnyCandidate": false
+  },
+  "multipleTesting": {
+    "universeFamiliesTested": 6,
+    "fullHistoryZeroCellsGe100": 937,
+    "note": "A abundância de células zero-histórico mostra forte risco de seleção múltipla. Nenhuma regra deve ser promovida só por ausência histórica. M1/M2 foram as únicas escolhas principais que sobreviveram ao holdout fixo, mas ainda tiveram falhas no rolling de re-seleção completo."
+  },
+  "decision": {
+    "promoteToOfficial": false,
+    "strongest": [
+      "M1",
+      "M2"
+    ],
+    "nextStep": "Tentar segunda geração MORPH com descritores realmente novos (curvatura/cantos, componentes 8-vizinhos, run-lengths) e SPEC com espectro exato apenas dentro das células candidatas, mantendo seleção pré-declarada e rolling verdadeiro.",
+    "appChanged": false,
+    "deployed": false
+  }
+}
