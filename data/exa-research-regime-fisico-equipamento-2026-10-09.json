@@ -1,0 +1,108 @@
+{
+  "generatedAt": "2026-10-09",
+  "baseFile": "data/lotofacil-ordem-extracao-1-3800.json",
+  "analysisFile": "data/exa-research-ordem-extracao-full-1-3800-2026-10-09.json",
+  "physicalRegimeFindings": {
+    "currentRules": {
+      "lotofacilGlobe": "1 globo com bolas 01-25",
+      "ballSpec": "borracha maciça, 66 g, 50 mm; aferição periódica por instituto de metrologia",
+      "note": "A dinâmica pode variar conforme disponibilidade de equipamentos."
+    },
+    "historicalVenue": {
+      "pre2021": "Caminhão da Sorte, Espaço Loterias CAIXA no Terminal Rodoviário Tietê/SP, Auditório CAIXA Brasília/DF e outros ambientes CAIXA.",
+      "mar2020Example": "Espaço Loterias CAIXA no Terminal Rodoviário Tietê, Av. Cruzeiro do Sul 1800.",
+      "espacoDaSorte": "Inaugurado em dezembro de 2021, Av. Paulista 750, São Paulo.",
+      "splitUsed": {
+        "contest": 2391,
+        "date": "07/12/2021"
+      }
+    },
+    "perContestEquipmentId": {
+      "publicIdentifierFound": false,
+      "missingFields": [
+        "ID do globo",
+        "ID do conjunto/maleta de bolas",
+        "número de lacre associado ao concurso em base estruturada"
+      ],
+      "videoArchive": "CAIXA informa que sorteios a partir de 07/10/2019 estão disponíveis no YouTube, incluindo abertura/fechamento de maletas e carregamento."
+    }
+  },
+  "statisticalSummary": {
+    "positionalCells375": {
+      "anyBonferroniSignificantFull": false,
+      "strongest": {
+        "dezena": 20,
+        "posicao": 9,
+        "observed": 190,
+        "zApprox": 3.1458,
+        "rawPApprox": 0.001657,
+        "bonferroniApprox": 0.62125
+      }
+    },
+    "positionLevel15": {
+      "anyBonferroniSignificantFull": false
+    },
+    "recent": {
+      "last500AnySignificant": false,
+      "last1000AnySignificant": false
+    },
+    "venueChange2391": {
+      "anyCellSignificantAfterBonferroni": false
+    },
+    "inclusionFrequency": {
+      "significantAfter25TestBonferroni": [
+        {
+          "dezena": 16,
+          "observed": 2173,
+          "expected": 2280,
+          "zApprox": -3.5431,
+          "bonferroniApprox": 0.00989
+        }
+      ],
+      "num16Stability": [
+        {
+          "range": "1-950",
+          "rate": 0.57263,
+          "z": -1.7219
+        },
+        {
+          "range": "951-1900",
+          "rate": 0.57368,
+          "z": -1.6557
+        },
+        {
+          "range": "1901-2850",
+          "rate": 0.58105,
+          "z": -1.1921
+        },
+        {
+          "range": "2851-3800",
+          "rate": 0.56,
+          "z": -2.5166
+        },
+        {
+          "range": "last1000",
+          "rate": 0.557,
+          "z": -2.7756
+        },
+        {
+          "range": "pre2391",
+          "rate": 0.57824,
+          "z": -2.1712
+        },
+        {
+          "range": "post2391",
+          "rate": 0.56099,
+          "z": -2.9898
+        }
+      ],
+      "interpretation": "Anomalia descritiva real no histórico, mas não prova viés físico nem vantagem preditiva; precisa validação prospectiva."
+    }
+  },
+  "nextProtocol": [
+    "Não transformar frequência da dezena 16 em bloqueio duro.",
+    "Congelar hipótese prospectiva: acompanhar inclusão da 16 e posição de saída por pelo menos 100-300 concursos.",
+    "Extrair metadados visuais/verbais dos vídeos oficiais 2019+ para identificar maleta/lacre/globo quando visíveis.",
+    "Se identificadores físicos forem recuperáveis, testar cada conjunto separadamente com correção de múltiplas hipóteses."
+  ]
+}
