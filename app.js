@@ -316,12 +316,7 @@
   function markerData(){const x=indicatorSets();return[{key:'hot',emoji:'🔥',label:'Quentes',set:x.hot},{key:'cold',emoji:'❄️',label:'Frias',set:x.cold},{key:'latest',emoji:'♻️',label:'Repetidas',set:x.latest},{key:'delayed',emoji:'⏳',label:'Atrasadas',set:x.delayed},{key:'three',emoji:'🔄',label:'3+ seguidos',set:x.three}];}
   function indicatorQuotaSpec(){
     const x=indicatorSets(),availableGroups={hot:[...x.hot],cold:[...x.cold],latest:[...x.latest],delayed:[...x.delayed],three:[...x.three]},targets={},groups={};
-    for(const key of Object.keys(availableGroups)){
-      const available=availableGroups[key].length,raw=Math.max(1,Math.min(5,Number(state.indicatorTargets[key])||1));targets[key]=available?Math.min(raw,Math.min(5,available)):0;
-      const allowed=new Set(availableGroups[key]),saved=(state.indicatorPicks[key]||[]).map(Number).filter(n=>allowed.has(n));
-      if(state.indicatorMode==='random'){groups[key]=(saved.length===targets[key]?saved:availableGroups[key].slice(0,targets[key])).sort((a,b)=>a-b);state.indicatorPicks[key]=groups[key];}
-      else{groups[key]=availableGroups[key].slice().sort((a,b)=>a-b);state.indicatorPicks[key]=[];}
-    }
+    for(const key of Object.keys(availableGroups)){const available=availableGroups[key].length,raw=Math.max(1,Math.min(5,Number(state.indicatorTargets[key])||1));targets[key]=available?Math.min(raw,Math.min(5,available)):0;const allowed=new Set(availableGroups[key]),saved=(state.indicatorPicks[key]||[]).map(Number).filter(n=>allowed.has(n));groups[key]=(saved.length===targets[key]?saved:availableGroups[key].slice(0,targets[key])).sort((a,b)=>a-b);state.indicatorPicks[key]=groups[key];}
     return{targets,groups,mode:state.indicatorMode};
   }
   function indicatorQuotaAllows(game,spec=indicatorQuotaSpec()){
@@ -366,7 +361,7 @@
     const spec=indicatorQuotaSpec(),game=new Set(state.decision||[]);
     el.innerHTML=indicatorTargetItems().map(item=>{const available=item.set.size,max=Math.min(5,available),saved=Math.max(1,Math.min(5,Number(state.indicatorTargets[item.key])||1)),effective=spec.targets[item.key]||0,current=[...game].filter(n=>item.set.has(n)).length;
       const options=[1,2,3,4,5].map(v=>`<option value="${v}" ${saved===v?'selected':''} ${available&&v>max?'disabled':''}>${v}</option>`).join('');
-      return `<label class="indicator-target-card ${available?'':'is-disabled'}"><span><b>${item.emoji} ${item.label}</b><small>${item.hint}</small></span><select data-indicator-target="${item.key}" ${available&&state.indicatorMode==='manual'?'':'disabled'}>${options}</select><i>Meta ${effective} dentro do grupo: ${(spec.groups[item.key]||[]).map(pad).join(', ')||'—'} · no jogo ${current}/${effective}</i></label>`;
+      return `<label class="indicator-target-card ${available?'':'is-disabled'}"><span><b>${item.emoji} ${item.label}</b><small>${item.hint}</small></span><select data-indicator-target="${item.key}" ${available&&state.indicatorMode==='manual'?'':'disabled'}>${options}</select><i>Base exata ${effective}: ${(spec.groups[item.key]||[]).map(pad).join(', ')||'—'} · no jogo ${current}/${effective}</i></label>`;
     }).join('');
     if(summary){const t=spec.targets;summary.textContent=`Metas exatas: 🔥 ${t.hot} · ❄️ ${t.cold} · ♻️ ${t.latest} · ⏳ ${t.delayed} · 🔄 ${t.three}. Sobreposições contam em mais de um indicador.`;}
     const mode=$('#indicator-composition-mode');if(mode)mode.value=state.indicatorMode;const reroll=$('#randomize-indicator-targets');if(reroll)reroll.hidden=state.indicatorMode!=='random';    $$('[data-indicator-target]').forEach(s=>s.onchange=()=>{state.indicatorTargets[s.dataset.indicatorTarget]=Math.max(1,Math.min(5,Number(s.value)||1));state.indicatorPicks[s.dataset.indicatorTarget]=[];savePrefs();invalidateDecisionForIndicatorTargets();renderIndicatorTargetPanel();});
