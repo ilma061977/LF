@@ -27,3 +27,5 @@ jobs:
           path: artifact/Mega-Particular-Publicado
           if-no-files-found: error
           compression-level: 9
+
+# release-request-2026-10-09-mega-v116
