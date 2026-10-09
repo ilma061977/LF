@@ -638,7 +638,7 @@ function buildIndicatorQuotaSpec(history,rawTargets={}){
   const hasHistory=(history||[]).length>0,hot=hasHistory?[...ALL].sort((a,b)=>f[b]-f[a]||a-b).slice(0,5):[],cold=hasHistory?[...ALL].sort((a,b)=>f[a]-f[b]||a-b).slice(0,5):[],latest=new Set(history?.at(-1)?.dezenas||[]),last3=(history||[]).slice(-3),three=last3.length===3?ALL.filter(n=>last3.every(d=>(d.dezenas||[]).includes(n))):[];
   const dm={};for(const n of ALL){let delay=0;for(let i=(history||[]).length-1;i>=0&&!(history[i].dezenas||[]).includes(n);i--)delay++;dm[n]=delay;}
   const absent10=hasHistory?ALL.filter(n=>!latest.has(n)):[],delayed=[...absent10].sort((a,b)=>dm[b]-dm[a]||a-b).slice(0,5),availableGroups={hot,cold,latest:[...latest],delayed,three},targets={},groups={};
-  for(const key of Object.keys(availableGroups)){const available=availableGroups[key].length,raw=Math.max(1,Math.min(5,Number(rawTargets?.[key])||1));targets[key]=available?Math.min(raw,Math.min(5,available)):0;groups[key]=availableGroups[key].slice();}
+  for(const key of Object.keys(availableGroups)){const available=availableGroups[key].length,raw=Math.max(1,Math.min(5,Number(rawTargets?.[key])||1));targets[key]=available?Math.min(raw,Math.min(5,available)):0;groups[key]=availableGroups[key].slice(0,targets[key]);}
   return{targets,groups};
 }
 function quotaAllows(game,spec){
