@@ -249,7 +249,10 @@
       couplesTrigger:previousCouples===1,
       previousCouples
     };
-    return {history,analysisHistory,window:requested,latest,previous,prev,hash,history14,rank,hot,cold,delay,delayed,persistentAbsent,floating,cycleMissing,flags,linePatterns,columnPatterns,repeatedRange,sumRange,primeRange,oddRange,digitRange,fibRange,m3Range,m5Range,radialRange,terminalBandRange,neighborRange,decadeRanges,persistentAbsentRange,floatingRange,avgDelayRange,endingDeltaRange,opposedRange,cycleRange,calibrated:analysisHistory.length>=20};
+    const ranking2Windows=[5,10,20,50],ranking2Freq={};
+    for(const w of ranking2Windows){const rows=history.slice(-Math.min(w,history.length)),freq=Object.fromEntries(ALL.map(n=>[n,0]));for(const d of rows)for(const n of d.dezenas)freq[n]++;ranking2Freq[w]=Object.fromEntries(ALL.map(n=>[n,rows.length?freq[n]/rows.length:.6]));}
+    const r2Logit=p=>{p=Math.max(.03,Math.min(.97,Number(p)||.6));return Math.log(p/(1-p));},ranking2Weights=Object.fromEntries(ALL.map(n=>[n,r2Logit(.35*ranking2Freq[5][n]+.30*ranking2Freq[10][n]+.20*ranking2Freq[20][n]+.15*ranking2Freq[50][n])]));
+    return {history,analysisHistory,window:requested,latest,previous,prev,hash,history14,rank,hot,cold,delay,delayed,persistentAbsent,floating,cycleMissing,flags,linePatterns,columnPatterns,repeatedRange,sumRange,primeRange,oddRange,digitRange,fibRange,m3Range,m5Range,radialRange,terminalBandRange,neighborRange,decadeRanges,persistentAbsentRange,floatingRange,avgDelayRange,endingDeltaRange,opposedRange,cycleRange,ranking2Freq,ranking2Weights,calibrated:analysisHistory.length>=20};
   }
 
   function lineRepeatRule(game,latest=null){
@@ -623,6 +626,10 @@
   function rangeCentral(value,range){if(!Number.isFinite(value)||!range)return 0;const mid=(range[0]+range[1])/2,half=Math.max(.5,(range[1]-range[0])/2);return Math.max(-1,1-Math.abs(value-mid)/half);}
   function candidateScoreFromReport(r,ctx,policies={},externalPolicies={}){if(!r?.valid||externalRuleBlocks(r,externalPolicies))return-Infinity;const policy=f=>Number(f.id)===29?'block':(policies[f.id]||(f.id===23?'ignore':(f.mode==='core'||f.mode==='advisory')?'warn':'ignore'));const blocked=r.filters.filter(f=>policy(f)==='block'&&!f.passed).length;if(blocked)return-Infinity;const warns=r.filters.filter(f=>policy(f)==='warn'&&!f.passed).length,m=r.metrics;let score=70-warns*1.25;score+=rangeCentral(m.total,ctx.sumRange)*5;score+=rangeCentral(m.odds,ctx.oddRange)*4;score+=rangeCentral(m.primes,ctx.primeRange)*3;if(m.repeated!=null)score+=rangeCentral(m.repeated,ctx.repeatedRange)*4;score+=Math.max(-2,3-Math.abs(m.center-6));score+=Math.max(-2,2-variance(m.lines));score+=Math.max(-2,2-variance(m.cols));score+=Math.max(-2,2-variance(m.qs));if(m.maxHistorical>=14)score-=12;else if(m.maxHistorical===13)score-=2;return +score.toFixed(6);}
   function candidateScore(game,ctx,policies={},externalPolicies={}){return candidateScoreFromReport(inspect(game,ctx),ctx,policies,externalPolicies);}
+  function candidateScoreV2(game,ctx,policies={},externalPolicies={}){
+    const g=normalize(game);if(!g)return-Infinity;const r=inspect(g,ctx);if(!policyAllows(r,policies,externalPolicies))return-Infinity;
+    const w=ctx?.ranking2Weights||{};let score=0;for(const n of g)score+=Number(w[n]||0);return +score.toFixed(9);
+  }
   function nCk(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);}
   function unrank(pool,k,rank){const out=[];let start=0,r=Math.max(0,Math.floor(rank));for(let need=k;need>0;need--){for(let i=start;i<=pool.length-need;i++){const c=nCk(pool.length-i-1,need-1);if(r<c){out.push(pool[i]);start=i+1;break;}r-=c;}}return out;}
   function deterministicBest(ctx,policies={},options={}){
@@ -638,5 +645,5 @@
   }
   function portfolioScore(games){const norm=games.map(normalize).filter(Boolean);if(norm.length<2)return{score:100,meanOverlap:0,maxOverlap:0};const overlaps=[];for(let i=0;i<norm.length;i++)for(let j=i+1;j<norm.length;j++)overlaps.push(intersections(norm[i],norm[j]));const mo=mean(overlaps),mx=Math.max(...overlaps);return{score:Math.max(0,Math.round(100-(mo-7)*12-(mx-10)*5)),meanOverlap:+mo.toFixed(2),maxOverlap:mx};}
 
-  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,FULL_COLOR_TRIPLES,EXA_ORTHOGONAL_RULES,EXA_EXTENDED_RULES,EXA_ORTHOGONAL_SUMMARY,buildContext,inspect,exaOrthogonalMetrics,exaOrthogonalBlocks,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,buildFullColorDelayModel,fullColorDelayBonus,exactPatternCooldown,externalRuleBlocks,policyAllows,candidateScore,candidateScoreFromReport,deterministicBest,nCk,unrank};
+  window.LFMatrix51={SCHEMA_VERSION,THRESHOLD_VERSION,AUDIT_VERSION,AUDIT_BASE_THROUGH,PATTERN_COOLDOWNS,THRESHOLDS,FILTERS,FULL_COLOR_TRIPLES,EXA_ORTHOGONAL_RULES,EXA_EXTENDED_RULES,EXA_ORTHOGONAL_SUMMARY,buildContext,inspect,exaOrthogonalMetrics,exaOrthogonalBlocks,generate,portfolioScore,normalize,keyOf,maxHistoricalHits,mandatoryColorRule,buildFullColorDelayModel,fullColorDelayBonus,exactPatternCooldown,externalRuleBlocks,policyAllows,candidateScore,candidateScoreFromReport,candidateScoreV2,deterministicBest,nCk,unrank};
 })();
