@@ -1,0 +1,131 @@
+{
+  "generatedAt": "2026-10-09",
+  "mode": "PESQUISA SEM DEPLOY",
+  "universe": 3268760,
+  "baseThrough": 3799,
+  "publicAppUnchanged": true,
+  "baseline": {
+    "blocked": 79750,
+    "approved": 3189010,
+    "blockedPct": 2.4397630905909273
+  },
+  "exaResearch": {
+    "sourcesReviewed": 24,
+    "workstreams": 3,
+    "topics": [
+      "binary morphology/run-length/local 2x2 descriptors",
+      "graph spectral/local structural invariants",
+      "significant pattern mining and Westfall-Young multiple-testing control"
+    ]
+  },
+  "candidates": [
+    {
+      "id": "F84",
+      "key": "EXA-MORPH2-01",
+      "family": "J1",
+      "label": "Grau × Bit-quads × Run-length",
+      "signature": "0.7.5.3.0|2.4.3.6.1|8.6.2.1.0",
+      "universeMass": 1000,
+      "rollingRange": "501-3799",
+      "rollingFailures": 0,
+      "selectedSince": 501,
+      "last500": 0,
+      "last1000": 0,
+      "last1500": 0,
+      "last3000": 0,
+      "stabilityLast100": 100,
+      "cvLast100": 0,
+      "marginalAgainstZeroFailureBaseline": 982,
+      "exclusive": 982
+    },
+    {
+      "id": "F85",
+      "key": "EXA-MORPH2-02",
+      "family": "J2",
+      "label": "Componentes × Bit-quads × Run-length",
+      "signature": "14.1|3.3.1.7.2|7.4.2.1.1",
+      "universeMass": 792,
+      "rollingRange": "501-3799",
+      "rollingFailures": 0,
+      "selectedSince": 501,
+      "last500": 0,
+      "last1000": 0,
+      "last1500": 0,
+      "last3000": 0,
+      "stabilityLast100": 100,
+      "cvLast100": 0,
+      "marginalAgainstZeroFailureBaseline": 784,
+      "exclusive": 784
+    },
+    {
+      "id": "F86",
+      "key": "EXA-SPEC2-01",
+      "family": "J5",
+      "label": "Componentes × Grau × Bit-quads",
+      "signature": "14.1|1.3.5.5.1|2.4.1.6.3",
+      "universeMass": 1320,
+      "rollingRange": "501-3799",
+      "rollingFailures": 0,
+      "selectedSince": 501,
+      "last500": 0,
+      "last1000": 0,
+      "last1500": 0,
+      "last3000": 0,
+      "stabilityLast100": 100,
+      "cvLast100": 0,
+      "marginalAgainstZeroFailureBaseline": 1297,
+      "exclusive": 1297
+    }
+  ],
+  "exactUnion": {
+    "gross": 3112,
+    "marginal": 3063,
+    "approvedOverlapBetweenF84F86": 0,
+    "newBlocked": 82813,
+    "newApproved": 3185947,
+    "newBlockedPct": 2.5334683488539995,
+    "gainPctPoints": 0.0937052582630722
+  },
+  "contest3800": {
+    "winningNumbers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      19,
+      21
+    ],
+    "F84": false,
+    "F85": false,
+    "F86": false,
+    "passesAllThree": true
+  },
+  "operationalGate": {
+    "zeroRollingFailures": true,
+    "marginalAtLeast100": true,
+    "stabilityAtLeast70of100": true,
+    "cvAtMost1": true,
+    "result": "PASS"
+  },
+  "statisticalCaution": {
+    "note": "As famílias J1/J2/J5 foram definidas após pesquisa exploratória de várias famílias MORPH/SPEC. O rolling interno é zero-falhas, mas isso não transforma o filtro em evidência de menor probabilidade matemática. O risco de data snooping permanece e deve ser controlado prospectivamente/por múltiplas hipóteses.",
+    "fixedCombinationProbabilityUnchanged": true,
+    "recommendedProspectiveValidation": "Manter auditoria a cada novo concurso e retirar imediatamente do hard block se ocorrer qualquer falha."
+  },
+  "codeStatus": {
+    "matrix51": true,
+    "analysisWorker": true,
+    "appSource": true,
+    "publicDeployment": false,
+    "autoDeployGuard": "commandForIgnoringBuildStep=exit 0"
+  }
+}
