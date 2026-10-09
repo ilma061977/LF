@@ -1,0 +1,90 @@
+{
+  "generatedAt": "2026-10-09",
+  "mode": "PESQUISA SEM DEPLOY",
+  "contest": 3800,
+  "drawDate": "2026-10-08",
+  "winningNumbers": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    8,
+    9,
+    10,
+    12,
+    13,
+    14,
+    15,
+    19,
+    21
+  ],
+  "sourceNote": "Resultado confirmado em fonte pública; análise da matriz executada com contexto histórico somente até 3799.",
+  "verdict": "WINNING GAME BLOCKED BEFORE RANKING",
+  "currentPolicyAllowed": false,
+  "blockingFilters": [
+    {
+      "id": "F01",
+      "name": "Formato comum das linhas",
+      "actual": "5-4-4-1-1",
+      "reason": "assinatura não aceita como core",
+      "historicalRejectsThrough3799": 1080,
+      "historicalRejectPct": 28.428534
+    },
+    {
+      "id": "F04",
+      "name": "Moldura entre 9 e 11",
+      "actual": 8,
+      "reason": "abaixo do mínimo 9",
+      "historicalRejectsThrough3799": 818,
+      "historicalRejectPct": 21.531982
+    },
+    {
+      "id": "F10",
+      "name": "Espelhamento horizontal: diferença até 4",
+      "actual": "superior 9 × inferior 2; diferença 7",
+      "reason": "diferença acima de 4",
+      "historicalRejectsThrough3799": 139,
+      "historicalRejectPct": 3.658858
+    },
+    {
+      "id": "F14",
+      "name": "Soma entre 166 e 220",
+      "actual": 143,
+      "reason": "abaixo do mínimo 166",
+      "historicalRejectsThrough3799": 481,
+      "historicalRejectPct": 12.661227
+    }
+  ],
+  "fourFilterHistoricalUnion": {
+    "rejectedRealDraws": 1819,
+    "total": 3799,
+    "pct": 47.881021,
+    "last500": 227,
+    "last1000": 497,
+    "last1500": 731
+  },
+  "newResearchImpact": {
+    "f78ToF83BlockedWinner": false,
+    "exaNewCrossesBlockedWinner": false,
+    "wfA": false,
+    "wfB": false,
+    "wfC": false,
+    "note": "As pesquisas recentes não foram a causa da exclusão do concurso 3800."
+  },
+  "counterfactual": {
+    "demoteOnlyF01": false,
+    "demoteOnlyF04": false,
+    "demoteOnlyF10": false,
+    "demoteOnlyF14": false,
+    "demoteAllFourToWarn": true,
+    "conclusion": "Os quatro precisam deixar de ser hard blockers em conjunto para que #3800 seja elegível sob a matriz restante."
+  },
+  "recommendation": [
+    "Retirar F01/F04/F10/F14 do status hard block e convertê-los em aviso/peso de ranking.",
+    "Recalibrar esses quatro por walk-forward verdadeiro antes de qualquer eventual promoção futura.",
+    "Auditar os demais filtros core/mandatory com o mesmo critério: nenhum bloqueio oficial deve ser mantido se elimina concursos reais no walk-forward."
+  ],
+  "deployed": false
+}
