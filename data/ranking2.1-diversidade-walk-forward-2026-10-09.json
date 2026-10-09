@@ -1,0 +1,149 @@
+{
+  "generatedAt": "2026-10-09",
+  "mode": "PESQUISA SEM DEPLOY",
+  "name": "RANKING 2.1 · TESTE WALK-FORWARD",
+  "baseline": "Ranking 2.0 SHORT = U5 35% + U10 30% + U20 20% + U50 15%",
+  "protocol": {
+    "development": "3501-3700",
+    "holdout": "3701-3800",
+    "noFutureData": true,
+    "candidateSampleDevelopment": 900,
+    "candidateSampleHoldout": 3000,
+    "matrixValidationSample": 1500,
+    "variableFamilies": [
+      "duplas recentes U20/U50/U100",
+      "trincas recentes U20/U50/U100",
+      "combinações dupla+trinca",
+      "diversidade de carteira"
+    ],
+    "rule": "Variável de score só entra se melhora no desenvolvimento e confirma ganho marginal no holdout."
+  },
+  "scoreVariableTest": {
+    "development": {
+      "R2": {
+        "meanPercentile": 51.55277777777778,
+        "meanTop1Hits": 8.995,
+        "actualTop100": 21
+      },
+      "bestCandidate": {
+        "name": "R50T",
+        "description": "Ranking 2.0 + 0,5 × trincas U50",
+        "meanPercentile": 52.22388888888888,
+        "meanTop1Hits": 9.02,
+        "actualTop100": 25
+      }
+    },
+    "holdout": {
+      "R2": {
+        "meanPercentile": 52.99066666666667,
+        "meanTop1Hits": 9.07,
+        "actualTop100": 4
+      },
+      "R50T": {
+        "meanPercentile": 50.56333333333336,
+        "meanTop1Hits": 9.11,
+        "actualTop100": 4
+      },
+      "marginalPercentile": {
+        "mean": -2.427333333333333,
+        "ci95": [
+          -4.681105287326872,
+          -0.1735613793397941
+        ]
+      },
+      "marginalTop1Hits": {
+        "mean": 0.04,
+        "ci95": [
+          -0.12696353681646375,
+          0.20696353681646376
+        ]
+      },
+      "decision": "REJECT"
+    },
+    "duplasDecision": "REJECT — nenhum candidato de duplas apresentou ganho consistente suficiente para ser congelado.",
+    "trincasDecision": "REJECT — R50T venceu no desenvolvimento, mas perdeu percentil no holdout e o ganho de Top 1 não foi significativo."
+  },
+  "portfolioDiversity": {
+    "development": {
+      "samplePerContest": 1200,
+      "portfolioSize": 10,
+      "overlapCandidates": [
+        9,
+        10,
+        11,
+        12
+      ],
+      "raw": {
+        "meanBest": 10.53,
+        "p11": 106,
+        "p12": 34,
+        "p13": 2
+      },
+      "selectedRule": {
+        "maxOverlap": 10,
+        "meanBest": 10.85,
+        "p11": 137,
+        "p12": 37,
+        "p13": 5
+      },
+      "decision": "FREEZE maxOverlap=10"
+    },
+    "holdoutWithoutMatrixFilter": {
+      "samplePerContest": 3000,
+      "raw": {
+        "meanBest": 10.59,
+        "p11": 53,
+        "p12": 17,
+        "p13": 2
+      },
+      "diversified": {
+        "meanBest": 10.91,
+        "p11": 68,
+        "p12": 24,
+        "p13": 3
+      },
+      "marginalMeanBest": {
+        "mean": 0.32,
+        "ci95": [
+          0.12925758656547218,
+          0.5107424134345279
+        ]
+      }
+    },
+    "holdoutWithZeroFailureBlocks": {
+      "samplePerContest": 1500,
+      "avgApproved": 1473.25,
+      "raw": {
+        "meanBest": 10.6,
+        "p11": 57,
+        "p12": 11,
+        "p13": 2
+      },
+      "diversified": {
+        "meanBest": 10.85,
+        "p11": 67,
+        "p12": 17,
+        "p13": 3
+      },
+      "marginalMeanBest": {
+        "mean": 0.25,
+        "ci95": [
+          0.08666666666666664,
+          0.41333333333333333
+        ]
+      },
+      "decision": "PASS"
+    },
+    "contest3800": {
+      "note": "A diversificação não piorou o melhor resultado na validação sem filtro (12→12); no teste amostral com os bloqueios ativos, ambos atingiram 11 por diferença da amostra."
+    }
+  },
+  "finalDesign": {
+    "score": "MANTER Ranking 2.0 sem duplas/trincas.",
+    "portfolio": "Ranking 2.1 = mesma ordenação do 2.0 + carteira de 10 jogos com sobreposição máxima de 10 dezenas.",
+    "hardBlocks": "Somente política zero-falhas.",
+    "status": "VALIDADO COMO ESTRATÉGIA DE CARTEIRA, não como aumento comprovado da probabilidade de uma combinação individual.",
+    "caution": "O ganho observado é de cobertura entre várias apostas. Não altera a probabilidade matemática de 15 acertos de cada combinação individual."
+  },
+  "deployment": false
+}
