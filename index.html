@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#071219" />
-  <meta name="lf-build" content="2026-10-10-v377-base3800-r23-premium2-synced" />
+  <meta name="lf-build" content="2026-10-10-v377-base3800-r23-responsive-qa" />
   <title>LF Inteligente Particular · Painel Premium</title>
   <meta name="description" content="LF Inteligente Particular — painel premium de análise, geração, validação e gestão de jogos para uso pessoal." />
   <style>:root{
@@ -1100,6 +1100,37 @@ body{background:linear-gradient(180deg,#edf2f5 0,#f7f9fb 36%,#f4f6f8 100%)!impor
 </style>
 
 
+<style id="lf-responsive-qa-20261010">
+/* Fase 2: revisão responsiva sem alterar filtros ou rankings */
+html,body{max-width:100%;overflow-x:clip}
+.main,.workspace,.page,.page.active{min-width:0}
+img,svg,canvas{max-width:100%}
+.phase2-page-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.phase2-page-actions .btn{min-height:40px}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #1684b7;outline-offset:2px}
+@media (min-width:769px) and (max-width:1366px){
+ .main{min-width:0}
+ .phase2-page-actions{justify-content:flex-start}
+ .phase2-page-actions .btn{white-space:normal}
+ .stats-layout,.charts-layout{min-width:0}
+ .stats-layout>*,.charts-layout>*{min-width:0}
+}
+@media (max-width:768px){
+ .workspace,.main,.page{max-width:100%;min-width:0}
+ .topbar{gap:8px}
+ .topbar-title{min-width:0}
+ .topbar-title strong,.topbar-title span{overflow-wrap:anywhere}
+ .phase2-page-actions{display:grid;grid-template-columns:1fr 1fr}
+ .phase2-page-actions>*{min-width:0}
+ .phase2-page-actions .btn{width:100%;white-space:normal}
+ .stats-layout,.charts-layout{min-width:0}
+ .stats-layout>*,.charts-layout>*{min-width:0}
+}
+@media (max-width:420px){
+ .phase2-page-actions{grid-template-columns:1fr}
+ .phase2-page-actions .btn{width:100%}
+}
+</style>
 </head>
 <body>
   <a class="skip" href="#main">Ir para o conteúdo</a>
