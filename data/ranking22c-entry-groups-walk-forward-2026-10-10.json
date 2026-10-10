@@ -1,0 +1,245 @@
+{
+  "generatedAt": "2026-10-10",
+  "mode": "PESQUISA SEM DEPLOY",
+  "name": "RANKING 2.2C · ENTRY POR GRUPOS DE 2–3 DEZENAS",
+  "objective": "Testar se duplas/trincas presentes no concurso anterior antecipam a entrada de dezenas ausentes, com regularização, seleção só no desenvolvimento e holdout congelado.",
+  "baseline": {
+    "score": "Ranking 2.0 SHORT = U5 35% + U10 30% + U20 20% + U50 15%",
+    "portfolio": "Ranking 2.1 = 20 jogos entre Top 600 com overlap <=10"
+  },
+  "protocol": {
+    "development": "3501-3700",
+    "holdout": "3701-3800",
+    "noFutureData": true,
+    "devSample": 900,
+    "holdoutSample": 3000,
+    "families": [
+      "PAIR",
+      "TRIPLE",
+      "BOTH"
+    ],
+    "shrinkage": [
+      50,
+      100
+    ],
+    "topKPositive": [
+      3,
+      5
+    ],
+    "beta": [
+      0.5,
+      1
+    ],
+    "antiDataSnooping": "Grade pequena pré-definida; um único candidato congelado pelo desenvolvimento antes do holdout."
+  },
+  "model": {
+    "target": "Somente dezenas ausentes no concurso anterior.",
+    "referenceRate": "P(entrada da dezena | dezena ausente no concurso anterior).",
+    "groupRate": "P(entrada | dezena ausente e grupo de 2/3 dezenas presente no concurso anterior).",
+    "regularization": "Taxa do grupo suavizada em direção à taxa-base de entrada da própria dezena.",
+    "aggregation": "Somente deltas positivos; Top K sinais agregados por soma/sqrt(K)."
+  },
+  "development": {
+    "baseline": {
+      "meanPercentile": 51.55277777777778,
+      "meanTop1Hits": 8.995,
+      "actualTop100": 21
+    },
+    "selected": {
+      "config": "TRIPLE | shrink=50 | Top3 positivos | beta=0.5",
+      "meanPercentile": 51.59500000000003,
+      "meanTop1Hits": 8.92,
+      "actualTop100": 21,
+      "marginalPercentile": {
+        "mean": 0.04222222222222239,
+        "ci95": [
+          -0.6210858668312615,
+          0.7055303112757063
+        ]
+      },
+      "marginalTop1Hits": {
+        "mean": -0.075,
+        "ci95": [
+          -0.1825669477172519,
+          0.03256694771725192
+        ]
+      }
+    },
+    "interpretation": "O melhor ganho de percentil foi mínimo e o Top1 caiu; candidato congelado apenas para validação honesta."
+  },
+  "holdout": {
+    "baseline": {
+      "meanPercentile": 52.99066666666667,
+      "meanTop1Hits": 9.07,
+      "rawTop20MeanBestHits": 10.87,
+      "diversified20MeanBestHits": 11.21,
+      "diversified20_11plus": 84,
+      "diversified20_12plus": 36,
+      "diversified20_13plus": 3
+    },
+    "ranking22C": {
+      "meanPercentile": 52.839,
+      "meanTop1Hits": 9.14,
+      "rawTop20MeanBestHits": 10.88,
+      "diversified20MeanBestHits": 11.21,
+      "diversified20_11plus": 83,
+      "diversified20_12plus": 32,
+      "diversified20_13plus": 5
+    },
+    "marginal": {
+      "percentile": {
+        "mean": -0.1516666666666664,
+        "ci95": [
+          -1.0489098497098124,
+          0.7455765163764795
+        ]
+      },
+      "top1Hits": {
+        "mean": 0.07,
+        "ci95": [
+          -0.027523690983423527,
+          0.16752369098342354
+        ]
+      },
+      "rawTop20Best": {
+        "mean": 0.01,
+        "ci95": [
+          -0.08024947690046781,
+          0.1002494769004678
+        ]
+      },
+      "diversified20Best": {
+        "mean": 0,
+        "ci95": [
+          -0.14204964276653784,
+          0.14204964276653784
+        ]
+      }
+    }
+  },
+  "contest3800": {
+    "winner": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      19,
+      21
+    ],
+    "previous3799": [
+      1,
+      3,
+      4,
+      5,
+      7,
+      8,
+      10,
+      12,
+      13,
+      18,
+      19,
+      20,
+      23,
+      24,
+      25
+    ],
+    "baseline": {
+      "percentile": 94.2,
+      "rankApproxIn3000": 175,
+      "top1Hits": 12,
+      "rawTop20Best": 12,
+      "diversified20Best": 12
+    },
+    "ranking22C": {
+      "percentile": 93.7,
+      "rankApproxIn3000": 190,
+      "top1Hits": 12,
+      "rawTop20Best": 12,
+      "diversified20Best": 12
+    },
+    "absentEntryRanking": [
+      {
+        "n": 11,
+        "entered": false,
+        "entryWeight": 0.498251
+      },
+      {
+        "n": 22,
+        "entered": false,
+        "entryWeight": 0.465953
+      },
+      {
+        "n": 6,
+        "entered": false,
+        "entryWeight": 0.435361
+      },
+      {
+        "n": 15,
+        "entered": true,
+        "entryWeight": 0.415798
+      },
+      {
+        "n": 9,
+        "entered": true,
+        "entryWeight": 0.406245
+      },
+      {
+        "n": 2,
+        "entered": true,
+        "entryWeight": 0.402341
+      },
+      {
+        "n": 16,
+        "entered": false,
+        "entryWeight": 0.369601
+      },
+      {
+        "n": 14,
+        "entered": true,
+        "entryWeight": 0.362701
+      },
+      {
+        "n": 21,
+        "entered": true,
+        "entryWeight": 0.315299
+      },
+      {
+        "n": 17,
+        "entered": false,
+        "entryWeight": 0.299908
+      }
+    ],
+    "keyFinding": "O sinal reconheceu as cinco entradas reais, mas falsas entradas 11/22/06 receberam escores maiores; isso impediu recuperação do jogo vencedor."
+  },
+  "decision": {
+    "promote": false,
+    "status": "REJEITADO COMO NOVO SCORE",
+    "reasons": [
+      "O ganho observado no desenvolvimento foi muito pequeno e não robusto.",
+      "No holdout o percentil médio piorou 52,991 -> 52,839.",
+      "A carteira diversificada não melhorou a média e 12+ caiu de 36 para 32.",
+      "No #3800 o vencedor caiu aproximadamente de 175º para 190º."
+    ],
+    "keepCurrent": "Ranking 2.1 permanece inalterado.",
+    "hardBlocks": "Nenhum sinal ENTRY vira bloqueio."
+  },
+  "nextResearch": {
+    "direction": "Separar sinal positivo de entrada de um sinal negativo de falsa entrada.",
+    "proposal": "Para cada dezena ausente, modelar simultaneamente evidência a favor e contra a entrada usando grupos de 2/3 do anterior, exigindo consistência entre múltiplos grupos em vez de selecionar somente os maiores deltas positivos.",
+    "targetProblem": "Reduzir falsos positivos 11/22/06 sem perder 02/09/15/21."
+  },
+  "implementation": {
+    "researchArtifactOnly": true,
+    "appChanged": false,
+    "publicDeployment": false
+  }
+}
