@@ -1,0 +1,293 @@
+{
+  "generatedAt": "2026-10-10",
+  "mode": "PESQUISA SEM DEPLOY",
+  "name": "RANKING 2.2D · R2 + STAY + ENTRY +/- + PREVISÃO DE REPETIDAS + CARTEIRA 20",
+  "objective": "Combinar R2 base, transição STAY separada, ENTRY com evidência positiva e negativa, previsão suave do número de repetidas e carteira Top600/20 com overlap<=10, sem filtros estruturais.",
+  "baseline": {
+    "score": "R2 SHORT = U5 35% + U10 30% + U20 20% + U50 15%",
+    "portfolio": "20 jogos entre Top 600 com overlap máximo 10"
+  },
+  "protocol": {
+    "development": "3501-3700",
+    "holdout": "3701-3800",
+    "noFutureData": true,
+    "devScoreSample": 900,
+    "devPortfolioSample": 1200,
+    "holdoutSample": 3000,
+    "antiOverfit": "Configuração congelada no desenvolvimento antes do holdout. Nenhum retuning após abrir 3701-3800 é tratado como validado."
+  },
+  "components": {
+    "stay": {
+      "method": "Para dezenas presentes no concurso anterior, usar deltas condicionais por pares presentes no anterior.",
+      "regularization": 50,
+      "aggregation": "8 efeitos de maior magnitude, mantendo sinal, soma/sqrt(K)",
+      "beta": 1
+    },
+    "entry": {
+      "method": "Para dezenas ausentes no concurso anterior, usar trincas do concurso anterior.",
+      "regularization": 50,
+      "positive": "Top 3 deltas positivos",
+      "negative": "Top 3 deltas negativos em magnitude",
+      "score": "positive - 1.0*negative",
+      "beta": 0.25
+    },
+    "repeats": {
+      "method": "Prever distribuição de repetidas com U20/U50/U100/histórico e shrinkage para distribuição teórica de sobreposição.",
+      "windowWeights": [
+        0.4,
+        0.3,
+        0.2,
+        0.1
+      ],
+      "signal": "log(P_prevista(k)/P_teorica(k))",
+      "beta": 0.25,
+      "role": "prior suave; nunca hard block"
+    },
+    "portfolio": {
+      "pool": 600,
+      "size": 20,
+      "maxOverlap": 10
+    }
+  },
+  "development": {
+    "baselineWithStay": {
+      "meanBestHits": 11.225,
+      "p11": 174,
+      "p12": 66,
+      "p13": 6,
+      "p14": 0,
+      "p15": 0
+    },
+    "frozenFull": {
+      "config": "STAY beta1 + ENTRY gamma1 beta0.25 + repeats beta0.25",
+      "meanBestHits": 11.29,
+      "p11": 179,
+      "p12": 71,
+      "p13": 9,
+      "p14": 0,
+      "p15": 0
+    },
+    "improvement": {
+      "meanBestHits": 0.065,
+      "p11": 5,
+      "p12": 5,
+      "p13": 3
+    }
+  },
+  "holdout": {
+    "R2": {
+      "meanPercentile": 52.99066666666667,
+      "meanTop1Hits": 9.07,
+      "rawTop20MeanBest": 10.87,
+      "div20MeanBest": 11.21,
+      "p11": 84,
+      "p12": 36,
+      "p13": 3,
+      "p14": 0,
+      "p15": 0
+    },
+    "STAY": {
+      "meanPercentile": 52.123666666666665,
+      "meanTop1Hits": 9.14,
+      "rawTop20MeanBest": 10.96,
+      "div20MeanBest": 11.12,
+      "p11": 82,
+      "p12": 27,
+      "p13": 4,
+      "p14": 0,
+      "p15": 0
+    },
+    "STAY_ENTRY": {
+      "meanPercentile": 52.096666666666664,
+      "meanTop1Hits": 9.14,
+      "rawTop20MeanBest": 10.96,
+      "div20MeanBest": 11.15,
+      "p11": 85,
+      "p12": 29,
+      "p13": 2,
+      "p14": 0,
+      "p15": 0
+    },
+    "FULL": {
+      "meanPercentile": 52.10799999999999,
+      "meanTop1Hits": 9.14,
+      "rawTop20MeanBest": 10.95,
+      "div20MeanBest": 11.2,
+      "p11": 86,
+      "p12": 31,
+      "p13": 3,
+      "p14": 0,
+      "p15": 0
+    },
+    "fullVsR2": {
+      "meanPercentileDelta": -0.8826666666666667,
+      "percentileCI95": [
+        -2.286907222315784,
+        0.5215738889824506
+      ],
+      "top1Delta": 0.07,
+      "top1CI95": [
+        -0.10003790902340123,
+        0.24003790902340125
+      ],
+      "rawTop20BestDelta": 0.08,
+      "rawTop20CI95": [
+        -0.01920032583850026,
+        0.17920032583850026
+      ],
+      "diversified20BestDelta": -0.01,
+      "diversified20CI95": [
+        -0.15870918810303103,
+        0.138709188103031
+      ]
+    }
+  },
+  "contest3800": {
+    "winner": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      19,
+      21
+    ],
+    "previous3799": [
+      1,
+      3,
+      4,
+      5,
+      7,
+      8,
+      10,
+      12,
+      13,
+      18,
+      19,
+      20,
+      23,
+      24,
+      25
+    ],
+    "actualRepeated": 10,
+    "predictedRepeatMode": 9,
+    "predictedRepeat10Probability": 0.215326,
+    "R2": {
+      "percentile": 94.2,
+      "rankApprox": 175,
+      "top1Hits": 12,
+      "raw20": 12,
+      "div20": 12
+    },
+    "STAY": {
+      "percentile": 87.4,
+      "rankApprox": 379,
+      "top1Hits": 8,
+      "raw20": 12,
+      "div20": 12
+    },
+    "STAY_ENTRY": {
+      "percentile": 87.33333333333333,
+      "rankApprox": 381,
+      "top1Hits": 8,
+      "raw20": 12,
+      "div20": 12
+    },
+    "FULL": {
+      "percentile": 87.16666666666667,
+      "rankApprox": 386,
+      "top1Hits": 8,
+      "raw20": 12,
+      "div20": 12
+    },
+    "entryNetRanking": [
+      {
+        "n": 2,
+        "entered": true,
+        "net": 0.178357
+      },
+      {
+        "n": 11,
+        "entered": false,
+        "net": 0.150536
+      },
+      {
+        "n": 22,
+        "entered": false,
+        "net": 0.091221
+      },
+      {
+        "n": 14,
+        "entered": true,
+        "net": 0.066346
+      },
+      {
+        "n": 15,
+        "entered": true,
+        "net": 0.0613
+      },
+      {
+        "n": 17,
+        "entered": false,
+        "net": 0.006203
+      },
+      {
+        "n": 16,
+        "entered": false,
+        "net": -0.001787
+      },
+      {
+        "n": 9,
+        "entered": true,
+        "net": -0.010918
+      },
+      {
+        "n": 6,
+        "entered": false,
+        "net": -0.021785
+      },
+      {
+        "n": 21,
+        "entered": true,
+        "net": -0.14567
+      }
+    ],
+    "diagnosis": [
+      "ENTRY positivo-negativo corrigiu parte dos falsos positivos: 06 caiu abaixo de zero e 02 virou a melhor entrada.",
+      "11 e 22 ainda ficaram acima de 14/15, e 09/21 ficaram penalizadas.",
+      "STAY foi o maior responsável pela queda do vencedor no ranking.",
+      "A previsão de repetidas apontou moda 9; o real foi 10. Como prior suave, não bloqueou o jogo, mas não ajudou o #3800."
+    ]
+  },
+  "decision": {
+    "promote": false,
+    "status": "REJEITADO COMO SUBSTITUTO DO RANKING 2.1",
+    "reasons": [
+      "A melhora da carteira no desenvolvimento não confirmou no holdout.",
+      "Carteira diversificada ficou 11.20 vs 11.21 do R2.",
+      "12+ caiu de 36 para 31.",
+      "No #3800 o vencedor caiu aproximadamente de 175º para 386º.",
+      "O principal problema foi o peso do STAY; qualquer retuning após este holdout seria post-hoc e precisa de novo período independente."
+    ],
+    "keepCurrent": "Ranking 2.1 permanece como versão experimental preferida.",
+    "hardBlocks": "Nenhum componente 2.2D vira bloqueio; política zero-falhas permanece separada."
+  },
+  "nextHypothesis": {
+    "name": "2.2E pré-registrado",
+    "direction": "Reduzir agressividade do STAY e usar ENTRY positivo-negativo como sinal pequeno; manter repeats apenas como prior suave.",
+    "validationRequirement": "Escolher pesos somente em uma nova janela de desenvolvimento ou congelar agora e aguardar concursos futuros; não reutilizar 3701-3800 como novo holdout."
+  },
+  "implementation": {
+    "researchArtifactOnly": true,
+    "appChanged": false,
+    "publicDeployment": false
+  }
+}
