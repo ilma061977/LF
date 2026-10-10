@@ -1,0 +1,186 @@
+{
+  "generatedAt": "2026-10-10",
+  "mode": "PESQUISA SEM DEPLOY",
+  "name": "RANKING 2.2E · STAY CONSERVADOR / PRÉ-REGISTRO",
+  "objective": "Reduzir agressividade do STAY, manter ENTRY positivo-negativo e previsão suave de repetidas, preservando a carteira R2.1.",
+  "base": "R2.1 = R2 U5/U10/U20/U50 + carteira Top600/20 jogos/overlap<=10",
+  "stage1": {
+    "development": "3301-3500",
+    "grid": {
+      "stayBeta": [
+        0,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.35,
+        0.5
+      ],
+      "stayCaps": [
+        0.05,
+        0.1,
+        0.15,
+        0.25,
+        "sem cap"
+      ],
+      "entry": "positivo-negativo, beta 0.25",
+      "repeats": "prior suave beta 0.25"
+    },
+    "selectedBeforeDiagnostics": {
+      "stayBeta": 0.35,
+      "stayCap": 0.25,
+      "meanBestHits": 11.215,
+      "baselineR2MeanBestHits": 11.2,
+      "p12": 63,
+      "baselineP12": 62,
+      "p13": 10,
+      "baselineP13": 6
+    }
+  },
+  "historicalDiagnosticsNotValidation": {
+    "window3501_3700": {
+      "R2": {
+        "meanTop1": 9.055,
+        "div20Mean": 11.135,
+        "p12": 60,
+        "p13": 7
+      },
+      "candidate": {
+        "meanTop1": 9.01,
+        "div20Mean": 11.105,
+        "p12": 59,
+        "p13": 4
+      }
+    },
+    "window3701_3800": {
+      "R2": {
+        "meanTop1": 9.07,
+        "div20Mean": 11.21,
+        "p12": 36,
+        "p13": 3
+      },
+      "candidate": {
+        "meanTop1": 9.16,
+        "div20Mean": 11.11,
+        "p12": 26,
+        "p13": 3
+      }
+    },
+    "contest3800": {
+      "R2RankApprox": 175,
+      "candidateRankApprox": 233,
+      "R2Top1Hits": 12,
+      "candidateTop1Hits": 10,
+      "R2Div20Best": 12,
+      "candidateDiv20Best": 12
+    },
+    "interpretation": "O STAY menos agressivo evitou a queda extrema do 2.2D, mas ainda piorou a carteira e não recuperou o #3800."
+  },
+  "robustnessSweep3301_3800": {
+    "R2": {
+      "allMean": 11.228,
+      "w1": {
+        "mean": 11.2,
+        "p12": 62,
+        "p13": 6
+      },
+      "w2": {
+        "mean": 11.25,
+        "p12": 65,
+        "p13": 6
+      },
+      "w3": {
+        "mean": 11.24,
+        "p12": 32,
+        "p13": 2
+      }
+    },
+    "E10": {
+      "allMean": 11.218,
+      "w1": {
+        "mean": 11.215,
+        "p12": 64,
+        "p13": 8
+      },
+      "w2": {
+        "mean": 11.21,
+        "p12": 61,
+        "p13": 6
+      },
+      "w3": {
+        "mean": 11.24,
+        "p12": 33,
+        "p13": 2
+      }
+    },
+    "E10R10": {
+      "allMean": 11.204,
+      "w1": {
+        "mean": 11.175,
+        "p12": 57,
+        "p13": 7
+      },
+      "w2": {
+        "mean": 11.205,
+        "p12": 62,
+        "p13": 6
+      },
+      "w3": {
+        "mean": 11.26,
+        "p12": 35,
+        "p13": 3
+      }
+    },
+    "S10C10_E10R10": {
+      "allMean": 11.202,
+      "w1": {
+        "mean": 11.185,
+        "p12": 58,
+        "p13": 9
+      },
+      "w2": {
+        "mean": 11.2,
+        "p12": 61,
+        "p13": 6
+      },
+      "w3": {
+        "mean": 11.24,
+        "p12": 33,
+        "p13": 3
+      }
+    }
+  },
+  "decision": {
+    "promote": false,
+    "status": "REJEITADO PARA SCORE",
+    "reason": [
+      "R2.1 teve a melhor média global da carteira em 3301-3800.",
+      "Nenhuma combinação conservadora de STAY/ENTRY/repetidas superou R2 de forma robusta entre as três janelas.",
+      "O STAY continua prejudicando 12+ quando ganha peso.",
+      "ENTRY 0.10 é o candidato auxiliar mais estável, mas ainda ficou abaixo do R2 na média global."
+    ],
+    "keepCurrent": "Ranking 2.1 permanece inalterado.",
+    "shadowMode": {
+      "stayWeight": 0,
+      "entryWeight": 0,
+      "repeatWeight": 0,
+      "action": "Calcular e registrar os três sinais separadamente em novos concursos, sem alterar ordenação nem bloquear jogos."
+    }
+  },
+  "futureActivationGate": {
+    "minimumNewContests": 100,
+    "requirements": [
+      "ganho de média da carteira de 20 > 0.10 acerto sobre R2.1",
+      "IC95% do ganho da carteira acima de zero",
+      "não reduzir quantidade de 12+",
+      "não reduzir quantidade de 13+",
+      "nenhum sinal virar hard block"
+    ],
+    "note": "Esse gate é pré-registrado para concursos adicionados após este artefato; resultados históricos já vistos não contam como nova validação."
+  },
+  "implementation": {
+    "researchArtifactOnly": true,
+    "appChanged": false,
+    "publicDeployment": false
+  }
+}
