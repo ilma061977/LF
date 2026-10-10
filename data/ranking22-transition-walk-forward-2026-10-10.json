@@ -1,0 +1,196 @@
+{
+  "generatedAt": "2026-10-10",
+  "mode": "PESQUISA SEM DEPLOY",
+  "name": "RANKING 2.2 · TRANSIÇÃO INDIVIDUAL POR DEZENA",
+  "objective": "Testar ganho marginal sobre o Ranking 2.0/2.1 usando somente transições aprendidas cronologicamente: presença/ausência anterior, sequência de presença e atraso individual.",
+  "baseline": {
+    "score": "Ranking 2.0 SHORT",
+    "windows": {
+      "U5": 0.35,
+      "U10": 0.3,
+      "U20": 0.2,
+      "U50": 0.15
+    },
+    "portfolio": "Ranking 2.1: 20 jogos entre Top 600, overlap <=10"
+  },
+  "protocol": {
+    "development": "3501-3700",
+    "holdout": "3701-3800",
+    "noFutureData": true,
+    "candidateSampleDevelopment": 900,
+    "candidateSampleHoldout": 3000,
+    "transitionTrainingRule": "Para cada alvo t, cada estado e taxa de retorno foram calculados somente com concursos < t. O resultado t só entra nas estatísticas depois de ser avaliado.",
+    "familiesTested": {
+      "PREV": "presença/ausência no concurso anterior",
+      "PRES": "sequência de presença P1/P2/P3+",
+      "DELAY": "atraso A1/A2/A3/A4/A5+; dezenas presentes recebem bônus neutro",
+      "STATE": "estado combinado P1/P2/P3+/A1/A2/A3/A4/A5+"
+    },
+    "shrinkage": [
+      25,
+      50,
+      100
+    ],
+    "beta": [
+      0.15,
+      0.25,
+      0.35,
+      0.5,
+      0.75
+    ],
+    "decisionRule": "Parâmetros escolhidos somente no desenvolvimento e congelados antes do holdout."
+  },
+  "development": {
+    "baseline": {
+      "meanPercentile": 51.55277777777778,
+      "meanTop1Hits": 8.995,
+      "actualTop100": 21
+    },
+    "selectedCandidate": {
+      "family": "DELAY",
+      "shrink": 50,
+      "beta": 0.75,
+      "meanPercentile": 51.735555555555536,
+      "meanTop1Hits": 9.04,
+      "actualTop100": 21,
+      "marginalPercentile": {
+        "mean": 0.18277777777777796,
+        "ci95": [
+          -0.12748819706455003,
+          0.4930437526201059
+        ]
+      },
+      "marginalTop1Hits": {
+        "mean": 0.045,
+        "ci95": [
+          -0.033961244867053694,
+          0.12396124486705369
+        ]
+      }
+    },
+    "note": "Melhor candidato no desenvolvimento, porém sem evidência estatística suficiente; foi congelado apenas para teste honesto no holdout."
+  },
+  "holdout": {
+    "range": "3701-3800",
+    "baseline": {
+      "meanPercentile": 52.99066666666667,
+      "meanTop1Hits": 9.07,
+      "actualTop100": 4,
+      "rawTop20MeanBestHits": 10.87,
+      "diversified20MeanBestHits": 11.21,
+      "diversified20_11plus": 84,
+      "diversified20_12plus": 36,
+      "diversified20_13plus": 3
+    },
+    "ranking22Delay": {
+      "meanPercentile": 53.23399999999999,
+      "meanTop1Hits": 9.02,
+      "actualTop100": 4,
+      "rawTop20MeanBestHits": 10.93,
+      "diversified20MeanBestHits": 11.18,
+      "diversified20_11plus": 82,
+      "diversified20_12plus": 33,
+      "diversified20_13plus": 4
+    },
+    "marginal": {
+      "percentile": {
+        "mean": 0.24333333333333307,
+        "ci95": [
+          -0.09622545373680474,
+          0.5828921204034709
+        ]
+      },
+      "top1Hits": {
+        "mean": -0.05,
+        "ci95": [
+          -0.15188268159054713,
+          0.05188268159054711
+        ]
+      },
+      "rawTop20Best": {
+        "mean": 0.06,
+        "ci95": [
+          0.005551596103570915,
+          0.11444840389642907
+        ]
+      },
+      "diversified20Best": {
+        "mean": -0.03,
+        "ci95": [
+          -0.14300623742506302,
+          0.08300623742506304
+        ]
+      }
+    }
+  },
+  "contest3800": {
+    "winner": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      19,
+      21
+    ],
+    "baseline": {
+      "percentile": 94.2,
+      "rankApproxIn3000": 175,
+      "top1Hits": 12,
+      "rawTop20Best": 12,
+      "diversified20Best": 12
+    },
+    "ranking22": {
+      "percentile": 93.76666666666667,
+      "rankApproxIn3000": 188,
+      "top1Hits": 10,
+      "rawTop20Best": 12,
+      "diversified20Best": 12
+    },
+    "targetNumbers": {
+      "15": {
+        "state": "A3",
+        "transitionAdjustment": -0.023517
+      },
+      "21": {
+        "state": "A3",
+        "transitionAdjustment": 0.033752
+      },
+      "02": {
+        "state": "A1",
+        "transitionAdjustment": -0.003983
+      },
+      "09": {
+        "state": "A1",
+        "transitionAdjustment": -0.077798
+      }
+    },
+    "conclusion": "O sinal de atraso ajudou 21, mas penalizou 02, 09 e 15; portanto não explica nem recupera o jogo vencedor."
+  },
+  "decision": {
+    "promoteToRanking22": false,
+    "status": "REJEITADO COMO NOVO SCORE",
+    "reason": [
+      "Ganho de percentil no holdout não é estatisticamente robusto.",
+      "Top 1 médio caiu 9.07 -> 9.02.",
+      "A carteira diversificada de 20 jogos caiu 11.21 -> 11.18 e reduziu 11+ e 12+.",
+      "No concurso 3800 o jogo vencedor caiu aproximadamente de 175º para 188º na amostra."
+    ],
+    "keepCurrent": "Ranking 2.1 = score do Ranking 2.0 + carteira diversificada de 20 jogos, Top 600, overlap <=10.",
+    "hardBlockPolicy": "Não reintroduzir filtros estruturais antigos; somente mecanismos zero-falhas permanecem elegíveis.",
+    "nextResearch": "Testar transições de pares condicionais entre dezenas (entrada/saída após o concurso anterior) com regularização e validação walk-forward, sem transformar o sinal em bloqueio."
+  },
+  "implementation": {
+    "researchArtifactOnly": true,
+    "appChanged": false,
+    "publicDeployment": false
+  }
+}
