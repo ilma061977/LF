@@ -1,5 +1,5 @@
 self.window=self;
-/* LF Inteligente V3.7.5 — Matriz 51 canônica restaurada, versionada e auditável.
+/* LF Inteligente V3.7.7 — Matriz 51 canônica restaurada, versionada e auditável.
  * F01–F29 preservam a matriz canônica e foram diferenciados para evitar redundâncias exatas.
  * F30–F44 ampliam a análise com métricas não duplicadas.
  * F45–F49 são experimentais (score/hipótese; não eliminam por padrão).
@@ -28,10 +28,10 @@ self.window=self;
   ];
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
-  const SCHEMA_VERSION = 'matrix51-zero-failure-2026-10-09-v3.7.6';
-  const THRESHOLD_VERSION = 'LF-M86-ZF-2026.10.09-MORPH2-SPEC2-BASE3799-v3.7.6';
-  const AUDIT_VERSION = 'LF-M86-ZF-AUDIT-3799-v3.7.6';
-  const AUDIT_BASE_THROUGH = 3799;
+  const SCHEMA_VERSION = 'matrix51-zero-failure-2026-10-10-v3.7.7';
+  const THRESHOLD_VERSION = 'LF-M86-ZF-2026.10.10-MORPH2-SPEC2-BASE3800-v3.7.7';
+  const AUDIT_VERSION = 'LF-M86-ZF-AUDIT-3800-v3.7.7';
+  const AUDIT_BASE_THROUGH = 3800;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
   const PATTERN_COOLDOWNS = Object.freeze({
@@ -289,12 +289,12 @@ self.window=self;
     'EXA-DIST-01':{label:'Espectro de distâncias',rule:'30 ou mais pares Manhattan com distância 3',threshold:'man3>=30',status:'QUARENTENA',enabledByDefault:false,isolatedGames:845,exclusiveGames:823}
   });
   const EXA_ORTHOGONAL_SUMMARY=Object.freeze({
-    baseThrough:3799,
+    baseThrough:3800,
     universe:3268760,
-    matrixApprovedBeforeExa:3264961,
+    matrixApprovedBeforeExa:3264960,
     activeKeys:Object.freeze(['EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01','EXA-CROSS-01','EXA-CROSS-02','EXA-CROSS-03','EXA-CROSS-04','EXA-CROSS-05','EXA-CROSS-06','EXA-CROSS-07','EXA-CROSS-08','EXA-CROSS-09','EXA-CROSS-10','EXA-MORPH2-01','EXA-MORPH2-02','EXA-SPEC2-01']),
     unionMarginalGames:79014,
-    unionPctOfMatrix:2.420059535167495,
+    unionPctOfMatrix:2.420060276389297,
     unionPctOfUniverse:2.417246907084032,
     countingRule:'F29 + EXA-TEMP-01..08 + EXA-WJ-01 + EXA-CROSS-01..10 + F84-F86 · zero falhas walk-forward; cada jogo contado uma única vez',
     degIncluded:false
