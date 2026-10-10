@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-10-10",
+  "mode": "PESQUISA SEM DEPLOY",
+  "name": "RANKING 2.3 PORTFOLIO OPTIMIZER",
+  "baseThrough": 3800,
+  "score": "R2 unchanged: U5 .35, U10 .30, U20 .20, U50 .15",
+  "configuration": {
+    "pool": 2000,
+    "size": 20,
+    "maxOverlap": 10,
+    "seedWeights": {
+      "r2": 0.5,
+      "coverage25": 0.2,
+      "overlap": 0.15,
+      "novelty5": 0.1,
+      "novelty10": 0.05
+    },
+    "jointSwaps": 1
+  },
+  "results": {
+    "3501-3700": {
+      "R21": {
+        "mean": 11.135,
+        "p11": 162,
+        "p12": 60,
+        "p13": 7
+      },
+      "R23": {
+        "mean": 11.255,
+        "p11": 173,
+        "p12": 71,
+        "p13": 7
+      }
+    },
+    "3701-3800": {
+      "R21": {
+        "mean": 11.21,
+        "p11": 84,
+        "p12": 36,
+        "p13": 3
+      },
+      "R23": {
+        "mean": 11.39,
+        "p11": 94,
+        "p12": 40,
+        "p13": 5
+      }
+    }
+  },
+  "gridConclusion": "Top2000/overlap10 selected. Overlap9 often infeasible for 20 games; overlap11 had lower mean.",
+  "shadowTieBreak": {
+    "tested": true,
+    "default": false,
+    "note": "Kept secondary-only; did not improve mean consistently."
+  },
+  "implementation": {
+    "worker": "analysis-worker.js",
+    "ranking23Mode": true,
+    "ranking21Preserved": true,
+    "F29Preserved": true,
+    "publicDeployment": false,
+    "syntax": "OK"
+  },
+  "validationNote": "Historical windows were previously inspected in Ranking 2.x research; treat these as retrospective diagnostics. Future contests are required for a clean confirmation."
+}
