@@ -1,18 +1,25 @@
-LF Inteligente Particular · Release V3.7.7
+LF Inteligente Particular · Release V3.7.7 FINAL
 Data: 10/10/2026
 Base: concursos 1–3800
 Build: 2026-10-10-v377-base3800-r23-premium2-synced
 
-Correções:
+CORREÇÕES DOS 7 ITENS
 1. index.html único sincronizado com app.js, matrix-51.js, analysis-worker.js e base #3800.
 2. Exportações da Fase 2 embutidas e funcionais no arquivo único.
-3. Ranking 2.3 Portfolio Optimizer exposto no Novo Indicado como experimental.
-4. Política da Matriz corrigida: somente F29 é trava interna absoluta; F28/F36/F37 configuráveis.
-5. Bloqueios externos alinhados ao protocolo zero-falhas e base #3800; regras reprovadas em quarentena.
-6. Base/fallback/offline consolidada até #3800 e worker offline V3.7.7.
-7. CSS premium Fase 1 + Fase 2 consolidado e refinado para notebook 13" e mobile.
+3. Ranking 2.3 Portfolio Optimizer exposto e persistido no Novo Indicado como modo experimental.
+4. Política da Matriz corrigida: somente F29 é trava interna absoluta; F28/F36/F37 são configuráveis.
+5. Bloqueios externos alinhados ao protocolo zero-falhas/base #3800; regras reprovadas ficam em DESLIGADO/QUARENTENA.
+6. Base/fallback/offline consolidada até #3800, com worker offline V3.7.7 idêntico ao worker publicado.
+7. CSS premium Fase 1 + Fase 2 consolidado, com refinamento para notebook 13" e mobile.
 
-Ranking 2.3:
+CORREÇÃO FINAL DE CONSISTÊNCIA PRO
+- Somente F29 permanece "SEMPRE BLOQUEADO".
+- 5–7 cores, extremos de temperatura e 12+ repetidas deixam de ser travas automáticas do Perfil PRO.
+- Esses sinais ficam diagnósticos/informativos.
+- Regras PRO só restringem quando o usuário as ativa/configura.
+- A mesma política foi aplicada no app.js e no analysis-worker.js.
+
+RANKING 2.3
 - score R2 preservado
 - Top 2.000
 - 20 jogos
@@ -21,4 +28,13 @@ Ranking 2.3:
 - 1 troca conjunta
 - experimental; requer validação prospectiva
 
-Nenhuma regra histórica reprovada foi promovida a bloqueio obrigatório.
+AUDITORIA FINAL
+- matrix-51.js: sintaxe OK
+- app.js: sintaxe OK
+- analysis-worker.js: sintaxe OK
+- versões inline do index.html idênticas aos arquivos separados
+- base principal e offline: #3800
+- apenas 1 "SEMPRE BLOQUEADO": F29
+- Ranking 2.3 presente no app e worker
+- exportações presentes no arquivo único
+- CSS premium consolidado
