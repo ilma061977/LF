@@ -1,4 +1,4 @@
-/* LF Inteligente V3.7.5 — Matriz 51 canônica restaurada, versionada e auditável.
+/* LF Inteligente V3.7.7 — Matriz 51 canônica restaurada, versionada e auditável.
  * F01–F29 preservam a matriz canônica e foram diferenciados para evitar redundâncias exatas.
  * F30–F44 ampliam a análise com métricas não duplicadas.
  * F45–F49 são experimentais (score/hipótese; não eliminam por padrão).
@@ -27,10 +27,10 @@
   ];
   const CANONICAL_COUPLES = [[1,2],[3,4],[5,6],[7,8],[9,10]];
   const DECADES = [new Set([1,2,3,4,5,6,7,8,9]), new Set([10,11,12,13,14,15,16,17,18,19]), new Set([20,21,22,23,24,25])];
-  const SCHEMA_VERSION = 'matrix51-zero-failure-2026-10-09-v3.7.6';
-  const THRESHOLD_VERSION = 'LF-M86-ZF-2026.10.09-MORPH2-SPEC2-BASE3799-v3.7.6';
-  const AUDIT_VERSION = 'LF-M86-ZF-AUDIT-3799-v3.7.6';
-  const AUDIT_BASE_THROUGH = 3799;
+  const SCHEMA_VERSION = 'matrix51-zero-failure-2026-10-10-v3.7.7';
+  const THRESHOLD_VERSION = 'LF-M86-ZF-2026.10.10-MORPH2-SPEC2-BASE3800-v3.7.7';
+  const AUDIT_VERSION = 'LF-M86-ZF-AUDIT-3800-v3.7.7';
+  const AUDIT_BASE_THROUGH = 3800;
   // Carência por formato EXATO das cinco linhas (L1-L2-L3-L4-L5).
   // O formato volta a ser aceito quando alvo - último concurso >= intervalo.
   const PATTERN_COOLDOWNS = Object.freeze({
@@ -288,12 +288,12 @@
     'EXA-DIST-01':{label:'Espectro de distâncias',rule:'30 ou mais pares Manhattan com distância 3',threshold:'man3>=30',status:'QUARENTENA',enabledByDefault:false,isolatedGames:845,exclusiveGames:823}
   });
   const EXA_ORTHOGONAL_SUMMARY=Object.freeze({
-    baseThrough:3799,
+    baseThrough:3800,
     universe:3268760,
-    matrixApprovedBeforeExa:3264961,
+    matrixApprovedBeforeExa:3264960,
     activeKeys:Object.freeze(['EXA-TEMP-01','EXA-TEMP-02','EXA-TEMP-03','EXA-TEMP-04','EXA-TEMP-05','EXA-TEMP-06','EXA-TEMP-07','EXA-TEMP-08','EXA-WJ-01','EXA-CROSS-01','EXA-CROSS-02','EXA-CROSS-03','EXA-CROSS-04','EXA-CROSS-05','EXA-CROSS-06','EXA-CROSS-07','EXA-CROSS-08','EXA-CROSS-09','EXA-CROSS-10','EXA-MORPH2-01','EXA-MORPH2-02','EXA-SPEC2-01']),
     unionMarginalGames:79014,
-    unionPctOfMatrix:2.420059535167495,
+    unionPctOfMatrix:2.420060276389297,
     unionPctOfUniverse:2.417246907084032,
     countingRule:'F29 + EXA-TEMP-01..08 + EXA-WJ-01 + EXA-CROSS-01..10 + F84-F86 · zero falhas walk-forward; cada jogo contado uma única vez',
     degIncluded:false
@@ -423,20 +423,11 @@
     'EXA-CROSS-03':new Set(['8-0-2-5','7-0-2-6']),
     'EXA-CROSS-04':new Set(['2-7-5-1','6-1-3-5'])
   });
-  function exaCrossSignature(game=[],a,b){
-    const c=[0,0,0,0];
-    for(const n of game){const x=a(n)?1:0,y=b(n)?1:0;c[x*2+y]++;}
-    return c.join('-');
-  }
+  function exaCrossSignature(game=[],a,b){const c=[0,0,0,0];for(const n of game){const x=a(n)?1:0,y=b(n)?1:0;c[x*2+y]++;}return c.join('-');}
   function exaCross4Metrics(game=[]){
     const g=normalize(game);if(!g)return{};
     const border=n=>EXA_BORDER_SET.has(n),prime=n=>EXA_PRIME_SET.has(n),parity=n=>n%2===0,low=n=>n<=13;
-    return{
-      br:exaCrossSignature(g,border,prime),
-      bp:exaCrossSignature(g,border,parity),
-      lr:exaCrossSignature(g,low,prime),
-      pl:exaCrossSignature(g,parity,low)
-    };
+    return{br:exaCrossSignature(g,border,prime),bp:exaCrossSignature(g,border,parity),lr:exaCrossSignature(g,low,prime),pl:exaCrossSignature(g,parity,low)};
   }
   const EXA_FIB_SET=new Set([1,2,3,5,8,13,21]);
   const EXA_MAGIC_SET=new Set([5,6,7,12,13,14,19,20,21]);
@@ -452,14 +443,7 @@
   function exaFourGroupPairMetrics(game=[]){
     const g=normalize(game);if(!g)return{};
     const fib=n=>EXA_FIB_SET.has(n),prime=n=>EXA_PRIME_SET.has(n),m3=n=>EXA_M3_SET.has(n),magic=n=>EXA_MAGIC_SET.has(n);
-    return{
-      fp:exaCrossSignature(g,fib,prime),
-      fm:exaCrossSignature(g,fib,m3),
-      fg:exaCrossSignature(g,fib,magic),
-      pm:exaCrossSignature(g,prime,m3),
-      pg:exaCrossSignature(g,prime,magic),
-      mg:exaCrossSignature(g,m3,magic)
-    };
+    return{fp:exaCrossSignature(g,fib,prime),fm:exaCrossSignature(g,fib,m3),fg:exaCrossSignature(g,fib,magic),pm:exaCrossSignature(g,prime,m3),pg:exaCrossSignature(g,prime,magic),mg:exaCrossSignature(g,m3,magic)};
   }
   function exaMorphSpec2Metrics(game=[]){
     const g=normalize(game);if(!g)return{};
