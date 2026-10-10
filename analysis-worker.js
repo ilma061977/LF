@@ -748,6 +748,57 @@ function virginPortfolioCoverage(entries=[]){
   return{games:games.length,numbers:nums.size,pairs:pairs.size,triples:triples.size,pairPct:+(pairs.size/300*100).toFixed(1),triplePct:+(triples.size/2300*100).toFixed(1)};
 }
 function insertExhaustiveTop(top,entry,limit){let lo=0,hi=top.length;while(lo<hi){const mid=(lo+hi)>>1;if(exhaustiveCompare(entry,top[mid])<0)hi=mid;else lo=mid+1;}top.splice(lo,0,entry);if(top.length>limit)top.pop();}
+function portfolio23Overlap(a,b){const x=new Set(a||[]);let n=0;for(const v of b||[])if(x.has(v))n++;return n;}
+function portfolio23Objective(chosen=[],maxOverlap=10){
+  if(!chosen.length)return-Infinity;
+  const count=Array(26).fill(0),ideal=chosen.length*15/25;
+  let quality=0;for(const r of chosen){quality+=Number(r._p23quality||0);for(const n of r.game||[])count[n]++;}quality/=chosen.length;
+  let sq=0;for(let n=1;n<=25;n++)sq+=(count[n]-ideal)**2;
+  const coverage=Math.max(0,1-Math.sqrt(sq/25)/Math.max(1,ideal));
+  let sumOv=0,sum5=0,sum10=0,pairs=0,maxOv=0;
+  for(let i=0;i<chosen.length;i++)for(let j=i+1;j<chosen.length;j++){const o=portfolio23Overlap(chosen[i].game,chosen[j].game);maxOv=Math.max(maxOv,o);sumOv+=o;sum5+=M.nCk(o,5);sum10+=M.nCk(o,10);pairs++;}
+  if(maxOv>maxOverlap)return-Infinity;
+  const overlapQuality=pairs?1-(sumOv/pairs)/15:1;
+  const novelty5=pairs?Math.max(0,1-(sum5/pairs)/Math.max(1,M.nCk(maxOverlap,5))):1;
+  const novelty10=pairs?Math.max(0,1-(sum10/pairs)/Math.max(1,M.nCk(maxOverlap,10))):1;
+  return .50*quality+.20*coverage+.15*overlapQuality+.10*novelty5+.05*novelty10;
+}
+function portfolio23Optimize(rows=[],options={}){
+  const size=Math.max(1,Math.min(20,Number(options.size)||20));
+  const maxOverlap=Math.max(8,Math.min(15,Number(options.maxOverlap)||10));
+  const poolLimit=Math.max(size,Math.min(2500,Number(options.poolLimit)||2000));
+  const jointSwaps=Math.max(0,Math.min(2,Number.isFinite(Number(options.jointSwaps))?Number(options.jointSwaps):1));
+  const source=(rows||[]).slice(0,poolLimit).map((r,i)=>({...r,_p23rank:i,_p23quality:1-i/Math.max(1,Math.min(poolLimit,rows.length)-1)}));
+  const chosen=[],used=new Set(),counts=Array(26).fill(0),den5=Math.max(1,M.nCk(maxOverlap,5)),den10=Math.max(1,M.nCk(maxOverlap,10));
+  for(let step=0;step<size;step++){
+    let best=null,bestValue=-Infinity;
+    for(let i=0;i<source.length;i++){
+      if(used.has(i))continue;
+      const r=source[i];let sumOv=0,sum5=0,sum10=0,ok=true;
+      for(const x of chosen){const o=portfolio23Overlap(r.game,x.game);if(o>maxOverlap){ok=false;break;}sumOv+=o;sum5+=M.nCk(o,5);sum10+=M.nCk(o,10);}
+      if(!ok)continue;
+      let cov=0;for(const n of r.game||[])cov+=1/(1+counts[n]);cov/=15;
+      const m=chosen.length||1,overlapQ=chosen.length?1-(sumOv/m)/15:1;
+      const nov5=chosen.length?Math.max(0,1-(sum5/m)/den5):1,nov10=chosen.length?Math.max(0,1-(sum10/m)/den10):1;
+      const value=.50*r._p23quality+.20*cov+.15*overlapQ+.10*nov5+.05*nov10;
+      if(value>bestValue){bestValue=value;best={row:r,index:i};}
+    }
+    if(!best)break;used.add(best.index);chosen.push(best.row);for(const n of best.row.game||[])counts[n]++;
+  }
+  if(chosen.length<size)for(let i=0;i<source.length&&chosen.length<size;i++)if(!used.has(i)){used.add(i);chosen.push(source[i]);}
+  let objective=portfolio23Objective(chosen,maxOverlap);
+  for(let pass=0;pass<jointSwaps;pass++){
+    const keys=new Set(chosen.map(x=>keyOf(x.game))),base=[...chosen];let bestSwap=null,bestObjective=objective;
+    for(let si=0;si<base.length;si++)for(const cand of source){
+      if(keys.has(keyOf(cand.game)))continue;
+      let ok=true;for(let j=0;j<base.length;j++)if(j!==si&&portfolio23Overlap(cand.game,base[j].game)>maxOverlap){ok=false;break;}if(!ok)continue;
+      const trial=[...base];trial[si]=cand;const value=portfolio23Objective(trial,maxOverlap);
+      if(value>bestObjective+1e-12){bestObjective=value;bestSwap={si,cand};}
+    }
+    if(!bestSwap)break;chosen[bestSwap.si]=bestSwap.cand;objective=bestObjective;
+  }
+  return{games:chosen,objective:+objective.toFixed(9),poolSize:source.length,size:chosen.length,maxOverlap,jointSwaps};
+}
 // A mesma avaliação do NOVO INDICADO, aplicada às escolhas independentes por cores.
 // Uma única varredura atende as cinco trincas; a seleção manual limita o universo.
 function colorRelaxSet(raw,color){return new Set((raw?.[color]||raw?.[String(color)]||[]).map(String));}
