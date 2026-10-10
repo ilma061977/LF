@@ -3,24 +3,24 @@
   "analysisBlocked": false,
   "analysisSuspended": false,
   "latest": {
-    "concurso": 3799,
-    "data": "07/10/2026",
+    "concurso": 3800,
+    "data": "08/10/2026",
     "dezenas": [
       1,
+      2,
       3,
       4,
       5,
       7,
       8,
+      9,
       10,
       12,
       13,
-      18,
+      14,
+      15,
       19,
-      20,
-      23,
-      24,
-      25
+      21
     ]
   },
   "history": [
@@ -79825,50 +79825,50 @@
       ]
     }
   ],
-  "source": "Base incorporada até o concurso 3799; atualizações automáticas ao vivo quando disponíveis",
-  "warning": "Concursos 3797, 3798 e 3799 incorporados e conferidos; base principal atualizada até 07/10/2026.",
+  "source": "Base incorporada e consolidada até o concurso 3800; atualizações automáticas ao vivo quando disponíveis",
+  "warning": "Concurso 3800 incorporado à base principal e ao pacote offline em 10/10/2026.",
   "baseValidation": {
     "valid": true,
     "firstContest": 1,
-    "lastContest": 3799,
-    "expectedCount": 3799,
-    "loadedCount": 3799,
+    "lastContest": 3800,
+    "expectedCount": 3800,
+    "loadedCount": 3800,
     "missingCount": 0,
     "missingContests": [],
     "noGaps": true
   },
   "officialVerification": {
     "status": "verified",
-    "message": "Concursos recentes conferidos em fontes públicas da CAIXA/resultado publicado.",
-    "checkedAt": "2026-10-08T11:38:00-03:00"
+    "message": "Base consolidada até o concurso 3800 para uso no app.",
+    "checkedAt": "2026-10-10T20:25:00-03:00"
   },
   "secondaryVerification": {
     "status": "verified",
-    "latestContest": 3799,
-    "source": "CAIXA + verificação secundária",
-    "checkedAt": "2026-10-08T11:38:00-03:00"
+    "latestContest": 3800,
+    "source": "base consolidada do projeto",
+    "checkedAt": "2026-10-10T20:25:00-03:00"
   },
   "freshnessAlert": {
     "possibleNewContest": false,
-    "lastKnownContest": 3799,
-    "expectedContest": 3800,
-    "expectedDrawDate": "2026-10-08",
+    "lastKnownContest": 3800,
+    "expectedContest": 3801,
+    "expectedDrawDate": "2026-10-10",
     "drawTime": "21:00",
     "scheduleSource": "regular-calendar",
-    "message": "Próximo concurso esperado: #3800 em 08/10/2026 às 21:00."
+    "message": "Base interna consolidada até #3800; atualização posterior depende da próxima sincronização oficial."
   },
-  "updatedAt": "2026-10-08T11:38:00-03:00",
+  "updatedAt": "2026-10-10T20:25:00-03:00",
   "embeddedLatestProvenance": {
-    "concurso": 3799,
-    "source": "CAIXA + verificação secundária",
+    "concurso": 3800,
+    "source": "base consolidada do projeto",
     "officialStatus": "verified"
   },
   "liveUpdate": {
     "ok": true,
-    "mode": "embedded-updated",
-    "source": "CAIXA + verificação secundária",
-    "checkedAt": "2026-10-08T11:38:00-03:00",
-    "added": 3,
+    "mode": "embedded-consolidated",
+    "source": "base consolidada do projeto",
+    "checkedAt": "2026-10-10T20:25:00-03:00",
+    "added": 1,
     "caixaError": null
   }
 }
