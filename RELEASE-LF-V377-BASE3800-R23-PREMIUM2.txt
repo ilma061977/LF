@@ -1,0 +1,24 @@
+LF Inteligente Particular · Release V3.7.7
+Data: 10/10/2026
+Base: concursos 1–3800
+Build: 2026-10-10-v377-base3800-r23-premium2-synced
+
+Correções:
+1. index.html único sincronizado com app.js, matrix-51.js, analysis-worker.js e base #3800.
+2. Exportações da Fase 2 embutidas e funcionais no arquivo único.
+3. Ranking 2.3 Portfolio Optimizer exposto no Novo Indicado como experimental.
+4. Política da Matriz corrigida: somente F29 é trava interna absoluta; F28/F36/F37 configuráveis.
+5. Bloqueios externos alinhados ao protocolo zero-falhas e base #3800; regras reprovadas em quarentena.
+6. Base/fallback/offline consolidada até #3800 e worker offline V3.7.7.
+7. CSS premium Fase 1 + Fase 2 consolidado e refinado para notebook 13" e mobile.
+
+Ranking 2.3:
+- score R2 preservado
+- Top 2.000
+- 20 jogos
+- overlap <= 10
+- objetivo multiobjetivo de qualidade/cobertura/diversidade
+- 1 troca conjunta
+- experimental; requer validação prospectiva
+
+Nenhuma regra histórica reprovada foi promovida a bloqueio obrigatório.
