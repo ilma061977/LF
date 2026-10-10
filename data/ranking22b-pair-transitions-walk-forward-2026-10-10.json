@@ -1,0 +1,189 @@
+{
+  "generatedAt": "2026-10-10",
+  "mode": "PESQUISA SEM DEPLOY",
+  "name": "RANKING 2.2B · TRANSIÇÕES ENTRE DEZENAS",
+  "objective": "Medir entrada/permanência por dezena condicionada às dezenas presentes no concurso anterior, com regularização e walk-forward, sem criar novos hard blocks.",
+  "baseline": {
+    "score": "Ranking 2.0 SHORT = U5 35% + U10 30% + U20 20% + U50 15%",
+    "portfolio": "Ranking 2.1 = 20 jogos entre Top 600 com sobreposição máxima 10"
+  },
+  "model": {
+    "targetState": "Separação por estado próprio no concurso anterior: ausente=ENTRY, presente=STAY.",
+    "pairSignal": "Para cada alvo n e fonte m presente no concurso anterior, estimar P(n_t=1 | estado próprio de n em t-1, m_(t-1)=1).",
+    "reference": "Comparar com P(n_t=1 | estado próprio de n em t-1).",
+    "regularization": "Shrinkage da probabilidade do par em direção à taxa-base do estado próprio.",
+    "aggregation": "Selecionar K efeitos de maior magnitude entre as fontes presentes e somar de forma normalizada por sqrt(K).",
+    "families": [
+      "ENTRY",
+      "STAY",
+      "BOTH"
+    ],
+    "shrinkage": [
+      25,
+      50,
+      100
+    ],
+    "K": [
+      3,
+      5,
+      8,
+      14
+    ],
+    "beta": [
+      0.15,
+      0.25,
+      0.35,
+      0.5,
+      0.75,
+      1
+    ]
+  },
+  "protocol": {
+    "development": "3501-3700",
+    "holdout": "3701-3800",
+    "noFutureData": true,
+    "candidateSampleDevelopment": 900,
+    "candidateSampleHoldout": 3000,
+    "selectionRule": "Escolher somente pelo desenvolvimento; congelar um único candidato antes do holdout.",
+    "frozenCandidate": "STAY | shrink=50 | K=8 | beta=1"
+  },
+  "development": {
+    "baseline": {
+      "meanPercentile": 51.55277777777778,
+      "meanTop1Hits": 8.995,
+      "actualTop100": 21
+    },
+    "frozenCandidate": {
+      "meanPercentile": 51.60666666666666,
+      "meanTop1Hits": 9,
+      "actualTop100": 22,
+      "marginalPercentile": {
+        "mean": 0.05388888888888912,
+        "ci95": [
+          -0.1315002867680848,
+          0.23927806454586306
+        ]
+      },
+      "marginalTop1Hits": {
+        "mean": 0.005,
+        "ci95": [
+          -0.04001657762765339,
+          0.05001657762765339
+        ]
+      }
+    },
+    "familyObservation": "Os seis melhores candidatos do desenvolvimento foram STAY; ENTRY e BOTH não ficaram entre os seis primeiros."
+  },
+  "holdout": {
+    "baseline": {
+      "meanPercentile": 52.99066666666667,
+      "meanTop1Hits": 9.07,
+      "rawTop20MeanBestHits": 10.87,
+      "diversified20MeanBestHits": 11.21,
+      "diversified20_11plus": 84,
+      "diversified20_12plus": 36,
+      "diversified20_13plus": 3
+    },
+    "ranking22B": {
+      "meanPercentile": 53.045,
+      "meanTop1Hits": 9.12,
+      "rawTop20MeanBestHits": 10.89,
+      "diversified20MeanBestHits": 11.17,
+      "diversified20_11plus": 83,
+      "diversified20_12plus": 31,
+      "diversified20_13plus": 4
+    },
+    "marginal": {
+      "percentile": {
+        "mean": 0.05433333333333323,
+        "ci95": [
+          -0.17116664820065594,
+          0.2798333148673224
+        ]
+      },
+      "top1Hits": {
+        "mean": 0.05,
+        "ci95": [
+          -0.02565445102302938,
+          0.12565445102302938
+        ]
+      },
+      "rawTop20Best": {
+        "mean": 0.02,
+        "ci95": [
+          -0.0075782376507127665,
+          0.04757823765071277
+        ]
+      },
+      "diversified20Best": {
+        "mean": -0.04,
+        "ci95": [
+          -0.13205869010713991,
+          0.05205869010713992
+        ]
+      }
+    }
+  },
+  "contest3800": {
+    "winner": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      19,
+      21
+    ],
+    "baseline": {
+      "percentile": 94.2,
+      "rankApproxIn3000": 175,
+      "top1Hits": 12,
+      "rawTop20Best": 12,
+      "diversified20Best": 12
+    },
+    "ranking22B": {
+      "percentile": 93.5,
+      "rankApproxIn3000": 196,
+      "top1Hits": 12,
+      "rawTop20Best": 12,
+      "diversified20Best": 12
+    },
+    "entryTargets": {
+      "15": "ausente no anterior; candidato congelado STAY não aplica bônus",
+      "21": "ausente no anterior; candidato congelado STAY não aplica bônus",
+      "02": "ausente no anterior; candidato congelado STAY não aplica bônus",
+      "09": "ausente no anterior; candidato congelado STAY não aplica bônus"
+    },
+    "note": "O melhor mecanismo aprendido foi de permanência, não de entrada; por isso não recuperou as dezenas ausentes que faltavam no #3800."
+  },
+  "multipleTestingNote": {
+    "postHocObservation": "STAY | shrink=100 | K=8 | beta=1 mostrou +0,07 acerto no Top1 no holdout com IC95% acima de zero, mas não pode ser promovido porque foi observado após abrir o holdout e não foi o candidato congelado do desenvolvimento.",
+    "action": "Manter apenas em quarentena exploratória; exigiria novo período futuro independente para confirmação."
+  },
+  "decision": {
+    "promoteToRanking22B": false,
+    "status": "REJEITADO COMO NOVO SCORE / MANTER COMO PESQUISA",
+    "reasons": [
+      "O candidato congelado não teve ganho estatisticamente robusto de percentil nem de Top1.",
+      "A carteira diversificada caiu de 11,21 para 11,17 acertos médios.",
+      "12+ caiu de 36 para 31 concursos no holdout.",
+      "No #3800 o jogo vencedor piorou aproximadamente de 175º para 196º.",
+      "A família ENTRY não apareceu entre os melhores candidatos do desenvolvimento."
+    ],
+    "keepCurrent": "Ranking 2.1 permanece: score Ranking 2.0 + carteira 20 / Top 600 / overlap <=10.",
+    "hardBlocks": "Nenhum sinal 2.2B vira bloqueio."
+  },
+  "implementation": {
+    "researchArtifactOnly": true,
+    "appChanged": false,
+    "publicDeployment": false
+  }
+}
