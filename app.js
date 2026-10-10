@@ -1244,6 +1244,39 @@
   function renderGenerated(){renderColorStatistics();const el=$('#generated-games'),kpis=$('#generator-kpis'),excluded=blockedNumbers(),mandatory=[28,29,36,37].filter(id=>state.filterPolicies[id]==='block').length,approved=state.generated.filter(g=>policyFailures(M.inspect(g,state.ctx)).length===0).length;if(kpis)kpis.innerHTML=[['Bloqueios obrigatórios',`${mandatory}/4`,'F28 · F29 · F36 · F37'],['Exclusões ativas',excluded.size,'dezenas indisponíveis'],['Jogos aprovados',`${approved}/${state.generated.length}`,'sem fallback reprovado'],['Base',`#${state.history.at(-1)?.concurso||'—'}`,'último concurso carregado']].map(([a,b,c])=>`<article><span>${a}</span><b>${b}</b><small>${c}</small></article>`).join('');if(!state.generated.length){el.className='generated-games empty';el.textContent='Nenhum jogo gerado.';return;}el.className='generated-games';const ps=M.portfolioScore(state.generated);el.innerHTML=state.generated.map((g,i)=>{const r=M.inspect(g,state.ctx),sim=historicalSimilarity(g),m=r.metrics||{},fails=policyFailures(r).length,warns=policyWarnings(r).length,hh=historicalGameHitSummary(g),d=hh.dist;return `<article class="game-card"><header><b>Jogo ${i+1}</b><span class="status-pill ${fails?'danger':warns?'warn':'ok'}">${fails?'REPROVADO':'APROVADO'}</span></header>${gameNumbers(g)}<div class="game-bi-grid"><span>Soma<b>${m.total??'—'}</b></span><span>Pares / ímpares<b>${m.odds==null?'—':`${15-m.odds}/${m.odds}`}</b></span><span>Repetidas<b>${m.repeated??'—'}</b></span><span>Cores<b>${new Set(g.map(n=>n%10)).size}</b></span></div><div class="game-bi-grid"><span>11 pontos<b>${d[11]}</b></span><span>12 pontos<b>${d[12]}</b></span><span>13 pontos<b>${d[13]}</b></span><span>14 / 15<b>${d[14]} / ${d[15]}</b></span></div><div class="game-foot"><span>Melhor histórico: ${hh.best}/15${hh.bestContest?' · #'+hh.bestContest:''}</span><span>${warns} avisos · Portfólio ${ps.score}/100</span></div></article>`;}).join('');}
   function renderExclusions(){renderBoard($('#exclusion-board'),new Set(),'exclusion');}
   function exportText(games,name='LF-Inteligente-jogos.txt'){if(!games.length)return toast('Nenhum jogo para exportar.');const body=games.map((g,i)=>`Jogo ${i+1}: ${g.map(pad).join(' ')}`).join('\n');const blob=new Blob([body],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href);}
+  function downloadCSV(name,rows=[]){
+    if(!rows.length)return toast('Nenhum dado para exportar.');
+    const esc=v=>{const x=String(v??'');return /[",\n;]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x;};
+    const body=rows.map(r=>r.map(esc).join(';')).join('\n');
+    const blob=new Blob(['\ufeff'+body],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href);
+  }
+  function exportStatsSnapshotCSV(){
+    const rows=rowsForPeriod(state.period);if(!rows.length)return toast('Aguardando histórico para exportar.');
+    const out=[['concurso','data','dezenas','soma','impares','pares','repetidas_anterior','cores_distintas']];
+    for(const draw of rows){
+      const idx=state.history.findIndex(x=>x.concurso===draw.concurso),prev=idx>0?state.history[idx-1]:null,setPrev=new Set(prev?.dezenas||[]);
+      const odds=draw.dezenas.filter(n=>n%2).length,repeated=prev?draw.dezenas.filter(n=>setPrev.has(n)).length:'';
+      out.push([draw.concurso,draw.data||'',draw.dezenas.map(pad).join(' '),draw.dezenas.reduce((a,b)=>a+b,0),odds,15-odds,repeated,new Set(draw.dezenas.map(n=>n%10)).size]);
+    }
+    downloadCSV('LF-Estatisticas-U'+state.period+'-ate-'+(state.history.at(-1)?.concurso||'base')+'.csv',out);
+    toast(rows.length+' concurso(s) exportados em CSV.');
+  }
+  function exportRenderedTableCSV(selector,name){
+    const root=$(selector),table=root?.querySelector('table');if(!table)return toast('A tabela ainda não foi calculada.');
+    const rows=[...table.querySelectorAll('tr')].map(tr=>[...tr.querySelectorAll('th,td')].map(td=>String(td.innerText||'').replace(/\s+/g,' ').trim()));
+    if(!rows.length)return toast('Nenhum dado para exportar.');
+    downloadCSV(name,rows);toast('Tabela exportada em CSV.');
+  }
+  function exportColorChoiceCurrent(){
+    const games=[],push=g=>{const n=M.normalize(g);if(n&&!games.some(x=>keyOf(x)===keyOf(n)))games.push(n);};
+    if(state.colorChoiceSelection?.size===15)push([...state.colorChoiceSelection]);
+    if(Array.isArray(state.colorRandomGame)&&state.colorRandomGame.length===15)push(state.colorRandomGame);
+    for(const g of state.colorAutoGames||[])push(g);
+    for(const g of state.colorAutoTerminalGames||[])push(g);
+    if(!games.length)return toast('Monte ou gere ao menos um jogo por cores antes de exportar.');
+    exportText(games,'LF-Jogo-por-Cores-'+(state.history.at(-1)?.concurso||'base')+'.txt');
+  }
   function saveGames(games){
     const normalized=(games||[]).map(g=>M.normalize(g)).filter(Boolean);
     if(!normalized.length)return toast('Nenhum jogo válido para salvar.');
@@ -2301,6 +2334,19 @@
   $('#clear-decision-boundary')?.addEventListener('click',()=>{if(state.decisionSearchMeta?.status==='running'&&state.decisionWorker)return toast('Aguarde a busca atual terminar para limpar a faixa.');state.decisionStartNumber=null;state.decisionEndNumber=null;savePrefs();invalidateDecisionBoundary();toast('Restrição de início/fim removida.');});
     $('#apply-pro-profile')?.addEventListener('click',applyProProfilePanel);renderProProfilePanel();
   $('#decision-generate').onclick=()=>generateDecision(state.decision.length===15);$('#decision-rerun').onclick=()=>{if(state.decisionWorker)return;state.decisionAutoRetryCount=1;state.decisionRankingCache=null;state.decisionIndex=0;storageRemove(decisionCacheKey());startDecisionExhaustive(generationSignature(),[...blockedNumbers()],decisionBoundaryUniverse([...blockedNumbers()]),0);};$('#decision-selection-mode').onchange=e=>{const v=e.target.value;if(v==='virgin'){state.decisionSelectionMode='virgin';state.indicatorMode='random';savePrefs();invalidateDecisionSelectionMode();randomizeIndicatorComposition();renderDecisionSelectionMode();renderIndicatorTargetPanel();toast('Modo Virgem ativado. Clique em Iniciar busca exaustiva.');return;}if(v==='ranking21'){state.decisionSelectionMode='ranking21';state.indicatorMode='manual';savePrefs();invalidateDecisionSelectionMode();renderDecisionSelectionMode();renderIndicatorTargetPanel();toast('Ranking 2.1 ativado: Carteira 20 diversificada, score 2.0 e somente bloqueios zero-falhas.');return;}if(v==='ranking2'){state.decisionSelectionMode='ranking2';state.indicatorMode='manual';savePrefs();invalidateDecisionSelectionMode();renderDecisionSelectionMode();renderIndicatorTargetPanel();toast('Ranking 2.0 experimental ativado. Indicadores e Perfil PRO ficam informativos; só os bloqueios zero-falhas eliminam.');return;}state.decisionSelectionMode='standard';if(v==='random'){state.indicatorMode='random';randomizeIndicatorComposition();renderDecisionSelectionMode();return;}state.indicatorMode='manual';savePrefs();renderDecisionSelectionMode();invalidateDecisionSelectionMode();renderIndicatorTargetPanel();};$('#virgin-profile')?.addEventListener('change',e=>{state.virginProfile=['light','strong','max'].includes(e.target.value)?e.target.value:'strong';savePrefs();invalidateDecisionSelectionMode();renderDecisionSelectionMode();toast('Perfil Virgem alterado. Execute nova busca para recalcular o ranking.');});$('#apply-indicator-targets').onclick=()=>{invalidateDecisionForIndicatorTargets();generateDecision(false);};$('#randomize-indicator-targets').onclick=()=>randomizeIndicatorComposition();$('#vertical-search').onclick=()=>renderVerticalVisual();$('#vertical-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical-start').value=Math.max(1,latest-9);$('#vertical-end').value=latest;renderVerticalVisual();};$('#vertical2-search').onclick=()=>renderVertical2();$('#vertical2-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical2-start').value=Math.max(1,latest-9);$('#vertical2-end').value=latest;renderVertical2();};$('#vertical3-search').onclick=()=>renderVertical3();$('#vertical3-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical3-start').value=Math.max(1,latest-9);$('#vertical3-end').value=latest;renderVertical3();};$('#vertical4-search').onclick=()=>renderVertical4();$('#vertical4-last-10').onclick=()=>{const latest=state.history.at(-1)?.concurso||0;$('#vertical4-start').value=Math.max(1,latest-9);$('#vertical4-end').value=latest;renderVertical4();};
+  $('#stats-export-csv')?.addEventListener('click',exportStatsSnapshotCSV);
+  $('#charts-export-csv')?.addEventListener('click',exportStatsSnapshotCSV);
+  const verticalExports=[
+    ['#vertical-export-csv','#vertical-export-csv-inline','#vertical-visual-wrap','LF-Vertical-1.csv'],
+    ['#vertical2-export-csv','#vertical2-export-csv-inline','#vertical2-visual-wrap','LF-Vertical-2.csv'],
+    ['#vertical3-export-csv','#vertical3-export-csv-inline','#vertical3-visual-wrap','LF-Vertical-3-Cores.csv'],
+    ['#vertical4-export-csv','#vertical4-export-csv-inline','#vertical4-visual-wrap','LF-Vertical-4-Ausentes.csv']
+  ];
+  for(const [mainBtn,inlineBtn,wrap,file] of verticalExports){
+    const run=()=>exportRenderedTableCSV(wrap,file);
+    $(mainBtn)?.addEventListener('click',run);$(inlineBtn)?.addEventListener('click',run);
+  }
+  $('#color-choice-export-current')?.addEventListener('click',exportColorChoiceCurrent);
   $('#use-suggestion').onclick=()=>{if(state.decision.length!==15)return toast('Aguarde a busca exaustiva chegar a 100% para usar o NOVO INDICADO oficial.');state.selection=new Set(state.decision);renderAnalysis();};
   $('#clear-selection').onclick=()=>{state.selection=new Set(state.fixedNumbers);syncManualDecision();};
   $('#complete-selection').onclick=completeManualSelection;
