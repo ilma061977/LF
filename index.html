@@ -1103,6 +1103,23 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 .lf-research-fold #ranking-diagnostics{margin:0;border:0;border-top:1px solid var(--line,#dfe4e9);border-radius:0;min-width:0}
 .lf-research-fold #ranking-compare-report,.lf-research-fold #ranking-wf-report{overflow-wrap:anywhere;line-height:1.6}
 @media(max-width:768px){.lf-research-fold>summary{padding:13px 12px}.lf-research-chevron{white-space:normal;text-align:right}.decision-number-mode .btn{white-space:normal}#decision-manual-counter{width:100%}}
+
+/* LF full-width workspace; preserve sidebar and existing visual identity */
+@media(min-width:821px){
+  .workspace{width:auto;max-width:none;min-width:0}
+  .workspace>.main,.main{width:100%;max-width:none!important;margin:0!important;padding:clamp(12px,1.35vw,24px)!important;min-width:0}
+  .page.active{width:100%;max-width:none;min-width:0}
+  .decision-grid,.decision-grid-clean,.stats-layout,.charts-layout{max-width:none;width:100%;min-width:0}
+  .decision-grid>*,.decision-grid-clean>*,.stats-layout>*,.charts-layout>*{min-width:0}
+  .hero,.decision-hero{width:100%;max-width:none}
+}
+@media(min-width:821px) and (max-width:1366px){
+ .workspace>.main,.main{padding:12px!important}
+}
+@media(max-width:820px){
+ .workspace>.main,.main{width:100%;max-width:none!important;min-width:0;padding:12px!important;margin:0!important}
+ .page.active,.hero,.decision-grid{max-width:100%;min-width:0}
+}
 </style>
 
 
