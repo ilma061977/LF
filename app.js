@@ -1183,6 +1183,32 @@
   }
 
 
+
+  let rankingWalkForwardWorker=null;
+  function runRankingWalkForwardUI(){
+    if(rankingWalkForwardWorker)return toast('Walk-forward já em execução.');
+    const report=$('#ranking-wf-report'),count=Number($('#ranking-wf-rounds')?.value||3);
+    if(state.history.length<35)return toast('Histórico insuficiente.');
+    const source=window.__LF_WORKER_URL||'analysis-worker.js';
+    let worker;try{worker=new Worker(source);}catch(e){return toast('Worker de análise indisponível: '+e.message);}
+    rankingWalkForwardWorker=worker;$('#ranking-wf-run').disabled=true;$('#ranking-wf-cancel').disabled=false;
+    report.textContent='Iniciando avaliação cronológica real dos últimos '+count+' concursos…';
+    worker.onmessage=e=>{
+      if(rankingWalkForwardWorker!==worker)return;
+      const d=e.data||{};
+      if(d.type==='ranking-wf-progress'){report.textContent='Analisando concurso #'+d.contest+' · '+(d.mode==='ranking21'?'Ranking 2.1':'Ranking 2.3')+' · '+d.completed+'/'+d.total+' concursos concluídos';return;}
+      if(d.type==='ranking-wf-error'){report.textContent='Teste interrompido: '+d.reason;finish();return;}
+      if(d.type==='ranking-wf-done'){
+        const rows=d.results||[],complete=rows.filter(x=>x.models?.ranking21?.complete&&x.models?.ranking23?.complete),avg=m=>complete.length?(complete.reduce((s,x)=>s+x.models[m].hits,0)/complete.length).toFixed(2):'—';
+        report.textContent='Walk-forward real: '+complete.length+'/'+rows.length+' concursos com ambos completos. Média 2.1: '+avg('ranking21')+' · Média 2.3: '+avg('ranking23')+' · Detalhes: '+rows.map(x=>'#'+x.contest+' (treino até #'+x.trainedThrough+'): 2.1='+ (x.models.ranking21.hits??'sem resultado')+'; 2.3='+(x.models.ranking23.hits??'sem resultado')).join(' | ')+'. A amostra é pequena e não comprova superioridade estatística.';
+        finish();
+      }
+    };
+    worker.onerror=e=>{report.textContent='Erro no processamento: '+(e.message||'sem detalhes');finish();};
+    function finish(){worker.terminate();rankingWalkForwardWorker=null;$('#ranking-wf-run').disabled=false;$('#ranking-wf-cancel').disabled=true;}
+    $('#ranking-wf-cancel').onclick=()=>{report.textContent='Teste cancelado sem alterar filtros.';finish();};
+    worker.postMessage({task:'ranking-walk-forward',history:state.history,rounds:count,period:state.period,policies:state.filterPolicies,externalPolicies:state.externalBlockPolicies,excluded:[...state.exclusions],fixedNumbers:[...state.fixedNumbers],boundary:{start:state.decisionStartNumber,end:state.decisionEndNumber},indicatorTargets:state.indicatorTargets,proProfile:null,decisionRelaxations:[]});
+  }
   const LF_RANKING_SNAPSHOTS_KEY='lfv377_ranking_snapshots_v1';
   const readRankingSnapshots=()=>{const x=safeJSON(LF_RANKING_SNAPSHOTS_KEY,{});return x&&typeof x==='object'?x:{};};
   function rankingPortfolioMetrics(games){
@@ -2383,6 +2409,7 @@
   $('#clear-decision-boundary')?.addEventListener('click',()=>{if(state.decisionSearchMeta?.status==='running'&&state.decisionWorker)return toast('Aguarde a busca atual terminar para limpar a faixa.');state.decisionStartNumber=null;state.decisionEndNumber=null;savePrefs();invalidateDecisionBoundary();toast('Restrição de início/fim removida.');});
     $('#apply-pro-profile')?.addEventListener('click',applyProProfilePanel);renderProProfilePanel();
   $('#decision-clear-marked')?.addEventListener('click',clearAllMarkedDecisionNumbers);
+  $('#ranking-wf-run')?.addEventListener('click',runRankingWalkForwardUI);
   $('#ranking-snapshot')?.addEventListener('click',rankingSnapshotCurrent);
   $('#ranking-compare-refresh')?.addEventListener('click',renderRankingDiagnostics);
   $('#ranking-backtest-baseline')?.addEventListener('click',runRankingChronologicalReference);
