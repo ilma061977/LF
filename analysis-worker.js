@@ -961,7 +961,28 @@ function runGroupPatternScore(d){
   postMessage({type:'group-pattern-score-done',pattern,part1Count:a,mid,part2Count:b,tested,total,approvedCount,game:picked?.game||[],score:picked?.score??null,rankScore:picked?.rankScore??null,topCount:top.length,part1Stats:stat(p1),part2Stats:stat(p2)});
 }
 
-self.onmessage=e=>{const d=e.data||{};if(d.task==='group-pattern-score')return runGroupPatternScore(d);if(d.task==='color-rank')return runColorRank(d);if(d.task==='generate')return runGenerate(d);if(d.task==='lab')return runLab(d);if(d.task==='backtest')return runBacktest(d);if(d.task==='filter-audit')return runFilterAudit(d);if(d.task==='combined-integral')return runCombinedIntegral(d);if(d.task==='closure')return runClosure(d);};
+
+function runRankingWalkForward(d){
+  const history=(d.history||[]).filter(x=>Number.isInteger(Number(x.concurso))&&Array.isArray(x.dezenas)).sort((a,b)=>a.concurso-b.concurso);
+  const rounds=Math.max(1,Math.min(5,Number(d.rounds)||3)),first=Math.max(30,history.length-rounds),results=[];
+  for(let i=first;i<history.length;i++){
+    const prior=history.slice(0,i),target=history[i],previous=history[i-1];
+    if(Number(target.concurso)!==Number(previous.concurso)+1){postMessage({type:'ranking-wf-error',reason:'Histórico não consecutivo no concurso #'+target.concurso});return;}
+    const ctx=M.buildContext(prior,{window:d.period||10});
+    const quotas=d.indicatorTargets?buildIndicatorQuotaSpec(prior,d.indicatorTargets):null;
+    const entry={contest:target.concurso,trainedThrough:previous.concurso,models:{}};
+    for(const mode of ['ranking21','ranking23']){
+      const r=exhaustiveBest(ctx,d.policies||{},d.excluded||[],0,mode==='ranking23'?2000:200,null,quotas,d.proProfile||null,{mode},d.boundary||null,d.fixedNumbers||[],d.decisionRelaxations||[],d.externalPolicies||{});
+      const valid=Array.isArray(r.game)&&r.game.length===15&&r.tested===r.total&&r.total>0;
+      entry.models[mode]={game:valid?r.game:null,hits:valid?hits(r.game,target.dezenas):null,tested:r.tested,total:r.total,complete:valid,reason:valid?'':r.diagnostics?.reason||'Busca sem candidato completo'};
+      postMessage({type:'ranking-wf-progress',contest:target.concurso,mode,completed:results.length,total:history.length-first});
+    }
+    results.push(entry);
+  }
+  postMessage({type:'ranking-wf-done',results,method:'Motor exaustivo original; treino somente concursos anteriores ao alvo; mesma política e configuração atual para os dois rankings'});
+}
+
+self.onmessage=e=>{const d=e.data||{};if(d.task==='ranking-walk-forward')return runRankingWalkForward(d);if(d.task==='group-pattern-score')return runGroupPatternScore(d);if(d.task==='color-rank')return runColorRank(d);if(d.task==='generate')return runGenerate(d);if(d.task==='lab')return runLab(d);if(d.task==='backtest')return runBacktest(d);if(d.task==='filter-audit')return runFilterAudit(d);if(d.task==='combined-integral')return runCombinedIntegral(d);if(d.task==='closure')return runClosure(d);};
 
 function runGenerate(d){
   const ctx=M.buildContext(d.history||[],{window:d.period||10}),externalPolicies=d.externalPolicies||{},target=1,maxAttempts=Math.max(1000,Number(d.maxAttempts)||250000),quotaSpec=d.indicatorQuotas||(d.indicatorTargets?buildIndicatorQuotaSpec(d.history||[],d.indicatorTargets):null);
