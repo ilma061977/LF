@@ -1120,6 +1120,22 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
  .workspace>.main,.main{width:100%;max-width:none!important;min-width:0;padding:12px!important;margin:0!important}
  .page.active,.hero,.decision-grid{max-width:100%;min-width:0}
 }
+
+/* LF 14-inch full-screen correction — actual board and top menu sizing */
+@media(min-width:821px){
+  html,body,.app-shell,.workspace{max-width:none!important}
+  .main,.workspace>.main{max-width:calc(100vw - 16px)!important;width:100%!important;margin:0!important;padding:12px 16px 28px!important;box-sizing:border-box!important}
+  .lf-top-menu-inner{max-width:none!important;width:100%!important;margin:0!important;padding:0 16px!important}
+  .page.active{width:100%!important;max-width:none!important}
+  #decision-board.decision-5x5{max-width:min(100%,850px)!important;width:100%!important;margin:16px auto 22px!important}
+  #decision-board.decision-5x5 .ball{min-width:0}
+  .decision-grid,.decision-grid-clean{width:100%!important;max-width:none!important}
+}
+@media(min-width:821px) and (max-width:1440px){
+  .main,.workspace>.main{padding:10px 12px 24px!important}
+  #decision-board.decision-5x5{max-width:min(100%,720px)!important}
+  .lf-top-menu-inner{gap:12px!important;padding:0 12px!important}
+}
 </style>
 
 
